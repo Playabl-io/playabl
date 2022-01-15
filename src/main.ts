@@ -1,15 +1,24 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router'
-import { createHead } from '@vueuse/head'
-import { store } from './store'
-import './assets/index.postcss'
+import { createApp } from "vue";
+import App from "./App.vue";
+import router from "./router";
+import { createHead } from "@vueuse/head";
+import FormInput from "./components/Forms/FormInput.vue";
+import FormLabel from "./components/Forms/FormLabel.vue";
+import PrimaryButton from "./components/Buttons/PrimaryButton.vue";
+import SecondaryButton from "./components/Buttons/SecondaryButton.vue";
 
-const head = createHead()
-const app = createApp(App)
+import "./assets/index.postcss";
+import "./styles/font.css";
 
-app.use(store)
-app.use(router)
-app.use(head)
+const head = createHead();
+const app = createApp(App);
 
-app.mount('#app')
+app.component("form-input", FormInput);
+app.component("form-label", FormLabel);
+app.component("primary-button", PrimaryButton);
+app.component("secondary-button", SecondaryButton);
+
+app.use(router);
+app.use(head);
+
+app.mount("#app");

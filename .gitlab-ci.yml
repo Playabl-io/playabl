@@ -4,9 +4,9 @@ stages:
   - test
 
 variables:
-  npm_config_cache: '$CI_PROJECT_DIR/.npm'
-  CYPRESS_CACHE_FOLDER: '$CI_PROJECT_DIR/cache/Cypress'
-  YARN_CACHE_FOLDER: '/root/.cache/yarn'
+  npm_config_cache: "$CI_PROJECT_DIR/.npm"
+  CYPRESS_CACHE_FOLDER: "$CI_PROJECT_DIR/cache/Cypress"
+  YARN_CACHE_FOLDER: "/root/.cache/yarn"
 
 cache:
   paths:
@@ -19,7 +19,7 @@ test:
   stage: test
   image:
     name: cypress/included:8.7.0
-    entrypoint: ['']
+    entrypoint: [""]
   script:
     # Uncomment for debugging
     # - export
@@ -32,8 +32,8 @@ test:
   coverage: '/Lines\s+:\s(\d+.?\d+)%/'
   artifacts:
     paths:
-      - '$CI_PROJECT_DIR/tests/e2e/videos/*.mp4'
-      - '$CI_PROJECT_DIR/coverage'
+      - "$CI_PROJECT_DIR/tests/e2e/videos/*.mp4"
+      - "$CI_PROJECT_DIR/coverage"
     expire_in: 2 weeks
     when: on_failure
   timeout: 15m

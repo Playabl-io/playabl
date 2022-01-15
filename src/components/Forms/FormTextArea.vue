@@ -1,0 +1,19 @@
+<template>
+  <textarea
+    v-bind="$attrs"
+    class="p-2 rounded-md border border-gray-300 resize-y"
+    :value="modelValue"
+    @input="handleInput"
+  />
+</template>
+<script setup lang="ts">
+defineProps({
+  modelValue: String,
+});
+const emit = defineEmits(["update:modelValue"]);
+
+function handleInput(event: Event) {
+  const element = event.target as HTMLInputElement;
+  emit("update:modelValue", element.value);
+}
+</script>

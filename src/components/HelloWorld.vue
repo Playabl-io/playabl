@@ -6,24 +6,23 @@
   >
     count is: {{ count }}
   </button>
-  <p
-    >Edit <code>components/HelloWorld.vue</code> to test hot module
-    replacement.</p
-  >
+  <p>
+    Edit <code>components/HelloWorld.vue</code> to test hot module replacement.
+  </p>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useStore, Mutation } from '@/store/index'
+import { computed } from "vue";
+import { useStore, Mutation } from "@/store/index";
 
-const store = useStore()
-const count = computed(() => store.state.count)
+const store = useStore();
+const count = computed(() => store.state.count);
 const props = defineProps<{
-  msg: string
-  optionalProp?: number
-}>()
+  msg: string;
+  optionalProp?: number;
+}>();
 
 function increment() {
-  store.commit(Mutation.INCREMENT, 1)
+  store.commit(Mutation.INCREMENT, 1);
 }
 </script>
