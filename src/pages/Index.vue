@@ -1,6 +1,6 @@
 <template>
   <section class="h-full bg-brand-500 flex flex-col text-brand-100">
-    <nav-header />
+    <nav-header class="bg-brand-500" />
     <main class="grid place-items-center flex-1">
       <span class="flex flex-col items-center space-y-4">
         <heading level="h1">Playout</heading>

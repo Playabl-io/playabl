@@ -1,16 +1,17 @@
 <template>
-  <button
+  <base-button
     v-bind="$attrs"
-    class="p-2 rounded-md bg-transparent hover:bg-gray-200 focus:bg-gray-200 text-slate-900 flex justify-center"
+    class="bg-transparent hover:bg-gray-200 focus:bg-gray-200 text-slate-900"
   >
     <loading-spinner v-if="isLoading" />
     <p v-if="isLoading" class="sr-only">Loading</p>
     <slot v-else></slot>
-  </button>
+  </base-button>
 </template>
 <script setup lang="ts">
 import { toRefs } from "vue";
 import LoadingSpinner from "../LoadingSpinner.vue";
+import BaseButton from "./BaseButton.vue";
 const props = defineProps({
   isLoading: {
     type: Boolean,

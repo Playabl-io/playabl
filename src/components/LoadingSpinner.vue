@@ -1,10 +1,21 @@
 <template>
   <div class="spinner flex space-x-1">
-    <div class="bounce1"></div>
-    <div class="bounce2"></div>
-    <div class="bounce3"></div>
+    <div class="bounce1" :class="`bg-${color}`"></div>
+    <div class="bounce2" :class="`bg-${color}`"></div>
+    <div class="bounce3" :class="`bg-${color}`"></div>
   </div>
 </template>
+<script setup lang="ts">
+import { toRefs } from "vue";
+
+const props = defineProps({
+  color: {
+    type: String,
+    default: "white",
+  },
+});
+toRefs(props);
+</script>
 <style>
 .spinner {
   text-align: center;
@@ -13,7 +24,6 @@
 .spinner > div {
   width: 0.8rem;
   height: 0.8rem;
-  background-color: #fff;
   border-radius: 100%;
   -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
   animation: sk-bouncedelay 1.4s infinite ease-in-out both;

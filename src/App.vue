@@ -11,9 +11,12 @@ if (user) {
   store.user = user;
 }
 
-supabase.auth.onAuthStateChange((_, session) => {
+supabase.auth.onAuthStateChange((event, session) => {
   if (session !== null && session.user) {
     store.user = session.user;
+  }
+  if (event === "SIGNED_OUT") {
+    store.user = null;
   }
 });
 </script>

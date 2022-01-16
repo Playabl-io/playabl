@@ -24,7 +24,7 @@
             <router-link
               class="px-2 py-1"
               to="/communities"
-              active-class="text-brand-500 border-l border-brand-500"
+              active-class="text-brand-500 border-l border-brand-500 dark:border-brand-300"
             >
               Communities
             </router-link>
@@ -33,7 +33,7 @@
             <router-link
               class="px-2 py-1"
               to="/games"
-              active-class="text-brand-500 border-l border-brand-500"
+              active-class="text-brand-500 border-l border-brand-500 dark:border-brand-300"
             >
               Games
             </router-link>
@@ -43,7 +43,7 @@
             <router-link
               class="px-2 py-1"
               to="/profile"
-              active-class="text-brand-500 border-l border-brand-500"
+              active-class="text-brand-500 border-l border-brand-500 dark:border-brand-300"
             >
               Profile
             </router-link>

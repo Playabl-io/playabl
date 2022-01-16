@@ -3,7 +3,7 @@
     <section class="col-span-3">
       <heading level="h6">{{ heading }}</heading>
       <slot name="website"></slot>
-      <p class="prose mt-6">
+      <p class="prose dark:prose-invert mt-6">
         <slot name="description"></slot>
       </p>
     </section>

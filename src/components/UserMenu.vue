@@ -1,11 +1,12 @@
 <template>
-  <section v-if="true" class="relative">
+  <loading-spinner v-if="isSigningOut" />
+  <section v-else-if="store.user" class="relative">
     <Menu>
       <MenuButton class="hover:underline">
         <div
           class="rounded-full w-8 h-8 bg-brand-200 text-brand-500 grid place-items-center content-center"
         >
-          J
+          {{ store.user.email?.charAt(0) }}
         </div>
       </MenuButton>
       <transition
@@ -29,22 +30,41 @@
             </router-link>
           </MenuItem>
           <MenuItem v-slot="{ active }">
-            <a
+            <button
               :class="{ [activeMenuItem]: active }"
-              class="whitespace-nowrap px-2 py-1 rounded-md w-full"
-              href="/account-settings"
+              class="whitespace-nowrap px-2 py-1 rounded-md w-full bg-none"
+              @click="signOut"
             >
               Sign out
-            </a>
+            </button>
           </MenuItem>
         </MenuItems>
       </transition>
     </Menu>
   </section>
-  <router-link v-else to="/sign-in">Sign in</router-link>
+  <router-link v-else to="/sign-in" class="whitespace-nowrap hover:underline">
+    Sign in
+  </router-link>
 </template>
 <script setup lang="ts">
+import { ref } from "vue";
+import { supabase } from "@/supabase";
 import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue";
 import { store } from "../store";
+import LoadingSpinner from "./LoadingSpinner.vue";
+import { log } from "@/util/logger";
 const activeMenuItem = "bg-gray-100 cursor-pointer";
+
+const isSigningOut = ref(false);
+
+async function signOut() {
+  isSigningOut.value = true;
+  const { error } = await supabase.auth.signOut();
+  isSigningOut.value = false;
+  if (error) {
+    log(error);
+  }
+}
+
+console.log(store.user);
 </script>
