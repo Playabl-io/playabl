@@ -7,7 +7,7 @@
     <nav class="mx-auto col-span-4 place-items-center">
       <router-link
         class="pt-2 mx-6"
-        to="/communities"
+        :to="`${store.user ? '/communities/joined' : '/communities/all'}`"
         active-class="border-t border-brand-500 dark:border-brand-300"
       >
         Communities
@@ -30,4 +30,5 @@
 import { RouterLink } from "vue-router";
 import FormInput from "./Forms/FormInput.vue";
 import UserMenu from "./UserMenu.vue";
+import { store } from "../store";
 </script>

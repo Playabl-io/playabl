@@ -9,17 +9,17 @@
           Tell us about your community
         </p>
         <div class="grid grid-cols-1 gap-8">
-          <div class="flex flex-col space-y-2">
+          <div class="flex flex-col">
             <FormLabel for="name">
               Community Name
               <span role="presentation" class="text-red-700">*</span>
             </FormLabel>
             <FormInput v-model="name" id="name" required />
-            <p class="prose-sm">
+            <p class="prose dark:prose-invert text-xs leading-6">
               Your community name must be unique and cannot be changed
             </p>
           </div>
-          <div class="flex flex-col space-y-2">
+          <div class="flex flex-col">
             <FormLabel for="description">Description</FormLabel>
             <FormTextArea v-model="description" id="description" />
           </div>
@@ -38,15 +38,15 @@
           Any links to share?
         </p>
         <div class="grid grid-cols-1 gap-8">
-          <div class="flex flex-col space-y-2">
+          <div class="flex flex-col">
             <FormLabel for="website">Website</FormLabel>
             <FormInput v-model="website" id="website" type="url" />
           </div>
-          <div class="flex flex-col space-y-2">
+          <div class="flex flex-col">
             <FormLabel for="twitter"> Twitter </FormLabel>
             <FormInput v-model="twitter" id="twitter" />
           </div>
-          <div class="flex flex-col space-y-2">
+          <div class="flex flex-col">
             <FormLabel for="facebook">Facebook</FormLabel>
             <FormInput v-model="facebook" id="facebook" />
           </div>
@@ -65,13 +65,6 @@
         </div>
       </form>
     </div>
-    <div v-if="state.value === 'finished'">
-      <Heading level="h2">Success!</Heading>
-      <p class="prose prose-lg dark:prose-invert">
-        Your community has been created. You will be redirected to complete
-        setup.
-      </p>
-    </div>
   </BaseTemplate>
 </template>
 <script setup lang="ts">
@@ -87,7 +80,10 @@ import OutlineButton from "@/components/Buttons/OutlineButton.vue";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import { supabase } from "@/supabase";
 import { log } from "@/util/logger";
-import Heading from "@/components/Heading.vue";
+import { store } from "@/store";
+import router from "@/router";
+import { AccessLevel } from "@/typings/AccessLevel";
+import { ADMIN } from "@/util/roles";
 
 const newCommunityMachine = createMachine({
   id: "newCommunity",
@@ -97,14 +93,12 @@ const newCommunityMachine = createMachine({
       on: { ADVANCE: "screen2" },
     },
     screen2: {
-      on: { BACK: "screen1", SUBMIT: "submitting" },
+      on: { BACK: "screen1", SUBMIT: "submitting", NO_USER: "show_signup" },
     },
     submitting: {
-      on: {
-        SUCCESS: "finished",
-      },
+      type: "final",
     },
-    finished: {
+    show_signup: {
       type: "final",
     },
   },
@@ -118,21 +112,52 @@ const website = ref("");
 const twitter = ref("");
 const facebook = ref("");
 
-const isSubmitting = ref(false);
 async function createCommunity() {
-  send("SUBMIT");
-  const { data, error } = await supabase.from("communities").insert({
-    name: name.value,
-    description: description.value,
-    website: website.value,
-    twitter: twitter.value,
-    facebook: facebook.value,
-  });
-  if (error) {
-    log({ error });
+  if (!store.user) {
+    send("NO_USER");
+    return;
   }
-  if (data) {
-    send("SUCCESS");
+  send("SUBMIT");
+  try {
+    const { data, error } = await supabase
+      .from("communities")
+      .insert({
+        name: name.value,
+        description: description.value,
+        website: website.value,
+        twitter: twitter.value,
+        facebook: facebook.value,
+        owner_id: store.user.id,
+        allow_public_access: false,
+      })
+      .single();
+    if (error) throw error;
+
+    // Create default access level
+    const { data: accessLevelData, error: accessLevelError } = await supabase
+      .from<AccessLevel>("access_levels")
+      .insert({
+        name: "default",
+        community_id: data.id,
+        priority_access_time: 0,
+      })
+      .single();
+    if (accessLevelError) throw accessLevelError;
+
+    // Add owner to community membership
+    const { error: membershipError } = await supabase
+      .from("community_memberships")
+      .insert({
+        user_id: store.user.id,
+        community_id: data.id,
+        access_level_id: accessLevelData?.id,
+        role_id: ADMIN,
+      });
+    if (membershipError) throw membershipError;
+
+    router.push(`/communities/${data.id}/manage?display_success_banner=true`);
+  } catch (error) {
+    log({ error });
   }
 }
 </script>

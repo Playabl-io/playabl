@@ -53,6 +53,7 @@ import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue";
 import { store } from "../store";
 import LoadingSpinner from "./LoadingSpinner.vue";
 import { log } from "@/util/logger";
+import router from "@/router";
 const activeMenuItem = "bg-gray-100 cursor-pointer";
 
 const isSigningOut = ref(false);
@@ -60,11 +61,10 @@ const isSigningOut = ref(false);
 async function signOut() {
   isSigningOut.value = true;
   const { error } = await supabase.auth.signOut();
+  router.push("/");
   isSigningOut.value = false;
   if (error) {
     log(error);
   }
 }
-
-console.log(store.user);
 </script>

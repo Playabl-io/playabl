@@ -1,5 +1,10 @@
 <template>
-  <base-button v-bind="$attrs" class="bg-brand-500 text-white">
+  <base-button
+    :disabled="isLoading || disabled"
+    v-bind="$attrs"
+    class="bg-brand-500 text-white"
+    :class="{ 'opacity-50 cursor-not-allowed': disabled }"
+  >
     <loading-spinner v-if="isLoading" />
     <p v-if="isLoading" class="sr-only">Loading</p>
     <slot v-else></slot>
@@ -11,6 +16,10 @@ import LoadingSpinner from "../LoadingSpinner.vue";
 import BaseButton from "./BaseButton.vue";
 const props = defineProps({
   isLoading: {
+    type: Boolean,
+    default: false,
+  },
+  disabled: {
     type: Boolean,
     default: false,
   },

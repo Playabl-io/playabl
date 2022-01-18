@@ -1,9 +1,42 @@
 <template>
   <router-view></router-view>
+  <Modal title="Account created!" :open="displayFinishSignUp">
+    <p class="prose prose-sm">
+      Let's just get a couple of details to set up your profile
+    </p>
+    <form class="mt-2" @submit.prevent="updateProfile">
+      <FormLabel class="flex flex-col">
+        Display name
+        <FormInput v-model="username" required />
+      </FormLabel>
+      <FormLabel class="mt-4 flex flex-col">
+        Pronouns
+        <FormInput v-model="pronouns" required />
+      </FormLabel>
+      <p class="prose prose-sm mt-2">
+        You can change these, and other settings, any time from your profile
+        page
+      </p>
+      <PrimaryButton :isLoading="saving" class="mt-4"
+        >Create profile</PrimaryButton
+      >
+    </form>
+  </Modal>
 </template>
 <script setup lang="ts">
 import { store } from "./store";
 import { supabase } from "./supabase";
+import { onMounted, ref } from "vue";
+import Modal from "./components/Modal.vue";
+import FormLabel from "./components/Forms/FormLabel.vue";
+import FormInput from "./components/Forms/FormInput.vue";
+import PrimaryButton from "./components/Buttons/PrimaryButton.vue";
+import { log } from "./util/logger";
+
+const displayFinishSignUp = ref(false);
+const username = ref("");
+const pronouns = ref("");
+const saving = ref(false);
 
 const user = supabase.auth.user();
 
@@ -19,4 +52,37 @@ supabase.auth.onAuthStateChange((event, session) => {
     store.user = null;
   }
 });
+
+onMounted(async () => {
+  if (user) {
+    const { data } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("id", user.id)
+      .single();
+    console.log(data);
+    if (!data) {
+      displayFinishSignUp.value = true;
+    }
+  }
+});
+
+async function updateProfile() {
+  saving.value = true;
+
+  const updates = {
+    id: store.user?.id,
+    username: username.value,
+    pronouns: pronouns.value,
+    updated_at: new Date(),
+  };
+
+  const { error } = await supabase.from("profiles").upsert(updates, {
+    returning: "minimal", // Don't return the value after inserting
+  });
+
+  if (error) log(error);
+  saving.value = false;
+  displayFinishSignUp.value = false;
+}
 </script>

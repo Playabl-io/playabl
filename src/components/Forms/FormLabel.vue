@@ -1,5 +1,5 @@
 <template>
-  <label class="text-sm font-bold mb-2" v-bind="$attrs">
+  <label class="text-sm font-bold" v-bind="$attrs">
     <slot></slot>
   </label>
 </template>

@@ -1,6 +1,9 @@
 <template>
   <base-template>
     <form class="flex flex-col space-y-4" @submit.prevent="updateProfile">
+      <pre>
+        {{ JSON.stringify(store.user, null, 2) }}
+      </pre>
       <div class="flex flex-col">
         <form-label for="email">Email</form-label>
         <p class="prose">{{ store.user.email }}</p>

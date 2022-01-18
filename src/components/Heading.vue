@@ -1,6 +1,6 @@
 <template>
   <component
-    :is="level"
+    :is="as || level"
     class="font-paytone"
     :class="fontSizeClass"
     v-bind="$attrs"
@@ -15,6 +15,10 @@ const props = defineProps({
   level: {
     type: String,
     required: true,
+  },
+  as: {
+    type: String,
+    default: "",
   },
 });
 

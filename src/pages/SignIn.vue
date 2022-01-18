@@ -1,7 +1,10 @@
 <template>
   <BaseTemplate>
     <section>
-      <p v-if="submitted" class="prose mx-auto font-semibold text-center">
+      <p
+        v-if="submitted"
+        class="prose dark:prose-invert mx-auto font-semibold text-center"
+      >
         Check your email to finish signing in!
       </p>
       <form
@@ -10,7 +13,7 @@
         @submit.prevent="handleLogin"
       >
         <Heading level="h1" as="h5">Sign in</Heading>
-        <p class="prose">
+        <p class="prose dark:prose-invert">
           Sign in to join or start communities and play in games
         </p>
         <form-label class="flex flex-col">

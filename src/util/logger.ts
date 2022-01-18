@@ -6,7 +6,7 @@ export function log({
   message,
 }: {
   level?: "error" | "info" | "warn";
-  error?: Error | PostgrestError;
+  error?: Error | PostgrestError | unknown;
   message?: string;
 }) {
   if (level === "error") {
