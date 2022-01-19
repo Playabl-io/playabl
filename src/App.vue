@@ -26,12 +26,13 @@
 <script setup lang="ts">
 import { store } from "./store";
 import { supabase } from "./supabase";
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
 import Modal from "./components/Modal.vue";
 import FormLabel from "./components/Forms/FormLabel.vue";
 import FormInput from "./components/Forms/FormInput.vue";
 import PrimaryButton from "./components/Buttons/PrimaryButton.vue";
 import { log } from "./util/logger";
+import { User } from "@supabase/supabase-js";
 
 const displayFinishSignUp = ref(false);
 const username = ref("");
@@ -47,25 +48,23 @@ if (user) {
 supabase.auth.onAuthStateChange((event, session) => {
   if (session !== null && session.user) {
     store.user = session.user;
+    checkForProfile(session.user);
   }
   if (event === "SIGNED_OUT") {
     store.user = null;
   }
 });
 
-onMounted(async () => {
-  if (user) {
-    const { data } = await supabase
-      .from("profiles")
-      .select("id")
-      .eq("id", user.id)
-      .single();
-    console.log(data);
-    if (!data) {
-      displayFinishSignUp.value = true;
-    }
+async function checkForProfile(sessionUser: User) {
+  const { data } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("id", sessionUser.id)
+    .single();
+  if (!data) {
+    displayFinishSignUp.value = true;
   }
-});
+}
 
 async function updateProfile() {
   saving.value = true;

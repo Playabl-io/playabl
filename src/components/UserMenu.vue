@@ -48,15 +48,16 @@
 </template>
 <script setup lang="ts">
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 import { supabase } from "@/supabase";
 import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue";
 import { store } from "../store";
 import LoadingSpinner from "./LoadingSpinner.vue";
 import { log } from "@/util/logger";
-import router from "@/router";
 const activeMenuItem = "bg-gray-100 cursor-pointer";
 
 const isSigningOut = ref(false);
+const router = useRouter();
 
 async function signOut() {
   isSigningOut.value = true;

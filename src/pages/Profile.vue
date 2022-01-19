@@ -47,7 +47,6 @@ async function getProfile() {
   try {
     loading.value = true;
     const user = supabase.auth.user();
-    console.log("loaded user", user);
 
     if (!user) return;
 

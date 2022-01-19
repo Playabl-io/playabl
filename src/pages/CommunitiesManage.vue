@@ -22,7 +22,7 @@ async function loadManagedCommunities() {
   isLoading.value = true;
   const { data, error } = await supabase
     .from("community_memberships")
-    .select("community_id (name, website, description)")
+    .select("community_id (*)")
     .eq("user_id", store.user.id)
     .eq("role_id", ADMIN);
   if (error) {

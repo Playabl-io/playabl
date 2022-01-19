@@ -21,7 +21,7 @@ async function loadJoinedCommunities() {
   isLoading.value = true;
   const { data, error } = await supabase
     .from("community_memberships")
-    .select("community_id (name, website, description)")
+    .select("community_id (*)")
     .eq("user_id", store.user.id);
   if (error) {
     log({ error });

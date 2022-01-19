@@ -35,11 +35,14 @@
     </span>
     <template v-else v-for="community in communities" :key="community.id">
       <Listing
-        :heading="community.name"
+        :id="community.id"
+        :name="community.name"
         :website="community.website"
         :description="community.description"
+        :twitter="community.twitter"
+        :facebook="community.facebook"
       />
-      <hr class="last:hidden border-gray-300" />
+      <hr class="last:hidden border-slate-200" />
     </template>
   </section>
 </template>

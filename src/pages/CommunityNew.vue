@@ -128,7 +128,7 @@ async function createCommunity() {
         twitter: twitter.value,
         facebook: facebook.value,
         owner_id: store.user.id,
-        allow_public_access: false,
+        allow_public_signup: false,
       })
       .single();
     if (error) throw error;

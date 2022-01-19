@@ -9,6 +9,9 @@
         class="pt-2 mx-6"
         :to="`${store.user ? '/communities/joined' : '/communities/all'}`"
         active-class="border-t border-brand-500 dark:border-brand-300"
+        :class="{
+          'border-t border-brand-500 dark:border-brand-300': onCommunitiesRoute,
+        }"
       >
         Communities
       </router-link>
@@ -16,6 +19,9 @@
         class="pt-2 mx-6"
         to="/games"
         active-class="border-t border-brand-500 dark:border-brand-300"
+        :class="{
+          'border-t border-brand-500 dark:border-brand-300': onGamesRoute,
+        }"
       >
         Games
       </router-link>
@@ -27,8 +33,13 @@
   </header>
 </template>
 <script setup lang="ts">
-import { RouterLink } from "vue-router";
+import { RouterLink, useRoute } from "vue-router";
 import FormInput from "./Forms/FormInput.vue";
 import UserMenu from "./UserMenu.vue";
 import { store } from "../store";
+
+const route = useRoute();
+
+const onCommunitiesRoute = route.path.includes("communities");
+const onGamesRoute = route.path.includes("games");
 </script>

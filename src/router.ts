@@ -7,6 +7,10 @@ import CommunitiesAll from "@/pages/CommunitiesAll.vue";
 import CommunitiesJoined from "@/pages/CommunitiesJoined.vue";
 import CommunitiesManage from "@/pages/CommunitiesManage.vue";
 import CommunityNew from "@/pages/CommunityNew.vue";
+import CommunityBase from "@/pages/CommunityBase.vue";
+import CommunityHome from "@/pages/CommunityHome.vue";
+import CommunityFeed from "@/pages/CommunityFeed.vue";
+import CommunityCalendar from "@/pages/CommunityCalendar.vue";
 import CommunityManage from "@/pages/CommunityManage.vue";
 import Games from "@/pages/Games.vue";
 import { store } from "./store";
@@ -62,12 +66,29 @@ const routes = [
     },
   },
   {
-    path: "/communities/:community_id/manage",
-    component: CommunityManage,
+    path: "/communities/:community_id",
+    component: CommunityBase,
     meta: {
-      title: "Playout - Manage Community",
-      requiresAuth: true,
+      title: "Playout - Community",
     },
+    children: [
+      {
+        path: "",
+        component: CommunityHome,
+      },
+      {
+        path: "feed",
+        component: CommunityFeed,
+      },
+      {
+        path: "calendar",
+        component: CommunityCalendar,
+      },
+      {
+        path: "manage",
+        component: CommunityManage,
+      },
+    ],
   },
   {
     path: "/games",
