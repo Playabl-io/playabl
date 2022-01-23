@@ -12,7 +12,7 @@ import { Community } from "@/typings/Community";
 import { log } from "@/util/logger";
 
 const isLoading = ref(false);
-const communities = ref([] as Community[]);
+const communities = ref<Community[]>([]);
 
 onMounted(loadAllCommunities);
 

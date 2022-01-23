@@ -59,7 +59,7 @@ import { log } from "@/util/logger";
 import BaseTemplate from "@/components/BaseTemplate.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import Heading from "@/components/Heading.vue";
-import { ADMIN, PLAYER } from "@/util/roles";
+import { ADMIN } from "@/util/roles";
 import { store } from "@/store";
 import { Community } from "@/typings/Community";
 

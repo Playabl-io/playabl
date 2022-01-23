@@ -1,7 +1,7 @@
 <template>
   <base-button
     v-bind="$attrs"
-    class="bg-transparent hover:bg-gray-200 focus:bg-gray-200 text-slate-900"
+    class="bg-transparent hover:bg-gray-200 dark:hover:bg-gray-700 text-slate-900 dark:text-slate-100"
   >
     <loading-spinner v-if="isLoading" />
     <p v-if="isLoading" class="sr-only">Loading</p>

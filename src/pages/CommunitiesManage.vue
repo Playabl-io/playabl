@@ -14,7 +14,7 @@ import { store } from "../store";
 import { ADMIN } from "@/util/roles";
 
 const isLoading = ref(false);
-const communities = ref([] as Community[]);
+const communities = ref<Community[]>([]);
 
 onMounted(loadManagedCommunities);
 async function loadManagedCommunities() {

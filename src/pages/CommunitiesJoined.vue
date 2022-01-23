@@ -13,7 +13,7 @@ import { log } from "@/util/logger";
 import { store } from "../store";
 
 const isLoading = ref(false);
-const communities = ref([] as Community[]);
+const communities = ref<Community[]>([]);
 
 onMounted(loadJoinedCommunities);
 async function loadJoinedCommunities() {

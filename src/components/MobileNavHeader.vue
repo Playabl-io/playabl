@@ -2,7 +2,7 @@
   <header>
     <Menu>
       <MenuButton class="m-2 p-2">
-        <MenuIcon class="text-slate-900 h-6 w-6" />
+        <MenuIcon class="text-slate-900 dark:text-slate-100 h-6 w-6" />
       </MenuButton>
       <transition
         enter-active-class="transition duration-100 ease-out"
@@ -13,7 +13,7 @@
         leave-to-class="transform scale-95 opacity-0"
       >
         <MenuItems
-          class="absolute bottom-0 w-full border-t border-gray-100 flex flex-col space-y-4 bg-gray-50 rounded-lg shadow-md text-slate-900 p-4"
+          class="absolute bottom-0 w-full border-t border-gray-100 flex flex-col space-y-4 bg-gray-50 rounded-lg shadow-md text-slate-900 p-4 z-20"
         >
           <menu-item>
             <router-link to="/" class="font-paytone text-lg p-2">
@@ -23,7 +23,7 @@
           <MenuItem>
             <router-link
               class="px-2 py-1"
-              to="/communities"
+              :to="`${store.user ? '/communities/joined' : '/communities/all'}`"
               active-class="text-brand-500 border-l border-brand-500 dark:border-brand-300"
             >
               Communities
@@ -32,7 +32,7 @@
           <MenuItem>
             <router-link
               class="px-2 py-1"
-              to="/games"
+              to="/games/joined"
               active-class="text-brand-500 border-l border-brand-500 dark:border-brand-300"
             >
               Games
@@ -61,4 +61,5 @@ import { RouterLink } from "vue-router";
 import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue";
 import OutlineButton from "./Buttons/OutlineButton.vue";
 import { MenuIcon } from "@heroicons/vue/solid";
+import { store } from "@/store";
 </script>
