@@ -4,6 +4,7 @@
     :class="{
       'p-4 h-10': size === 'default',
       'p-2 h-6': size === 'small',
+      'p-0': size === 'bare',
     }"
     v-bind="$attrs"
   >

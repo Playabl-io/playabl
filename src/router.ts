@@ -13,6 +13,7 @@ import CommunityFeed from "@/pages/CommunityFeed.vue";
 import CommunityCalendar from "@/pages/CommunityCalendar.vue";
 import CommunityManage from "@/pages/CommunityManage.vue";
 import Games from "@/pages/Games.vue";
+import GameNew from "@/pages/GameNew.vue";
 import { store } from "./store";
 
 const routes = [
@@ -35,6 +36,7 @@ const routes = [
     component: Profile,
     meta: {
       title: "Playout - Profile",
+      requiresAuth: true,
     },
   },
   {
@@ -42,6 +44,7 @@ const routes = [
     component: CommunitiesJoined,
     meta: {
       title: "Playout - Communities",
+      requiresAuth: true,
     },
   },
   {
@@ -56,6 +59,7 @@ const routes = [
     component: CommunitiesManage,
     meta: {
       title: "Playout - Communities",
+      requiresAuth: true,
     },
   },
   {
@@ -79,22 +83,55 @@ const routes = [
       {
         path: "feed",
         component: CommunityFeed,
+        meta: {
+          requiresAuth: true,
+        },
       },
       {
         path: "calendar",
         component: CommunityCalendar,
+        meta: {
+          requiresAuth: true,
+        },
       },
       {
         path: "manage",
         component: CommunityManage,
+        meta: {
+          requiresAuth: true,
+        },
       },
     ],
   },
   {
-    path: "/games",
+    path: "/games/joined",
     component: Games,
     meta: {
       title: "Playout - Games",
+      // requiresAuth: true,
+    },
+  },
+  {
+    path: "/games/browse",
+    component: Games,
+    meta: {
+      title: "Playout - Games",
+    },
+  },
+  {
+    path: "/games/manage",
+    component: Games,
+    meta: {
+      title: "Playout - Games",
+      requiresAuth: true,
+    },
+  },
+  {
+    path: "/games/new",
+    component: GameNew,
+    meta: {
+      title: "Playout - New Game",
+      // requiresAuth: true,
     },
   },
 ];
