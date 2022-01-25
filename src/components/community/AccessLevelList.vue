@@ -1,0 +1,257 @@
+<template>
+  <div class="flex justify-between mb-2">
+    <p class="font-bold text-lg">Priority access times</p>
+    <LinkButton class="font-normal text-sm" @click="send('NEW_ACCESS_LEVEL')">
+      Add new
+    </LinkButton>
+  </div>
+  <div
+    class="grid gap-2 text-sm text-slate-700 dark:text-slate-300 mb-2 access-rules-grid"
+  >
+    <p>Title</p>
+    <p>Priority time</p>
+    <p class="justify-self-center">Mandatory?</p>
+  </div>
+  <ul>
+    <li
+      v-for="level in accessLevels"
+      :key="level.id"
+      class="grid access-rules-grid gap-x-2 gap-y-3 even:bg-gray-100 even:dark:bg-gray-800 py-2 rounded-md px-2 -mx-2"
+    >
+      <p class="block truncate">
+        {{ level.name }}
+      </p>
+      <p>{{ level.priority_access_time }} {{ level.time_denomination }}</p>
+      <CheckCircleIcon
+        v-if="level.is_mandatory"
+        class="h-5 w-5 justify-self-center text-green-600 dark:text-green-400"
+      />
+      <span v-else />
+      <div class="flex space-x-1">
+        <GhostButton
+          size="small"
+          aria-label="Edit access policy"
+          @click="
+            send({
+              type: 'EDIT_ACCESS_LEVEL',
+              payload: { accessLevel: level },
+            })
+          "
+        >
+          <PencilIcon class="h-5 w-5" />
+        </GhostButton>
+        <GhostButton
+          size="small"
+          aria-label="Delete access policy"
+          @click="
+            send({
+              type: 'DELETE_ACCESS_LEVEL',
+              payload: { accessLevel: level },
+            })
+          "
+        >
+          <TrashIcon class="h-5 w-5 text-red-500" />
+        </GhostButton>
+      </div>
+    </li>
+  </ul>
+  <Drawer :open="state.context.drawerVisible" @close="send('CANCEL')">
+    <AccessLevelForm
+      :access-level="state.context.accessLevel"
+      :community-id="(route.params.community_id as string)"
+      :saving="['updating', 'creating'].includes(state.value as string)"
+      @close="send('CANCEL')"
+      @save="send('SAVE', $event)"
+    />
+  </Drawer>
+  <DeleteModal
+    :is-deleting="state.value === 'deleting'"
+    :open="state.context.modalVisible"
+    :title="`Delete access policy ${state.context.accessLevel?.name}?`"
+    message="Are you sure? This action is permanent."
+    @delete="send('DELETE', { accessLevel: state.context.accessLevel })"
+    @cancel="send('CANCEL')"
+  />
+</template>
+<script setup lang="ts">
+import { onMounted, ref } from "vue";
+import { supabase } from "@/supabase";
+import { useRoute } from "vue-router";
+import { TrashIcon, CheckCircleIcon, PencilIcon } from "@heroicons/vue/outline";
+import { createMachine, assign } from "xstate";
+import { useMachine } from "@xstate/vue";
+import LinkButton from "@/components/Buttons/LinkButton.vue";
+import GhostButton from "@/components/Buttons/GhostButton.vue";
+import Drawer from "@/components/Drawer.vue";
+import AccessLevelForm from "@/components/community/AccessLevelForm.vue";
+import DeleteModal from "../DeleteModal.vue";
+import {
+  createAccessLevel,
+  deleteAccessLevel,
+  updateAccessLevel,
+} from "@/api/accessLevels";
+import { AccessLevel } from "@/typings/AccessLevel";
+
+const route = useRoute();
+
+const accessLevelsMachine = createMachine<{
+  accessLevel?: AccessLevel;
+  drawerVisible: boolean;
+  modalVisible: boolean;
+}>(
+  {
+    id: "accessLevelsMachine",
+    context: {
+      accessLevel: undefined,
+      drawerVisible: false,
+      modalVisible: false,
+    },
+    initial: "closed",
+    states: {
+      closed: {
+        on: {
+          EDIT_ACCESS_LEVEL: {
+            target: "editAccessLevel",
+            actions: ["assignAccessLevel", "showDrawer"],
+          },
+          NEW_ACCESS_LEVEL: {
+            target: "newAccessLevel",
+            actions: "showDrawer",
+          },
+          DELETE_ACCESS_LEVEL: {
+            target: "deleteAccessLevel",
+            actions: ["assignAccessLevel", "showModal"],
+          },
+        },
+      },
+      editAccessLevel: {
+        on: {
+          CANCEL: {
+            target: "closed",
+            actions: ["clearAccessLevel", "hideDrawer"],
+          },
+          SAVE: {
+            target: "updating",
+          },
+        },
+      },
+      updating: {
+        invoke: {
+          src: (context, event) => updateAccessLevel(event.accessLevel),
+          onDone: {
+            target: "closed",
+            actions: ["updateAccessLevel", "clearAccessLevel", "hideDrawer"],
+          },
+        },
+      },
+      newAccessLevel: {
+        on: {
+          CANCEL: {
+            target: "closed",
+            actions: "hideDrawer",
+          },
+          SAVE: {
+            target: "creating",
+          },
+        },
+      },
+      creating: {
+        invoke: {
+          src: (context, event) =>
+            createAccessLevel({
+              ...event.accessLevel,
+              community_id: route.params.community_id,
+            }),
+          onDone: {
+            target: "closed",
+            actions: ["addAccessLevel", "hideDrawer"],
+          },
+        },
+      },
+      deleteAccessLevel: {
+        on: {
+          CANCEL: {
+            target: "closed",
+            actions: ["hideModal", "clearAccessLevel"],
+          },
+          DELETE: {
+            target: "deleting",
+          },
+        },
+      },
+      deleting: {
+        invoke: {
+          src: (context, event) =>
+            deleteAccessLevel({
+              ...event.accessLevel,
+              community_id: route.params.community_id,
+            }),
+          onDone: {
+            target: "closed",
+            actions: ["removeAccessLevel", "clearAccessLevel", "hideModal"],
+          },
+        },
+      },
+    },
+  },
+  {
+    actions: {
+      showDrawer: assign({
+        drawerVisible: (context, event) => true,
+      }),
+      hideDrawer: assign({
+        drawerVisible: (context, event) => false,
+      }),
+      showModal: assign({
+        modalVisible: (context, event) => true,
+      }),
+      hideModal: assign({
+        modalVisible: (context, event) => false,
+      }),
+      assignAccessLevel: assign({
+        accessLevel: (context, event) => event.payload.accessLevel,
+      }),
+      clearAccessLevel: assign({
+        accessLevel: (_, __) => undefined,
+      }),
+      updateAccessLevel: (context, event) => {
+        accessLevels.value = accessLevels.value.map((level) => {
+          if (level.id === event.data.id) {
+            return event.data;
+          }
+          return level;
+        });
+      },
+      addAccessLevel: (context, event) => {
+        accessLevels.value.push(event.data);
+      },
+      removeAccessLevel: (context, event) => {
+        accessLevels.value = accessLevels.value.filter(
+          (level) => level.id !== event.data.id
+        );
+      },
+    },
+  }
+);
+
+const accessLevels = ref<AccessLevel[]>([]);
+
+const { state, send } = useMachine(accessLevelsMachine);
+
+async function getAccessLevels() {
+  const { data } = await supabase
+    .from("access_levels")
+    .select()
+    .eq("community_id", route.params.community_id);
+  if (data) {
+    accessLevels.value = data;
+  }
+}
+
+onMounted(getAccessLevels);
+</script>
+<style scoped>
+.access-rules-grid {
+  grid-template-columns: repeat(3, 1fr) 5rem;
+}
+</style>

@@ -1,25 +1,20 @@
 <template>
-  <!-- <div v-if="route.query.display_success_banner">
-      <Heading level="h2">Success!</Heading>
-      <p class="prose prose-lg dark:prose-invert">
-        Your community has been created!
-      </p>
-    </div> -->
   <section>
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <section>
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 settings-grid">
+      <section class="[grid-area:info] section-container">
+        <Heading level="h6" as="h2" class="mb-4">Community Info</Heading>
+        <GhostButton class="w-full">Edit community info</GhostButton>
+      </section>
+      <section class="[grid-area:members] section-container">
         <Heading level="h6" as="h2" class="mb-4">Members</Heading>
         <p class="prose dark:prose-invert prose-sm">
           {{ membersCount }} members
         </p>
         <GhostButton class="w-full">Manage and invite members</GhostButton>
       </section>
-      <section>
-        <Heading level="h6" as="h2" class="mb-4">Community Info</Heading>
-        <GhostButton class="w-full">Edit community info</GhostButton>
-      </section>
-      <section>
+      <section class="[grid-area:settings] section-container">
         <Heading level="h6" as="h2" class="mb-4">Settings</Heading>
+        <AccessLevelList />
       </section>
     </div>
   </section>
@@ -30,12 +25,9 @@ import { log } from "@/util/logger";
 import { ref, onMounted, PropType, toRefs } from "vue";
 import { useRoute } from "vue-router";
 import Heading from "@/components/Heading.vue";
-import { ADMIN, PLAYER } from "@/util/roles";
-import { store } from "@/store";
-import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
-import { AccessLevel } from "@/typings/AccessLevel";
 import { Community } from "@/typings/Community";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
+import AccessLevelList from "@/components/community/AccessLevelList.vue";
 
 const props = defineProps({
   community: {
@@ -48,35 +40,14 @@ toRefs(props);
 const route = useRoute();
 const loading = ref(true);
 
-const accessLevels = ref([] as AccessLevel[]);
-const members = ref([] as { email: string; id: string }[]);
+const members = ref<{ email: string; id: string }[]>([]);
 const membersCount = ref(0);
 
 onMounted(async () => {
   loading.value = true;
-  getAccessLevels();
   getMembers();
   loading.value = false;
 });
-
-async function getAccessLevels() {
-  const { data } = await supabase
-    .from("access_levels")
-    .select("name, priority_access_time, id")
-    .eq("community_id", route.params.community_id);
-  if (data) {
-    accessLevels.value = data;
-  }
-}
-
-async function addMember() {
-  const { data, error } = await supabase.from("community_memberships").insert({
-    user_id: "77442c21-1084-467e-9775-372f7e942162",
-    community_id: route.params.community_id,
-    access_level_id: 1,
-    role_id: PLAYER,
-  });
-}
 
 async function getMembers() {
   const { data, error, count } = await supabase
@@ -97,3 +68,12 @@ async function getMembers() {
   }
 }
 </script>
+<style scoped>
+.settings-grid {
+  grid-template-areas: "info info info settings settings" "members members members settings settings";
+}
+
+.section-container {
+  @apply border border-solid border-gray-300 p-4 rounded-lg;
+}
+</style>

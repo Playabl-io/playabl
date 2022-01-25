@@ -10,10 +10,7 @@
         </p>
         <div class="grid grid-cols-1 gap-8">
           <div class="flex flex-col">
-            <FormLabel for="name">
-              Community Name
-              <span role="presentation" class="text-red-700">*</span>
-            </FormLabel>
+            <FormLabel for="name" required> Community Name </FormLabel>
             <FormInput v-model="name" id="name" required />
             <p class="prose dark:prose-invert text-xs leading-6">
               Your community name must be unique and cannot be changed
@@ -82,7 +79,10 @@ import { supabase } from "@/supabase";
 import { log } from "@/util/logger";
 import { store } from "@/store";
 import router from "@/router";
-import { AccessLevel } from "@/typings/AccessLevel";
+import {
+  AccessLevel,
+  ACCESS_LEVEL_TIME_DENOMINATION,
+} from "@/typings/AccessLevel";
 import { ADMIN } from "@/util/roles";
 
 const newCommunityMachine = createMachine({
@@ -140,6 +140,8 @@ async function createCommunity() {
         name: "default",
         community_id: data.id,
         priority_access_time: 0,
+        time_denomination: ACCESS_LEVEL_TIME_DENOMINATION.hours,
+        is_mandatory: true,
       })
       .single();
     if (accessLevelError) throw accessLevelError;
@@ -150,10 +152,19 @@ async function createCommunity() {
       .insert({
         user_id: store.user.id,
         community_id: data.id,
-        access_level_id: accessLevelData?.id,
         role_id: ADMIN,
       });
     if (membershipError) throw membershipError;
+
+    // Add community access
+    const { error: accessError } = await supabase
+      .from("community_access")
+      .insert({
+        user_id: store.user.id,
+        community_id: data.id,
+        access_level_id: accessLevelData?.id,
+      });
+    if (accessError) throw accessError;
 
     router.push(`/communities/${data.id}/manage?display_success_banner=true`);
   } catch (error) {

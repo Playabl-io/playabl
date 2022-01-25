@@ -81,7 +81,7 @@
     >
       <Heading level="h4" as="h1"> Create a new game </Heading>
       <div
-        class="bg-sky-100 rounded-lg border border-solid border-sky-300 p-6 text-brand-500 text-sm"
+        class="bg-sky-100 dark:bg-indigo-800 rounded-lg border border-solid border-sky-300 dark:border-indigo-900 p-6 text-brand-500 dark:text-brand-100 text-sm"
       >
         <div class="flex items-center">
           <UserGroupIcon class="h-6 w-6 mr-2" />
@@ -94,12 +94,7 @@
       <Heading level="h6" as="h2">Game info</Heading>
       <div class="grid grid-cols-1 gap-8">
         <div class="flex flex-col">
-          <FormLabel for="title">
-            Game title
-            <span role="presentation" class="text-red-700 dark:text-red-400">
-              *
-            </span>
-          </FormLabel>
+          <FormLabel for="title" required> Game title </FormLabel>
           <FormInput v-model="title" id="title" required />
         </div>
         <div class="flex flex-col">
@@ -107,11 +102,8 @@
           <FormTextArea v-model="description" id="description" />
         </div>
         <div class="flex flex-col">
-          <FormLabel for="participant-count">
+          <FormLabel for="participant-count" required>
             Number of players
-            <span role="presentation" class="text-red-700 dark:text-red-400">
-              *
-            </span>
           </FormLabel>
           <FormInput
             v-model.number="participantCount"
@@ -266,7 +258,7 @@ import LinkButton from "@/components/Buttons/LinkButton.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import { log } from "@/util/logger";
 import { Session } from "@/typings/Session";
-import { loadJoinedCommunities } from "@/api/communities/communities";
+import { loadJoinedCommunities } from "@/api/communities";
 import { Community } from "@/typings/Community";
 import { Game, GAME_DRAFT_STATE } from "@/typings/Game";
 
@@ -283,10 +275,7 @@ const newGameMachine = createMachine<{ communities: Community[] }>({
         onDone: {
           target: "evaluateCommunities",
           actions: assign({
-            communities: (context, event) => {
-              console.log(event);
-              return event.data;
-            },
+            communities: (context, event) => event.data,
           }),
         },
       },

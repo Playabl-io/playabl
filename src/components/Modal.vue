@@ -67,10 +67,6 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  message: {
-    type: String,
-    default: "",
-  },
 });
 toRefs(props);
 </script>

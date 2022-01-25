@@ -33,3 +33,7 @@
   font-family: "Paytone";
   src: url(../assets/Paytone_One/PaytoneOne-Regular.ttf);
 }
+@font-face {
+  font-family: "Inter";
+  src: url(../assets/Inter/Inter-VariableFont.ttf);
+}
