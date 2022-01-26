@@ -1,6 +1,6 @@
 <template>
   <div class="flex justify-between mb-2">
-    <p class="font-bold text-lg">Priority access times</p>
+    <p class="font-bold text-lg">Priority access rules</p>
     <LinkButton class="font-normal text-sm" @click="send('NEW_ACCESS_LEVEL')">
       Add new
     </LinkButton>
@@ -90,9 +90,11 @@ import {
   deleteAccessLevel,
   updateAccessLevel,
 } from "@/api/accessLevels";
+import useToast from "../Toast/useToast";
 import { AccessLevel } from "@/typings/AccessLevel";
 
 const route = useRoute();
+const { showSuccess, showError } = useToast();
 
 const accessLevelsMachine = createMachine<{
   accessLevel?: AccessLevel;
@@ -142,6 +144,10 @@ const accessLevelsMachine = createMachine<{
             target: "closed",
             actions: ["updateAccessLevel", "clearAccessLevel", "hideDrawer"],
           },
+          onError: {
+            target: "editAccessLevel",
+            actions: ["showError"],
+          },
         },
       },
       newAccessLevel: {
@@ -166,6 +172,10 @@ const accessLevelsMachine = createMachine<{
             target: "closed",
             actions: ["addAccessLevel", "hideDrawer"],
           },
+          onError: {
+            target: "newAccessLevel",
+            actions: ["showError"],
+          },
         },
       },
       deleteAccessLevel: {
@@ -189,6 +199,10 @@ const accessLevelsMachine = createMachine<{
           onDone: {
             target: "closed",
             actions: ["removeAccessLevel", "clearAccessLevel", "hideModal"],
+          },
+          onError: {
+            target: "deleteAccessLevel",
+            actions: ["showError"],
           },
         },
       },
@@ -221,14 +235,20 @@ const accessLevelsMachine = createMachine<{
           }
           return level;
         });
+        showSuccess({ message: "Access rule updated" });
       },
       addAccessLevel: (context, event) => {
         accessLevels.value.push(event.data);
+        showSuccess({ message: "Access rule added" });
       },
       removeAccessLevel: (context, event) => {
         accessLevels.value = accessLevels.value.filter(
           (level) => level.id !== event.data.id
         );
+        showSuccess({ message: "Access rule deleted" });
+      },
+      showError: (context, event) => {
+        showError({ message: event?.data?.message || "Something went wrong" });
       },
     },
   }

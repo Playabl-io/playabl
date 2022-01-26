@@ -43,7 +43,7 @@ const emit = defineEmits(["close"]);
 
 const target = ref<HTMLElement>();
 onClickOutside(target, () => emit("close"));
-const { hasFocus, activate, deactivate } = useFocusTrap(target);
+const { activate, deactivate } = useFocusTrap(target);
 
 const props = defineProps({
   open: {

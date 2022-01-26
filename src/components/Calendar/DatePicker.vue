@@ -4,7 +4,7 @@
       @click="toggleCalendar"
       type="button"
       ref="trigger"
-      class="w-full border-b border-solid border-brand-400 flex items-center justify-between"
+      class="w-full p-1 border-b border-solid border-brand-400 flex items-center justify-between focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-700 dark:focus-visible:ring-sky-500"
     >
       {{ format(selected, "EEE, MMM do") }}
       <ChevronDownIcon v-if="!showCalendar" class="h-4 w-4" />

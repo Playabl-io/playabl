@@ -1,5 +1,6 @@
 <template>
   <router-view></router-view>
+  <Toaster />
   <Modal title="Account created!" :open="displayFinishSignUp">
     <p class="prose prose-sm">
       Let's just get a couple of details to set up your profile
@@ -17,22 +18,23 @@
         You can change these, and other settings, any time from your profile
         page
       </p>
-      <PrimaryButton :isLoading="saving" class="mt-4"
-        >Create profile</PrimaryButton
-      >
+      <PrimaryButton :isLoading="saving" class="mt-4">
+        Create profile
+      </PrimaryButton>
     </form>
   </Modal>
 </template>
 <script setup lang="ts">
+import { ref } from "vue";
 import { store } from "./store";
 import { supabase } from "./supabase";
-import { ref } from "vue";
 import Modal from "./components/Modal.vue";
 import FormLabel from "./components/Forms/FormLabel.vue";
 import FormInput from "./components/Forms/FormInput.vue";
 import PrimaryButton from "./components/Buttons/PrimaryButton.vue";
 import { log } from "./util/logger";
 import { User } from "@supabase/supabase-js";
+import Toaster from "./components/Toast/Toaster.vue";
 
 const displayFinishSignUp = ref(false);
 const username = ref("");

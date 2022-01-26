@@ -3,7 +3,9 @@
     <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 settings-grid">
       <section class="[grid-area:info] section-container">
         <Heading level="h6" as="h2" class="mb-4">Community Info</Heading>
-        <GhostButton class="w-full">Edit community info</GhostButton>
+        <GhostButton class="w-full" @click="addToast">
+          Edit community info
+        </GhostButton>
       </section>
       <section class="[grid-area:members] section-container">
         <Heading level="h6" as="h2" class="mb-4">Members</Heading>
@@ -28,6 +30,19 @@ import Heading from "@/components/Heading.vue";
 import { Community } from "@/typings/Community";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
 import AccessLevelList from "@/components/community/AccessLevelList.vue";
+import useToast from "@/components/Toast/useToast";
+
+const { showSuccess, showError } = useToast();
+
+const addToast = () => {
+  showError({
+    message:
+      "We're sorry, but something went wrong with that. Please try again or message me.",
+  });
+  showSuccess({
+    message: "Community updated.",
+  });
+};
 
 const props = defineProps({
   community: {
