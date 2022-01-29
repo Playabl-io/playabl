@@ -66,6 +66,7 @@
 </template>
 <script setup lang="ts">
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 import { useMachine } from "@xstate/vue";
 import { createMachine } from "xstate";
 import BaseTemplate from "@/components/BaseTemplate.vue";
@@ -78,12 +79,13 @@ import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import { supabase } from "@/supabase";
 import { log } from "@/util/logger";
 import { store } from "@/store";
-import router from "@/router";
 import {
   AccessLevel,
   ACCESS_LEVEL_TIME_DENOMINATION,
 } from "@/typings/AccessLevel";
 import { ADMIN } from "@/util/roles";
+
+const router = useRouter();
 
 const newCommunityMachine = createMachine({
   id: "newCommunity",
@@ -166,7 +168,7 @@ async function createCommunity() {
       });
     if (accessError) throw accessError;
 
-    router.push(`/communities/${data.id}/manage?display_success_banner=true`);
+    router.push(`/communities/${data.id}/manage`);
   } catch (error) {
     log({ error });
   }

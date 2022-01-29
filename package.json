@@ -24,7 +24,6 @@
     "uuid": "^8.3.2",
     "vue": "~3.2",
     "vue-router": "~4.0",
-    "vuex": "~4.0",
     "xstate": "^4.27.0"
   },
   "devDependencies": {

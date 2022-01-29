@@ -16,7 +16,7 @@ const props = defineProps({
 });
 toRefs(props);
 </script>
-<style>
+<style scoped>
 .spinner {
   text-align: center;
 }

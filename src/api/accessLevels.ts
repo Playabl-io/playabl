@@ -1,5 +1,5 @@
 import { supabase } from "@/supabase";
-import { AccessLevel } from "@/typings/AccessLevel";
+import { AccessLevel, NewAccessLevel } from "@/typings/AccessLevel";
 
 export async function getAccessLevels(communityId: string) {
   const { data } = await supabase
@@ -9,7 +9,7 @@ export async function getAccessLevels(communityId: string) {
   return data;
 }
 
-export async function createAccessLevel(accessLevel: AccessLevel) {
+export async function createAccessLevel(accessLevel: NewAccessLevel) {
   const { data, error } = await supabase
     .from("access_levels")
     .insert(accessLevel)

@@ -1,20 +1,73 @@
 <template>
-  <section>
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 settings-grid">
-      <section class="[grid-area:info] section-container">
-        <Heading level="h6" as="h2" class="mb-4">Community Info</Heading>
-        <GhostButton class="w-full" @click="addToast">
-          Edit community info
-        </GhostButton>
+  <section class="flex space-x-8">
+    <div
+      class="w-40 h-40 bg-blue-700 text-white grid border border-solid border-gray-300 rounded-lg p-4"
+    >
+      <p class="">Members</p>
+      <p class="text-lg place-self-end font-semibold">{{ membersCount }}</p>
+    </div>
+    <div
+      class="w-40 h-40 bg-blue-700 text-white grid border border-solid border-gray-300 rounded-lg p-4"
+    >
+      <p class="">Games</p>
+      <p class="text-lg place-self-end font-semibold">{{ gamesCount }}</p>
+    </div>
+  </section>
+  <section class="mt-12">
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 settings-grid"
+    >
+      <section class="section-container lg:col-span-2 grid grid-cols-2 gap-2">
+        <Heading level="h6" as="h2" class="mb-4 col-span-2">
+          Community Info
+        </Heading>
+        <div class="flex items-center space-x-4">
+          <CheckCircleIcon
+            v-if="community.description"
+            class="h-6 w-6"
+            :class="{ 'text-blue-700': community.description }"
+          />
+          <MinusCircleIcon v-else class="h-6 w-6 text-slate-700" />
+          <p class="pt-1 prose dark:prose-invert">Description</p>
+        </div>
+        <div class="flex items-center space-x-4">
+          <CheckCircleIcon
+            v-if="community.website"
+            class="h-6 w-6"
+            :class="{ 'text-blue-700': community.website }"
+          />
+          <MinusCircleIcon v-else class="h-6 w-6 text-slate-700" />
+          <p class="pt-1 prose dark:prose-invert">Website</p>
+        </div>
+        <div class="flex items-center space-x-4">
+          <CheckCircleIcon
+            v-if="community.twitter"
+            class="h-6 w-6"
+            :class="{ 'text-blue-700': community.twitter }"
+          />
+          <MinusCircleIcon v-else class="h-6 w-6 text-slate-700" />
+          <p class="pt-1 prose dark:prose-invert">Twitter</p>
+        </div>
+        <div class="flex items-center space-x-4">
+          <CheckCircleIcon
+            v-if="community.facebook"
+            class="h-6 w-6"
+            :class="{ 'text-blue-700': community.facebook }"
+          />
+          <MinusCircleIcon v-else class="h-6 w-6 text-slate-700" />
+          <p class="pt-1 prose dark:prose-invert">Facebook</p>
+        </div>
       </section>
-      <section class="[grid-area:members] section-container">
+      <section class="section-container lg:col-span-2">
         <Heading level="h6" as="h2" class="mb-4">Members</Heading>
-        <p class="prose dark:prose-invert prose-sm">
-          {{ membersCount }} members
-        </p>
-        <GhostButton class="w-full">Manage and invite members</GhostButton>
+        <MemberList
+          v-if="membersWithAccess.length"
+          :members="membersWithAccess"
+        />
       </section>
-      <section class="[grid-area:settings] section-container">
+      <section
+        class="section-container md:col-span-2 lg:col-span-3 xl:col-span-2"
+      >
         <Heading level="h6" as="h2" class="mb-4">Settings</Heading>
         <AccessLevelList />
       </section>
@@ -22,27 +75,18 @@
   </section>
 </template>
 <script setup lang="ts">
+import { ref, onMounted, PropType, toRefs, computed } from "vue";
 import { supabase } from "@/supabase";
 import { log } from "@/util/logger";
-import { ref, onMounted, PropType, toRefs } from "vue";
 import { useRoute } from "vue-router";
+import { CheckCircleIcon, MinusCircleIcon } from "@heroicons/vue/outline";
 import Heading from "@/components/Heading.vue";
 import { Community } from "@/typings/Community";
-import GhostButton from "@/components/Buttons/GhostButton.vue";
 import AccessLevelList from "@/components/community/AccessLevelList.vue";
-import useToast from "@/components/Toast/useToast";
-
-const { showSuccess, showError } = useToast();
-
-const addToast = () => {
-  showError({
-    message:
-      "We're sorry, but something went wrong with that. Please try again or message me.",
-  });
-  showSuccess({
-    message: "Community updated.",
-  });
-};
+import MemberList from "@/components/Community/MembersList.vue";
+import { Game } from "@/typings/Game";
+import { MemberWithMembership } from "@/typings/Member";
+import { store } from "@/store";
 
 const props = defineProps({
   community: {
@@ -55,39 +99,101 @@ toRefs(props);
 const route = useRoute();
 const loading = ref(true);
 
-const members = ref<{ email: string; id: string }[]>([]);
+const members = ref<MemberWithMembership[]>([]);
 const membersCount = ref(0);
+const memberAccess = ref<{ name: string; userId: string; id: string }[]>([]);
+const games = ref<Game[]>([]);
+const gamesCount = ref(0);
+
+const membersWithAccess = computed(() => {
+  return members.value.map((member) => {
+    const access = memberAccess.value.filter(
+      (access) => access.userId === member.id
+    );
+    return {
+      ...member,
+      access,
+    };
+  });
+});
 
 onMounted(async () => {
   loading.value = true;
-  getMembers();
+  await Promise.all([
+    getMembers(),
+    getGames(),
+    getMemberAccess(),
+    getAccessLevels(),
+  ]);
   loading.value = false;
 });
 
 async function getMembers() {
   const { data, error, count } = await supabase
     .from("community_memberships")
-    .select("role_id (name), user_id (username, id)", { count: "exact" })
-    .eq("community_id", route.params.community_id);
-  if (count) {
-    membersCount.value = count;
+    .select("id, role_id (name), user_id (*)", { count: "exact" })
+    .eq("community_id", route.params.community_id)
+    .neq("user_id", store.user.id);
+  if (count !== null) {
+    membersCount.value = count + 1; // adds back the logged in user;
   }
   if (data) {
     members.value = data.map((membership) => ({
-      ...membership.role_id,
+      membershipId: membership.id,
       ...membership.user_id,
+      role: membership.role_id.name,
     }));
   }
   if (error) {
     log({ error });
   }
 }
-</script>
-<style scoped>
-.settings-grid {
-  grid-template-areas: "info info info settings settings" "members members members settings settings";
+
+async function getMemberAccess() {
+  // TODO: do this in a worker since this could be really expensive
+  const { data, error } = await supabase
+    .from("community_access")
+    .select("id, access_level_id (name), user_id (id)")
+    .eq("community_id", route.params.community_id);
+  if (error) {
+    log({ error });
+  }
+  if (data) {
+    memberAccess.value = data.map((access) => ({
+      id: access.id,
+      name: access.access_level_id.name,
+      userId: access.user_id.id,
+    }));
+  }
 }
 
+async function getGames() {
+  const { data, error, count } = await supabase
+    .from("games")
+    .select("*", { count: "exact" })
+    .eq("community_id", route.params.community_id);
+  if (count) {
+    gamesCount.value = count;
+  }
+  if (data) {
+    games.value = data;
+  }
+  if (error) {
+    log({ error });
+  }
+}
+
+async function getAccessLevels() {
+  const { data } = await supabase
+    .from("access_levels")
+    .select()
+    .eq("community_id", route.params.community_id);
+  if (data) {
+    store.community.communityAccessLevels = data;
+  }
+}
+</script>
+<style scoped>
 .section-container {
   @apply border border-solid border-gray-300 p-4 rounded-lg;
 }

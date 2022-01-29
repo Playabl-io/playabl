@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-between mb-2">
+  <div class="flex justify-between mb-4">
     <p class="font-bold text-lg">Priority access rules</p>
     <LinkButton class="font-normal text-sm" @click="send('NEW_ACCESS_LEVEL')">
       Add new
@@ -16,7 +16,7 @@
     <li
       v-for="level in accessLevels"
       :key="level.id"
-      class="grid access-rules-grid gap-x-2 gap-y-3 even:bg-gray-100 even:dark:bg-gray-800 py-2 rounded-md px-2 -mx-2"
+      class="grid access-rules-grid gap-x-2 gap-y-4 even:bg-gray-100 even:dark:bg-gray-800 py-2 rounded-md px-2 -mx-2"
     >
       <p class="block truncate">
         {{ level.name }}
@@ -27,7 +27,7 @@
         class="h-5 w-5 justify-self-center text-green-600 dark:text-green-400"
       />
       <span v-else />
-      <div class="flex space-x-1">
+      <div v-if="level.name !== 'default'" class="flex space-x-1">
         <GhostButton
           size="small"
           aria-label="Edit access policy"
@@ -74,8 +74,7 @@
   />
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import { supabase } from "@/supabase";
+import { store } from "@/store";
 import { useRoute } from "vue-router";
 import { TrashIcon, CheckCircleIcon, PencilIcon } from "@heroicons/vue/outline";
 import { createMachine, assign } from "xstate";
@@ -95,6 +94,8 @@ import { AccessLevel } from "@/typings/AccessLevel";
 
 const route = useRoute();
 const { showSuccess, showError } = useToast();
+
+const accessLevels = store.community.communityAccessLevels;
 
 const accessLevelsMachine = createMachine<{
   accessLevel?: AccessLevel;
@@ -229,7 +230,7 @@ const accessLevelsMachine = createMachine<{
         accessLevel: (_, __) => undefined,
       }),
       updateAccessLevel: (context, event) => {
-        accessLevels.value = accessLevels.value.map((level) => {
+        store.community.communityAccessLevels = accessLevels.map((level) => {
           if (level.id === event.data.id) {
             return event.data;
           }
@@ -238,11 +239,11 @@ const accessLevelsMachine = createMachine<{
         showSuccess({ message: "Access rule updated" });
       },
       addAccessLevel: (context, event) => {
-        accessLevels.value.push(event.data);
+        accessLevels.push(event.data);
         showSuccess({ message: "Access rule added" });
       },
       removeAccessLevel: (context, event) => {
-        accessLevels.value = accessLevels.value.filter(
+        store.community.communityAccessLevels = accessLevels.filter(
           (level) => level.id !== event.data.id
         );
         showSuccess({ message: "Access rule deleted" });
@@ -254,24 +255,10 @@ const accessLevelsMachine = createMachine<{
   }
 );
 
-const accessLevels = ref<AccessLevel[]>([]);
-
 const { state, send } = useMachine(accessLevelsMachine);
-
-async function getAccessLevels() {
-  const { data } = await supabase
-    .from("access_levels")
-    .select()
-    .eq("community_id", route.params.community_id);
-  if (data) {
-    accessLevels.value = data;
-  }
-}
-
-onMounted(getAccessLevels);
 </script>
 <style scoped>
 .access-rules-grid {
-  grid-template-columns: repeat(3, 1fr) 5rem;
+  grid-template-columns: 2fr 1fr 1fr 5rem;
 }
 </style>

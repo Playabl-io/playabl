@@ -6,7 +6,7 @@
     <div v-else>
       <div class="flex items-baseline justify-between">
         <router-link :to="`/communities/${id}`">
-          <Heading level="h1">{{ communityData.name }}</Heading>
+          <Heading level="h1">{{ communityData?.name }}</Heading>
         </router-link>
       </div>
       <section class="my-12 flex justify-between items-baseline text-sm">
@@ -66,7 +66,7 @@ import { Community } from "@/typings/Community";
 const route = useRoute();
 const { community_id: id } = route.params;
 
-const communityData = ref({} as Community);
+const communityData = ref<Community>();
 const isOwner = ref(false);
 const isAdmin = ref(false);
 const isLoading = ref(true);
@@ -103,6 +103,7 @@ async function getCommunity() {
 
   if (data) {
     communityData.value = data;
+    store.community.communityInfo = data;
     if (data.owner_id === store.user?.id) {
       isOwner.value = true;
     }

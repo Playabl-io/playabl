@@ -1,10 +1,10 @@
 <template>
   <Modal :title="title" :open="open">
-    <p class="prose prose-sm">
+    <p class="prose">
       {{ message }}
     </p>
     <div class="mt-2 flex justify-end space-x-2">
-      <OutlineButton @click="emit('cancel')">Cancel</OutlineButton>
+      <GhostButton @click="emit('cancel')">Cancel</GhostButton>
       <WarningButton :is-loading="isDeleting" @click="emit('delete')">
         Delete
       </WarningButton>
@@ -15,7 +15,7 @@
 import { toRefs } from "vue";
 import WarningButton from "./Buttons/WarningButton.vue";
 import Modal from "./Modal.vue";
-import OutlineButton from "./Buttons/OutlineButton.vue";
+import GhostButton from "./Buttons/GhostButton.vue";
 
 const props = defineProps({
   open: {

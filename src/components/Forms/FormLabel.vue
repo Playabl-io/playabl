@@ -1,5 +1,5 @@
 <template>
-  <label class="text-sm font-bold" v-bind="$attrs">
+  <label class="text-sm font-semibold text-slate-800" v-bind="$attrs">
     <slot></slot>
     <span
       v-if="required"
