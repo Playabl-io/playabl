@@ -8,23 +8,14 @@ interface StoreUser {
   pronouns?: string;
 }
 
-/**
- * Set and used when managing a community
- */
-interface StoreCommunity {
+interface Store {
+  user?: StoreUser | null;
   communityInfo: Community | null;
   communityAccessLevels: AccessLevel[];
 }
 
-interface Store {
-  user?: StoreUser | null;
-  community: StoreCommunity;
-}
-
 export const store = reactive<Store>({
   user: null,
-  community: {
-    communityAccessLevels: [],
-    communityInfo: null,
-  },
+  communityAccessLevels: [],
+  communityInfo: null,
 });

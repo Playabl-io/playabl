@@ -32,7 +32,7 @@
       <div class="grid auto-cols-auto grid-flow-col gap-4">
         <!-- Todo - don't show ones the member already has -->
         <GhostButton
-          v-for="grant in store.community.communityAccessLevels"
+          v-for="grant in store.communityAccessLevels"
           :key="grant.id"
         >
           <PlusCircleIcon class="h-6 w-6 mr-2" />

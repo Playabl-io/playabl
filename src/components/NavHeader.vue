@@ -1,6 +1,6 @@
 <template>
   <header
-    class="w-screen px-12 py-2 prose-sm grid grid-cols-6 sticky top-0 bg-inherit"
+    class="w-screen px-12 py-2 prose-sm grid grid-cols-6 sticky top-0 bg-inherit items-center z-10"
     v-bind="$attrs"
   >
     <router-link to="/" class="font-paytone text-lg self-center">

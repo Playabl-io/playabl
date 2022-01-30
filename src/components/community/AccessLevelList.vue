@@ -5,54 +5,28 @@
       Add new
     </LinkButton>
   </div>
-  <div
-    class="grid gap-2 text-sm text-slate-700 dark:text-slate-300 mb-2 access-rules-grid"
-  >
-    <p>Title</p>
-    <p>Priority time</p>
-    <p class="justify-self-center">Mandatory?</p>
-  </div>
   <ul>
     <li
-      v-for="level in accessLevels"
+      v-for="level in store.communityAccessLevels"
       :key="level.id"
-      class="grid access-rules-grid gap-x-2 gap-y-4 even:bg-gray-100 even:dark:bg-gray-800 py-2 rounded-md px-2 -mx-2"
+      class="grid gap-y-4 even:bg-gray-100 even:dark:bg-gray-800 py-2 rounded-md px-2 -mx-2"
     >
-      <p class="block truncate">
-        {{ level.name }}
-      </p>
-      <p>{{ level.priority_access_time }} {{ level.time_denomination }}</p>
-      <CheckCircleIcon
-        v-if="level.is_mandatory"
-        class="h-5 w-5 justify-self-center text-green-600 dark:text-green-400"
-      />
-      <span v-else />
-      <div v-if="level.name !== 'default'" class="flex space-x-1">
-        <GhostButton
-          size="small"
-          aria-label="Edit access policy"
-          @click="
-            send({
-              type: 'EDIT_ACCESS_LEVEL',
-              payload: { accessLevel: level },
-            })
-          "
-        >
-          <PencilIcon class="h-5 w-5" />
-        </GhostButton>
-        <GhostButton
-          size="small"
-          aria-label="Delete access policy"
-          @click="
-            send({
-              type: 'DELETE_ACCESS_LEVEL',
-              payload: { accessLevel: level },
-            })
-          "
-        >
-          <TrashIcon class="h-5 w-5 text-red-500" />
-        </GhostButton>
-      </div>
+      <button class="flex justify-between">
+        <div class="flex flex-col items-start">
+          <p class="block truncate">
+            {{ level.name }}
+          </p>
+          <p class="text-sm text-slate-700">
+            {{ level.priority_access_time }} {{ level.time_denomination }}
+          </p>
+        </div>
+        <div v-if="level.is_mandatory" class="flex flex-col items-center">
+          <CheckCircleIcon
+            class="h-8 w-8 justify-self-center text-green-600 dark:text-green-400"
+          />
+          <p class="text-sm font-semibold">Mandatory</p>
+        </div>
+      </button>
     </li>
   </ul>
   <Drawer :open="state.context.drawerVisible" @close="send('CANCEL')">
@@ -74,13 +48,12 @@
   />
 </template>
 <script setup lang="ts">
-import { store } from "@/store";
+import { store } from "../../store";
 import { useRoute } from "vue-router";
-import { TrashIcon, CheckCircleIcon, PencilIcon } from "@heroicons/vue/outline";
+import { CheckCircleIcon } from "@heroicons/vue/outline";
 import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/vue";
 import LinkButton from "@/components/Buttons/LinkButton.vue";
-import GhostButton from "@/components/Buttons/GhostButton.vue";
 import Drawer from "@/components/Drawer.vue";
 import AccessLevelForm from "@/components/community/AccessLevelForm.vue";
 import DeleteModal from "../DeleteModal.vue";
@@ -94,8 +67,6 @@ import { AccessLevel } from "@/typings/AccessLevel";
 
 const route = useRoute();
 const { showSuccess, showError } = useToast();
-
-const accessLevels = store.community.communityAccessLevels;
 
 const accessLevelsMachine = createMachine<{
   accessLevel?: AccessLevel;
@@ -230,20 +201,22 @@ const accessLevelsMachine = createMachine<{
         accessLevel: (_, __) => undefined,
       }),
       updateAccessLevel: (context, event) => {
-        store.community.communityAccessLevels = accessLevels.map((level) => {
-          if (level.id === event.data.id) {
-            return event.data;
+        store.communityAccessLevels = store.communityAccessLevels.map(
+          (level) => {
+            if (level.id === event.data.id) {
+              return event.data;
+            }
+            return level;
           }
-          return level;
-        });
+        );
         showSuccess({ message: "Access rule updated" });
       },
       addAccessLevel: (context, event) => {
-        accessLevels.push(event.data);
+        store.communityAccessLevels.push(event.data);
         showSuccess({ message: "Access rule added" });
       },
       removeAccessLevel: (context, event) => {
-        store.community.communityAccessLevels = accessLevels.filter(
+        store.communityAccessLevels = store.communityAccessLevels.filter(
           (level) => level.id !== event.data.id
         );
         showSuccess({ message: "Access rule deleted" });

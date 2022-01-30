@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import Index from "@/pages/Index.vue";
+import Invite from "@/pages/Invite.vue";
 import SignIn from "@/pages/SignIn.vue";
 import Profile from "@/pages/Profile.vue";
 import CommunitiesAll from "@/pages/CommunitiesAll.vue";
@@ -20,6 +21,13 @@ const routes = [
   {
     path: "/",
     component: Index,
+    meta: {
+      title: "Playout",
+    },
+  },
+  {
+    path: "/invite/:invite_id",
+    component: Invite,
     meta: {
       title: "Playout",
     },

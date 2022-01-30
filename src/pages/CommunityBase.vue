@@ -103,7 +103,7 @@ async function getCommunity() {
 
   if (data) {
     communityData.value = data;
-    store.community.communityInfo = data;
+    store.communityInfo = data;
     if (data.owner_id === store.user?.id) {
       isOwner.value = true;
     }
