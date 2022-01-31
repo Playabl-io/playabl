@@ -60,10 +60,7 @@
       </section>
       <section class="section-container lg:col-span-2 row-span-2">
         <Heading level="h6" as="h2" class="mb-4">Members</Heading>
-        <MemberList
-          v-if="membersWithAccess.length"
-          :members="membersWithAccess"
-        />
+        <MemberList v-if="membersWithAccess.length" />
         <Heading level="h6" as="h2" class="mb-4">Invite Links</Heading>
         <InviteLink
           v-for="invite in communityInvites"
@@ -88,7 +85,7 @@
   </section>
 </template>
 <script setup lang="ts">
-import { ref, onMounted, PropType, toRefs, computed, reactive } from "vue";
+import { ref, onMounted, PropType, toRefs, computed } from "vue";
 import { supabase } from "@/supabase";
 import { log } from "@/util/logger";
 import { useRoute } from "vue-router";
@@ -96,7 +93,7 @@ import useToast from "@/components/Toast/useToast";
 import { CheckCircleIcon, MinusCircleIcon } from "@heroicons/vue/outline";
 import Heading from "@/components/Heading.vue";
 import { Community } from "@/typings/Community";
-import AccessLevelList from "@/components/community/AccessLevelList.vue";
+import AccessLevelList from "@/components/Community/AccessList.vue";
 import MemberList from "@/components/Community/MembersList.vue";
 import { Game } from "@/typings/Game";
 import { MemberWithMembership } from "@/typings/Member";
@@ -159,11 +156,13 @@ async function getMembers() {
     membersCount.value = count + 1; // adds back the logged in user;
   }
   if (data) {
-    members.value = data.map((membership) => ({
+    const mappedMembers = data.map((membership) => ({
       membershipId: membership.id,
       ...membership.user_id,
       role: membership.role_id.name,
     }));
+    store.communityMembers = mappedMembers;
+    members.value = mappedMembers;
   }
   if (error) {
     log({ error });
@@ -180,11 +179,29 @@ async function getMemberAccess() {
     log({ error });
   }
   if (data) {
-    memberAccess.value = data.map((access) => ({
+    const mappedAccess = data.map((access) => ({
       id: access.id,
       name: access.access_level_id.name,
       userId: access.user_id.id,
     }));
+    const memberAccessMap = data.reduce((acc, access) => {
+      if (acc[access.user_id.id]) {
+        acc[access.user_id.id].push({
+          id: access.id,
+          name: access.access_level_id.name,
+        });
+      } else {
+        acc[access.user_id.id] = [
+          {
+            id: access.id,
+            name: access.access_level_id.name,
+          },
+        ];
+      }
+      return acc;
+    }, {});
+    store.communityMemberAccess = memberAccessMap;
+    memberAccess.value = mappedAccess;
   }
 }
 

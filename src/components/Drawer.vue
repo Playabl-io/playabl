@@ -10,7 +10,7 @@
     >
       <div
         v-if="open"
-        class="fixed inset-0 bg-black opacity-20"
+        class="fixed inset-0 bg-black opacity-20 z-20"
         aria-hidden="true"
       />
     </transition>

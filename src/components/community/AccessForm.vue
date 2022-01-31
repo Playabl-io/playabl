@@ -40,6 +40,9 @@
     <div
       class="grow-0 px-6 py-4 flex justify-end space-x-2 border-t border-solid border-gray-200"
     >
+      <GhostButton @click="emit('delete')" type="button" class="mr-auto">
+        <TrashIcon class="h-5 w-5 text-red-600" />
+      </GhostButton>
       <OutlineButton @click="emit('close')" type="button">Cancel</OutlineButton>
       <PrimaryButton :is-loading="saving">Save</PrimaryButton>
     </div>
@@ -51,12 +54,14 @@ import {
   AccessLevel,
   ACCESS_LEVEL_TIME_DENOMINATION,
 } from "@/typings/AccessLevel";
+import { TrashIcon } from "@heroicons/vue/outline";
 import FormLabel from "../Forms/FormLabel.vue";
 import FormInput from "../Forms/FormInput.vue";
 import Heading from "../Heading.vue";
 import PrimaryButton from "../Buttons/PrimaryButton.vue";
 import OutlineButton from "../Buttons/OutlineButton.vue";
 import FormCheckbox from "../Forms/FormCheckbox.vue";
+import GhostButton from "../Buttons/GhostButton.vue";
 const props = defineProps({
   accessLevel: {
     type: Object as () => AccessLevel,
@@ -72,7 +77,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["close", "save"]);
+const emit = defineEmits(["close", "save", "delete"]);
 
 const id = ref(props.accessLevel?.id);
 const title = ref(props.accessLevel?.name || "");

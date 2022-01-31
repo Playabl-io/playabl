@@ -1,7 +1,7 @@
 <template>
   <div class="grid gap-4">
     <ul>
-      <li v-for="member in members" :key="member.id">
+      <li v-for="member in store.communityMembers" :key="member.id">
         <button
           class="w-full grid gap-1 p-4 rounded-md transition-all transform duration-150 hover:shadow-lg hover:-translate-y-1"
           @click="
@@ -35,8 +35,13 @@
             </div>
           </div>
           <p class="text-slate-500 text-sm max-h-16 text-right">
-            {{ member.access.length }} access
-            {{ pluralize({ count: member.access.length, singular: "grant" }) }}
+            {{ store.communityMemberAccess[member.id]?.length || 0 }} access
+            {{
+              pluralize({
+                count: store.communityMemberAccess[member.id]?.length,
+                singular: "grant",
+              })
+            }}
           </p>
         </button>
       </li>
@@ -59,7 +64,6 @@
   />
 </template>
 <script setup lang="ts">
-import { toRefs, PropType } from "vue";
 import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/vue";
 import { MemberWithMembership } from "@/typings/Member";
@@ -68,14 +72,7 @@ import Drawer from "../Drawer.vue";
 import DeleteModal from "../DeleteModal.vue";
 import { pluralize } from "@/util/grammar";
 import MemberForm from "./MemberForm.vue";
-
-const props = defineProps({
-  members: {
-    type: Array as PropType<MemberWithMembership[]>,
-    required: true,
-  },
-});
-toRefs(props);
+import { store } from "@/store";
 
 const { showError, showSuccess } = useToast();
 

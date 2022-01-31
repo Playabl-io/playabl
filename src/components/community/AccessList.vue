@@ -9,14 +9,19 @@
     <li
       v-for="level in store.communityAccessLevels"
       :key="level.id"
-      class="grid gap-y-4 even:bg-gray-100 even:dark:bg-gray-800 py-2 rounded-md px-2 -mx-2"
+      class="grid gap-y-4"
     >
-      <button class="flex justify-between">
+      <button
+        class="flex justify-between p-4 rounded-md transition-all transform duration-150 hover:shadow-lg hover:-translate-y-1"
+        @click="
+          send({ type: 'EDIT_ACCESS_LEVEL', payload: { accessLevel: level } })
+        "
+      >
         <div class="flex flex-col items-start">
-          <p class="block truncate">
+          <p class="block truncate font-semibold">
             {{ level.name }}
           </p>
-          <p class="text-sm text-slate-700">
+          <p class="text-sm text-slate-700 mt-1">
             {{ level.priority_access_time }} {{ level.time_denomination }}
           </p>
         </div>
@@ -24,7 +29,7 @@
           <CheckCircleIcon
             class="h-8 w-8 justify-self-center text-green-600 dark:text-green-400"
           />
-          <p class="text-sm font-semibold">Mandatory</p>
+          <p class="text-sm">Mandatory</p>
         </div>
       </button>
     </li>
@@ -36,6 +41,7 @@
       :saving="['updating', 'creating'].includes(state.value as string)"
       @close="send('CANCEL')"
       @save="send('SAVE', $event)"
+      @delete="send('DELETE_ACCESS_LEVEL')"
     />
   </Drawer>
   <DeleteModal
@@ -55,7 +61,7 @@ import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/vue";
 import LinkButton from "@/components/Buttons/LinkButton.vue";
 import Drawer from "@/components/Drawer.vue";
-import AccessLevelForm from "@/components/community/AccessLevelForm.vue";
+import AccessLevelForm from "@/components/Community/AccessForm.vue";
 import DeleteModal from "../DeleteModal.vue";
 import {
   createAccessLevel,
@@ -92,10 +98,6 @@ const accessLevelsMachine = createMachine<{
             target: "newAccessLevel",
             actions: "showDrawer",
           },
-          DELETE_ACCESS_LEVEL: {
-            target: "deleteAccessLevel",
-            actions: ["assignAccessLevel", "showModal"],
-          },
         },
       },
       editAccessLevel: {
@@ -106,6 +108,10 @@ const accessLevelsMachine = createMachine<{
           },
           SAVE: {
             target: "updating",
+          },
+          DELETE_ACCESS_LEVEL: {
+            target: "deleteAccessLevel",
+            actions: ["showModal"],
           },
         },
       },
@@ -153,8 +159,8 @@ const accessLevelsMachine = createMachine<{
       deleteAccessLevel: {
         on: {
           CANCEL: {
-            target: "closed",
-            actions: ["hideModal", "clearAccessLevel"],
+            target: "editAccessLevel",
+            actions: ["hideModal"],
           },
           DELETE: {
             target: "deleting",
@@ -170,7 +176,12 @@ const accessLevelsMachine = createMachine<{
             }),
           onDone: {
             target: "closed",
-            actions: ["removeAccessLevel", "clearAccessLevel", "hideModal"],
+            actions: [
+              "removeAccessLevel",
+              "clearAccessLevel",
+              "hideDrawer",
+              "hideModal",
+            ],
           },
           onError: {
             target: "deleteAccessLevel",
