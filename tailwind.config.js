@@ -18,7 +18,7 @@ module.exports = {
       // here's how to extend fonts if needed
       fontFamily: {
         sans: [...defaultTheme.fontFamily.sans],
-        inter: "'Inter', sans-serif",
+        openSans: "'Open Sans', sans-serif",
         spartan: "'Spartan', sans-serif",
         paytone: "'Paytone', sans-serif",
       },
