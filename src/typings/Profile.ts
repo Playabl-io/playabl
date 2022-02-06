@@ -5,5 +5,5 @@ export interface Profile {
   website?: string;
   twitter?: string;
   bio?: string;
-  user_id: string;
+  id: string;
 }

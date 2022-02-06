@@ -13,8 +13,14 @@ import CommunityHome from "@/pages/CommunityHome.vue";
 import CommunityFeed from "@/pages/CommunityFeed.vue";
 import CommunityCalendar from "@/pages/CommunityCalendar.vue";
 import CommunityManage from "@/pages/CommunityManage.vue";
-import Games from "@/pages/Games.vue";
+import GamesJoined from "@/pages/GamesJoined.vue";
+import GamesBrowse from "@/pages/GamesBrowse.vue";
+import GamesManage from "@/pages/GamesManage.vue";
 import GameNew from "@/pages/GameNew.vue";
+import GameBase from "@/pages/GameBase.vue";
+import GameHome from "@/pages/GameHome.vue";
+import GameMessages from "@/pages/GameMessages.vue";
+import GameManage from "@/pages/GameManage.vue";
 import { store } from "./store";
 
 const routes = [
@@ -113,22 +119,21 @@ const routes = [
   },
   {
     path: "/games/joined",
-    component: Games,
+    component: GamesJoined,
     meta: {
       title: "Playout - Games",
-      // requiresAuth: true,
     },
   },
   {
     path: "/games/browse",
-    component: Games,
+    component: GamesBrowse,
     meta: {
       title: "Playout - Games",
     },
   },
   {
     path: "/games/manage",
-    component: Games,
+    component: GamesManage,
     meta: {
       title: "Playout - Games",
       requiresAuth: true,
@@ -139,8 +144,35 @@ const routes = [
     component: GameNew,
     meta: {
       title: "Playout - New Game",
-      // requiresAuth: true,
+      requiresAuth: true,
     },
+  },
+  {
+    path: "/games/:game_id",
+    component: GameBase,
+    meta: {
+      title: "Playout - Community",
+    },
+    children: [
+      {
+        path: "",
+        component: GameHome,
+      },
+      {
+        path: "messages",
+        component: GameMessages,
+        meta: {
+          requiresAuth: true,
+        },
+      },
+      {
+        path: "manage",
+        component: GameManage,
+        meta: {
+          requiresAuth: true,
+        },
+      },
+    ],
   },
 ];
 
@@ -149,7 +181,7 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from) => {
+router.beforeEach((to) => {
   // instead of having to check every route record with
   // to.matched.some(record => record.meta.requiresAuth)
   if (to.meta.requiresAuth && !store.user) {

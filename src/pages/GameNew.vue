@@ -6,88 +6,29 @@
     >
       <LoadingSpinner color="brand-500" />
     </div>
-    <div
+    <ChooseCommunity
       v-if="state.value === 'chooseCommunity'"
-      class="max-w-4xl mx-auto flex flex-col"
-    >
-      <Heading level="h4" as="h1" class="mb-12"> Choose a community </Heading>
-      <Listbox v-model="selectedCommunity">
-        <div class="relative mt-1">
-          <ListboxButton
-            class="relative h-10 w-full py-2 pl-3 pr-10 text-left bg-white text-slate-900 rounded-lg border border-solid border-gray-300 cursor-default focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-0 focus-visible:ring-blue-700 dark:focus-visible:ring-sky-500 sm:text-sm"
-          >
-            <span class="block truncate">{{
-              selectedCommunity?.name || "Select a community"
-            }}</span>
-            <span
-              class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
-            >
-              <SelectorIcon class="w-5 h-5 text-gray-400" aria-hidden="true" />
-            </span>
-          </ListboxButton>
-          <transition
-            leave-active-class="transition duration-100 ease-in"
-            leave-from-class="opacity-100"
-            leave-to-class="opacity-0"
-          >
-            <ListboxOptions
-              class="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
-            >
-              <ListboxOption
-                v-slot="{ active, selected }"
-                v-for="community in state.context.communities"
-                :key="community.id"
-                :value="community"
-                as="template"
-              >
-                <li
-                  :class="[
-                    active ? 'text-brand-500 bg-violet-100' : 'text-gray-900',
-                    'cursor-default select-none relative py-2 pl-10 pr-4',
-                  ]"
-                >
-                  <span
-                    :class="[
-                      selected ? 'font-medium' : 'font-normal',
-                      'block truncate',
-                    ]"
-                  >
-                    {{ community.name }}
-                  </span>
-                  <span
-                    v-if="selected"
-                    class="absolute inset-y-0 left-0 flex items-center pl-3 text-brand-500"
-                  >
-                    <CheckIcon class="w-5 h-5" aria-hidden="true" />
-                  </span>
-                </li>
-              </ListboxOption>
-            </ListboxOptions>
-          </transition>
-        </div>
-      </Listbox>
-      <PrimaryButton
-        @click="send('SELECT')"
-        class="w-full mt-6"
-        :disabled="!selectedCommunity"
-      >
-        Next
-      </PrimaryButton>
-    </div>
+      :communities="state.context.communities"
+      @select="send('SELECT', $event)"
+    />
     <form
-      v-if="state.value === 'gameDetails'"
-      class="grid grid-cols-1 gap-12 max-w-4xl mx-auto"
-      @submit.prevent="createGame"
+      v-if="['gameDetails', 'submitting'].includes(state.value as string)"
+      class="grid grid-cols-1 gap-12 max-w-4xl mx-auto relative"
+      @submit.prevent="send('SUBMIT')"
     >
       <Heading level="h4" as="h1"> Create a new game </Heading>
       <div
-        class="bg-sky-100 dark:bg-indigo-800 rounded-lg border border-solid border-sky-300 dark:border-indigo-900 p-6 text-brand-500 dark:text-brand-100 text-sm"
+        class="bg-sky-100 dark:bg-indigo-800 rounded-lg border border-solid border-sky-300 dark:border-indigo-900 p-6 text-slate-700 dark:text-brand-100 text-sm"
       >
         <div class="flex items-center">
           <UserGroupIcon class="h-6 w-6 mr-2" />
-          <p class="pt-1">{{ selectedCommunity?.name }}</p>
+          <p class="pt-1">{{ state.context.selectedCommunity?.name }}</p>
         </div>
-        <LinkButton @click="send('CHOOSE_NEW_COMMUNITY')" class="mt-2">
+        <LinkButton
+          v-if="state.context.communities.length > 1"
+          @click="send('CHOOSE_NEW_COMMUNITY')"
+          class="mt-2"
+        >
           Choose a new community
         </LinkButton>
       </div>
@@ -195,7 +136,7 @@
                 <li>
                   {{
                     format(
-                      parseISO(sessions[sessionId].start_time),
+                      new Date(sessions[sessionId].start_time),
                       "EEE, MMM do, h:mm a"
                     )
                   }}
@@ -203,7 +144,7 @@
                 <li>
                   {{
                     format(
-                      parseISO(sessions[sessionId].end_time),
+                      new Date(sessions[sessionId].end_time),
                       "EEE, MMM do, h:mm a"
                     )
                   }}
@@ -214,36 +155,26 @@
         </div>
       </div>
       <div>
-        <Heading level="h6" as="h2">Access times</Heading>
-        <p class="text-sm text-slate-700 dark:text-slate-300">
-          Access times are computed automatically based on your community's
-          settings
-        </p>
+        <AccessTimes
+          :enabled-levels="state.context.enabledAccessLevels"
+          @update="send({ type: 'UPDATE_ENABLED_LEVELS', data: $event })"
+        />
       </div>
-      <PrimaryButton>Save</PrimaryButton>
+      <PrimaryButton :is-loading="state.value === 'submitting'">
+        Save
+      </PrimaryButton>
     </form>
   </BaseTemplate>
 </template>
 <script setup lang="ts">
+import { supabase } from "@/supabase";
+import { useRouter } from "vue-router";
 import { ref } from "vue";
-import router from "@/router";
 import { v4 as uuidv4 } from "uuid";
-import { format, set, parseISO } from "date-fns";
+import { format, set } from "date-fns";
 import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/vue";
-import { supabase } from "@/supabase";
-import {
-  XCircleIcon,
-  CheckIcon,
-  SelectorIcon,
-  UserGroupIcon,
-} from "@heroicons/vue/outline";
-import {
-  Listbox,
-  ListboxButton,
-  ListboxOptions,
-  ListboxOption,
-} from "@headlessui/vue";
+import { XCircleIcon, UserGroupIcon } from "@heroicons/vue/outline";
 import BaseTemplate from "@/components/BaseTemplate.vue";
 import FormLabel from "@/components/Forms/FormLabel.vue";
 import FormInput from "@/components/Forms/FormInput.vue";
@@ -256,67 +187,125 @@ import FormTimeInput from "@/components/Forms/FormTimeInput.vue";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
 import LinkButton from "@/components/Buttons/LinkButton.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
-import { log } from "@/util/logger";
-import { Session } from "@/typings/Session";
+import { NewSession } from "@/typings/Session";
 import { loadJoinedCommunities } from "@/api/communities";
 import { Community } from "@/typings/Community";
-import { Game, GAME_DRAFT_STATE } from "@/typings/Game";
+import { GAME_DRAFT_STATE, NewGame } from "@/typings/Game";
+import AccessTimes from "@/components/Game/AccessTimes.vue";
+import ChooseCommunity from "@/components/Game/ChooseCommunity.vue";
+import { loadCommunityAccessTimes } from "@/api/communityAccess";
+import { store } from "@/store";
+import useToast from "@/components/Toast/useToast";
+import { createGame } from "@/api/games";
+import { rsvpTimes } from "@/util/time";
 
-const newGameMachine = createMachine<{ communities: Community[] }>({
-  context: {
-    communities: [],
-  },
-  id: "newGame",
-  initial: "loadCommunities",
-  states: {
-    loadCommunities: {
-      invoke: {
-        src: loadJoinedCommunities,
-        onDone: {
-          target: "evaluateCommunities",
-          actions: assign({
-            communities: (context, event) => event.data,
-          }),
+const { showSuccess, showError } = useToast();
+const router = useRouter();
+
+const newGameMachine = createMachine<{
+  communities: Community[];
+  selectedCommunity?: Community;
+  enabledAccessLevels: string[];
+}>(
+  {
+    context: {
+      communities: [],
+      selectedCommunity: undefined,
+      enabledAccessLevels: [],
+    },
+    id: "newGame",
+    initial: "loadCommunities",
+    states: {
+      loadCommunities: {
+        invoke: {
+          src: loadJoinedCommunities,
+          onDone: {
+            target: "evaluateCommunities",
+            actions: assign({
+              communities: (context, event) => event.data,
+            }),
+          },
+        },
+      },
+      evaluateCommunities: {
+        always: [
+          {
+            target: "chooseCommunity",
+            cond: (context) => context.communities.length > 1,
+          },
+          {
+            target: "gameDetails",
+            cond: (context) => context.communities.length === 1,
+            actions: ["assignFirstCommunity"],
+          },
+        ],
+      },
+      noCommunities: {
+        type: "final",
+      },
+      chooseCommunity: {
+        on: {
+          SELECT: {
+            target: "gameDetails",
+            actions: ["assignCommunity"],
+          },
+        },
+      },
+      gameDetails: {
+        invoke: {
+          src: (context, event) =>
+            getAccessLevels(context.selectedCommunity?.id ?? ""),
+          onDone: {
+            actions: ["updateEnabledAccessLevels"],
+          },
+        },
+        on: {
+          CHOOSE_NEW_COMMUNITY: "chooseCommunity",
+          SUBMIT: "submitting",
+          UPDATE_ENABLED_LEVELS: {
+            actions: ["updateEnabledAccessLevels"],
+          },
+        },
+      },
+      submitting: {
+        invoke: {
+          src: submitGame,
+          onError: {
+            target: "gameDetails",
+            actions: ["showErrorToast"],
+          },
         },
       },
     },
-    evaluateCommunities: {
-      always: [
-        {
-          target: "chooseCommunity",
-          cond: (context) => context.communities.length > 1,
-        },
-        {
-          target: "gameDetails",
-          cond: (context) => context.communities.length === 1,
-        },
-      ],
-    },
-    noCommunities: {
-      type: "final",
-    },
-    chooseCommunity: {
-      on: { SELECT: "gameDetails" },
-    },
-    gameDetails: {
-      on: { CHOOSE_NEW_COMMUNITY: "chooseCommunity", SUBMIT: "submitting" },
-    },
-    submitting: {
-      type: "final",
-    },
   },
-});
+  {
+    actions: {
+      assignFirstCommunity: assign({
+        selectedCommunity: (context) => context.communities[0],
+      }),
+      assignCommunity: assign({
+        selectedCommunity: (context, event) => event.community,
+      }),
+      updateEnabledAccessLevels: assign({
+        enabledAccessLevels: (context, event) => {
+          return event.data;
+        },
+      }),
+      showErrorToast: (context, event) => {
+        showError({ message: "Unable to create game" });
+      },
+    },
+  }
+);
 
 const { state, send } = useMachine(newGameMachine);
 
 const title = ref("");
 const description = ref("");
-const sessions = ref<Record<string, Session>>({});
+const sessions = ref<Record<string, NewSession>>({});
 const sessionIds = ref<string[]>([]);
 const coverImage = ref("");
-const participantCount = ref<number>(0);
-const draftState = ref<GAME_DRAFT_STATE>(GAME_DRAFT_STATE.draft);
-const selectedCommunity = ref<Community>();
+const participantCount = ref<number>();
 
 const sessionStartTime = ref("");
 const sessionEndTime = ref("");
@@ -332,6 +321,7 @@ function updateEndDate(date: Date) {
 }
 
 function addSession() {
+  if (!store.user) return router.push("/sign-in");
   const [startHours, startMinutes] = sessionStartTime.value.split(":");
   const [endHours, endMinutes] = sessionEndTime.value.split(":");
   const localId = uuidv4();
@@ -339,11 +329,12 @@ function addSession() {
     start_time: set(startDate.value, {
       hours: Number(startHours),
       minutes: Number(startMinutes),
-    }).toISOString(),
+    }).getTime(),
     end_time: set(endDate.value, {
       hours: Number(endHours),
       minutes: Number(endMinutes),
-    }).toISOString(),
+    }).getTime(),
+    creator_id: store.user.id,
   };
   sessionIds.value.push(localId);
 }
@@ -353,25 +344,49 @@ function deleteSession(sessionId: string) {
   sessionIds.value = sessionIds.value.filter((id) => id !== sessionId);
 }
 
-async function createGame() {
-  if (!selectedCommunity.value?.id) return;
-  const newGame: Game = {
+async function submitGame() {
+  if (!state.value.context.selectedCommunity?.id || !store.user?.id) return;
+  const levels = store.communityAccessLevels.filter((level) =>
+    state.value.context.enabledAccessLevels.includes(level.id)
+  );
+  const times = rsvpTimes(levels);
+  const newGame: NewGame = {
     title: title.value,
     description: description.value,
-    participant_count: participantCount.value,
-    draft_state: draftState.value,
-    community_id: selectedCommunity.value?.id,
+    participant_count: participantCount.value || 0,
+    draft_state: GAME_DRAFT_STATE.published,
+    community_id: state.value.context.selectedCommunity.id,
+    creator_id: store.user.id,
   };
-  try {
-    const { data, error } = await supabase
-      .from("games")
-      .insert(newGame)
-      .single();
-    if (error) throw error;
+  const game = await createGame(newGame);
 
-    router.push(`/games/${data.id}/manage`);
-  } catch (error) {
-    log({ error });
+  const sessionsToCreate = sessionIds.value.reduce((acc, id) => {
+    const sessionPartial = sessions.value[id];
+    sessionPartial.access_times = JSON.stringify(times);
+    sessionPartial.game_id = game.id;
+    return acc.concat(sessionPartial);
+  }, [] as NewSession[]);
+
+  await Promise.all(
+    sessionsToCreate.map((session) => {
+      return supabase.from("sessions").insert(session);
+    })
+  );
+
+  showSuccess({ message: "Game created" });
+  router.push(`/games/${game.id}`);
+}
+
+async function getAccessLevels(communityId: string) {
+  const data = await loadCommunityAccessTimes(communityId);
+  if (data) {
+    store.communityAccessLevels = data;
   }
+  return store.communityAccessLevels.reduce((acc, level) => {
+    if (level.is_mandatory) {
+      acc.push(level.id);
+    }
+    return acc;
+  }, [] as string[]);
 }
 </script>

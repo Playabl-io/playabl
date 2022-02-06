@@ -2,6 +2,7 @@ import { reactive } from "vue";
 import { Community } from "./typings/Community";
 import { AccessLevel } from "./typings/AccessLevel";
 import { MemberWithMembership } from "./typings/Member";
+import { RsvpWithUser } from "./typings/Rsvp";
 
 interface StoreUser {
   id: string;
@@ -15,6 +16,7 @@ interface Store {
   communityAccessLevels: AccessLevel[];
   communityMembers: MemberWithMembership[];
   communityMemberAccess: Record<string, { id: string; name: string }[]>;
+  sessionRsvps: Record<string, RsvpWithUser[]>;
 }
 
 export const store = reactive<Store>({
@@ -23,4 +25,5 @@ export const store = reactive<Store>({
   communityInfo: null,
   communityMembers: [],
   communityMemberAccess: {},
+  sessionRsvps: {},
 });

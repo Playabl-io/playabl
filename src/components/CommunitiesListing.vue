@@ -34,7 +34,7 @@
       <LoadingSpinner color="brand-500" />
     </span>
     <template v-else v-for="community in communities" :key="community.id">
-      <Listing
+      <CommunityListing
         :id="community.id"
         :name="community.name"
         :website="community.website"
@@ -52,7 +52,7 @@ import { store } from "@/store";
 import { Community } from "@/typings/Community";
 import Heading from "./Heading.vue";
 import LoadingSpinner from "./LoadingSpinner.vue";
-import Listing from "./Listing.vue";
+import CommunityListing from "./CommunityListing.vue";
 const props = defineProps({
   isLoading: {
     type: Boolean,

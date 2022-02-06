@@ -5,34 +5,25 @@
     </div>
     <div v-else>
       <div class="flex items-baseline justify-between">
-        <router-link :to="`/communities/${id}`">
-          <Heading level="h1">{{ communityData?.name }}</Heading>
-        </router-link>
+        <Heading level="h1">{{ gameData?.title }}</Heading>
       </div>
       <section class="my-12 flex justify-between items-baseline text-sm">
         <div class="flex space-x-4 py-2">
           <router-link
-            :to="`/communities/${id}`"
+            :to="`/games/${id}`"
             exact-active-class="border-b border-brand-500 dark:border-brand-300"
           >
-            Home
+            Details
           </router-link>
           <router-link
-            v-if="store.user"
-            :to="`/communities/${id}/feed`"
+            :to="`/games/${id}/messages`"
             activeClass="border-b border-brand-500 dark:border-brand-300"
           >
-            Feed
+            Messages
           </router-link>
           <router-link
-            :to="`/communities/${id}/calendar`"
-            activeClass="border-b border-brand-500 dark:border-brand-300"
-          >
-            Calendar
-          </router-link>
-          <router-link
-            v-if="isAdmin"
-            :to="`/communities/${id}/manage`"
+            v-if="isOwner"
+            :to="`/games/${id}/manage`"
             activeClass="border-b border-brand-500 dark:border-brand-300"
           >
             Manage
@@ -44,7 +35,8 @@
           <component
             :is="Component"
             :key="route.meta.usePathKey ? route.path : undefined"
-            :community="communityData"
+            :game="gameData"
+            :is-owner="isOwner"
           />
         </keep-alive>
       </router-view>
@@ -59,54 +51,46 @@ import { log } from "@/util/logger";
 import BaseTemplate from "@/components/BaseTemplate.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import Heading from "@/components/Heading.vue";
-import { ADMIN } from "@/util/roles";
 import { store } from "@/store";
-import { Community } from "@/typings/Community";
+import { GameWithSessionsAndRsvps } from "@/typings/Game";
+import { SessionWithRsvps } from "@/typings/Session";
 
 const route = useRoute();
-const { community_id: id } = route.params;
+const { game_id: id } = route.params;
 
-const communityData = ref<Community>();
+const gameData = ref<GameWithSessionsAndRsvps>();
 const isOwner = ref(false);
-const isAdmin = ref(false);
 const isLoading = ref(true);
 
 onMounted(async () => {
-  await Promise.allSettled([getAdminStatus(), getCommunity()]);
+  await getGameData();
   isLoading.value = false;
 });
 
-async function getAdminStatus() {
-  if (!store.user) return;
-  const { data } = await supabase
-    .from("community_memberships")
-    .select(`user_id`)
-    .eq("community_id", route.params.community_id)
-    .eq("role_id", ADMIN)
-    .eq("user_id", store.user.id)
-    .single();
-  if (data) {
-    isAdmin.value = true;
-  }
-}
-
-async function getCommunity() {
-  const { data, error, status } = await supabase
-    .from("communities")
-    .select()
+async function getGameData() {
+  const { data, error } = await supabase
+    .from("games")
+    .select("*, sessions (*, rsvps (*, user_id (*)))")
     .eq("id", id)
     .single();
 
-  if (error && status !== 406) {
+  if (error) {
     log({ error });
   }
 
   if (data) {
-    communityData.value = data;
+    setSessionDataInStore(data.sessions);
+    gameData.value = data;
     store.communityInfo = data;
-    if (data.owner_id === store.user?.id) {
+    if (data.creator_id === store.user?.id) {
       isOwner.value = true;
     }
   }
+}
+
+function setSessionDataInStore(sessions: SessionWithRsvps[]) {
+  sessions.forEach((session) => {
+    store.sessionRsvps[session.id] = session.rsvps;
+  });
 }
 </script>

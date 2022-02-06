@@ -67,14 +67,11 @@
 import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/vue";
 import { MemberWithMembership } from "@/typings/Member";
-import useToast from "../Toast/useToast";
 import Drawer from "../Drawer.vue";
 import DeleteModal from "../DeleteModal.vue";
 import { pluralize } from "@/util/grammar";
 import MemberForm from "./MemberForm.vue";
 import { store } from "@/store";
-
-const { showError, showSuccess } = useToast();
 
 const memberManagementMachine = createMachine<{
   member?: MemberWithMembership;

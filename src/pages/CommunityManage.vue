@@ -60,7 +60,7 @@
       </section>
       <section class="section-container lg:col-span-2 row-span-2">
         <Heading level="h6" as="h2" class="mb-4">Members</Heading>
-        <MemberList v-if="membersWithAccess.length" />
+        <MemberList />
         <Heading level="h6" as="h2" class="mb-4">Invite Links</Heading>
         <InviteLink
           v-for="invite in communityInvites"
@@ -100,6 +100,7 @@ import { MemberWithMembership } from "@/typings/Member";
 import { store } from "@/store";
 import InviteLink from "@/components/Community/InviteLink.vue";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
+import { loadCommunityAccessTimes } from "@/api/communityAccess";
 
 const props = defineProps({
   community: {
@@ -116,23 +117,10 @@ const loading = ref(true);
 
 const members = ref<MemberWithMembership[]>([]);
 const membersCount = ref(0);
-const memberAccess = ref<{ name: string; userId: string; id: string }[]>([]);
 const games = ref<Game[]>([]);
 const gamesCount = ref(0);
 const communityInvites = ref<string[]>();
 const creatingInvite = ref(false);
-
-const membersWithAccess = computed(() => {
-  return members.value.map((member) => {
-    const access = memberAccess.value.filter(
-      (access) => access.userId === member.id
-    );
-    return {
-      ...member,
-      access,
-    };
-  });
-});
 
 onMounted(async () => {
   loading.value = true;
@@ -179,11 +167,6 @@ async function getMemberAccess() {
     log({ error });
   }
   if (data) {
-    const mappedAccess = data.map((access) => ({
-      id: access.id,
-      name: access.access_level_id.name,
-      userId: access.user_id.id,
-    }));
     const memberAccessMap = data.reduce((acc, access) => {
       if (acc[access.user_id.id]) {
         acc[access.user_id.id].push({
@@ -201,7 +184,6 @@ async function getMemberAccess() {
       return acc;
     }, {});
     store.communityMemberAccess = memberAccessMap;
-    memberAccess.value = mappedAccess;
   }
 }
 
@@ -222,10 +204,9 @@ async function getGames() {
 }
 
 async function getAccessLevels() {
-  const { data } = await supabase
-    .from("access_levels")
-    .select()
-    .eq("community_id", route.params.community_id);
+  const data = await loadCommunityAccessTimes(
+    route.params.community_id as string
+  );
   if (data) {
     store.communityAccessLevels = data;
   }

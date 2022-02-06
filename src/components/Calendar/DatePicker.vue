@@ -50,7 +50,10 @@ const props = defineProps({
 toRefs(props);
 
 const calendar = ref<HTMLElement>();
-onClickOutside(calendar, toggleCalendar);
+onClickOutside(calendar, (event) => {
+  if (event.target === trigger.value) return;
+  showCalendar.value = false;
+});
 
 const trigger = ref<HTMLButtonElement>();
 

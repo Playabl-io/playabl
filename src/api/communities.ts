@@ -17,3 +17,19 @@ export async function loadJoinedCommunities() {
     }));
   }
 }
+
+export async function loadJoinedCommunityIds(): Promise<
+  { community_id: string }[] | undefined
+> {
+  if (!store.user) return;
+  const { data, error } = await supabase
+    .from("community_memberships")
+    .select("community_id")
+    .eq("user_id", store.user.id);
+  if (error) {
+    log({ error });
+  }
+  if (data) {
+    return data;
+  }
+}
