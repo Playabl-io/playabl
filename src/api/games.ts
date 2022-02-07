@@ -116,16 +116,12 @@ export async function joinSession({
   sessionId: string;
   userId: string;
 }) {
-  const { data, error } = await supabase
-    .from("rsvps")
-    .insert({
-      session_id: sessionId,
-      user_id: userId,
-    })
-    .single();
-  if (error) {
-    log({ error });
-  }
+  const data = await fetch(
+    `/.netlify/functions/processRsvp?sessionId=${sessionId}&userId=${userId}`,
+    {
+      method: "POST",
+    }
+  ).then((response) => response.json());
   return data;
 }
 
@@ -136,17 +132,12 @@ export async function leaveSession({
   sessionId: string;
   userId: string;
 }) {
-  const { data, error } = await supabase
-    .from("rsvps")
-    .delete()
-    .match({
-      session_id: sessionId,
-      user_id: userId,
-    })
-    .single();
-  if (error) {
-    log({ error });
-  }
+  const data = await fetch(
+    `/.netlify/functions/processRsvp?sessionId=${sessionId}&userId=${userId}`,
+    {
+      method: "DELETE",
+    }
+  ).then((response) => response.json());
   return data;
 }
 

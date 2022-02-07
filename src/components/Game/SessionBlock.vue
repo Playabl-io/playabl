@@ -69,7 +69,6 @@
 </template>
 <script setup lang="ts">
 import { format, formatRelative } from "date-fns";
-import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/vue/outline";
 import { SessionWithRsvps } from "@/typings/Session";
 import { computed, onMounted, onUnmounted, PropType, ref, toRefs } from "vue";
 import PrimaryButton from "../Buttons/PrimaryButton.vue";
@@ -80,10 +79,8 @@ import { store } from "@/store";
 import useToast from "../Toast/useToast";
 import { joinSession, leaveSession } from "@/api/games";
 import * as R from "ramda";
-import { Rsvp } from "@/typings/Rsvp";
 import { supabase } from "@/supabase";
 import { RealtimeSubscription } from "@supabase/supabase-js";
-import GhostButton from "../Buttons/GhostButton.vue";
 
 const { showSuccess, showError } = useToast();
 
@@ -124,7 +121,7 @@ const soonestRsvp = computed(() =>
   )
 );
 
-const splitAtParticipantCount = R.splitAt(props.participantCount - 1);
+const splitAtParticipantCount = R.splitAt(props.participantCount);
 const rsvps = computed(() => {
   return splitAtParticipantCount(store.sessionRsvps[props.session.id]);
 });

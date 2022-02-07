@@ -1,8 +1,8 @@
 import { ROLES } from "../../src/util/roles";
-import { createClient } from "@supabase/supabase-js";
 import { Handler } from "@netlify/functions";
+import { createClient } from "@supabase/supabase-js";
 
-const supabase = createClient(
+export const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE
 );
