@@ -36,7 +36,9 @@ export async function createGame(newGame: NewGame) {
 export async function loadJoinedGames(userId: string) {
   const { data, error } = await supabase
     .from<RsvpWithSessionAndGame>("rsvps")
-    .select("session_id (id, start_time, game_id (*, community_id (id, name)))")
+    .select(
+      "id, session_id (id, start_time, end_time, game_id (*, communities (id, name)), rsvps (*))"
+    )
     .eq("user_id", userId);
   if (error) {
     log({ error });
@@ -69,7 +71,7 @@ export async function loadManagedGames(userId: string) {
   const { data, error } = await supabase
     .from<SessionsLookup>("sessions")
     .select(
-      "*, game_id (*, community_id (id, name)), rsvps (profile_id (username))"
+      "*, game_id (*, community_id (id, name)), rsvps (user_id (username))"
     )
     .gte("start_time", today.getTime())
     .eq("creator_id", userId);

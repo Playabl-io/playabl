@@ -145,6 +145,7 @@ function nextDay() {
 }
 function previousDay() {
   const nextDay = subDays(props.selected, 1);
+  if (props.notBefore && isBefore(nextDay, props.notBefore)) return;
   emit("select", nextDay);
   focusActiveDay();
 }
@@ -155,6 +156,7 @@ function nextWeek() {
 }
 function previousWeek() {
   const nextDay = subWeeks(props.selected, 1);
+  if (props.notBefore && isBefore(nextDay, props.notBefore)) return;
   emit("select", nextDay);
   focusActiveDay();
 }

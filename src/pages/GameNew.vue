@@ -63,7 +63,11 @@
             <div class="grid gap-8">
               <div>
                 <FormLabel>Start date</FormLabel>
-                <DatePicker @select="updateStartDate" :selected="startDate" />
+                <DatePicker
+                  @select="updateStartDate"
+                  :selected="startDate"
+                  :not-before="getStartOfToday()"
+                />
               </div>
               <div class="flex flex-col">
                 <FormLabel for="start-time"> Start time </FormLabel>
@@ -97,6 +101,7 @@
             type="button"
             class="my-2 w-full"
             @click="addSession"
+            :disabled="!sessionStartTime || !sessionEndTime"
           >
             Add session
           </SecondaryButton>
@@ -197,7 +202,7 @@ import { loadCommunityAccessTimes } from "@/api/communityAccess";
 import { store } from "@/store";
 import useToast from "@/components/Toast/useToast";
 import { createGame } from "@/api/games";
-import { rsvpTimes } from "@/util/time";
+import { rsvpTimes, getStartOfToday } from "@/util/time";
 
 const { showSuccess, showError } = useToast();
 const router = useRouter();

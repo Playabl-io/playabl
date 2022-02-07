@@ -3,7 +3,6 @@
     :disabled="isLoading || disabled"
     v-bind="$attrs"
     class="bg-brand-500 text-white"
-    :class="{ 'opacity-50 cursor-not-allowed': disabled }"
   >
     <loading-spinner v-if="isLoading" />
     <p v-if="isLoading" class="sr-only">Loading</p>

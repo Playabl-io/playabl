@@ -11,6 +11,7 @@ import {
   roundToNearestMinutes,
   isBefore,
   min,
+  startOfDay,
 } from "date-fns";
 
 const maxTimeMapper = {
@@ -68,4 +69,8 @@ export function getSoonestRsvpTime(
     .filter(Boolean);
   if (possibleTimes.length === 0) return null;
   return min(possibleTimes);
+}
+
+export function getStartOfToday() {
+  return startOfDay(new Date());
 }

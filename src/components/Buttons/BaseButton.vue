@@ -5,6 +5,7 @@
       'p-3 min-h-10': size === 'default',
       'p-2 h-6': size === 'small',
       'p-0': size === 'bare',
+      'cursor-not-allowed opacity-50': $attrs.disabled,
     }"
     v-bind="$attrs"
   >

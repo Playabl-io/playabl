@@ -1,3 +1,4 @@
+import { Rsvp } from "./Rsvp";
 import { Session, SessionWithRsvps } from "./Session";
 
 export enum GAME_DRAFT_STATE {
@@ -29,15 +30,18 @@ export type GameListing = Game & {
 export type GameWithSessionsAndRsvps = Game & { sessions: SessionWithRsvps[] };
 
 export interface RsvpWithSessionAndGame {
+  id: string;
   user_id: string;
   session_id: {
     id: string;
     start_time: number;
+    end_time: number;
     game_id: Game & {
-      community_id: {
+      communities: {
         id: string;
         name: string;
       };
     };
+    rsvps: Rsvp[];
   };
 }
