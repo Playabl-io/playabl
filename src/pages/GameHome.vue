@@ -20,7 +20,7 @@
         />
         <div
           v-if="i !== game.sessions.length - 1"
-          class="w-px h-6 border-l border-dashed border-gray-500 self-center"
+          class="w-px h-6 border-l-2 border-dotted border-gray-500 self-center rounded-lg"
         />
       </div>
     </div>

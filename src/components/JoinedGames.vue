@@ -3,14 +3,15 @@
     <span v-if="isLoading" class="place-self-center">
       <LoadingSpinner color="brand-500" />
     </span>
-    <template v-else v-for="rsvp in rsvps" :key="rsvp.id">
+    <template v-else-if="rsvps.length" v-for="rsvp in rsvps" :key="rsvp.id">
       <GameRsvp :rsvp="rsvp" />
       <hr class="last:hidden border-slate-200" />
     </template>
+    <div v-else>You don't have any upcoming sessions</div>
   </section>
 </template>
 <script setup lang="ts">
-import { PropType, toRefs } from "vue";
+import { computed, PropType, toRefs } from "vue";
 import { RsvpWithSessionAndGame } from "@/typings/Game";
 import LoadingSpinner from "./LoadingSpinner.vue";
 import GameRsvp from "./GameRsvp.vue";
@@ -26,4 +27,8 @@ const props = defineProps({
   },
 });
 toRefs(props);
+
+// const filteredRsvps = computed(() =>
+//   props.rsvps.filter((rsvp) => Boolean(rsvp.session_id))
+// );
 </script>

@@ -4,7 +4,7 @@ export interface Session {
   id: string;
   start_time: number;
   end_time: number;
-  game_id?: string;
+  game_id: number;
   access_times?: string;
   creator_id: string;
 }

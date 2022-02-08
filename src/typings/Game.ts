@@ -7,7 +7,7 @@ export enum GAME_DRAFT_STATE {
 }
 
 export interface Game {
-  id: string;
+  id: number;
   title: string;
   description: string;
   cover_image?: string;
@@ -32,7 +32,7 @@ export type GameWithSessionsAndRsvps = Game & { sessions: SessionWithRsvps[] };
 export interface RsvpWithSessionAndGame {
   id: string;
   user_id: string;
-  session_id: {
+  sessions: {
     id: string;
     start_time: number;
     end_time: number;

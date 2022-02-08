@@ -4,7 +4,7 @@
     Select what access levels to apply. Mandatory access levels are
     automatically selected.
   </p>
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+  <div class="grid" :class="grid">
     <label
       v-for="level in store.communityAccessLevels"
       :for="level.id"
@@ -50,6 +50,10 @@ const props = defineProps({
   enabledLevels: {
     type: Array as PropType<string[]>,
     required: true,
+  },
+  grid: {
+    type: String,
+    default: "grid-cols-2 md:grid-cols-4 gap-6",
   },
 });
 toRefs(props);

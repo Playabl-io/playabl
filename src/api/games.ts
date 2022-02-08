@@ -1,12 +1,6 @@
 import * as R from "ramda";
 import { supabase } from "@/supabase";
-import {
-  Game,
-  GameListing,
-  NewGame,
-  RsvpWithSessionAndGame,
-} from "@/typings/Game";
-import { Rsvp } from "@/typings/Rsvp";
+import { GameListing, NewGame, RsvpWithSessionAndGame } from "@/typings/Game";
 import { Session } from "@/typings/Session";
 import { log } from "@/util/logger";
 
@@ -34,11 +28,13 @@ export async function createGame(newGame: NewGame) {
 }
 
 export async function loadJoinedGames(userId: string) {
+  const today = new Date();
   const { data, error } = await supabase
     .from<RsvpWithSessionAndGame>("rsvps")
     .select(
-      "id, session_id (id, start_time, end_time, game_id (*, communities (id, name)), rsvps (*))"
+      "id, user_id, sessions!inner(id, start_time, end_time, game_id (*, communities (id, name)), rsvps (*))"
     )
+    .gte("sessions.start_time", today.getTime())
     .eq("user_id", userId);
   if (error) {
     log({ error });
@@ -49,10 +45,13 @@ export async function loadJoinedGames(userId: string) {
 }
 
 export async function loadCommunityGames(communityIds: string[]) {
+  const today = new Date();
   const { data, error } = await supabase
     .from<GameListing>("games")
-    .select("*, community_id (id, name), sessions (id, start_time)")
-    .in("community_id", communityIds);
+    .select("*, community_id (id, name), sessions!inner(id, start_time)")
+    .gte("sessions.start_time", today.getTime())
+    .in("community_id", communityIds)
+    .order("start_time", { foreignTable: "sessions", ascending: true });
   if (error) {
     log({ error });
   }
@@ -61,54 +60,23 @@ export async function loadCommunityGames(communityIds: string[]) {
   }
 }
 
-type SessionsLookup = Omit<Session, "game_id"> & {
-  game_id: Game;
-  rsvps: Rsvp[];
-};
-
 export async function loadManagedGames(userId: string) {
   const today = new Date();
   const { data, error } = await supabase
-    .from<SessionsLookup>("sessions")
+    .from<GameListing>("games")
     .select(
-      "*, game_id (*, community_id (id, name)), rsvps (user_id (username))"
+      "*, community_id (id, name), sessions!inner(*, rsvps (user_id (username)))"
     )
-    .gte("start_time", today.getTime())
-    .eq("creator_id", userId);
+    .gte("sessions.start_time", today.getTime())
+    .eq("creator_id", userId)
+    .order("start_time", { foreignTable: "sessions" });
   if (error) {
     log({ error });
   }
 
   if (data) {
-    return transformSessionBasedLookupToGames(data);
+    return data;
   }
-}
-
-function transformSessionBasedLookupToGames(
-  sessions: SessionsLookup[]
-): GameListing[] {
-  const byGame = R.groupBy((session: SessionsLookup) => {
-    return session.game_id.id;
-  });
-  const removeGameFromSession = R.omit(["game_id"]);
-  const reduceSessionsIntoGame = R.reduce(
-    (acc, session: SessionsLookup) => {
-      return {
-        ...acc,
-        ...session.game_id,
-        sessions: acc.sessions.concat(removeGameFromSession(session)),
-      };
-    },
-    { sessions: [] as Session[] }
-  );
-  const sessionsByGame = byGame(sessions);
-  const mapToGameWithSessions = R.map(reduceSessionsIntoGame);
-  // @ts-expect-error confusing types from ramda but swear it works
-  return R.compose(
-    R.values,
-    mapToAscSessions,
-    mapToGameWithSessions
-  )(sessionsByGame);
 }
 
 export async function joinSession({
@@ -142,20 +110,3 @@ export async function leaveSession({
   ).then((response) => response.json());
   return data;
 }
-
-// function transformRsvpBasedLookupToGames(rsvps: RsvpWithSessionAndGame[]): GameListing[] {
-//   const byGame = R.groupBy((rsvp: RsvpWithSessionAndGame) => {
-//     return rsvp.session_id.game_id.id;
-//   });
-//   const removeGameFromSession = R.omit(["game_id"]);
-//   const reduceSessionsIntoGame = R.reduce(
-//     (acc, session: SessionsLookup) => {
-//       return {
-//         ...acc,
-//         ...session.game_id,
-//         sessions: acc.sessions.concat(removeGameFromSession(session)),
-//       };
-//     },
-//     { sessions: [] as Session[] }
-//   );
-// }

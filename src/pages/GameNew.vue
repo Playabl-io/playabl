@@ -340,6 +340,7 @@ function addSession() {
       minutes: Number(endMinutes),
     }).getTime(),
     creator_id: store.user.id,
+    game_id: 0,
   };
   sessionIds.value.push(localId);
 }

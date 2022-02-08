@@ -16,12 +16,6 @@
             Details
           </router-link>
           <router-link
-            :to="`/games/${id}/messages`"
-            activeClass="border-b border-brand-500 dark:border-brand-300"
-          >
-            Messages
-          </router-link>
-          <router-link
             v-if="isOwner"
             :to="`/games/${id}/manage`"
             activeClass="border-b border-brand-500 dark:border-brand-300"
@@ -72,6 +66,7 @@ async function getGameData() {
     .from("games")
     .select("*, sessions (*, rsvps (*, user_id (*)))")
     .eq("id", id)
+    .order("start_time", { foreignTable: "sessions" })
     .single();
 
   if (error) {
