@@ -7,7 +7,7 @@
           Add new session
         </LinkButton>
       </span>
-      <div class="grid grid-cols-3 gap-8 mb-12">
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
         <div
           v-for="session in sessions"
           :key="session.id"

@@ -6,34 +6,29 @@
   </div>
   <section class="mt-12">
     <Heading level="h6" as="h2">Sessions</Heading>
-    <div class="flex flex-col mt-6 max-w-md mx-auto">
-      <div
-        v-for="(session, i) in game.sessions"
-        :key="session.id"
-        class="flex flex-col relative"
-      >
+    <div class="grid gap-8 mt-8">
+      <template v-for="session in game.sessions" :key="session.id">
         <SessionBlock
           :session="session"
           :participant-count="game.participant_count"
           :user-access="userAccess"
           :is-owner="isOwner"
         />
-        <div
-          v-if="i !== game.sessions.length - 1"
-          class="w-px h-6 border-l-2 border-dotted border-gray-500 self-center rounded-lg"
-        />
-      </div>
+        <hr class="last:hidden border-slate-200" />
+      </template>
     </div>
   </section>
 </template>
 <script setup lang="ts">
-import { onMounted, PropType, ref, toRefs } from "vue";
+import { onMounted, onUnmounted, PropType, ref, toRefs } from "vue";
 import { GameWithSessionsAndRsvps } from "@/typings/Game";
 import Heading from "@/components/Heading.vue";
 import SessionBlock from "@/components/Game/SessionBlock.vue";
 import { loadUserCommunityAccess } from "@/api/communityAccess";
 import { store } from "@/store";
 import { CommunityAccess } from "@/typings/CommunityAccess";
+import { supabase } from "@/supabase";
+import { RealtimeSubscription } from "@supabase/supabase-js";
 
 const props = defineProps({
   game: {
@@ -49,7 +44,10 @@ toRefs(props);
 
 const userAccess = ref<CommunityAccess[]>();
 
-onMounted(getUserAccess);
+onMounted(() => {
+  getUserAccess();
+  setSubscription();
+});
 
 async function getUserAccess() {
   if (!store.user) return;
@@ -60,5 +58,41 @@ async function getUserAccess() {
   if (data) {
     userAccess.value = data;
   }
+}
+
+let subscription: RealtimeSubscription;
+onUnmounted(() => {
+  removeSubscription();
+  store.sessionRsvps = {};
+});
+
+function setSubscription() {
+  subscription = supabase
+    .from("rsvps")
+    .on("DELETE", (payload) => {
+      const sessionIds = Object.keys(store.sessionRsvps);
+      sessionIds.forEach((id) => {
+        store.sessionRsvps[id] = store.sessionRsvps[id].filter(
+          (rsvp) => rsvp.id !== payload.old.id
+        );
+      });
+    })
+    .on("INSERT", async (payload) => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", payload.new.user_id)
+        .single();
+      const newRsvp = { ...payload.new, user_id: data };
+      store.sessionRsvps[payload.new.session_id] = Array.isArray(
+        store.sessionRsvps[payload.new.session_id]
+      )
+        ? [...store.sessionRsvps[payload.new.session_id], newRsvp]
+        : [newRsvp];
+    })
+    .subscribe();
+}
+function removeSubscription() {
+  supabase.removeSubscription(subscription);
 }
 </script>

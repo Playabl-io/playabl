@@ -4,9 +4,8 @@
       <LoadingSpinner color="brand-500" />
     </div>
     <div v-else>
-      <div class="flex items-baseline justify-between">
-        <Heading level="h1">{{ gameData?.title }}</Heading>
-      </div>
+      <Heading level="h1">{{ gameData?.title }}</Heading>
+      <p class="mt-6">By {{ gameData?.creator_id.username }}</p>
       <section class="my-12 flex justify-between items-baseline text-sm">
         <div class="flex space-x-4 py-2">
           <router-link
@@ -63,8 +62,8 @@ onMounted(async () => {
 
 async function getGameData() {
   const { data, error } = await supabase
-    .from("games")
-    .select("*, sessions (*, rsvps (*, user_id (*)))")
+    .from<GameWithSessionsAndRsvps>("games")
+    .select("*, creator_id (*), sessions (*, rsvps (*, user_id (*)))")
     .eq("id", id)
     .order("start_time", { foreignTable: "sessions" })
     .single();
@@ -76,8 +75,7 @@ async function getGameData() {
   if (data) {
     setSessionDataInStore(data.sessions);
     gameData.value = data;
-    store.communityInfo = data;
-    if (data.creator_id === store.user?.id) {
+    if (data.creator_id.id === store.user?.id) {
       isOwner.value = true;
     }
   }

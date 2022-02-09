@@ -1,35 +1,29 @@
 <template>
   <div class="flex flex-col">
-    <div class="p-6 rounded-md bg-blue-50 border border-solid border-blue-200">
-      <div class="grid grid-cols-2 gap-4">
-        <div
-          class="mx-auto"
-          :class="{
-            'col-span-2': isOwner,
-          }"
-        >
-          <p class="text-xs text-slate-700 dark:text-slate-300">
+    <div class="p-4 rounded-md border border-solid border-gray-200 shadow-md">
+      <div class="grid grid-cols-2">
+        <div>
+          <p class="text-lg font-bold">
             {{ format(new Date(session.start_time), "EEE, MMM do") }}
           </p>
-          <ul
-            class="mt-2 text-xs font-semibold list-disc list-inside grid gap-2"
-          >
-            <li>
-              {{ format(new Date(session.start_time), "h:mm a") }}
-            </li>
-            <li>
-              {{ format(new Date(session.end_time), "h:mm a") }}
-            </li>
-          </ul>
+          <p class="text-sm mt-2 text-slate-800">
+            {{ format(new Date(session.start_time), "h:mm a") }} -
+            {{ format(new Date(session.end_time), "h:mm a z") }}
+          </p>
         </div>
         <template v-if="!isOwner">
-          <OutlineButton v-if="userIsInTheGame" @click="handleLeave">
+          <GhostButton
+            v-if="userIsInTheGame"
+            @click="handleLeave"
+            :is-loading="isProcessing"
+          >
             Leave session
-          </OutlineButton>
+          </GhostButton>
           <PrimaryButton
             v-else-if="canRsvp"
             @click="handleJoin"
             class="self-center mx-4"
+            :is-loading="isProcessing"
           >
             Join
           </PrimaryButton>
@@ -40,29 +34,22 @@
             RSVP available {{ formatRelative(soonestRsvp, new Date()) }}
           </div>
         </template>
-        <transition
-          enter-active-class="transition-all duration-150 ease-out"
-          enter-from-class="opacity-0"
-          enter-to-class="opacity-1"
-          leave-active-class="transition-all duration-100 ease-in"
-          leave-from-class="opacity-1"
-          leave-to-class="opacity-0"
-        >
-          <div class="col-span-2">
-            <h6 class="text-xs text-slate-600 mb-2">RSVP'd</h6>
-            <ul class="mb-4">
-              <li v-for="rsvp in rsvps[0]" :key="rsvp.id">
-                {{ rsvp.user_id?.username }}
-              </li>
-            </ul>
-            <h6 class="text-xs text-slate-600 mb-2">Waitlist</h6>
-            <ul>
-              <li v-for="rsvp in rsvps[1]" :key="rsvp.id">
-                {{ rsvp.user_id?.username }}
-              </li>
-            </ul>
-          </div>
-        </transition>
+      </div>
+    </div>
+    <div class="grid gap-4 mt-6">
+      <div class="col-span-2">
+        <h6 class="text-xs text-slate-600 mb-2">RSVP'd</h6>
+        <ul class="mb-4">
+          <li v-for="rsvp in rsvps[0]" :key="rsvp.id">
+            {{ rsvp.user_id?.username }}
+          </li>
+        </ul>
+        <h6 class="text-xs text-slate-600 mb-2">Waitlist</h6>
+        <ul>
+          <li v-for="rsvp in rsvps[1]" :key="rsvp.id">
+            {{ rsvp.user_id?.username }}
+          </li>
+        </ul>
       </div>
     </div>
   </div>
@@ -81,6 +68,8 @@ import { joinSession, leaveSession } from "@/api/games";
 import * as R from "ramda";
 import { supabase } from "@/supabase";
 import { RealtimeSubscription } from "@supabase/supabase-js";
+import SecondaryButton from "../Buttons/SecondaryButton.vue";
+import GhostButton from "../Buttons/GhostButton.vue";
 
 const { showSuccess, showError } = useToast();
 
@@ -104,7 +93,7 @@ const props = defineProps({
 });
 toRefs(props);
 
-const isJoining = ref(false);
+const isProcessing = ref(false);
 
 const canRsvp = computed(() => {
   const isEligibleToRsvp = compareUserAccessToRsvpTimes(
@@ -133,55 +122,27 @@ const userIsInTheGame = computed(() => {
 
 async function handleJoin() {
   if (!store.user) return;
-  isJoining.value = true;
+  isProcessing.value = true;
   try {
     await joinSession({ sessionId: props.session.id, userId: store.user.id });
     showSuccess({ message: "Successfully RSVP'd" });
   } catch (error) {
     showError({ message: "Unable to join session" });
   } finally {
-    isJoining.value = false;
+    isProcessing.value = false;
   }
 }
 
 async function handleLeave() {
   if (!store.user) return;
+  isProcessing.value = true;
   try {
     await leaveSession({ sessionId: props.session.id, userId: store.user.id });
     showSuccess({ message: "Successfully left session" });
   } catch (error) {
     showError({ message: "Unable to leave session" });
+  } finally {
+    isProcessing.value = false;
   }
-}
-
-let subscription: RealtimeSubscription;
-onMounted(setSubscription);
-onUnmounted(removeSubscription);
-
-function setSubscription() {
-  subscription = supabase
-    .from("rsvps")
-    .on("DELETE", (payload) => {
-      store.sessionRsvps[props.session.id] = store.sessionRsvps[
-        props.session.id
-      ].filter((rsvp) => rsvp.id !== payload.old.id);
-    })
-    .on("INSERT", async (payload) => {
-      const { data } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", payload.new.user_id)
-        .single();
-      const newRsvp = { ...payload.new, user_id: data };
-      store.sessionRsvps[props.session.id] = Array.isArray(
-        store.sessionRsvps[props.session.id]
-      )
-        ? [...store.sessionRsvps[props.session.id], newRsvp]
-        : [newRsvp];
-    })
-    .subscribe();
-}
-function removeSubscription() {
-  supabase.removeSubscription(subscription);
 }
 </script>

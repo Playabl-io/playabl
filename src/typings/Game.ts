@@ -1,3 +1,4 @@
+import { Profile } from "./Profile";
 import { Rsvp } from "./Rsvp";
 import { Session, SessionWithRsvps } from "./Session";
 
@@ -27,7 +28,10 @@ export type GameListing = Game & {
   sessions: Session[];
 };
 
-export type GameWithSessionsAndRsvps = Game & { sessions: SessionWithRsvps[] };
+export type GameWithSessionsAndRsvps = Omit<Game, "creator_id"> & {
+  sessions: SessionWithRsvps[];
+  creator_id: Profile;
+};
 
 export interface RsvpWithSessionAndGame {
   id: string;
