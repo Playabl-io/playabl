@@ -39,7 +39,7 @@ const routes = [
     },
   },
   {
-    path: "/sign-in",
+    path: "/login",
     component: SignIn,
     meta: {
       title: "Playout - Sign In",
@@ -122,6 +122,7 @@ const routes = [
     component: GamesJoined,
     meta: {
       title: "Playout - Games",
+      requiresAuth: true,
     },
   },
   {
@@ -188,7 +189,7 @@ router.beforeEach((to) => {
     // this route requires auth, check if logged in
     // if not, redirect to login page.
     return {
-      path: "/sign-in",
+      path: "/login",
       // save the location we were at to come back later
       query: { redirect: to.fullPath },
     };
