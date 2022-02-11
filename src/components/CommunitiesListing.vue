@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-baseline justify-between">
+  <div class="flex flex-wrap gap-6 items-baseline justify-between">
     <Heading level="h1">Communities</Heading>
     <router-link to="/communities/new" class="hover:underline">
       Create a new community
@@ -34,14 +34,7 @@
       <LoadingSpinner color="brand-500" />
     </span>
     <template v-else v-for="community in communities" :key="community.id">
-      <CommunityListing
-        :id="community.id"
-        :name="community.name"
-        :website="community.website"
-        :description="community.description"
-        :twitter="community.twitter"
-        :facebook="community.facebook"
-      />
+      <CommunityListing :community="community" />
       <hr class="last:hidden border-slate-200" />
     </template>
   </section>
