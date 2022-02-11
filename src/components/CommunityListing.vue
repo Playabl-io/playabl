@@ -43,8 +43,8 @@
       </a>
       <div class="flex flex-wrap gap-4 mt-4">
         <div
-          :key="gameType"
           v-for="gameType in community.game_types"
+          :key="gameType"
           class="rounded-xl px-2 bg-blue-500 text-white"
         >
           {{ gameType }}
@@ -58,16 +58,16 @@
         class="mt-auto text-xs text-slate-600 dark:text-slate-400 flex space-x-4"
       >
         <a
-          class="underline"
           v-if="community.twitter"
+          class="underline"
           target="blank"
           :href="`https://twitter.com/${community.twitter}`"
         >
           Twitter
         </a>
         <a
-          class="underline"
           v-if="community.facebook"
+          class="underline"
           target="blank"
           :href="`https://facebook.com/${community.facebook}`"
         >
@@ -122,7 +122,6 @@ const props = defineProps({
   },
 });
 
-const isLoadingImage = ref(true);
 const coverImageUrl = ref("");
 
 onMounted(() => {

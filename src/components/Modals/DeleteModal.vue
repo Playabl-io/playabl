@@ -13,9 +13,9 @@
 </template>
 <script setup lang="ts">
 import { toRefs } from "vue";
-import WarningButton from "./Buttons/WarningButton.vue";
+import WarningButton from "../Buttons/WarningButton.vue";
 import Modal from "./Modal.vue";
-import GhostButton from "./Buttons/GhostButton.vue";
+import GhostButton from "../Buttons/GhostButton.vue";
 
 const props = defineProps({
   open: {

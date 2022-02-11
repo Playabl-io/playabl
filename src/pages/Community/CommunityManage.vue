@@ -71,8 +71,8 @@
         <GhostButton
           :is-loading="creatingInvite"
           :disabled="creatingInvite"
-          @click="createInviteLink"
           class="w-full mt-6"
+          @click="createInviteLink"
         >
           Create new invite link
         </GhostButton>

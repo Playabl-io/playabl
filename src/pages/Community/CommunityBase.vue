@@ -20,20 +20,20 @@
           <router-link
             v-if="store.user"
             :to="`/communities/${id}/feed`"
-            activeClass="border-b border-brand-500 dark:border-brand-300"
+            active-class="border-b border-brand-500 dark:border-brand-300"
           >
             Feed
           </router-link>
           <router-link
             :to="`/communities/${id}/calendar`"
-            activeClass="border-b border-brand-500 dark:border-brand-300"
+            active-class="border-b border-brand-500 dark:border-brand-300"
           >
             Calendar
           </router-link>
           <router-link
-            v-if="isAdmin"
+            v-if="communityStore.isAdmin"
             :to="`/communities/${id}/manage`"
-            activeClass="border-b border-brand-500 dark:border-brand-300"
+            active-class="border-b border-brand-500 dark:border-brand-300"
           >
             Manage
           </router-link>
@@ -59,34 +59,48 @@ import { log } from "@/util/logger";
 import BaseTemplate from "@/components/BaseTemplate.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import Heading from "@/components/Heading.vue";
-import { ADMIN } from "@/util/roles";
+import { ADMIN, CREATOR, PLAYER } from "@/util/roles";
 import { store } from "@/store";
 import { Community } from "@/typings/Community";
+import {
+  communityStore,
+  getCoverImageUrl,
+  getGames,
+  getMemberCount,
+} from "./communityStore";
 
 const route = useRoute();
 const { community_id: id } = route.params;
 
 const communityData = ref<Community>();
 const isOwner = ref(false);
-const isAdmin = ref(false);
 const isLoading = ref(true);
 
 onMounted(async () => {
-  await Promise.allSettled([getAdminStatus(), getCommunity()]);
+  if (typeof route.params.community_id === "string") {
+    getMemberCount(route.params.community_id);
+    getGames(route.params.community_id);
+  }
+  await Promise.allSettled([getMembershipStatus(), getCommunity()]);
   isLoading.value = false;
 });
 
-async function getAdminStatus() {
+async function getMembershipStatus() {
   if (!store.user) return;
   const { data } = await supabase
     .from("community_memberships")
-    .select(`user_id`)
+    .select(`user_id, role_id`)
     .eq("community_id", route.params.community_id)
-    .eq("role_id", ADMIN)
     .eq("user_id", store.user.id)
     .single();
-  if (data) {
-    isAdmin.value = true;
+  if (data && data.role_id === ADMIN) {
+    communityStore.isAdmin = true;
+  }
+  if (data && data.role_id === CREATOR) {
+    communityStore.isCreator = true;
+  }
+  if (data && data.role_id === PLAYER) {
+    communityStore.isPlayer = true;
   }
 }
 
@@ -101,9 +115,12 @@ async function getCommunity() {
     log({ error });
   }
 
+  if (data.cover_image) {
+    getCoverImageUrl(data.cover_image);
+  }
+
   if (data) {
     communityData.value = data;
-    store.communityInfo = data;
     if (data.owner_id === store.user?.id) {
       isOwner.value = true;
     }

@@ -10,20 +10,20 @@
       <router-link
         v-if="store.user"
         to="/communities/joined"
-        activeClass="border-b border-brand-500 dark:border-brand-300"
+        active-class="border-b border-brand-500 dark:border-brand-300"
       >
         Joined
       </router-link>
       <router-link
         to="/communities/all"
-        activeClass="border-b border-brand-500 dark:border-brand-300"
+        active-class="border-b border-brand-500 dark:border-brand-300"
       >
         Browse all
       </router-link>
       <router-link
         v-if="store.user"
         to="/communities/manage"
-        activeClass="border-b border-brand-500 dark:border-brand-300"
+        active-class="border-b border-brand-500 dark:border-brand-300"
       >
         Manage
       </router-link>
@@ -33,7 +33,7 @@
     <span v-if="isLoading" class="place-self-center">
       <LoadingSpinner color="brand-500" />
     </span>
-    <template v-else v-for="community in communities" :key="community.id">
+    <template v-for="community in communities" v-else :key="community.id">
       <CommunityListing :community="community" />
       <hr class="last:hidden border-slate-200" />
     </template>

@@ -1,18 +1,16 @@
 <template>
-  <BaseTemplate>
-    <section>
-      <p v-if="submitted" class="grid place-items-center text-xl font-bold">
-        Awesome! Watch your email for a confirmation message very soon!
-      </p>
+  <Modal title="One sec, let's make you an account" :open="open">
+    <DismissButton
+      class="absolute top-4 right-4"
+      label="Close"
+      @click="emit('cancel')"
+    />
+    <div class="my-12">
       <form
-        v-else-if="displaySignUp"
+        v-if="showSignUpForm"
         class="flex flex-col space-y-4 lg:max-w-xl mx-auto"
         @submit.prevent="handleSignUp"
       >
-        <Heading level="h1" as="h5">Sign up</Heading>
-        <p class="prose dark:prose-invert">
-          Sign up to join or start communities and play in games
-        </p>
         <form-label class="flex flex-col">
           Email
           <form-input v-model="email" type="email" required />
@@ -77,7 +75,7 @@
           </p>
         </div>
         <primary-button :is-loading="loading"> Sign up </primary-button>
-        <LinkButton type="button" @click="displaySignUp = false">
+        <LinkButton type="button" @click="showSignUpForm = false">
           Have an account already? Sign in
         </LinkButton>
       </form>
@@ -86,7 +84,6 @@
         class="flex flex-col space-y-4 lg:max-w-xl mx-auto"
         @submit.prevent="handleLogin"
       >
-        <Heading level="h1" as="h5">Sign in</Heading>
         <form-label class="flex flex-col">
           Email
           <form-input v-model="email" type="email" required />
@@ -96,31 +93,40 @@
           <form-input v-model="password" type="password" required />
         </form-label>
         <primary-button :is-loading="loading"> Sign in </primary-button>
-        <LinkButton type="button" @click="displaySignUp = true">
+        <LinkButton type="button" @click="showSignUpForm = true">
           Need an account? Sign up
         </LinkButton>
       </form>
-    </section>
-  </BaseTemplate>
+    </div>
+  </Modal>
 </template>
 <script setup lang="ts">
+import { toRefs, ref } from "vue";
+import Modal from "./Modal.vue";
 import { EyeIcon, EyeOffIcon } from "@heroicons/vue/outline";
 import FormLabel from "@/components/Forms/FormLabel.vue";
 import FormInput from "@/components/Forms/FormInput.vue";
 import Heading from "@/components/Heading.vue";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
-import { ref } from "vue";
 import { supabase } from "@/supabase";
-import BaseTemplate from "@/components/BaseTemplate.vue";
 import LinkButton from "@/components/Buttons/LinkButton.vue";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
 import useToast from "@/components/Toast/useToast";
 import { log } from "@/util/logger";
-import { useRouter, useRoute } from "vue-router";
+import { store } from "@/store";
+import DismissButton from "../Buttons/DismissButton.vue";
 
-const route = useRoute();
-const router = useRouter();
-const { showError } = useToast();
+const { showSuccess, showError } = useToast();
+
+const props = defineProps({
+  open: {
+    type: Boolean,
+    required: true,
+  },
+});
+toRefs(props);
+
+const emit = defineEmits(["signedIn", "cancel"]);
 
 const email = ref("");
 const password = ref("");
@@ -130,9 +136,8 @@ const showConfirmPw = ref(false);
 const passwordError = ref("");
 const passwordsValid = ref(false);
 const loading = ref(false);
-const submitted = ref(false);
 
-const displaySignUp = ref(true);
+const showSignUpForm = ref(true);
 
 function validatePasswordsMatch() {
   if (password.value !== confirmPassword.value) {
@@ -147,12 +152,16 @@ function validatePasswordsMatch() {
 const handleSignUp = async () => {
   try {
     loading.value = true;
-    const { error } = await supabase.auth.signUp({
+    const { user, error } = await supabase.auth.signUp({
       email: email.value,
       password: password.value,
     });
     if (error) throw error;
-    submitted.value = true;
+    if (user) {
+      store.user = user;
+      showSuccess({ message: "Account created" });
+      emit("signedIn");
+    }
   } catch (error) {
     showError({ message: error?.error_description || error?.message });
     log({ error });
@@ -164,17 +173,16 @@ const handleSignUp = async () => {
 const handleLogin = async () => {
   try {
     loading.value = true;
-    const { error } = await supabase.auth.signIn({
+    const { user, error } = await supabase.auth.signIn({
       email: email.value,
       password: password.value,
     });
-    if (error) throw error;
-    const redirect = route.query.redirect;
-    if (redirect && typeof redirect === "string") {
-      router.push(redirect);
-    } else {
-      router.push("/profile");
+    if (user) {
+      store.user = user;
+      showSuccess({ message: "Signed in" });
+      emit("signedIn");
     }
+    if (error) throw error;
   } catch (error) {
     showError({ message: error?.error_description || error?.message });
     log({ error });

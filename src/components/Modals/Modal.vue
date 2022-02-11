@@ -33,7 +33,7 @@
             >
               <DialogTitle
                 as="h3"
-                class="text-lg font-medium leading-6 text-gray-900"
+                class="text-lg font-medium leading-6 text-gray-900 font-paytone"
               >
                 {{ title }}
               </DialogTitle>
@@ -69,4 +69,6 @@ const props = defineProps({
   },
 });
 toRefs(props);
+
+defineEmits(["close"]);
 </script>
