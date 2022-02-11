@@ -15,7 +15,6 @@ module.exports = {
           500: "#4622B8",
         },
       },
-      // here's how to extend fonts if needed
       fontFamily: {
         sans: [...defaultTheme.fontFamily.sans],
         openSans: "'Open Sans', sans-serif",
