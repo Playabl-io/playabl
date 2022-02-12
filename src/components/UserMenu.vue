@@ -6,7 +6,7 @@
         <div
           class="rounded-full w-8 h-8 bg-brand-200 text-brand-500 grid place-items-center content-center"
         >
-          {{ store.user.email?.charAt(0) }}
+          {{ store.user?.email?.charAt(0) }}
         </div>
       </MenuButton>
       <transition
@@ -42,7 +42,7 @@
       </transition>
     </Menu>
   </section>
-  <router-link v-else to="/sign-in" class="whitespace-nowrap hover:underline">
+  <router-link v-else to="/login" class="whitespace-nowrap hover:underline">
     Sign in
   </router-link>
 </template>

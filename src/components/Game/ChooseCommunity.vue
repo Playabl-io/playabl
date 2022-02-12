@@ -4,7 +4,7 @@
     <Listbox v-model="selectedCommunity">
       <div class="relative mt-1">
         <ListboxButton
-          class="relative h-10 w-full py-2 pl-3 pr-10 text-left bg-white text-slate-900 rounded-lg border border-solid border-gray-300 cursor-default focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-0 focus-visible:ring-blue-700 dark:focus-visible:ring-sky-500 sm:text-sm"
+          class="relative h-10 w-full py-2 pl-3 pr-10 text-left bg-white text-slate-900 rounded-lg border border-solid border-gray-300 cursor-default focus-styles"
         >
           <span class="block truncate">{{
             selectedCommunity?.name || "Select a community"
@@ -21,11 +21,11 @@
           leave-to-class="opacity-0"
         >
           <ListboxOptions
-            class="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+            class="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus-styles"
           >
             <ListboxOption
-              v-slot="{ active, selected }"
               v-for="community in communities"
+              v-slot="{ active, selected }"
               :key="community.id"
               :value="community"
               as="template"
@@ -57,9 +57,9 @@
       </div>
     </Listbox>
     <PrimaryButton
-      @click="emit('select', { community: selectedCommunity })"
       class="w-full mt-6"
       :disabled="!selectedCommunity"
+      @click="emit('select', { community: selectedCommunity })"
     >
       Next
     </PrimaryButton>

@@ -62,7 +62,7 @@ import { useMachine } from "@xstate/vue";
 import LinkButton from "@/components/Buttons/LinkButton.vue";
 import Drawer from "@/components/Drawer.vue";
 import AccessLevelForm from "@/components/Community/AccessForm.vue";
-import DeleteModal from "../DeleteModal.vue";
+import DeleteModal from "../Modals/DeleteModal.vue";
 import {
   createAccessLevel,
   deleteAccessLevel,

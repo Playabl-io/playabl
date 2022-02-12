@@ -22,9 +22,9 @@
         </p>
         <PrimaryButton
           class="w-full mt-4"
-          @click="joinCommunity"
           :is-loading="joining"
           :disabled="joining"
+          @click="joinCommunity"
         >
           Join now
         </PrimaryButton>

@@ -3,16 +3,16 @@
     <div class="grid gap-8 auto-rows-auto">
       <section class="px-6 pt-6">
         <Heading level="h6" as="h2" class="mb-6">
-          Edit {{ possessive(member.username) }} role and access
+          Edit {{ possessive(member.username || member.email) }} role and access
         </Heading>
         <div class="flex flex-col relative">
           <FormLabel for="role">Role</FormLabel>
           <select
-            :value="member.role"
-            class="rounded-md border border-solid border-gray-300 text-slate-900 dark:bg-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-700 dark:focus-visible:ring-sky-500"
-            @change="handleRoleUpdate($event)"
             id="role"
+            :value="member.role"
+            class="mt-1 rounded-md border border-solid border-gray-300 text-slate-900 dark:bg-slate-200 focus-styles"
             :disabled="updatingRole"
+            @change="handleRoleUpdate($event)"
           >
             <option value="Admin">Admin</option>
             <option value="Creator">Creator</option>
@@ -31,17 +31,15 @@
         >
           <p class="text-xs text-slate-700 mb-2">Current</p>
           <div class="grid grid-cols-2 gap-2">
-            <LinkButton
+            <PrimaryButton
               v-for="grant in store.communityMemberAccess[props.member.id]"
               :key="grant.id"
-              @click="handleRemoveAccess(grant.id)"
               :disabed="removingAccess"
+              @click="handleRemoveAccess(grant.id)"
             >
               <XCircleIcon class="h-6 w-6 mr-2" />
-              <p class="w-2/3">
-                {{ grant.name }}
-              </p>
-            </LinkButton>
+              {{ grant.name }}
+            </PrimaryButton>
           </div>
         </div>
         <div
@@ -51,19 +49,17 @@
           }"
         >
           <p class="text-xs text-slate-700 mb-2">Available</p>
-          <div class="grid grid-cols-2 gap-2">
+          <div class="grid grid-cols-2 gap-2 py-2">
             <!-- Todo - don't show ones the member already has -->
-            <LinkButton
+            <PrimaryButton
               v-for="grant in availableAccess"
               :key="grant.id"
-              @click="handleAddAccess(grant)"
               :disabled="addingAccess"
+              @click="handleAddAccess(grant)"
             >
               <PlusCircleIcon class="h-6 w-6 mr-2" />
-              <p class="w-2/3">
-                {{ grant.name }}
-              </p>
-            </LinkButton>
+              {{ grant.name }}
+            </PrimaryButton>
           </div>
         </div>
       </section>
@@ -71,7 +67,7 @@
     <div
       class="absolute inset-x-0 bottom-0 px-6 py-4 flex justify-end space-x-2 border-t border-solid border-gray-200"
     >
-      <OutlineButton @click="emit('close')" type="button">Close</OutlineButton>
+      <OutlineButton type="button" @click="emit('close')">Close</OutlineButton>
     </div>
   </div>
 </template>
@@ -93,6 +89,7 @@ import {
   addAccessToMember,
   removeAccessFromMember,
 } from "@/api/communityAccess";
+import PrimaryButton from "../Buttons/PrimaryButton.vue";
 
 const addingAccess = ref(false);
 const removingAccess = ref(false);

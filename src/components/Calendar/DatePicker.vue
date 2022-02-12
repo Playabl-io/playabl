@@ -1,10 +1,10 @@
 <template>
   <div class="relative">
     <button
-      @click="toggleCalendar"
-      type="button"
       ref="trigger"
-      class="w-full p-1 border-b border-solid border-brand-400 flex items-center justify-between focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-700 dark:focus-visible:ring-sky-500"
+      type="button"
+      class="w-full p-1 border-b border-solid border-brand-400 flex items-center justify-between focus-styles"
+      @click="toggleCalendar"
     >
       {{ format(selected, "EEE, MMM do") }}
       <ChevronDownIcon v-if="!showCalendar" class="h-4 w-4" />
@@ -18,13 +18,13 @@
       enter-to-class="opacity-1 scale-100"
       leave-from-class="opacity-1 scale-100"
     >
-      <div v-if="showCalendar" class="absolute z-10 mt-2" ref="calendar">
+      <div v-if="showCalendar" ref="calendar" class="absolute z-10 mt-2">
         <Calendar
           size="medium"
-          @select="emit('select', $event)"
-          @close="handleClose"
           :selected="selected"
           :not-before="notBefore"
+          @select="emit('select', $event)"
+          @close="handleClose"
         />
       </div>
     </transition>

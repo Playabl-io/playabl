@@ -3,9 +3,12 @@
     <span v-if="isLoading" class="place-self-center">
       <LoadingSpinner color="brand-500" />
     </span>
-    <template v-else v-for="game in games" :key="game.id">
+    <template v-for="game in games" v-else-if="games.length" :key="game.id">
       <GameListingVue :id="game.id" :game="game" />
       <hr class="last:hidden border-slate-200" />
+    </template>
+    <template v-else>
+      <p>Sorry, no results</p>
     </template>
   </section>
 </template>

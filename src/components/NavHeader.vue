@@ -1,6 +1,6 @@
 <template>
   <header
-    class="w-screen h-12 px-12 prose-sm grid grid-cols-6 sticky top-0 bg-inherit items-end box-border z-10"
+    class="w-screen h-14 pb-2 px-12 prose-sm grid grid-cols-6 sticky top-0 bg-inherit items-end box-border z-10"
     v-bind="$attrs"
   >
     <router-link to="/" class="font-paytone text-lg"> Playout </router-link>

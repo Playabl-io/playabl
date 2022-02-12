@@ -15,11 +15,11 @@
             <div
               class="rounded-full w-10 h-10 bg-brand-200 text-brand-500 grid place-items-center content-center"
             >
-              {{ member.username.charAt(0) }}
+              {{ member.username?.charAt(0) || member.email.charAt(0) }}
             </div>
-            <div class="grid place-items-start text-left">
+            <div class="grid place-items-center text-left">
               <p class="font-semibold truncate w-full">
-                {{ member.username }}
+                {{ member.username || member.email }}
               </p>
               <p class="text-slate-700 text-sm">{{ member.pronouns }}</p>
             </div>
@@ -68,7 +68,7 @@ import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/vue";
 import { MemberWithMembership } from "@/typings/Member";
 import Drawer from "../Drawer.vue";
-import DeleteModal from "../DeleteModal.vue";
+import DeleteModal from "../Modals/DeleteModal.vue";
 import { pluralize } from "@/util/grammar";
 import MemberForm from "./MemberForm.vue";
 import { store } from "@/store";

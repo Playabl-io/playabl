@@ -14,16 +14,16 @@
         <template v-if="!isOwner">
           <GhostButton
             v-if="userIsInTheGame"
-            @click="handleLeave"
             :is-loading="isProcessing"
+            @click="handleLeave"
           >
             Leave session
           </GhostButton>
           <PrimaryButton
             v-else-if="canRsvp"
-            @click="handleJoin"
             class="self-center mx-4"
             :is-loading="isProcessing"
+            @click="handleJoin"
           >
             Join
           </PrimaryButton>
@@ -56,26 +56,22 @@
 </template>
 <script setup lang="ts">
 import { format, formatRelative } from "date-fns";
-import { SessionWithRsvps } from "@/typings/Session";
-import { computed, onMounted, onUnmounted, PropType, ref, toRefs } from "vue";
+import { Session } from "@/typings/Session";
+import { computed, PropType, ref, toRefs } from "vue";
 import PrimaryButton from "../Buttons/PrimaryButton.vue";
-import OutlineButton from "../Buttons/OutlineButton.vue";
 import { CommunityAccess } from "@/typings/CommunityAccess";
 import { compareUserAccessToRsvpTimes, getSoonestRsvpTime } from "@/util/time";
 import { store } from "@/store";
 import useToast from "../Toast/useToast";
 import { joinSession, leaveSession } from "@/api/games";
 import * as R from "ramda";
-import { supabase } from "@/supabase";
-import { RealtimeSubscription } from "@supabase/supabase-js";
-import SecondaryButton from "../Buttons/SecondaryButton.vue";
 import GhostButton from "../Buttons/GhostButton.vue";
 
 const { showSuccess, showError } = useToast();
 
 const props = defineProps({
   session: {
-    type: Object as PropType<SessionWithRsvps>,
+    type: Object as PropType<Session>,
     required: true,
   },
   participantCount: {

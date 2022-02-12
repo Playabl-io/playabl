@@ -11,15 +11,15 @@
       <div class="py-2 flex space-x-2 items-center justify-center">
         <GhostButton
           type="button"
-          @click="previousMonth"
           aria-label="Previous month"
+          @click="previousMonth"
         >
           <ChevronLeftIcon class="h-6 w-6" />
         </GhostButton>
         <label aria-live="polite" class="font-bold text-center w-48">
           {{ format(selected, "LLLL yyyy") }}
         </label>
-        <GhostButton type="button" @click="nextMonth" aria-label="Next month">
+        <GhostButton type="button" aria-label="Next month" @click="nextMonth">
           <ChevronRightIcon class="h-6 w-6" />
         </GhostButton>
       </div>
@@ -44,8 +44,8 @@
     >
       <button
         v-for="day in daysOfMonth"
-        :key="day.getTime()"
         :id="`${day.getTime()}`"
+        :key="day.getTime()"
         class="w-full h-full p-2 rounded-md flex focus:ring-2 focus:ring-offset-2 focus:ring-blue-700 focus-visible:outline-none dark:focus:ring-sky-500 dark:focus:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-40"
         :class="[
           isSameMonth(day, selected)
@@ -56,9 +56,9 @@
             : 'bg-slate-200',
         ]"
         type="button"
+        :disabled="notBefore ? isBefore(day, notBefore) : false"
         @focus="handleFocus(day)"
         @click="handleSelect(day)"
-        :disabled="notBefore ? isBefore(day, notBefore) : false"
       >
         {{ format(day, "dd") }}
       </button>

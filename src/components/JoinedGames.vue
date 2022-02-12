@@ -3,7 +3,7 @@
     <span v-if="isLoading" class="place-self-center">
       <LoadingSpinner color="brand-500" />
     </span>
-    <template v-else-if="rsvps.length" v-for="rsvp in rsvps" :key="rsvp.id">
+    <template v-for="rsvp in rsvps" v-else-if="rsvps.length" :key="rsvp.id">
       <GameRsvp :rsvp="rsvp" />
       <hr class="last:hidden border-slate-200" />
     </template>

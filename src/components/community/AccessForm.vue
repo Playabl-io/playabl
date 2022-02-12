@@ -13,8 +13,8 @@
         <FormLabel required> Priority access time </FormLabel>
         <div class="grid grid-cols-2 gap-2">
           <FormInput
-            type="number"
             v-model.number="priorityAccessTime"
+            type="number"
             required
           />
           <select
@@ -31,7 +31,7 @@
       <div
         class="p-4 rounded-lg bg-gray-100 border border-solid border-gray-200 flex items-center space-x-2"
       >
-        <FormCheckbox v-model="isMandatory" id="is-mandatory" />
+        <FormCheckbox id="is-mandatory" v-model="isMandatory" />
         <FormLabel class="font-normal pt-1" for="is-mandatory">
           Make this access level mandatory for games?
         </FormLabel>
@@ -40,10 +40,10 @@
     <div
       class="grow-0 px-6 py-4 flex justify-end space-x-2 border-t border-solid border-gray-200"
     >
-      <GhostButton @click="emit('delete')" type="button" class="mr-auto">
+      <GhostButton type="button" class="mr-auto" @click="emit('delete')">
         <TrashIcon class="h-5 w-5 text-red-600" />
       </GhostButton>
-      <OutlineButton @click="emit('close')" type="button">Cancel</OutlineButton>
+      <OutlineButton type="button" @click="emit('close')">Cancel</OutlineButton>
       <PrimaryButton :is-loading="saving">Save</PrimaryButton>
     </div>
   </form>

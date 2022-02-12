@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-end justify-between">
-    <LinkButton @click="copy(link)" class="relative text-xs text-slate-700">
+    <LinkButton class="relative text-xs text-slate-700" @click="copy(link)">
       <transition
         mode="out-in"
         enter-active-class="transition duration-200 ease-out"
@@ -10,7 +10,7 @@
         leave-from-class="transform scale-100 opacity-100"
         leave-to-class="transform scale-95 opacity-0 -translate-y-2"
       >
-        <p class="" v-if="copied">Copied!</p>
+        <p v-if="copied" class="">Copied!</p>
         <span v-else>{{ link }}</span>
       </transition>
     </LinkButton>

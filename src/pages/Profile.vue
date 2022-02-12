@@ -10,7 +10,7 @@
       </div>
       <div class="flex flex-col">
         <form-label for="username">Name</form-label>
-        <form-input id="username" type="text" v-model="username" />
+        <form-input id="username" v-model="username" type="text" />
       </div>
       <div class="flex flex-col">
         <form-label for="pronouns">Pronouns</form-label>
@@ -24,7 +24,7 @@
       </div>
 
       <div>
-        <secondary-button @click="signOut" :disabled="loading"
+        <secondary-button :disabled="loading" @click="signOut"
           >Sign Out</secondary-button
         >
       </div>
@@ -89,7 +89,7 @@ async function updateProfile() {
       updated_at: new Date(),
     };
 
-    let { error } = await supabase.from("profiles").upsert(updates, {
+    const { error } = await supabase.from("profiles").upsert(updates, {
       returning: "minimal", // Don't return the value after inserting
     });
 
@@ -104,7 +104,7 @@ async function updateProfile() {
 async function signOut() {
   try {
     loading.value = true;
-    let { error } = await supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut();
     if (error) throw error;
   } catch (error) {
     alert(error.message);

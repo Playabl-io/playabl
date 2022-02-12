@@ -21,13 +21,13 @@
       enter-to-class="opacity-100 translate-x-0"
       leave-from-class="opacity-100 translate-x-0"
       leave-to-class="opacity-0 translate-x-full"
-      v-on:after-enter="activate()"
-      v-on:before-leave="deactivate()"
+      @after-enter="activate()"
+      @before-leave="deactivate()"
     >
       <div
         v-if="open"
-        class="h-screen w-screen sm:[width:460px] absolute inset-y-0 right-0 z-20 bg-neutral-50 shadow-md"
         ref="target"
+        class="h-screen w-screen sm:[width:460px] absolute inset-y-0 right-0 z-20 bg-neutral-50 shadow-md"
       >
         <slot></slot>
       </div>

@@ -3,20 +3,20 @@
     <router-link
       v-if="store.user"
       to="/games/joined"
-      activeClass="border-b border-brand-500 dark:border-brand-300"
+      active-class="border-b border-brand-500 dark:border-brand-300"
     >
       Joined
     </router-link>
     <router-link
       to="/games/browse"
-      activeClass="border-b border-brand-500 dark:border-brand-300"
+      active-class="border-b border-brand-500 dark:border-brand-300"
     >
       Browse
     </router-link>
     <router-link
       v-if="store.user"
       to="/games/manage"
-      activeClass="border-b border-brand-500 dark:border-brand-300"
+      active-class="border-b border-brand-500 dark:border-brand-300"
     >
       Manage
     </router-link>
