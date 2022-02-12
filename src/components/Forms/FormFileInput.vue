@@ -1,6 +1,6 @@
 <template>
   <label
-    for="description"
+    for="file-input"
     class="h-40 w-full p-3 rounded-lg bg-gray-200 bg-opacity-70"
     @dragenter.prevent
     @dragover.prevent
@@ -10,7 +10,9 @@
       class="w-full h-full p-3 grid place-items-center border border-dashed border-gray-400 rounded-md"
     >
       <template v-if="file">
-        {{ file.name }}
+        <p class="truncate">
+          {{ file.name }}
+        </p>
         <GhostButton type="button" @click="emit('clearFile')">
           Clear
         </GhostButton>
@@ -20,10 +22,11 @@
           Choose a file
         </PrimaryButton>
         <p>or drop your file here</p>
-        <p class="text-sm text-slate-700">3 MB max file size</p>
+        <p class="text-sm text-slate-700">{{ sizeLimit }} max file size</p>
       </template>
     </span>
     <input
+      id="file-input"
       ref="fileInput"
       type="file"
       accept="image/*"
@@ -41,6 +44,10 @@ defineProps({
   file: {
     type: File,
     default: undefined,
+  },
+  sizeLimit: {
+    type: String,
+    default: "3 MB",
   },
 });
 

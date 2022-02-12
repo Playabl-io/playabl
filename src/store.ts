@@ -3,15 +3,10 @@ import { Community } from "./typings/Community";
 import { AccessLevel } from "./typings/AccessLevel";
 import { MemberWithMembership } from "./typings/Member";
 import { RsvpWithUser } from "./typings/Rsvp";
-
-interface StoreUser {
-  id: string;
-  email?: string;
-  pronouns?: string;
-}
+import { Profile } from "./typings/Profile";
 
 interface Store {
-  user?: StoreUser | null;
+  user?: Profile | null;
   communityInfo: Community | null;
   communityAccessLevels: AccessLevel[];
   communityMembers: MemberWithMembership[];

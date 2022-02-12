@@ -46,9 +46,9 @@ import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import Heading from "@/components/Heading.vue";
 import { store } from "@/store";
 import { GameWithSessionsAndRsvps } from "@/typings/Game";
-import { SessionWithRsvps } from "@/typings/Session";
 import { gameStore } from "./gameStore";
 import * as R from "ramda";
+import { Session } from "@/typings/Session";
 
 const currentRoute = useRoute();
 const { game_id: id } = currentRoute.params;
@@ -81,6 +81,9 @@ async function getGameData() {
     };
     setSubscription(data.id);
     setSessionDataInStore(data.sessions);
+    loadAndSetAttendeesInStore(
+      R.compose(R.uniq, R.flatten, R.pluck("rsvps"))(data.sessions)
+    );
     gameData.value = data;
     if (data.creator_id.id === store.user?.id) {
       isOwner.value = true;
@@ -88,8 +91,22 @@ async function getGameData() {
   }
 }
 
-function setSessionDataInStore(sessions: SessionWithRsvps[]) {
+function setSessionDataInStore(sessions: Session[]) {
   gameStore.sessions = sessions;
+}
+
+function loadAndSetAttendeesInStore(rsvps: string[]) {
+  rsvps.forEach((member: string) => {
+    if (gameStore.attendees[member]) return;
+    supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", member)
+      .single()
+      .then(({ data }) => {
+        gameStore.attendees[member] = data;
+      });
+  });
 }
 
 let subscription: RealtimeSubscription;
@@ -102,13 +119,25 @@ function setSubscription(gameId: number) {
   subscription = supabase
     .from(`sessions:game_id=eq.${gameId}`)
     .on("UPDATE", (payload) => {
-      console.log("updated", payload);
       gameStore.sessions = gameStore.sessions.map((session) => {
         if (session.id === payload.new.id) {
           return payload.new;
         }
         return session;
       });
+      const attendeesToLoad = payload.new.rsvps.filter(
+        (rsvp: string) => !gameStore.attendees[rsvp]
+      );
+      attendeesToLoad.forEach((member: string) =>
+        supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", member)
+          .single()
+          .then(({ data }) => {
+            gameStore.attendees[member] = data;
+          })
+      );
     })
     .subscribe();
 }

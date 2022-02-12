@@ -100,7 +100,7 @@ import { ClockIcon, UsersIcon, TrashIcon } from "@heroicons/vue/outline";
 import Drawer from "@/components/Drawer.vue";
 import NewSession from "@/pages/Game/NewSession.vue";
 import LinkButton from "@/components/Buttons/LinkButton.vue";
-import { Session, SessionWithRsvps } from "@/typings/Session";
+import { Session } from "@/typings/Session";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
 import DeleteModal from "@/components/Modals/DeleteModal.vue";
 import { supabase } from "@/supabase";
@@ -123,7 +123,7 @@ const editDescriptionDrawerOpen = ref(false);
 const editDetailsDrawerOpen = ref(false);
 const deleteSessionModalOpen = ref(false);
 const cancelGameModalOpen = ref(false);
-const sessionToDelete = ref<SessionWithRsvps>();
+const sessionToDelete = ref<Session>();
 const isDeleting = ref(false);
 
 function addSession(session: Session) {
@@ -134,7 +134,7 @@ function addSession(session: Session) {
   gameStore.sessions.push(transformedSession);
   newSessionDrawerOpen.value = false;
 }
-function confirmDelete(session: SessionWithRsvps) {
+function confirmDelete(session: Session) {
   sessionToDelete.value = session;
   deleteSessionModalOpen.value = true;
 }

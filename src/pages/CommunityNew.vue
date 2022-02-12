@@ -356,7 +356,7 @@ import {
 } from "@/typings/AccessLevel";
 import useToast from "@/components/Toast/useToast";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
-import { uploadToStorage } from "@/api/storage";
+import { uploadToCoverImageStorage } from "@/api/storage";
 
 const { showError } = useToast();
 
@@ -472,7 +472,7 @@ async function createCommunity() {
   try {
     let imagePath;
     if (coverImage.value) {
-      imagePath = await uploadToStorage(coverImage.value);
+      imagePath = await uploadToCoverImageStorage(coverImage.value);
     }
     const { data, error } = await supabase
       .from("communities")

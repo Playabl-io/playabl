@@ -1,5 +1,3 @@
-import { RsvpWithUser } from "./Rsvp";
-
 export interface Session {
   id: string;
   start_time: number;
@@ -14,7 +12,3 @@ export interface Session {
 }
 
 export type NewSession = Omit<Session, "id">;
-
-export type SessionWithRsvps = Session & {
-  rsvps: RsvpWithUser[];
-};

@@ -45,15 +45,19 @@
       <div class="col-span-2">
         <h6 class="text-xs text-slate-600 mb-2">RSVP'd</h6>
         <ul class="mb-4">
-          <li v-for="rsvp in participants[0]" :key="rsvp">
-            {{ rsvp }}
-          </li>
+          <SessionAttendee
+            v-for="rsvp in participants[0]"
+            :id="rsvp"
+            :key="rsvp"
+          />
         </ul>
         <h6 class="text-xs text-slate-600 mb-2">Waitlist</h6>
         <ul>
-          <li v-for="rsvp in participants[1]" :key="rsvp">
-            {{ rsvp }}
-          </li>
+          <SessionAttendee
+            v-for="rsvp in participants[1]"
+            :id="rsvp"
+            :key="rsvp"
+          />
         </ul>
       </div>
     </div>
@@ -72,6 +76,8 @@ import { store } from "@/store";
 import useToast from "../Toast/useToast";
 import GhostButton from "../Buttons/GhostButton.vue";
 import { gameStore } from "@/pages/Game/gameStore";
+import LoadingSpinner from "../LoadingSpinner.vue";
+import SessionAttendee from "@/pages/Game/SessionAttendee.vue";
 
 const { showSuccess, showError } = useToast();
 

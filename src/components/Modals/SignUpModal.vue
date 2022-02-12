@@ -106,7 +106,6 @@ import Modal from "./Modal.vue";
 import { EyeIcon, EyeOffIcon } from "@heroicons/vue/outline";
 import FormLabel from "@/components/Forms/FormLabel.vue";
 import FormInput from "@/components/Forms/FormInput.vue";
-import Heading from "@/components/Heading.vue";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import { supabase } from "@/supabase";
 import LinkButton from "@/components/Buttons/LinkButton.vue";
@@ -115,6 +114,7 @@ import useToast from "@/components/Toast/useToast";
 import { log } from "@/util/logger";
 import { store } from "@/store";
 import DismissButton from "../Buttons/DismissButton.vue";
+import { loadProfile } from "@/api/profiles";
 
 const { showSuccess, showError } = useToast();
 
@@ -158,7 +158,7 @@ const handleSignUp = async () => {
     });
     if (error) throw error;
     if (user) {
-      store.user = user;
+      store.user = await loadProfile(user.id);
       showSuccess({ message: "Account created" });
       emit("signedIn");
     }
@@ -178,7 +178,6 @@ const handleLogin = async () => {
       password: password.value,
     });
     if (user) {
-      store.user = user;
       showSuccess({ message: "Signed in" });
       emit("signedIn");
     }

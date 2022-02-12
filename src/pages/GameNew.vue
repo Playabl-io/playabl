@@ -268,7 +268,7 @@ import {
   handleFileDrop,
 } from "@/components/Forms/fileInputUtil";
 import AddSessions from "@/components/Game/AddSessions.vue";
-import { uploadToStorage } from "@/api/storage";
+import { uploadToCoverImageStorage } from "@/api/storage";
 import { Delta } from "@vueup/vue-quill";
 
 const { showSuccess, showError } = useToast();
@@ -466,6 +466,7 @@ function addSession() {
     participant_count: participantCount.value || 0,
     has_openings: true,
     community_id: state.value.context.selectedCommunity.id,
+    rsvps: [],
   };
   sessionIds.value.push(localId);
 }
@@ -485,7 +486,7 @@ async function submitGame() {
 
   let imagePath;
   if (coverImage.value) {
-    imagePath = await uploadToStorage(coverImage.value);
+    imagePath = await uploadToCoverImageStorage(coverImage.value);
   }
 
   const newGame: NewGame = {

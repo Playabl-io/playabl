@@ -1,10 +1,12 @@
 import { Game, GAME_DRAFT_STATE } from "@/typings/Game";
+import { Profile } from "@/typings/Profile";
 import { Session } from "@/typings/Session";
 import { reactive } from "vue";
 
 interface Store {
   game: Game;
   sessions: Session[];
+  attendees: Record<string, Profile>;
 }
 
 export const gameStore = reactive<Store>({
@@ -19,4 +21,5 @@ export const gameStore = reactive<Store>({
     description: "",
   },
   sessions: [],
+  attendees: {},
 });

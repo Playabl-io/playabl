@@ -117,6 +117,7 @@ import GhostButton from "@/components/Buttons/GhostButton.vue";
 import useToast from "@/components/Toast/useToast";
 import { log } from "@/util/logger";
 import { useRouter, useRoute } from "vue-router";
+import { store } from "@/store";
 
 const route = useRoute();
 const router = useRouter();
@@ -164,11 +165,13 @@ const handleSignUp = async () => {
 const handleLogin = async () => {
   try {
     loading.value = true;
-    const { error } = await supabase.auth.signIn({
+    const { user, error } = await supabase.auth.signIn({
       email: email.value,
       password: password.value,
     });
     if (error) throw error;
+    // makes sure other pages don't immediately redirect while App loads profile
+    store.user = user;
     const redirect = route.query.redirect;
     if (redirect && typeof redirect === "string") {
       router.push(redirect);

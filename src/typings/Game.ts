@@ -1,6 +1,6 @@
 import { Profile } from "./Profile";
 import { Rsvp } from "./Rsvp";
-import { Session, SessionWithRsvps } from "./Session";
+import { Session } from "./Session";
 
 export enum GAME_DRAFT_STATE {
   draft = "draft",
@@ -32,7 +32,7 @@ export type GameListing = Game & {
 };
 
 export type GameWithSessionsAndRsvps = Omit<Game, "creator_id"> & {
-  sessions: SessionWithRsvps[];
+  sessions: Session[];
   creator_id: Profile;
 };
 
