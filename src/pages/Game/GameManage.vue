@@ -1,5 +1,16 @@
 <template>
   <div class="grid gap-12">
+    <div class="flex flex-wrap gap-8">
+      <OutlineButton @click="editDescriptionDrawerOpen = true">
+        Edit description
+      </OutlineButton>
+      <OutlineButton @click="editDetailsDrawerOpen = true">
+        Edit game details
+      </OutlineButton>
+      <OutlineButton @click="cancelGameModalOpen = true">
+        Cancel game
+      </OutlineButton>
+    </div>
     <section class="section-container">
       <span class="flex items-center justify-between mb-8">
         <Heading level="h6" as="h3"> Sessions </Heading>
@@ -9,7 +20,7 @@
       </span>
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
         <div
-          v-for="session in sessions"
+          v-for="session in gameStore.sessions"
           :key="session.id"
           class="rounded-md bg-blue-100 pt-4 px-4 pb-2"
         >
@@ -43,16 +54,26 @@
         </div>
       </div>
     </section>
-    <section class="section-container">
-      <Heading level="h6" as="h3"> Game info </Heading>
-    </section>
   </div>
   <Drawer :open="newSessionDrawerOpen" @close="newSessionDrawerOpen = false">
     <NewSession
-      :game-id="game.id"
-      :community-id="game.community_id"
+      :game-id="gameStore.game.id"
+      :community-id="gameStore.game.community_id"
       @add-session="addSession"
     />
+  </Drawer>
+  <Drawer
+    :open="editDescriptionDrawerOpen"
+    @close="editDescriptionDrawerOpen = false"
+  >
+    <EditDescription
+      :description="gameStore.game.description"
+      :game-id="gameStore.game.id"
+      @close="editDescriptionDrawerOpen = false"
+    />
+  </Drawer>
+  <Drawer :open="editDetailsDrawerOpen" @close="editDetailsDrawerOpen = false">
+    <EditGameDetails @close="editDetailsDrawerOpen = false" />
   </Drawer>
   <DeleteModal
     :is-deleting="isDeleting"
@@ -62,26 +83,34 @@
     @cancel="deleteSessionModalOpen = false"
     @delete="handleDelete(sessionToDelete)"
   />
+  <DeleteModal
+    :is-deleting="isDeleting"
+    :open="cancelGameModalOpen"
+    title="Delete game"
+    message="Are you sure? This cannot be undone"
+    @cancel="cancelGameModalOpen = false"
+    @delete="cancelGame"
+  />
 </template>
 <script setup lang="ts">
-import { PropType, ref, toRefs } from "vue";
+import { ref, toRefs } from "vue";
 import { format } from "date-fns";
 import Heading from "@/components/Heading.vue";
 import { ClockIcon, UsersIcon, TrashIcon } from "@heroicons/vue/outline";
-import { GameWithSessionsAndRsvps } from "@/typings/Game";
 import Drawer from "@/components/Drawer.vue";
-import NewSession from "@/components/Game/NewSession.vue";
+import NewSession from "@/pages/Game/NewSession.vue";
 import LinkButton from "@/components/Buttons/LinkButton.vue";
 import { Session, SessionWithRsvps } from "@/typings/Session";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
-import DeleteModal from "@/components/DeleteModal.vue";
+import DeleteModal from "@/components/Modals/DeleteModal.vue";
 import { supabase } from "@/supabase";
+import OutlineButton from "@/components/Buttons/OutlineButton.vue";
+import EditDescription from "@/pages/Game/EditDescription.vue";
+import { gameStore } from "./gameStore";
+import router from "@/router";
+import EditGameDetails from "./EditGameDetails.vue";
 
 const props = defineProps({
-  game: {
-    type: Object as PropType<GameWithSessionsAndRsvps>,
-    required: true,
-  },
   isOwner: {
     type: Boolean,
     required: true,
@@ -90,30 +119,40 @@ const props = defineProps({
 toRefs(props);
 
 const newSessionDrawerOpen = ref(false);
+const editDescriptionDrawerOpen = ref(false);
+const editDetailsDrawerOpen = ref(false);
 const deleteSessionModalOpen = ref(false);
+const cancelGameModalOpen = ref(false);
 const sessionToDelete = ref<SessionWithRsvps>();
 const isDeleting = ref(false);
 
-const sessions = ref(props.game.sessions);
 function addSession(session: Session) {
   const transformedSession = {
     ...session,
     rsvps: [],
   };
-  sessions.value.push(transformedSession);
+  gameStore.sessions.push(transformedSession);
   newSessionDrawerOpen.value = false;
 }
 function confirmDelete(session: SessionWithRsvps) {
   sessionToDelete.value = session;
   deleteSessionModalOpen.value = true;
 }
-async function handleDelete(session?: SessionWithRsvps) {
+async function handleDelete(session?: Session) {
   if (!session) return;
   isDeleting.value = true;
   await supabase.from("sessions").delete().match({ id: session.id });
-  sessions.value = sessions.value.filter((sesh) => sesh.id !== session.id);
+  gameStore.sessions = gameStore.sessions.filter(
+    (sesh) => sesh.id !== session.id
+  );
   deleteSessionModalOpen.value = false;
   isDeleting.value = false;
+}
+async function cancelGame() {
+  isDeleting.value = true;
+  await Promise.all(gameStore.sessions.map(handleDelete));
+  await supabase.from("games").delete().match({ id: gameStore.game.id });
+  router.push("/games/browse");
 }
 </script>
 <style scoped>

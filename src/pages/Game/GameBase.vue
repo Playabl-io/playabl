@@ -4,8 +4,8 @@
       <LoadingSpinner color="brand-500" />
     </div>
     <div v-else>
-      <Heading level="h1">{{ gameData?.title }}</Heading>
-      <p class="mt-6">By {{ gameData?.creator_id.username }}</p>
+      <Heading level="h1">{{ gameStore.game.title }}</Heading>
+      <p class="mt-6">By {{ gameData?.creator_id.username || "" }}</p>
       <section class="my-12 flex justify-between items-baseline text-sm">
         <div class="flex space-x-4 py-2">
           <router-link
@@ -17,21 +17,20 @@
           <router-link
             v-if="isOwner"
             :to="`/games/${id}/manage`"
-            activeClass="border-b border-brand-500 dark:border-brand-300"
+            active-class="border-b border-brand-500 dark:border-brand-300"
           >
             Manage
           </router-link>
         </div>
       </section>
       <router-view v-slot="{ Component, route }">
-        <keep-alive>
+        <KeepAlive>
           <component
             :is="Component"
             :key="route.meta.usePathKey ? route.path : undefined"
-            :game="gameData"
             :is-owner="isOwner"
           />
-        </keep-alive>
+        </KeepAlive>
       </router-view>
     </div>
   </BaseTemplate>
@@ -47,9 +46,11 @@ import Heading from "@/components/Heading.vue";
 import { store } from "@/store";
 import { GameWithSessionsAndRsvps } from "@/typings/Game";
 import { SessionWithRsvps } from "@/typings/Session";
+import { gameStore } from "./gameStore";
+import * as R from "ramda";
 
-const route = useRoute();
-const { game_id: id } = route.params;
+const currentRoute = useRoute();
+const { game_id: id } = currentRoute.params;
 
 const gameData = ref<GameWithSessionsAndRsvps>();
 const isOwner = ref(false);
@@ -63,8 +64,8 @@ onMounted(async () => {
 async function getGameData() {
   const { data, error } = await supabase
     .from<GameWithSessionsAndRsvps>("games")
-    .select("*, creator_id (*), sessions (*, rsvps (*, user_id (*)))")
-    .eq("id", id)
+    .select("*, creator_id (*), sessions (*)")
+    .eq("id", id as string)
     .order("start_time", { foreignTable: "sessions" })
     .single();
 
@@ -73,6 +74,10 @@ async function getGameData() {
   }
 
   if (data) {
+    gameStore.game = {
+      ...R.omit(["creator_id", "sessions"], data),
+      creator_id: data.creator_id.id,
+    };
     setSessionDataInStore(data.sessions);
     gameData.value = data;
     if (data.creator_id.id === store.user?.id) {
@@ -82,6 +87,7 @@ async function getGameData() {
 }
 
 function setSessionDataInStore(sessions: SessionWithRsvps[]) {
+  gameStore.sessions = sessions;
   sessions.forEach((session) => {
     store.sessionRsvps[session.id] = session.rsvps;
   });

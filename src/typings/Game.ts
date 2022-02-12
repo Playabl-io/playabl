@@ -18,6 +18,9 @@ export interface Game {
   created_at: string;
   community_id: string;
   creator_id: string;
+  system?: string;
+  virtual_tabletop?: string;
+  will_be_recorded?: boolean;
 }
 
 export type NewGame = Omit<Game, "id" | "created_at">;

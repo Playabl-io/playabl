@@ -20,14 +20,14 @@
         <div class="grid grid-cols-1 gap-8">
           <div class="flex flex-col">
             <FormLabel for="name" required> Community Name </FormLabel>
-            <FormInput v-model="name" id="name" required />
+            <FormInput id="name" v-model="name" required />
             <p class="prose dark:prose-invert text-xs leading-6">
               Your community name must be unique and cannot be changed
             </p>
           </div>
           <div class="flex flex-col">
             <FormLabel for="description">Description</FormLabel>
-            <FormTextArea v-model="description" id="description" class="h-40" />
+            <FormTextArea id="description" v-model="description" class="h-40" />
           </div>
           <div class="flex flex-col">
             <FormLabel>Cover image</FormLabel>
@@ -48,7 +48,7 @@
                   </GhostButton>
                 </template>
                 <template v-else>
-                  <PrimaryButton @click="fileInput?.click()" type="button">
+                  <PrimaryButton type="button" @click="fileInput?.click()">
                     Choose a file
                   </PrimaryButton>
                   <p>or drop your file here</p>
@@ -106,9 +106,9 @@
               >
                 <input
                   :id="tag"
+                  v-model="gameTypes"
                   name="gameType"
                   type="checkbox"
-                  v-model="gameTypes"
                   class="w-0 h-0 opacity-0"
                   :value="tag"
                   @change="gameTypesError = ''"
@@ -124,7 +124,7 @@
             <div
               class="p-4 rounded-lg bg-gray-100 border border-solid border-gray-200 flex items-center space-x-2"
             >
-              <FormCheckbox v-model="allowPublicSignup" id="allow-public" />
+              <FormCheckbox id="allow-public" v-model="allowPublicSignup" />
               <FormLabel class="font-normal" for="allow-public">
                 Allow others to join without invite?
               </FormLabel>
@@ -134,7 +134,7 @@
             <FormLabel for="name">
               How can people join your community?
             </FormLabel>
-            <FormTextArea v-model="howToJoin" id="howToJoin" class="h-40" />
+            <FormTextArea id="howToJoin" v-model="howToJoin" class="h-40" />
             <p class="text-xs text-slate-700 mt-1">
               Optional. Give people short direction on how they can join.
             </p>
@@ -148,9 +148,9 @@
         </div>
         <div class="grid grid-cols-2 gap-4 max-w-2xl">
           <OutlineButton
-            @click="send('BACK')"
             type="button"
             class="mt-8 font-semibold"
+            @click="send('BACK')"
           >
             <ArrowSmLeftIcon class="h-6 w-6" /> Back
           </OutlineButton>
@@ -169,15 +169,15 @@
         <div class="grid grid-cols-1 gap-8">
           <div class="flex flex-col">
             <FormLabel for="website">Website</FormLabel>
-            <FormInput v-model="website" id="website" type="url" />
+            <FormInput id="website" v-model="website" type="url" />
           </div>
           <div class="flex flex-col">
             <FormLabel for="codeOfConductUrl">
               Community code of conduct
             </FormLabel>
             <FormInput
-              v-model="codeOfConductUrl"
               id="codeOfConductUrl"
+              v-model="codeOfConductUrl"
               type="url"
             />
             <p class="text-xs text-slate-700 mt-1">
@@ -288,26 +288,26 @@
             <FormLabel for="twitter"> Twitter handle </FormLabel>
             <div class="relative flex items-center">
               <AtSymbolIcon class="h-5 w-5 absolute left-2 mt-2" />
-              <FormInput v-model="twitter" id="twitter" class="pl-8 grow" />
+              <FormInput id="twitter" v-model="twitter" class="pl-8 grow" />
             </div>
           </div>
           <div v-if="facebookEnabled" class="flex flex-col">
             <FormLabel for="facebook">Facebook</FormLabel>
-            <FormInput v-model="facebook" id="facebook" type="url" />
+            <FormInput id="facebook" v-model="facebook" type="url" />
             <p class="text-xs text-slate-700 mt-1">
               Enter full address. Ex: https://www.facebook.com/YourCommunity
             </p>
           </div>
           <div v-if="discordEnabled" class="flex flex-col">
             <FormLabel for="discord"> Discord </FormLabel>
-            <FormInput v-model="discord" id="discord" type="url" />
+            <FormInput id="discord" v-model="discord" type="url" />
             <p class="text-xs text-slate-700 mt-1">
               Enter full address. Ex: https://YourCommunity.discord.com
             </p>
           </div>
           <div v-if="slackEnabled" class="flex flex-col">
             <FormLabel for="slack">Slack</FormLabel>
-            <FormInput v-model="slack" id="slack" type="url" />
+            <FormInput id="slack" v-model="slack" type="url" />
             <p class="text-xs text-slate-700 mt-1">
               Enter full address. Ex: https://YourCommunity.slack.com
             </p>
@@ -315,13 +315,16 @@
         </div>
         <div class="grid grid-cols-2 gap-4 max-w-2xl">
           <OutlineButton
-            @click="send('BACK')"
             type="button"
             class="mt-8 font-semibold"
+            @click="send('BACK')"
           >
             <ArrowSmLeftIcon class="h-6 w-6" /> Back
           </OutlineButton>
-          <PrimaryButton class="mt-8" :isLoading="state.value === 'submitting'">
+          <PrimaryButton
+            class="mt-8"
+            :is-loading="state.value === 'submitting'"
+          >
             Create
           </PrimaryButton>
         </div>
@@ -353,6 +356,7 @@ import {
 } from "@/typings/AccessLevel";
 import useToast from "@/components/Toast/useToast";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
+import { uploadToStorage } from "@/api/storage";
 
 const { showError } = useToast();
 
@@ -466,16 +470,9 @@ async function createCommunity() {
   }
   send("SUBMIT");
   try {
-    let imagePath = "";
+    let imagePath;
     if (coverImage.value) {
-      const { data } = await supabase.storage
-        .from("cover-images")
-        .upload(`${store.user.id}/${coverImage.value.name}`, coverImage.value, {
-          cacheControl: "360000",
-        });
-      if (data) {
-        imagePath = data.Key;
-      }
+      imagePath = await uploadToStorage(coverImage.value);
     }
     const { data, error } = await supabase
       .from("communities")
@@ -492,6 +489,7 @@ async function createCommunity() {
         owner_id: store.user.id,
         allow_public_signup: allowPublicSignup.value,
         cover_image: imagePath,
+        code_of_conduct_url: codeOfConductUrl.value,
       })
       .single();
     if (error) throw error;

@@ -3,7 +3,7 @@
     <p class="prose">
       {{ message }}
     </p>
-    <div class="mt-2 flex justify-end space-x-2">
+    <div class="mt-2 flex justify-end space-x-4">
       <GhostButton @click="emit('cancel')">Cancel</GhostButton>
       <WarningButton :is-loading="isDeleting" @click="emit('delete')">
         Delete

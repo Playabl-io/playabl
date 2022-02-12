@@ -1,0 +1,7 @@
+@tailwind components;
+
+@layer components {
+  .focus-styles {
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-0 focus-visible:ring-blue-700 dark:focus-visible:ring-sky-500 focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-0 focus:ring-blue-700 dark:focus:ring-sky-500;
+  }
+}

@@ -1,9 +1,10 @@
 export interface Member {
   id: string;
+  email: string;
   updated_at: string;
-  username: string;
+  username?: string;
   avatar_url?: string;
-  pronouns: string;
+  pronouns?: string;
   website?: string;
   twitter?: string;
   bio?: string;
