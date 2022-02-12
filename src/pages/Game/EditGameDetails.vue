@@ -85,7 +85,23 @@ async function handleSave() {
     saving.value = false;
     return;
   }
+
+  if (participantCount.value !== gameStore.game.participant_count) {
+    await Promise.all(
+      gameStore.sessions.map(async (session) => {
+        await supabase
+          .from("sessions")
+          .update({
+            participant_count: participantCount.value,
+          })
+          .match({ id: session.id });
+        await supabase.rpc("set_session_opening", { session_id: session.id });
+      })
+    );
+  }
+
   gameStore.game = data;
+
   showSuccess({ message: "Details updated" });
   emit("close");
 }

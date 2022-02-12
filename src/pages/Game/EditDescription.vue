@@ -1,13 +1,13 @@
 <template>
   <form class="h-full flex flex-col" @submit.prevent="updateGame">
-    <div class="grow overflow-auto pt-4 px-4">
+    <div class="grow overflow-auto pt-6 px-6">
       <Heading as="h3" level="h6">Update description</Heading>
       <div class="rounded-md border border-solid border-gray-300 mt-6">
         <QuillEditor v-model:content="localCopyOfDescription" theme="bubble" />
       </div>
     </div>
     <div
-      class="grow-0 flex justify-end space-x-4 bg-inherit py-4 px-8 border-t border-solid border-gray-200"
+      class="grow-0 flex justify-end space-x-4 bg-inherit p-6 border-t border-solid border-gray-200"
     >
       <OutlineButton type="button" @click="emit('close')">
         Cancel

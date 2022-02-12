@@ -1,7 +1,7 @@
 <template>
   <form class="h-full flex flex-col" @submit.prevent="addSession">
-    <div class="grow-1 overflow-auto">
-      <div class="grid gap-10 pt-8 px-8">
+    <div class="grow overflow-auto">
+      <div class="grid gap-10 pt-6 px-6">
         <div class="grid gap-8">
           <div>
             <FormLabel>Start date</FormLabel>
@@ -51,7 +51,7 @@
       </section>
     </div>
     <div
-      class="grow-0 flex justify-end bg-inherit py-4 px-8 border-t border-solid border-gray-200"
+      class="grow-0 flex justify-end bg-inherit p-6 border-t border-solid border-gray-200"
     >
       <PrimaryButton :is-loading="saving">Add session</PrimaryButton>
     </div>
@@ -71,6 +71,7 @@ import PrimaryButton from "../../components/Buttons/PrimaryButton.vue";
 import { supabase } from "@/supabase";
 import { NewSession } from "@/typings/Session";
 import { log } from "@/util/logger";
+import { gameStore } from "./gameStore";
 
 const emit = defineEmits(["addSession"]);
 
@@ -120,6 +121,10 @@ async function addSession() {
     creator_id: store.user.id,
     access_times: JSON.stringify(times),
     game_id: props.gameId,
+    community_id: props.communityId,
+    has_openings: true,
+    rsvps: [],
+    participant_count: gameStore.game.participant_count,
   };
   saving.value = true;
   const { data, error } = await supabase

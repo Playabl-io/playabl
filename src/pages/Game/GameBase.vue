@@ -36,9 +36,10 @@
   </BaseTemplate>
 </template>
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { useRoute } from "vue-router";
 import { supabase } from "@/supabase";
+import { RealtimeSubscription } from "@supabase/supabase-js";
 import { log } from "@/util/logger";
 import BaseTemplate from "@/components/BaseTemplate.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
@@ -78,6 +79,7 @@ async function getGameData() {
       ...R.omit(["creator_id", "sessions"], data),
       creator_id: data.creator_id.id,
     };
+    setSubscription(data.id);
     setSessionDataInStore(data.sessions);
     gameData.value = data;
     if (data.creator_id.id === store.user?.id) {
@@ -88,8 +90,29 @@ async function getGameData() {
 
 function setSessionDataInStore(sessions: SessionWithRsvps[]) {
   gameStore.sessions = sessions;
-  sessions.forEach((session) => {
-    store.sessionRsvps[session.id] = session.rsvps;
-  });
+}
+
+let subscription: RealtimeSubscription;
+onUnmounted(() => {
+  removeSubscription();
+  store.sessionRsvps = {};
+});
+
+function setSubscription(gameId: number) {
+  subscription = supabase
+    .from(`sessions:game_id=eq.${gameId}`)
+    .on("UPDATE", (payload) => {
+      console.log("updated", payload);
+      gameStore.sessions = gameStore.sessions.map((session) => {
+        if (session.id === payload.new.id) {
+          return payload.new;
+        }
+        return session;
+      });
+    })
+    .subscribe();
+}
+function removeSubscription() {
+  supabase.removeSubscription(subscription);
 }
 </script>

@@ -33,6 +33,11 @@
           >
             RSVP available {{ formatRelative(soonestRsvp, new Date()) }}
           </div>
+          <p v-else class="text-center text-sm">
+            You cannot RSVP, likely because you need to be assigned an access
+            level.
+            <br />Please contact the community organizers.
+          </p>
         </template>
       </div>
     </div>
@@ -40,14 +45,14 @@
       <div class="col-span-2">
         <h6 class="text-xs text-slate-600 mb-2">RSVP'd</h6>
         <ul class="mb-4">
-          <li v-for="rsvp in rsvps[0]" :key="rsvp.id">
-            {{ rsvp.user_id?.username }}
+          <li v-for="rsvp in participants[0]" :key="rsvp">
+            {{ rsvp }}
           </li>
         </ul>
         <h6 class="text-xs text-slate-600 mb-2">Waitlist</h6>
         <ul>
-          <li v-for="rsvp in rsvps[1]" :key="rsvp.id">
-            {{ rsvp.user_id?.username }}
+          <li v-for="rsvp in participants[1]" :key="rsvp">
+            {{ rsvp }}
           </li>
         </ul>
       </div>
@@ -55,17 +60,18 @@
   </div>
 </template>
 <script setup lang="ts">
-import { format, formatRelative } from "date-fns";
-import { Session } from "@/typings/Session";
 import { computed, PropType, ref, toRefs } from "vue";
+import { format, formatRelative } from "date-fns";
+import * as R from "ramda";
+import { Session } from "@/typings/Session";
+import { joinSession, leaveSession } from "@/api/games";
 import PrimaryButton from "../Buttons/PrimaryButton.vue";
 import { CommunityAccess } from "@/typings/CommunityAccess";
 import { compareUserAccessToRsvpTimes, getSoonestRsvpTime } from "@/util/time";
 import { store } from "@/store";
 import useToast from "../Toast/useToast";
-import { joinSession, leaveSession } from "@/api/games";
-import * as R from "ramda";
 import GhostButton from "../Buttons/GhostButton.vue";
+import { gameStore } from "@/pages/Game/gameStore";
 
 const { showSuccess, showError } = useToast();
 
@@ -92,29 +98,40 @@ toRefs(props);
 const isProcessing = ref(false);
 
 const canRsvp = computed(() => {
+  let accessTimes;
+  if (typeof props.session.access_times === "string") {
+    accessTimes = JSON.parse(props.session.access_times);
+  } else {
+    accessTimes = props.session.access_times;
+  }
   const isEligibleToRsvp = compareUserAccessToRsvpTimes(
     props.userAccess,
-    JSON.parse(props.session.access_times ?? "{}")
+    accessTimes
   );
   return isEligibleToRsvp;
 });
 
-const soonestRsvp = computed(() =>
-  getSoonestRsvpTime(
-    props.userAccess,
-    JSON.parse(props.session.access_times ?? "{}")
-  )
-);
+const soonestRsvp = computed(() => {
+  let accessTimes;
+  if (typeof props.session.access_times === "string") {
+    accessTimes = JSON.parse(props.session.access_times);
+  } else {
+    accessTimes = props.session.access_times;
+  }
+  return getSoonestRsvpTime(props.userAccess, accessTimes);
+});
 
 const splitAtParticipantCount = R.splitAt(props.participantCount);
-const rsvps = computed(() => {
-  return splitAtParticipantCount(store.sessionRsvps[props.session.id]);
+const rsvps = computed(
+  () =>
+    gameStore.sessions.find((session) => session.id === props.session.id)?.rsvps
+);
+const participants = computed(() => {
+  return splitAtParticipantCount(rsvps.value ?? []);
 });
-const userIsInTheGame = computed(() => {
-  return store.sessionRsvps[props.session.id].find(
-    (rsvp) => rsvp.user_id.id === store.user?.id
-  );
-});
+const userIsInTheGame = computed(() =>
+  rsvps.value?.includes(store.user?.id ?? "")
+);
 
 async function handleJoin() {
   if (!store.user) return;

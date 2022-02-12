@@ -2,6 +2,7 @@ import { Handler } from "@netlify/functions";
 import { createClient } from "@supabase/supabase-js";
 import axios from "axios";
 import { format } from "date-fns";
+import { compareUserAccessToRsvpTimes } from "../../src/util/time";
 
 export const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -19,50 +20,73 @@ export const handler: Handler = async (event, context) => {
     communityId: game.community_id,
   });
 
-  if (userIsCommunityMember) {
-    const beforeRsvps = await getRsvps({ sessionId });
-    if (method === "POST") {
-      const data = await joinSession({ sessionId, userId });
-      if (beforeRsvps.length < game.participant_count) {
-        sendNewRsvpEmail({
-          gameName: game.title,
-          sessionStartTime: session.start_time,
-        });
-      }
+  if (!userIsCommunityMember) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify({
+        message: "Not eligible to rsvp",
+      }),
+    };
+  }
+
+  const beforeRsvps = session.rsvps;
+  if (method === "POST") {
+    const canRsvp = confirmRsvpAccess({
+      accessTimes: session.access_times,
+      userId,
+      communityId: game.community_id,
+    });
+
+    if (!canRsvp) {
       return {
-        statusCode: 201,
+        statusCode: 403,
         body: JSON.stringify({
-          data,
+          message: "Not eligible to rsvp",
         }),
       };
     }
-    if (method === "DELETE") {
-      const rsvpIndex = beforeRsvps.findIndex(
-        (rsvp) => rsvp.user_id === userId
-      );
-      const data = await leaveSession({ sessionId, userId });
-
-      if (rsvpIndex > -1 && rsvpIndex < game.participant_count) {
-        const newRsvps = await getRsvps({ sessionId });
-
-        if (newRsvps.length !== 0) {
-          const newlyAdded = newRsvps[game.participant_count - 1];
-          const user = await getUserProfile({ userId: newlyAdded.user_id });
-          sendNewRsvpEmail({
-            gameName: game.title,
-            sessionStartTime: session.start_time,
-            toEmail: user.email,
-            toName: user.username,
-          });
-        }
-      }
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          data,
-        }),
-      };
+    const data = await joinSession({ sessionId, userId });
+    if (beforeRsvps.length < game.participant_count) {
+      const user = await getUserProfile({ userId: userId });
+      sendNewRsvpEmail({
+        gameName: game.title,
+        sessionStartTime: session.start_time,
+        toEmail: user.email,
+        toName: user.username || user.email,
+      });
     }
+    return {
+      statusCode: 201,
+      body: JSON.stringify({
+        data,
+      }),
+    };
+  }
+  if (method === "DELETE") {
+    const rsvpIndex = beforeRsvps.indexOf(userId);
+    const { data } = await leaveSession({ sessionId, userId });
+    const newRsvps = data.rsvps;
+
+    if (
+      rsvpIndex > -1 &&
+      rsvpIndex < game.participant_count &&
+      newRsvps.length !== 0
+    ) {
+      const newlyAdded = newRsvps[game.participant_count - 1];
+      const user = await getUserProfile({ userId: newlyAdded });
+      sendNewRsvpEmail({
+        gameName: game.title,
+        sessionStartTime: session.start_time,
+        toEmail: user.email,
+        toName: user.username || user.email,
+      });
+    }
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        data,
+      }),
+    };
   }
 
   return {
@@ -70,24 +94,51 @@ export const handler: Handler = async (event, context) => {
   };
 };
 
+async function confirmRsvpAccess({
+  accessTimes,
+  userId,
+  communityId,
+}: {
+  accessTimes: string;
+  userId: string;
+  communityId: string;
+}) {
+  const userAccess = await loadUserCommunityAccess({
+    communityId,
+    userId,
+  });
+  const parsedAccessTimes = JSON.parse(accessTimes);
+  const isEligibleToRsvp = compareUserAccessToRsvpTimes(
+    userAccess,
+    parsedAccessTimes
+  );
+  return isEligibleToRsvp;
+}
+
+async function loadUserCommunityAccess({
+  userId,
+  communityId,
+}: {
+  userId: string;
+  communityId: string;
+}) {
+  const { data } = await supabase
+    .from("community_access")
+    .select()
+    .match({ community_id: communityId, user_id: userId });
+  return data;
+}
+
 async function getGameAndCommunityInfo({ sessionId }) {
   const { data } = await supabase
     .from("sessions")
-    .select("start_time, game_id (*)")
+    .select("*, game_id (*)")
     .eq("id", sessionId)
     .single();
   return {
     session: data,
     game: data.game_id,
   };
-}
-
-async function getRsvps({ sessionId }) {
-  const { data } = await supabase
-    .from("rsvps")
-    .select("*")
-    .eq("session_id", sessionId);
-  return data;
 }
 
 async function getUserProfile({ userId }) {
@@ -118,15 +169,10 @@ async function joinSession({
   sessionId: string;
   userId: string;
 }) {
-  const { data, error } = await supabase
-    .from("rsvps")
-    .insert({
-      session_id: sessionId,
-      user_id: userId,
-    })
-    .single();
-
-  return data;
+  return supabase.rpc("join_session", {
+    user_id: userId,
+    session_id: Number(sessionId),
+  });
 }
 
 async function leaveSession({
@@ -136,24 +182,14 @@ async function leaveSession({
   sessionId: string;
   userId: string;
 }) {
-  const { data, error } = await supabase
-    .from("rsvps")
-    .delete()
-    .match({
-      session_id: sessionId,
-      user_id: userId,
-    })
-    .single();
-
-  return data;
+  const result = await supabase.rpc("leave_session", {
+    user_id: userId,
+    session_id: Number(sessionId),
+  });
+  return result;
 }
 
-function sendNewRsvpEmail({
-  gameName,
-  sessionStartTime,
-  toEmail = "jonjongrim@gmail.com",
-  toName = "Jonathan Grim",
-}) {
+function sendNewRsvpEmail({ gameName, sessionStartTime, toEmail, toName }) {
   const formattedStartTime = format(sessionStartTime, "EEEE, MMMM do, HH:mm");
   axios.post(
     "https://api.mailjet.com/v3.1/send",

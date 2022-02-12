@@ -1,6 +1,7 @@
 import { supabase } from "@/supabase";
 import { log } from "@/util/logger";
 import { store } from "@/store";
+import { ROLES } from "@/util/roles";
 
 export async function loadJoinedCommunities() {
   if (!store.user) return;
@@ -31,5 +32,28 @@ export async function loadJoinedCommunityIds(): Promise<
   }
   if (data) {
     return data;
+  }
+}
+
+export async function joinCommunity({
+  userId,
+  communityId,
+}: {
+  userId: string;
+  communityId: string;
+}) {
+  const { data, error } = await supabase
+    .from("community_memberships")
+    .insert({
+      community_id: communityId,
+      user_id: userId,
+      role_id: ROLES.player,
+    })
+    .single();
+  if (data) {
+    return data;
+  }
+  if (error) {
+    throw error;
   }
 }

@@ -62,15 +62,13 @@
   </section>
 </template>
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, toRefs } from "vue";
+import { onMounted, ref, toRefs } from "vue";
 import { UsersIcon, TagIcon, CogIcon, FilmIcon } from "@heroicons/vue/outline";
 import Heading from "@/components/Heading.vue";
 import SessionBlock from "@/components/Game/SessionBlock.vue";
 import { loadUserCommunityAccess } from "@/api/communityAccess";
 import { store } from "@/store";
 import { CommunityAccess } from "@/typings/CommunityAccess";
-import { supabase } from "@/supabase";
-import { RealtimeSubscription } from "@supabase/supabase-js";
 import { getCoverImageUrl } from "@/api/storage";
 import GameBadge from "@/components/Game/GameBadge.vue";
 import { gameStore } from "./gameStore";
@@ -88,7 +86,6 @@ const gameCoverImage = ref("");
 
 onMounted(async () => {
   getUserAccess();
-  setSubscription();
   if (gameStore.game?.cover_image) {
     gameCoverImage.value = await getCoverImageUrl(gameStore.game.cover_image);
   }
@@ -103,42 +100,6 @@ async function getUserAccess() {
   if (data) {
     userAccess.value = data;
   }
-}
-
-let subscription: RealtimeSubscription;
-onUnmounted(() => {
-  removeSubscription();
-  store.sessionRsvps = {};
-});
-
-function setSubscription() {
-  subscription = supabase
-    .from("rsvps")
-    .on("DELETE", (payload) => {
-      const sessionIds = Object.keys(store.sessionRsvps);
-      sessionIds.forEach((id) => {
-        store.sessionRsvps[id] = store.sessionRsvps[id].filter(
-          (rsvp) => rsvp.id !== payload.old.id
-        );
-      });
-    })
-    .on("INSERT", async (payload) => {
-      const { data } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", payload.new.user_id)
-        .single();
-      const newRsvp = { ...payload.new, user_id: data };
-      store.sessionRsvps[payload.new.session_id] = Array.isArray(
-        store.sessionRsvps[payload.new.session_id]
-      )
-        ? [...store.sessionRsvps[payload.new.session_id], newRsvp]
-        : [newRsvp];
-    })
-    .subscribe();
-}
-function removeSubscription() {
-  supabase.removeSubscription(subscription);
 }
 </script>
 <style scoped>

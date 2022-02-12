@@ -28,20 +28,20 @@
             <ClockIcon class="h-6 w-6 mr-2 text-slate-700" />
             <span class="flex flex-col space-y-1 text-sm mb-2">
               <p>
-                {{ format(new Date(session.start_time), "EEE, MMM d") }}
-                {{ format(new Date(session.start_time), "hh:mm a") }}
+                {{
+                  format(new Date(session.start_time), "EEE, MMM d hh:mm a z")
+                }}
               </p>
               <p>
-                {{ format(new Date(session.start_time), "EEE, MMM d") }}
-                {{ format(new Date(session.end_time), "hh:mm a") }}
+                {{
+                  format(new Date(session.start_time), "EEE, MMM d hh:mm a z")
+                }}
               </p>
             </span>
           </div>
           <div class="flex items-center mt-2">
             <UsersIcon class="h-6 w-6 mr-2 text-slate-700" />
-            <p>
-              {{ session.rsvps.length }}
-            </p>
+            <p>{{ session.rsvps.length }} rsvp'd</p>
           </div>
           <div class="flex justify-end">
             <GhostButton
