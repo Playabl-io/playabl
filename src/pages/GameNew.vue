@@ -6,19 +6,36 @@
     >
       <LoadingSpinner color="brand-500" />
     </div>
+    <div v-if="state.value === 'noCommunities'" class="grid place-items-center">
+      <p>
+        Games are posted through communities. You can
+        <router-link
+          to="/communities/all"
+          class="text-brand-500 font-semibold hover:border-b hover:border-solid hover:border-brand-500"
+        >
+          browse and join communities
+        </router-link>
+        or
+        <router-link
+          to="/communities/new"
+          class="text-brand-500 font-semibold hover:border-b hover:border-solid hover:border-brand-500"
+        >
+          start your own!
+        </router-link>
+      </p>
+    </div>
     <ChooseCommunity
       v-if="state.value === 'chooseCommunity'"
       :communities="state.context.communities"
       @select="send('SELECT', $event)"
     />
-    <form
-      v-if="['gameDetails', 'submitting'].includes(state.value as string)"
-      class="grid grid-cols-1 gap-12 max-w-4xl mx-auto relative"
-      @submit.prevent="send('SUBMIT')"
+    <div
+      v-if="['gameDetails', 'gameSessions', 'submitting'].includes(state.value as string)"
+      class="max-w-2xl mx-auto"
     >
       <Heading level="h4" as="h1"> Create a new game </Heading>
       <div
-        class="bg-sky-100 dark:bg-indigo-800 rounded-lg border border-solid border-sky-300 dark:border-indigo-900 p-6 text-slate-700 dark:text-brand-100 text-sm"
+        class="mt-8 bg-sky-100 dark:bg-indigo-800 rounded-lg border border-solid border-sky-300 dark:border-indigo-900 p-6 text-slate-700 dark:text-brand-100 text-sm"
       >
         <div class="flex items-center">
           <UserGroupIcon class="h-6 w-6 mr-2" />
@@ -26,170 +43,212 @@
         </div>
         <LinkButton
           v-if="state.context.communities.length > 1"
-          @click="send('CHOOSE_NEW_COMMUNITY')"
           class="mt-2"
+          @click="send('CHOOSE_NEW_COMMUNITY')"
         >
           Choose a new community
         </LinkButton>
       </div>
-      <Heading level="h6" as="h2">Game info</Heading>
+      <div class="grid grid-cols-2 gap-6 my-8">
+        <div class="h-1 rounded-xl bg-blue-500" />
+        <div
+          class="h-1 rounded-xl transition-colors duration-150 ease-out"
+          :class="[
+            state.value === 'gameSessions' ? 'bg-blue-500' : 'bg-gray-300',
+          ]"
+        />
+      </div>
+    </div>
+    <form
+      v-if="['gameDetails'].includes(state.value as string)"
+      class="grid grid-cols-1 gap-12 max-w-2xl mx-auto relative"
+      @submit.prevent="send('ADVANCE')"
+    >
       <div class="grid grid-cols-1 gap-8">
+        <Heading level="h6" as="h2">Game info</Heading>
         <div class="flex flex-col">
           <FormLabel for="title" required> Game title </FormLabel>
-          <FormInput v-model="title" id="title" required />
+          <FormInput id="title" v-model="title" required />
         </div>
         <div class="flex flex-col">
-          <FormLabel for="description">Description</FormLabel>
-          <FormTextArea v-model="description" id="description" />
+          <FormLabel for="system" required> Game system </FormLabel>
+          <FormInput id="system" v-model="system" required />
         </div>
         <div class="flex flex-col">
-          <FormLabel for="participant-count" required>
-            Number of players
-          </FormLabel>
+          <FormLabel for="participantCount" required> Player count </FormLabel>
           <FormInput
+            id="participantCount"
             v-model.number="participantCount"
             type="number"
             min="1"
-            id="participant-count"
             required
           />
         </div>
+        <div class="flex flex-col">
+          <FormLabel for="description">Description</FormLabel>
+          <p class="text-xs text-slate-700 mt-1">
+            Supports rich text. Highlight words for controls.
+          </p>
+          <div
+            class="bg-white h-96 rounded-lg py-2 border border-solid border-gray-300 mt-2"
+          >
+            <QuillEditor
+              v-model:content="description"
+              theme="bubble"
+              toolbar="essential"
+            />
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <FormLabel for="tabletop"> Virtual tabletop </FormLabel>
+          <FormInput id="tabletop" v-model="tabletop" />
+        </div>
+        <div class="flex flex-col">
+          <FormLabel>Game cover image</FormLabel>
+          <FormFileInput
+            class="mt-2"
+            :file="coverImage"
+            @file-change="onFileChange"
+            @file-drop="onFileDrop"
+            @clear-file="coverImage = undefined"
+          />
+        </div>
+        <div
+          class="p-4 rounded-lg bg-gray-100 border border-solid border-gray-200 flex items-center space-x-2"
+        >
+          <FormCheckbox id="recording" v-model="isRecorded" />
+          <FormLabel class="font-normal" for="recording">
+            This game will be recorded in accordance with community guidelines
+          </FormLabel>
+        </div>
+        <PrimaryButton>
+          Next <ArrowSmRightIcon class="h-6 w-6" />
+        </PrimaryButton>
       </div>
-      <hr />
-      <div>
-        <Heading level="h6" as="h2" class="mb-12">Sessions</Heading>
-        <div class="grid gap-6">
-          <div class="grid lg:grid-cols-2 gap-10">
-            <div class="grid gap-8">
-              <div>
-                <FormLabel>Start date</FormLabel>
-                <DatePicker
-                  @select="updateStartDate"
-                  :selected="startDate"
-                  :not-before="getStartOfToday()"
-                />
-              </div>
-              <div class="flex flex-col">
-                <FormLabel for="start-time"> Start time </FormLabel>
-                <FormTimeInput
-                  id="start-time"
-                  v-model="sessionStartTime"
-                  aria-label="Session start time"
-                />
-              </div>
+    </form>
+    <form
+      v-if="['gameSessions', 'submitting'].includes(state.value as string)"
+      id="secondScreen"
+      class="max-w-2xl mx-auto"
+      @submit.prevent="send('SUBMIT')"
+    >
+      <Heading level="h6" as="h2" class="mb-2">Sessions</Heading>
+      <p class="text-sm text-slate-700 mb-6">All times in your timezone</p>
+      <div class="grid gap-6">
+        <div class="grid lg:grid-cols-2 gap-10">
+          <div class="grid gap-8">
+            <div>
+              <FormLabel>Start date</FormLabel>
+              <DatePicker
+                :selected="startDate"
+                :not-before="getStartOfToday()"
+                @select="updateStartDate"
+              />
             </div>
-            <div class="grid gap-8">
-              <div>
-                <FormLabel> End date </FormLabel>
-                <DatePicker
-                  @select="updateEndDate"
-                  :selected="endDate"
-                  :not-before="startDate"
-                />
-              </div>
-              <div class="flex flex-col">
-                <FormLabel for="end-time"> End time </FormLabel>
-                <FormTimeInput
-                  id="end-time"
-                  v-model="sessionEndTime"
-                  aria-label="Session start time"
-                />
-              </div>
+            <div class="flex flex-col">
+              <FormLabel for="start-time"> Start time </FormLabel>
+              <FormTimeInput
+                id="start-time"
+                v-model="sessionStartTime"
+                aria-label="Session start time"
+              />
             </div>
           </div>
-          <SecondaryButton
-            type="button"
-            class="my-2 w-full"
-            @click="addSession"
-            :disabled="!sessionStartTime || !sessionEndTime"
-          >
-            Add session
-          </SecondaryButton>
-          <div
-            aria-live="polite"
-            class="h-32 flex space-x-6 overflow-x-auto max-w-4xl pb-4"
-          >
-            <p
-              v-if="sessionIds.length === 0"
-              class="prose dark:prose-invert prose-lg"
-            >
-              Added sessions will appear here
-            </p>
-            <div
-              v-else
-              v-for="(sessionId, i) in sessionIds"
-              :key="sessionId"
-              class="relative flex-shrink-0 rounded-lg border-2 border-solid border-brand-500 dark:border-brand-300 p-4 [width:225px] shadow-sm"
-            >
-              <div class="absolute top-1 right-1">
-                <GhostButton
-                  size="small"
-                  @click="deleteSession(sessionId)"
-                  aria-label="Delete session"
-                >
-                  <XCircleIcon
-                    class="h-4 w-4 stroke-brand-500 dark:stroke-brand-300"
-                  />
-                </GhostButton>
-              </div>
-              <p class="text-xs text-slate-700 dark:text-slate-300">
-                Session {{ i + 1 }}
-              </p>
-              <ul
-                class="mt-2 text-xs font-semibold list-disc list-inside grid gap-2"
-              >
-                <li>
-                  {{
-                    format(
-                      new Date(sessions[sessionId].start_time),
-                      "EEE, MMM do, h:mm a"
-                    )
-                  }}
-                </li>
-                <li>
-                  {{
-                    format(
-                      new Date(sessions[sessionId].end_time),
-                      "EEE, MMM do, h:mm a"
-                    )
-                  }}
-                </li>
-              </ul>
+          <div class="grid gap-8">
+            <div>
+              <FormLabel> End date </FormLabel>
+              <DatePicker
+                :selected="endDate"
+                :not-before="startDate"
+                @select="updateEndDate"
+              />
+            </div>
+            <div class="flex flex-col">
+              <FormLabel for="end-time"> End time </FormLabel>
+              <FormTimeInput
+                id="end-time"
+                v-model="sessionEndTime"
+                aria-label="Session start time"
+                :class="{
+                  'border-red-500': dateError,
+                }"
+              />
             </div>
           </div>
         </div>
-      </div>
-      <div>
+        <p v-if="dateError" class="text-red-500 mt-2 font-semibold">
+          {{ dateError }}
+        </p>
+        <SecondaryButton
+          type="button"
+          class="my-2 w-full"
+          :disabled="Boolean(dateError)"
+          @click="addSession"
+        >
+          Add session
+        </SecondaryButton>
+        <div
+          aria-live="polite"
+          class="relative rounded-lg [min-height:128px] max-w-2xl p-4 bg-gradient-to-br from-emerald-500 to-sky-500"
+        >
+          <p
+            v-if="sessionIds.length === 0"
+            class="text-white absolute top-2 left-2 text-sm"
+          >
+            Added sessions will appear here
+          </p>
+          <AddSessions
+            :sessions="sessions"
+            :session-ids="sessionIds"
+            @delete-session="deleteSession"
+          />
+        </div>
         <AccessTimes
           :enabled-levels="state.context.enabledAccessLevels"
           @update="send({ type: 'UPDATE_ENABLED_LEVELS', data: $event })"
         />
+        <div class="grid grid-cols-2 gap-6">
+          <OutlineButton
+            type="button"
+            class="font-semibold"
+            @click="send('BACK')"
+          >
+            <ArrowSmLeftIcon class="h-6 w-6" /> Back
+          </OutlineButton>
+          <PrimaryButton
+            :is-loading="state.value === 'submitting'"
+            class="w-full"
+          >
+            Save
+          </PrimaryButton>
+        </div>
       </div>
-      <PrimaryButton :is-loading="state.value === 'submitting'">
-        Save
-      </PrimaryButton>
     </form>
   </BaseTemplate>
 </template>
 <script setup lang="ts">
 import { supabase } from "@/supabase";
 import { useRouter } from "vue-router";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { v4 as uuidv4 } from "uuid";
-import { format, set } from "date-fns";
+import { isBefore, set } from "date-fns";
 import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/vue";
-import { XCircleIcon, UserGroupIcon } from "@heroicons/vue/outline";
+import {
+  UserGroupIcon,
+  ArrowSmRightIcon,
+  ArrowSmLeftIcon,
+} from "@heroicons/vue/outline";
 import BaseTemplate from "@/components/BaseTemplate.vue";
+import FormCheckbox from "@/components/Forms/FormCheckbox.vue";
 import FormLabel from "@/components/Forms/FormLabel.vue";
 import FormInput from "@/components/Forms/FormInput.vue";
-import FormTextArea from "@/components/Forms/FormTextArea.vue";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
+import OutlineButton from "@/components/Buttons/OutlineButton.vue";
 import SecondaryButton from "@/components/Buttons/SecondaryButton.vue";
 import Heading from "@/components/Heading.vue";
 import DatePicker from "@/components/Calendar/DatePicker.vue";
 import FormTimeInput from "@/components/Forms/FormTimeInput.vue";
-import GhostButton from "@/components/Buttons/GhostButton.vue";
 import LinkButton from "@/components/Buttons/LinkButton.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import { NewSession } from "@/typings/Session";
@@ -203,6 +262,14 @@ import { store } from "@/store";
 import useToast from "@/components/Toast/useToast";
 import { createGame } from "@/api/games";
 import { rsvpTimes, getStartOfToday } from "@/util/time";
+import FormFileInput from "@/components/Forms/FormFileInput.vue";
+import {
+  handleFileChange,
+  handleFileDrop,
+} from "@/components/Forms/fileInputUtil";
+import AddSessions from "@/components/Game/AddSessions.vue";
+import { uploadToStorage } from "@/api/storage";
+import { Delta } from "@vueup/vue-quill";
 
 const { showSuccess, showError } = useToast();
 const router = useRouter();
@@ -235,6 +302,10 @@ const newGameMachine = createMachine<{
       evaluateCommunities: {
         always: [
           {
+            target: "noCommunities",
+            cond: (context) => context.communities.length === 0,
+          },
+          {
             target: "chooseCommunity",
             cond: (context) => context.communities.length > 1,
           },
@@ -266,6 +337,20 @@ const newGameMachine = createMachine<{
         },
         on: {
           CHOOSE_NEW_COMMUNITY: "chooseCommunity",
+          ADVANCE: {
+            target: "gameSessions",
+          },
+        },
+      },
+      gameSessions: {
+        entry: () => {
+          document
+            .getElementById("app")
+            ?.scrollTo({ top: 0, behavior: "smooth" });
+        },
+        on: {
+          CHOOSE_NEW_COMMUNITY: "chooseCommunity",
+          BACK: "gameDetails",
           SUBMIT: "submitting",
           UPDATE_ENABLED_LEVELS: {
             actions: ["updateEnabledAccessLevels"],
@@ -276,7 +361,7 @@ const newGameMachine = createMachine<{
         invoke: {
           src: submitGame,
           onError: {
-            target: "gameDetails",
+            target: "gameSessions",
             actions: ["showErrorToast"],
           },
         },
@@ -306,11 +391,14 @@ const newGameMachine = createMachine<{
 const { state, send } = useMachine(newGameMachine);
 
 const title = ref("");
-const description = ref("");
+const system = ref("");
+const tabletop = ref("");
+const description = ref<Delta>();
 const sessions = ref<Record<string, NewSession>>({});
 const sessionIds = ref<string[]>([]);
-const coverImage = ref("");
+const coverImage = ref<File>();
 const participantCount = ref<number>();
+const isRecorded = ref(false);
 
 const sessionStartTime = ref("");
 const sessionEndTime = ref("");
@@ -325,22 +413,59 @@ function updateEndDate(date: Date) {
   endDate.value = date;
 }
 
-function addSession() {
-  if (!store.user) return router.push("/sign-in");
+const startDateAndTime = computed(() => {
+  if (!sessionStartTime.value || !startDate.value) return 0;
   const [startHours, startMinutes] = sessionStartTime.value.split(":");
+  return set(startDate.value, {
+    hours: Number(startHours),
+    minutes: Number(startMinutes),
+  }).getTime();
+});
+
+const endDateAndTime = computed(() => {
+  if (!sessionEndTime.value || !endDate.value) return 0;
   const [endHours, endMinutes] = sessionEndTime.value.split(":");
+  return set(startDate.value, {
+    hours: Number(endHours),
+    minutes: Number(endMinutes),
+  }).getTime();
+});
+
+const dateError = computed(() => {
+  if (!startDateAndTime.value || !endDateAndTime.value) {
+    return "";
+  }
+  if (isBefore(endDateAndTime.value, startDateAndTime.value)) {
+    return "End date and time cannot be before start date and time";
+  }
+  return "";
+});
+
+function onFileDrop(event: DragEvent) {
+  const file = handleFileDrop(event);
+  if (file) {
+    coverImage.value = file;
+  }
+}
+
+function onFileChange(event: Event) {
+  const file = handleFileChange(event);
+  if (file) {
+    coverImage.value = file;
+  }
+}
+
+function addSession() {
+  if (!store.user || !state.value.context.selectedCommunity?.id) return;
   const localId = uuidv4();
   sessions.value[localId] = {
-    start_time: set(startDate.value, {
-      hours: Number(startHours),
-      minutes: Number(startMinutes),
-    }).getTime(),
-    end_time: set(endDate.value, {
-      hours: Number(endHours),
-      minutes: Number(endMinutes),
-    }).getTime(),
+    start_time: startDateAndTime.value,
+    end_time: endDateAndTime.value,
     creator_id: store.user.id,
     game_id: 0,
+    participant_count: participantCount.value || 0,
+    has_openings: true,
+    community_id: state.value.context.selectedCommunity.id,
   };
   sessionIds.value.push(localId);
 }
@@ -352,17 +477,28 @@ function deleteSession(sessionId: string) {
 
 async function submitGame() {
   if (!state.value.context.selectedCommunity?.id || !store.user?.id) return;
+
   const levels = store.communityAccessLevels.filter((level) =>
     state.value.context.enabledAccessLevels.includes(level.id)
   );
   const times = rsvpTimes(levels);
+
+  let imagePath;
+  if (coverImage.value) {
+    imagePath = await uploadToStorage(coverImage.value);
+  }
+
   const newGame: NewGame = {
     title: title.value,
-    description: description.value,
+    description: JSON.stringify(description.value),
     participant_count: participantCount.value || 0,
     draft_state: GAME_DRAFT_STATE.published,
     community_id: state.value.context.selectedCommunity.id,
     creator_id: store.user.id,
+    will_be_recorded: isRecorded.value,
+    system: system.value,
+    virtual_tabletop: tabletop.value,
+    cover_image: imagePath,
   };
   const game = await createGame(newGame);
 

@@ -3,7 +3,7 @@
     <GamesHeading />
     <section v-if="!store.user">
       You need to create an account to join games.
-      <router-link to="/sign-in"> Sign up for free </router-link>
+      <router-link to="/login"> Sign up for free </router-link>
     </section>
     <template v-else>
       <GamesNav class="mt-12" />
