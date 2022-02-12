@@ -8,19 +8,19 @@ import CommunitiesAll from "@/pages/CommunitiesAll.vue";
 import CommunitiesJoined from "@/pages/CommunitiesJoined.vue";
 import CommunitiesManage from "@/pages/CommunitiesManage.vue";
 import CommunityNew from "@/pages/CommunityNew.vue";
-import CommunityBase from "@/pages/CommunityBase.vue";
-import CommunityHome from "@/pages/CommunityHome.vue";
-import CommunityFeed from "@/pages/CommunityFeed.vue";
-import CommunityCalendar from "@/pages/CommunityCalendar.vue";
-import CommunityManage from "@/pages/CommunityManage.vue";
+import CommunityBase from "@/pages/Community/CommunityBase.vue";
+import CommunityHome from "@/pages/Community/CommunityHome.vue";
+import CommunityFeed from "@/pages/Community/CommunityFeed.vue";
+import CommunityCalendar from "@/pages/Community/CommunityCalendar.vue";
+import CommunityManage from "@/pages/Community/CommunityManage.vue";
 import GamesJoined from "@/pages/GamesJoined.vue";
 import GamesBrowse from "@/pages/GamesBrowse.vue";
 import GamesManage from "@/pages/GamesManage.vue";
 import GameNew from "@/pages/GameNew.vue";
-import GameBase from "@/pages/GameBase.vue";
-import GameHome from "@/pages/GameHome.vue";
+import GameBase from "@/pages/Game/GameBase.vue";
+import GameHome from "@/pages/Game/GameHome.vue";
 import GameMessages from "@/pages/GameMessages.vue";
-import GameManage from "@/pages/GameManage.vue";
+import GameManage from "@/pages/Game/GameManage.vue";
 import { store } from "./store";
 
 const routes = [
