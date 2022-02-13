@@ -1,6 +1,6 @@
 import * as R from "ramda";
 import { supabase } from "@/supabase";
-import { GameListing, NewGame, RsvpWithSessionAndGame } from "@/typings/Game";
+import { GameListing, NewGame } from "@/typings/Game";
 import { Session } from "@/typings/Session";
 import { log } from "@/util/logger";
 
@@ -30,12 +30,10 @@ export async function createGame(newGame: NewGame) {
 export async function loadJoinedGames(userId: string) {
   const today = new Date();
   const { data, error } = await supabase
-    .from<RsvpWithSessionAndGame>("rsvps")
-    .select(
-      "id, user_id, sessions!inner(id, start_time, end_time, game_id (*, communities (id, name)), rsvps (*))"
-    )
-    .gte("sessions.start_time", today.getTime())
-    .eq("user_id", userId);
+    .from<GameListing>("games")
+    .select("*, community_id (id, name), sessions!inner(*)")
+    .contains("sessions.rsvps", [userId])
+    .order("start_time", { foreignTable: "sessions", ascending: true });
   if (error) {
     log({ error });
   }
@@ -48,7 +46,7 @@ export async function loadChronologicalCommunityGames(communityIds: string[]) {
   const today = new Date();
   const { data, error } = await supabase
     .from<GameListing>("games")
-    .select("*, community_id (id, name), sessions!inner(id, start_time)")
+    .select("*, community_id (id, name), sessions!inner(*)")
     .gte("sessions.start_time", today.getTime())
     .in("community_id", communityIds)
     .order("start_time", { foreignTable: "sessions", ascending: true });
@@ -64,11 +62,13 @@ export async function loadCommunityGamesWithOpenings(communityIds: string[]) {
   const today = new Date();
   const { data, error } = await supabase
     .from<GameListing>("games")
-    .select("*, community_id (id, name), sessions!inner(id, start_time)")
+    .select(
+      "*, community_id (id, name), sessions (id, start_time, has_openings)"
+    )
+    .eq("sessions.has_openings", true)
     .gte("sessions.start_time", today.getTime())
     .in("community_id", communityIds)
-    .order("start_time", { foreignTable: "sessions", ascending: true })
-    .eq("has_openings", true);
+    .order("start_time", { foreignTable: "sessions", ascending: true });
   if (error) {
     log({ error });
   }

@@ -28,13 +28,19 @@
           </select>
         </div>
       </div>
-      <div
-        class="p-4 rounded-lg bg-gray-100 border border-solid border-gray-200 flex items-center space-x-2"
-      >
-        <FormCheckbox id="is-mandatory" v-model="isMandatory" />
-        <FormLabel class="font-normal pt-1" for="is-mandatory">
-          Make this access level mandatory for games?
-        </FormLabel>
+      <div class="p-4 rounded-lg bg-gray-100">
+        <div class="flex items-center space-x-4">
+          <FormCheckbox id="is-mandatory" v-model="isMandatory" />
+          <FormLabel class="font-normal" for="is-mandatory">
+            Make this access level mandatory for games?
+          </FormLabel>
+        </div>
+        <div class="flex items-center space-x-4 mt-4">
+          <FormCheckbox id="apply-to-new-members" v-model="applyOnJoin" />
+          <FormLabel class="font-normal" for="apply-to-new-members">
+            Automatically grant to members when they join the community?
+          </FormLabel>
+        </div>
       </div>
     </div>
     <div
@@ -86,6 +92,7 @@ const timeDenomination = ref(
   props.accessLevel?.time_denomination || ACCESS_LEVEL_TIME_DENOMINATION.days
 );
 const isMandatory = ref(props.accessLevel?.is_mandatory || false);
+const applyOnJoin = ref(props.accessLevel?.apply_on_join || false);
 
 function handleSave() {
   const updatedAccessLevel: AccessLevel = {
@@ -95,6 +102,7 @@ function handleSave() {
     time_denomination: timeDenomination.value,
     is_mandatory: isMandatory.value,
     community_id: props.communityId,
+    apply_on_join: applyOnJoin.value,
   };
   emit("save", {
     accessLevel: updatedAccessLevel,

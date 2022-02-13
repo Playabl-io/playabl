@@ -1,6 +1,6 @@
 <template>
-  <article class="grid md:grid-cols-5 gap-6 md:gap-12">
-    <section class="order-2 md:order-1 md:col-span-3 flex flex-col">
+  <article class="grid lg:grid-cols-5 gap-6 lg:gap-12">
+    <section class="order-2 lg:order-1 lg:col-span-3 flex flex-col">
       <div class="flex space-x-4 items-end">
         <router-link
           :to="`/communities/${community.id}`"
@@ -92,10 +92,10 @@
       </div>
     </section>
     <section
-      class="order-1 md:order-2 md:col-span-2 grid place-items-end content-center"
+      class="order-1 lg:order-2 lg:col-span-2 grid place-items-end content-center"
     >
       <div
-        class="aspect-w-16 aspect-h-9 md:aspect-w-4 md:aspect-h-3 w-full relative"
+        class="aspect-w-4 aspect-h-3 lg:aspect-w-16 lg:aspect-h-9 w-full relative"
       >
         <img
           v-if="coverImageUrl"

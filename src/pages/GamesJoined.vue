@@ -1,28 +1,21 @@
 <template>
   <base-template>
-    <GamesHeading />
-    <section v-if="!store.user">
-      You need to create an account to join games.
-      <router-link to="/login"> Sign up for free </router-link>
-    </section>
-    <template v-else>
-      <GamesNav class="mt-12" />
-      <JoinedGames :is-loading="isLoading" :rsvps="games" />
-    </template>
+    <GamesNav />
+    <GamesListing :is-loading="isLoading" :games="games" />
   </base-template>
 </template>
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import BaseTemplate from "@/components/BaseTemplate.vue";
-import { RsvpWithSessionAndGame } from "@/typings/Game";
+import { GameListing, RsvpWithSessionAndGame } from "@/typings/Game";
 import { store } from "@/store";
 import { loadJoinedGames } from "@/api/games";
 import GamesHeading from "@/components/GamesHeading.vue";
 import GamesNav from "@/components/GamesNav.vue";
-import JoinedGames from "@/components/JoinedGames.vue";
+import GamesListing from "@/components/GamesListing.vue";
 
 const isLoading = ref(true);
-const games = ref<RsvpWithSessionAndGame[]>([]);
+const games = ref<GameListing[]>([]);
 
 onMounted(loadAllGames);
 

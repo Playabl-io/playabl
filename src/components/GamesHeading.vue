@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-baseline justify-between">
+  <div class="flex flex-wrap gap-4 items-baseline justify-between">
     <slot name="heading">
       <Heading level="h1">Games</Heading>
     </slot>

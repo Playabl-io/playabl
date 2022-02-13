@@ -19,6 +19,21 @@ export async function loadJoinedCommunities() {
   }
 }
 
+export async function loadCreatorAndAdminCommunities() {
+  if (!store.user) return;
+  const { data, error } = await supabase
+    .from("community_memberships")
+    .select("role_id, user_id, community_id (*)")
+    .lt("role_id", 3)
+    .eq("user_id", store.user.id);
+  if (error) {
+    log({ error });
+  }
+  if (data) {
+    return data.map((membership) => membership.community_id);
+  }
+}
+
 export async function loadJoinedCommunityIds(): Promise<
   { community_id: string }[] | undefined
 > {

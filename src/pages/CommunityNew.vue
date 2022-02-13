@@ -121,9 +121,7 @@
           </div>
           <hr />
           <div>
-            <div
-              class="p-4 rounded-lg bg-gray-100 border border-solid border-gray-200 flex items-center space-x-2"
-            >
+            <div class="p-4 rounded-lg bg-gray-100 flex items-center space-x-2">
               <FormCheckbox id="allow-public" v-model="allowPublicSignup" />
               <FormLabel class="font-normal" for="allow-public">
                 Allow others to join without invite?
@@ -493,29 +491,6 @@ async function createCommunity() {
       })
       .single();
     if (error) throw error;
-
-    // Create default access level
-    const { data: accessLevelData, error: accessLevelError } = await supabase
-      .from<AccessLevel>("access_levels")
-      .insert({
-        name: "default",
-        community_id: data.id,
-        priority_access_time: 0,
-        time_denomination: ACCESS_LEVEL_TIME_DENOMINATION.hours,
-        is_mandatory: true,
-      })
-      .single();
-    if (accessLevelError) throw accessLevelError;
-
-    // Add community access
-    const { error: accessError } = await supabase
-      .from("community_access")
-      .insert({
-        user_id: store.user.id,
-        community_id: data.id,
-        access_level_id: accessLevelData?.id,
-      });
-    if (accessError) throw accessError;
 
     router.push(`/communities/${data.id}/manage`);
   } catch (error) {

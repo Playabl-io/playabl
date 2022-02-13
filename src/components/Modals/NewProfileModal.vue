@@ -33,7 +33,9 @@
           />
         </div>
         <div class="grid grid-cols-2 gap-4">
-          <OutlineButton>Do this later</OutlineButton>
+          <OutlineButton type="button" @click="emit('close')">
+            Do this later
+          </OutlineButton>
           <primary-button :is-loading="loading">
             Update profile
           </primary-button>

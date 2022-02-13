@@ -12,7 +12,7 @@
       class="grid gap-y-4"
     >
       <button
-        class="flex justify-between p-4 rounded-md transition-all transform duration-150 hover:shadow-lg hover:-translate-y-1"
+        class="flex justify-between items-center p-4 rounded-md transition-all transform duration-150 hover:shadow-lg hover:-translate-y-1"
         @click="
           send({ type: 'EDIT_ACCESS_LEVEL', payload: { accessLevel: level } })
         "
@@ -25,11 +25,33 @@
             {{ level.priority_access_time }} {{ level.time_denomination }}
           </p>
         </div>
-        <div v-if="level.is_mandatory" class="flex flex-col items-center">
-          <CheckCircleIcon
-            class="h-8 w-8 justify-self-center text-green-600 dark:text-green-400"
-          />
-          <p class="text-sm">Mandatory</p>
+        <div class="flex space-x-2">
+          <Tooltip v-if="level.is_mandatory">
+            <template #trigger="{ toggleTooltip }">
+              <CheckCircleIcon
+                class="h-6 w-6 text-slate-700 justify-self-center"
+                @mouseenter="toggleTooltip"
+                @mouseleave="toggleTooltip"
+                @focus="toggleTooltip"
+                @blur="toggleTooltip"
+              />
+            </template>
+            <template #tooltip>Mandatory rule</template>
+          </Tooltip>
+          <Tooltip v-if="level.apply_on_join">
+            <template #trigger="{ toggleTooltip }">
+              <CogIcon
+                class="h-6 w-6 text-slate-700 justify-self-center"
+                @mouseenter="toggleTooltip"
+                @mouseleave="toggleTooltip"
+                @focus="toggleTooltip"
+                @blur="toggleTooltip"
+              />
+            </template>
+            <template #tooltip>
+              All members receive this access when joining
+            </template>
+          </Tooltip>
         </div>
       </button>
     </li>
@@ -56,7 +78,7 @@
 <script setup lang="ts">
 import { store } from "../../store";
 import { useRoute } from "vue-router";
-import { CheckCircleIcon } from "@heroicons/vue/outline";
+import { CheckCircleIcon, CogIcon } from "@heroicons/vue/outline";
 import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/vue";
 import LinkButton from "@/components/Buttons/LinkButton.vue";
@@ -70,6 +92,7 @@ import {
 } from "@/api/accessLevels";
 import useToast from "../Toast/useToast";
 import { AccessLevel } from "@/typings/AccessLevel";
+import Tooltip from "../Tooltip.vue";
 
 const route = useRoute();
 const { showSuccess, showError } = useToast();

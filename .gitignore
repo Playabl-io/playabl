@@ -34,3 +34,8 @@ LOCAL_NOTES.md
 
 # Local Netlify folder
 .netlify
+
+# Supabase
+**/supabase/.branches
+**/supabase/.temp
+**/supabase/.env

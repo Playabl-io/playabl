@@ -24,12 +24,10 @@
         <FormLabel for="tabletop"> Virtual tabletop </FormLabel>
         <FormInput id="tabletop" v-model="tabletop" />
       </div>
-      <div
-        class="p-4 rounded-lg bg-gray-100 border border-solid border-gray-200 flex items-center space-x-2"
-      >
+      <div class="p-4 rounded-lg bg-gray-100 flex items-center space-x-2">
         <FormCheckbox id="recording" v-model="isRecorded" />
         <FormLabel class="font-normal" for="recording">
-          This game will be recorded in accordance with community guidelines
+          This game may be recorded
         </FormLabel>
       </div>
     </section>

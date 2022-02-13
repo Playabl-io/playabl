@@ -1,5 +1,5 @@
 <template>
-  <section class="flex space-x-5 py-2 items-baseline text-sm">
+  <section class="flex flex-wrap gap-5 py-2 items-baseline text-sm">
     <router-link
       v-if="store.user"
       to="/games/joined"

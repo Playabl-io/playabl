@@ -7,20 +7,14 @@
       <LoadingSpinner color="brand-500" />
     </div>
     <div v-if="state.value === 'noCommunities'" class="grid place-items-center">
-      <p>
-        Games are posted through communities. You can
-        <router-link
-          to="/communities/all"
-          class="text-brand-500 font-semibold hover:border-b hover:border-solid hover:border-brand-500"
-        >
-          browse and join communities
-        </router-link>
-        or
+      <p class="max-w-lg text-center leading-6">
+        You don't have creator privileges on any communities. Request this from
+        your community organizer, or
         <router-link
           to="/communities/new"
           class="text-brand-500 font-semibold hover:border-b hover:border-solid hover:border-brand-500"
         >
-          start your own!
+          start your own community!
         </router-link>
       </p>
     </div>
@@ -113,12 +107,10 @@
             @clear-file="coverImage = undefined"
           />
         </div>
-        <div
-          class="p-4 rounded-lg bg-gray-100 border border-solid border-gray-200 flex items-center space-x-2"
-        >
+        <div class="p-4 rounded-lg bg-gray-100 flex items-center space-x-2">
           <FormCheckbox id="recording" v-model="isRecorded" />
           <FormLabel class="font-normal" for="recording">
-            This game will be recorded in accordance with community guidelines
+            This game may be recorded
           </FormLabel>
         </div>
         <PrimaryButton>
@@ -252,7 +244,7 @@ import FormTimeInput from "@/components/Forms/FormTimeInput.vue";
 import LinkButton from "@/components/Buttons/LinkButton.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import { NewSession } from "@/typings/Session";
-import { loadJoinedCommunities } from "@/api/communities";
+import { loadCreatorAndAdminCommunities } from "@/api/communities";
 import { Community } from "@/typings/Community";
 import { GAME_DRAFT_STATE, NewGame } from "@/typings/Game";
 import AccessTimes from "@/components/Game/AccessTimes.vue";
@@ -290,7 +282,7 @@ const newGameMachine = createMachine<{
     states: {
       loadCommunities: {
         invoke: {
-          src: loadJoinedCommunities,
+          src: loadCreatorAndAdminCommunities,
           onDone: {
             target: "evaluateCommunities",
             actions: assign({

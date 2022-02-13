@@ -29,7 +29,6 @@ const showNewProfileModal = ref(false);
 
 supabase.auth.onAuthStateChange(async (event, session) => {
   if (session !== null && session.user) {
-    console.log("auth state change");
     const profile = await loadProfile(session.user.id);
     store.user = profile;
     if (redirect) {

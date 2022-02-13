@@ -11,6 +11,7 @@ export interface AccessLevel {
   time_denomination: ACCESS_LEVEL_TIME_DENOMINATION;
   is_mandatory: boolean;
   community_id: string;
+  apply_on_join: boolean;
 }
 
 export type NewAccessLevel = Omit<AccessLevel, "id">;

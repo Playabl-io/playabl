@@ -85,7 +85,7 @@
   </section>
 </template>
 <script setup lang="ts">
-import { ref, onMounted, PropType, toRefs, computed } from "vue";
+import { ref, onMounted, PropType, toRefs } from "vue";
 import { supabase } from "@/supabase";
 import { log } from "@/util/logger";
 import { useRoute } from "vue-router";

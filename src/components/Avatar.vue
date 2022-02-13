@@ -40,7 +40,9 @@ onMounted(async () => {
 watch(
   () => props.avatarUrl,
   async (newAvatarUrl) => {
-    imagePath.value = await getAvatarImageUrl(newAvatarUrl);
+    if (newAvatarUrl) {
+      imagePath.value = await getAvatarImageUrl(newAvatarUrl);
+    }
   }
 );
 
