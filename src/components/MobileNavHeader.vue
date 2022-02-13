@@ -17,7 +17,7 @@
         >
           <menu-item>
             <router-link to="/" class="font-paytone text-lg p-2">
-              Playout
+              Playabl
             </router-link>
           </menu-item>
           <MenuItem>

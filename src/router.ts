@@ -28,28 +28,28 @@ const routes = [
     path: "/",
     component: Index,
     meta: {
-      title: "Playout",
+      title: "Playabl",
     },
   },
   {
     path: "/invite/:invite_id",
     component: Invite,
     meta: {
-      title: "Playout",
+      title: "Playabl",
     },
   },
   {
     path: "/login",
     component: SignIn,
     meta: {
-      title: "Playout - Sign In",
+      title: "Playabl - Sign In",
     },
   },
   {
     path: "/profile",
     component: Profile,
     meta: {
-      title: "Playout - Profile",
+      title: "Playabl - Profile",
       requiresAuth: true,
     },
   },
@@ -57,7 +57,7 @@ const routes = [
     path: "/communities/joined",
     component: CommunitiesJoined,
     meta: {
-      title: "Playout - Communities",
+      title: "Playabl - Communities",
       requiresAuth: true,
     },
   },
@@ -65,14 +65,14 @@ const routes = [
     path: "/communities/all",
     component: CommunitiesAll,
     meta: {
-      title: "Playout - Communities",
+      title: "Playabl - Communities",
     },
   },
   {
     path: "/communities/manage",
     component: CommunitiesManage,
     meta: {
-      title: "Playout - Communities",
+      title: "Playabl - Communities",
       requiresAuth: true,
     },
   },
@@ -80,14 +80,14 @@ const routes = [
     path: "/communities/new",
     component: CommunityNew,
     meta: {
-      title: "Playout - New Community",
+      title: "Playabl - New Community",
     },
   },
   {
     path: "/communities/:community_id",
     component: CommunityBase,
     meta: {
-      title: "Playout - Community",
+      title: "Playabl - Community",
     },
     children: [
       {
@@ -104,9 +104,6 @@ const routes = [
       {
         path: "calendar",
         component: CommunityCalendar,
-        meta: {
-          requiresAuth: true,
-        },
       },
       {
         path: "manage",
@@ -121,7 +118,7 @@ const routes = [
     path: "/games/joined",
     component: GamesJoined,
     meta: {
-      title: "Playout - Games",
+      title: "Playabl - Games",
       requiresAuth: true,
     },
   },
@@ -129,14 +126,14 @@ const routes = [
     path: "/games/browse",
     component: GamesBrowse,
     meta: {
-      title: "Playout - Games",
+      title: "Playabl - Games",
     },
   },
   {
     path: "/games/manage",
     component: GamesManage,
     meta: {
-      title: "Playout - Games",
+      title: "Playabl - Games",
       requiresAuth: true,
     },
   },
@@ -144,7 +141,7 @@ const routes = [
     path: "/games/new",
     component: GameNew,
     meta: {
-      title: "Playout - New Game",
+      title: "Playabl - New Game",
       requiresAuth: true,
     },
   },
@@ -152,7 +149,7 @@ const routes = [
     path: "/games/:game_id",
     component: GameBase,
     meta: {
-      title: "Playout - Community",
+      title: "Playabl - Community",
     },
     children: [
       {

@@ -3,7 +3,7 @@
     class="w-screen py-2 px-12 grid grid-cols-6 sticky top-0 bg-inherit items-center box-border z-10"
     v-bind="$attrs"
   >
-    <router-link to="/" class="font-paytone text-lg"> Playout </router-link>
+    <router-link to="/" class="font-paytone text-lg"> Playabl </router-link>
     <nav class="mx-auto col-span-4 flex items-center">
       <router-link
         class="pt-2 mx-6"
