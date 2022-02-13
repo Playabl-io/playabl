@@ -67,6 +67,14 @@
     <div
       class="absolute inset-x-0 bottom-0 px-6 py-4 flex justify-end space-x-2 border-t border-solid border-gray-200"
     >
+      <GhostButton
+        type="button"
+        class="mr-auto"
+        aria-label="Remve member from community"
+        @click="emit('delete')"
+      >
+        <TrashIcon class="h-5 w-5 text-red-600" />
+      </GhostButton>
       <OutlineButton type="button" @click="emit('close')">Close</OutlineButton>
     </div>
   </div>
@@ -75,27 +83,29 @@
 import { PropType, toRefs, ref, computed } from "vue";
 import { MemberWithMembership } from "@/typings/Member";
 import { AccessLevel } from "@/typings/AccessLevel";
-import { PlusCircleIcon, XCircleIcon } from "@heroicons/vue/outline";
+import { PlusCircleIcon, XCircleIcon, TrashIcon } from "@heroicons/vue/outline";
 import Heading from "../Heading.vue";
 import { possessive } from "@/util/grammar";
 import OutlineButton from "../Buttons/OutlineButton.vue";
 import { store } from "@/store";
-import GhostButton from "../Buttons/GhostButton.vue";
 import { ROLES } from "@/util/roles";
 import FormLabel from "../Forms/FormLabel.vue";
 import { updateMemberRole } from "@/api/communityRole";
-import LinkButton from "../Buttons/LinkButton.vue";
 import {
   addAccessToMember,
   removeAccessFromMember,
 } from "@/api/communityAccess";
 import PrimaryButton from "../Buttons/PrimaryButton.vue";
+import GhostButton from "../Buttons/GhostButton.vue";
+import useToast from "../Toast/useToast";
+
+const { showSuccess } = useToast();
 
 const addingAccess = ref(false);
 const removingAccess = ref(false);
 const updatingRole = ref(false);
 
-const emit = defineEmits(["close"]);
+const emit = defineEmits(["close", "delete"]);
 
 const props = defineProps({
   member: {
@@ -126,6 +136,7 @@ async function handleRoleUpdate(event: Event) {
     role: membershipMap[element.value],
   });
   updatingRole.value = false;
+  showSuccess({ message: "Role updated" });
 }
 
 async function handleAddAccess(grant: AccessLevel) {
@@ -146,6 +157,7 @@ async function handleAddAccess(grant: AccessLevel) {
     ];
   }
   addingAccess.value = false;
+  showSuccess({ message: "Access updated" });
 }
 
 async function handleRemoveAccess(communityAccessId: string) {
@@ -155,5 +167,6 @@ async function handleRemoveAccess(communityAccessId: string) {
     props.member.id
   ].filter((access) => access.id !== communityAccessId);
   removingAccess.value = false;
+  showSuccess({ message: "Access updated" });
 }
 </script>

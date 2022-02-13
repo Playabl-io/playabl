@@ -12,6 +12,25 @@
       <p>Games</p>
       <p class="text-lg place-self-end font-semibold">{{ gamesCount }}</p>
     </div>
+    <div class="section-container grow flex flex-col">
+      <Heading level="h6" as="h2" class="mb-4">Invite Links</Heading>
+      <div class="grow">
+        <InviteLink
+          v-for="invite in communityInvites"
+          :key="invite"
+          :invite="invite"
+          @revoke="revokeInviteLink(invite)"
+        />
+      </div>
+      <GhostButton
+        :is-loading="creatingInvite"
+        :disabled="creatingInvite"
+        class="w-full mt-4"
+        @click="createInviteLink"
+      >
+        Create new invite link
+      </GhostButton>
+    </div>
   </section>
   <section class="mt-12">
     <div
@@ -60,22 +79,7 @@
       </section>
       <section class="section-container lg:col-span-2 row-span-2">
         <Heading level="h6" as="h2" class="mb-4">Members</Heading>
-        <MemberList />
-        <Heading level="h6" as="h2" class="mb-4">Invite Links</Heading>
-        <InviteLink
-          v-for="invite in communityInvites"
-          :key="invite"
-          :invite="invite"
-          @revoke="revokeInviteLink(invite)"
-        />
-        <GhostButton
-          :is-loading="creatingInvite"
-          :disabled="creatingInvite"
-          class="w-full mt-6"
-          @click="createInviteLink"
-        >
-          Create new invite link
-        </GhostButton>
+        <MembersList :community-id="community.id" />
       </section>
       <section class="section-container md:col-span-2 xl:col-span-2">
         <Heading level="h6" as="h2" class="mb-4">Settings</Heading>
@@ -94,7 +98,7 @@ import { CheckCircleIcon, MinusCircleIcon } from "@heroicons/vue/outline";
 import Heading from "@/components/Heading.vue";
 import { Community } from "@/typings/Community";
 import AccessLevelList from "@/components/Community/AccessList.vue";
-import MemberList from "@/components/Community/MembersList.vue";
+import MembersList from "@/components/Community/MembersList.vue";
 import { Game } from "@/typings/Game";
 import { MemberWithMembership } from "@/typings/Member";
 import { store } from "@/store";
@@ -119,7 +123,7 @@ const members = ref<MemberWithMembership[]>([]);
 const membersCount = ref(0);
 const games = ref<Game[]>([]);
 const gamesCount = ref(0);
-const communityInvites = ref<string[]>();
+const communityInvites = ref<string[]>([]);
 const creatingInvite = ref(false);
 
 onMounted(async () => {
@@ -138,10 +142,9 @@ async function getMembers() {
   const { data, error, count } = await supabase
     .from("community_memberships")
     .select("id, role_id (name), user_id (*)", { count: "exact" })
-    .eq("community_id", route.params.community_id)
-    .neq("user_id", store.user?.id);
+    .eq("community_id", route.params.community_id);
   if (count !== null) {
-    membersCount.value = count + 1; // adds back the logged in user;
+    membersCount.value = count;
   }
   if (data) {
     const mappedMembers = data.map((membership) => ({
@@ -230,7 +233,7 @@ async function createInviteLink() {
     })
     .single();
   if (data) {
-    communityInvites.value?.concat(data.id);
+    communityInvites.value = communityInvites.value?.concat(data.id);
     showSuccess({ message: "Invite link created!" });
   }
   creatingInvite.value = false;

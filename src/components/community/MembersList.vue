@@ -12,12 +12,11 @@
           "
         >
           <div class="grid member-list gap-4">
-            <div
-              class="rounded-full w-10 h-10 bg-brand-200 text-brand-500 grid place-items-center content-center"
-            >
-              {{ member.username?.charAt(0) || member.email.charAt(0) }}
-            </div>
-            <div class="grid place-items-center text-left">
+            <Avatar
+              :username="member.username || member.email"
+              :avatar-url="member.avatar_url"
+            />
+            <div class="grid text-left">
               <p class="font-semibold truncate w-full">
                 {{ member.username || member.email }}
               </p>
@@ -52,13 +51,14 @@
       v-if="state.context.member"
       :member="state.context.member"
       @close="send('CANCEL')"
+      @delete="send('DELETE_MEMBER')"
     />
   </Drawer>
   <DeleteModal
     :is-deleting="state.value === 'deleting'"
     :open="state.context.modalVisible"
     :title="`Remove ${state.context.member?.username} from community?`"
-    message="Are you sure? This action is permanent."
+    message="Are you sure? This will remove their access to the community and cancel any games they created. They will also be removed from any sessions they rsvp'd to."
     @delete="send('DELETE', { member: state.context.member })"
     @cancel="send('CANCEL')"
   />
@@ -72,6 +72,20 @@ import DeleteModal from "../Modals/DeleteModal.vue";
 import { pluralize } from "@/util/grammar";
 import MemberForm from "./MemberForm.vue";
 import { store } from "@/store";
+import Avatar from "../Avatar.vue";
+import { supabase } from "@/supabase";
+import { PropType } from "vue";
+import { Community } from "@/typings/Community";
+import useToast from "../Toast/useToast";
+
+const { showError } = useToast();
+
+const props = defineProps({
+  communityId: {
+    type: String as PropType<Community["id"]>,
+    required: true,
+  },
+});
 
 const memberManagementMachine = createMachine<{
   member?: MemberWithMembership;
@@ -93,14 +107,6 @@ const memberManagementMachine = createMachine<{
             target: "editMember",
             actions: ["assignMember", "showDrawer"],
           },
-          NEW_INVITE_LINK: {
-            target: "newInviteLink",
-            actions: "showDrawer",
-          },
-          DELETE_MEMBER: {
-            target: "deleteMember",
-            actions: ["assignMember", "showModal"],
-          },
         },
       },
       editMember: {
@@ -109,10 +115,42 @@ const memberManagementMachine = createMachine<{
             target: "closed",
             actions: ["clearMember", "hideDrawer"],
           },
+          DELETE_MEMBER: {
+            target: "deleteMember",
+            actions: ["hideDrawer", "showModal"],
+          },
         },
       },
-      newInviteLink: {},
-      deleteMember: {},
+      deleteMember: {
+        on: {
+          DELETE: {
+            target: "deleting",
+          },
+          CANCEL: {
+            target: "editMember",
+            actions: ["hideModal", "showDrawer"],
+          },
+        },
+      },
+      deleting: {
+        invoke: {
+          src: (context) => {
+            if (!context.member) throw Error("no member selected");
+            return supabase
+              .from("community_memberships")
+              .delete()
+              .eq("id", context.member.membershipId);
+          },
+          onDone: {
+            target: "closed",
+            actions: ["hideModal", "hideDrawer", "removeMember"],
+          },
+          onError: {
+            target: "editMember",
+            actions: ["hideModal", "showDrawer", "showError"],
+          },
+        },
+      },
     },
   },
   {
@@ -135,6 +173,19 @@ const memberManagementMachine = createMachine<{
       hideModal: assign({
         modalVisible: (context, event) => false,
       }),
+      removeMember: assign({
+        member: (context) => {
+          console.log(context);
+          if (!context.member?.id) throw Error("no member");
+          store.communityMembers = store.communityMembers.filter(
+            (member) => member.id !== context.member?.id
+          );
+          return undefined;
+        },
+      }),
+      showError: () => {
+        showError({ message: "Something went wrong " });
+      },
     },
   }
 );

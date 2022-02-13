@@ -76,7 +76,6 @@ import { store } from "@/store";
 import useToast from "../Toast/useToast";
 import GhostButton from "../Buttons/GhostButton.vue";
 import { gameStore } from "@/pages/Game/gameStore";
-import LoadingSpinner from "../LoadingSpinner.vue";
 import SessionAttendee from "@/pages/Game/SessionAttendee.vue";
 
 const { showSuccess, showError } = useToast();

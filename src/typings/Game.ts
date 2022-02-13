@@ -14,7 +14,7 @@ export interface Game {
   cover_image?: string;
   participant_count: number;
   draft_state: GAME_DRAFT_STATE;
-  deleted_at?: string;
+  deleted_at?: string | null;
   created_at: string;
   community_id: string;
   creator_id: string;

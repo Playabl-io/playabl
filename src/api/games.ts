@@ -47,6 +47,7 @@ export async function loadChronologicalCommunityGames(communityIds: string[]) {
   const { data, error } = await supabase
     .from<GameListing>("games")
     .select("*, community_id (id, name), sessions!inner(*)")
+    .is("deleted_at", null)
     .gte("sessions.start_time", today.getTime())
     .in("community_id", communityIds)
     .order("start_time", { foreignTable: "sessions", ascending: true });
@@ -65,6 +66,7 @@ export async function loadCommunityGamesWithOpenings(communityIds: string[]) {
     .select(
       "*, community_id (id, name), sessions (id, start_time, has_openings)"
     )
+    .is("deleted_at", null)
     .eq("sessions.has_openings", true)
     .gte("sessions.start_time", today.getTime())
     .in("community_id", communityIds)
@@ -81,15 +83,31 @@ export async function loadManagedGames(userId: string) {
   const today = new Date();
   const { data, error } = await supabase
     .from<GameListing>("games")
-    .select(
-      "*, community_id (id, name), sessions!inner(*, rsvps (user_id (username)))"
-    )
+    .select("*, community_id (id, name), sessions (*)")
     .gte("sessions.start_time", today.getTime())
     .eq("creator_id", userId)
     .order("start_time", { foreignTable: "sessions" });
   if (error) {
     log({ error });
   }
+
+  if (data) {
+    return data;
+  }
+}
+
+export async function loadPastManagedGames(userId: string) {
+  const today = new Date();
+  const { data, error } = await supabase
+    .from<GameListing>("games")
+    .select("*, community_id (id, name), sessions (*)")
+    .lt("sessions.start_time", today.getTime())
+    .eq("creator_id", userId)
+    .order("start_time", { foreignTable: "sessions", ascending: false });
+  if (error) {
+    log({ error });
+  }
+  console.log(data);
 
   if (data) {
     return data;

@@ -46,7 +46,7 @@
       </template>
     </GameBadge>
   </div>
-  <section class="mt-12">
+  <section v-if="!gameStore.game.deleted_at" class="mt-12">
     <Heading level="h6" as="h2">Sessions</Heading>
     <div class="grid gap-8 mt-8">
       <template v-for="session in gameStore.sessions" :key="session.id">

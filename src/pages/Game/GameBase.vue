@@ -6,6 +6,12 @@
     <div v-else>
       <Heading level="h1">{{ gameStore.game.title }}</Heading>
       <p class="mt-6">By {{ gameData?.creator_id.username || "" }}</p>
+      <div
+        v-if="gameStore.game.deleted_at"
+        class="mt-4 p-2 rounded-xl bg-red-700 text-white inline-flex"
+      >
+        Cancelled
+      </div>
       <section class="my-12 flex justify-between items-baseline text-sm">
         <div class="flex space-x-4 py-2">
           <router-link

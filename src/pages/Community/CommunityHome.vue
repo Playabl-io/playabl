@@ -56,7 +56,7 @@
       </div>
     </div>
   </div>
-  <div class="mt-12 p-8 bg-gray-200 rounded-lg">
+  <div class="mt-12 p-8 bg-gray-200 bg-opacity-70 rounded-lg">
     <p class="mx-auto prose dark:prose-invert prose-lg whitespace-pre-wrap">
       {{ community.description }}
     </p>
