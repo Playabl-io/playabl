@@ -84,20 +84,20 @@ import { PropType, toRefs, ref, computed } from "vue";
 import { MemberWithMembership } from "@/typings/Member";
 import { AccessLevel } from "@/typings/AccessLevel";
 import { PlusCircleIcon, XCircleIcon, TrashIcon } from "@heroicons/vue/outline";
-import Heading from "../Heading.vue";
+import Heading from "@/components/Heading.vue";
 import { possessive } from "@/util/grammar";
-import OutlineButton from "../Buttons/OutlineButton.vue";
+import OutlineButton from "@/components/Buttons/OutlineButton.vue";
 import { store } from "@/store";
 import { ROLES } from "@/util/roles";
-import FormLabel from "../Forms/FormLabel.vue";
+import FormLabel from "@/components/Forms/FormLabel.vue";
 import { updateMemberRole } from "@/api/communityRole";
 import {
   addAccessToMember,
   removeAccessFromMember,
 } from "@/api/communityAccess";
-import PrimaryButton from "../Buttons/PrimaryButton.vue";
-import GhostButton from "../Buttons/GhostButton.vue";
-import useToast from "../Toast/useToast";
+import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
+import GhostButton from "@/components/Buttons/GhostButton.vue";
+import useToast from "@/components/Toast/useToast";
 
 const { showSuccess } = useToast();
 

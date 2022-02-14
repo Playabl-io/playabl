@@ -79,9 +79,11 @@
       </section>
       <section class="section-container lg:col-span-2 row-span-2">
         <Heading level="h6" as="h2" class="mb-4">Members</Heading>
+        <MembersList :community-id="community.id" />
       </section>
       <section class="section-container md:col-span-2 xl:col-span-2">
         <Heading level="h6" as="h2" class="mb-4">Settings</Heading>
+        <AccessLevels />
       </section>
     </div>
   </section>
@@ -98,9 +100,11 @@ import { Community } from "@/typings/Community";
 import { Game } from "@/typings/Game";
 import { MemberWithMembership } from "@/typings/Member";
 import { store } from "@/store";
-import InviteLink from "@/components/Community/InviteLink.vue";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
 import { loadCommunityAccessTimes } from "@/api/communityAccess";
+import AccessLevels from "./AccessLevels.vue";
+import MembersList from "./MembersList.vue";
+import InviteLink from "./InviteLink.vue";
 
 const props = defineProps({
   community: {

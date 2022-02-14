@@ -61,13 +61,13 @@ import {
   ACCESS_LEVEL_TIME_DENOMINATION,
 } from "@/typings/AccessLevel";
 import { TrashIcon } from "@heroicons/vue/outline";
-import FormLabel from "../Forms/FormLabel.vue";
-import FormInput from "../Forms/FormInput.vue";
-import Heading from "../Heading.vue";
-import PrimaryButton from "../Buttons/PrimaryButton.vue";
-import OutlineButton from "../Buttons/OutlineButton.vue";
-import FormCheckbox from "../Forms/FormCheckbox.vue";
-import GhostButton from "../Buttons/GhostButton.vue";
+import FormLabel from "@/components/Forms/FormLabel.vue";
+import FormInput from "@/components/Forms/FormInput.vue";
+import Heading from "@/components/Heading.vue";
+import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
+import OutlineButton from "@/components/Buttons/OutlineButton.vue";
+import FormCheckbox from "@/components/Forms/FormCheckbox.vue";
+import GhostButton from "@/components/Buttons/GhostButton.vue";
 const props = defineProps({
   accessLevel: {
     type: Object as () => AccessLevel,

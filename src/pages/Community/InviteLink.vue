@@ -46,8 +46,8 @@
 import { useClipboard } from "@vueuse/core";
 import { computed, toRefs, ref } from "vue";
 import { BanIcon } from "@heroicons/vue/outline";
-import LinkButton from "../Buttons/LinkButton.vue";
-import GhostButton from "../Buttons/GhostButton.vue";
+import LinkButton from "@/components/Buttons/LinkButton.vue";
+import GhostButton from "@/components/Buttons/GhostButton.vue";
 
 const showTooltip = ref(false);
 
