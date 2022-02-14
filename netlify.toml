@@ -1,4 +1,4 @@
-[[functions]]
+[functions]
   directory = "netlify/functions/"
 [[redirects]]
   from = "/*"
