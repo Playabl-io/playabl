@@ -10,11 +10,6 @@
         >
           Playabl
         </h1>
-        <p class="text-lg text-white mt-2 text-center">
-          10,000 games
-          <br />
-          Endless playability
-        </p>
       </span>
     </main>
   </section>

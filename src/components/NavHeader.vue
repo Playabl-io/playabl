@@ -16,7 +16,7 @@
       </router-link>
       <router-link
         class="pt-2 mx-6"
-        to="/games/joined"
+        :to="`${store.user ? '/games/joined' : '/games/browse'}`"
         :class="{
           'border-t border-brand-500 dark:border-brand-300': onGamesRoute,
         }"
