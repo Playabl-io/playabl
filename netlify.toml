@@ -1,2 +1,7 @@
 [functions]
   directory = "netlify/functions/"
+[redirects]
+  from = "/*"
+  to = "/"
+  status = "200"
+  query = {path = ":path"}
