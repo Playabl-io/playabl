@@ -79,7 +79,6 @@
       </section>
       <section class="section-container lg:col-span-2 row-span-2">
         <Heading level="h6" as="h2" class="mb-4">Members</Heading>
-        <MembersList :community-id="community.id" />
       </section>
       <section class="section-container md:col-span-2 xl:col-span-2">
         <Heading level="h6" as="h2" class="mb-4">Settings</Heading>
@@ -96,7 +95,6 @@ import useToast from "@/components/Toast/useToast";
 import { CheckCircleIcon, MinusCircleIcon } from "@heroicons/vue/outline";
 import Heading from "@/components/Heading.vue";
 import { Community } from "@/typings/Community";
-import MembersList from "@/components/Community/MembersList.vue";
 import { Game } from "@/typings/Game";
 import { MemberWithMembership } from "@/typings/Member";
 import { store } from "@/store";
