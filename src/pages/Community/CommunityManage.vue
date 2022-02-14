@@ -83,7 +83,6 @@
       </section>
       <section class="section-container md:col-span-2 xl:col-span-2">
         <Heading level="h6" as="h2" class="mb-4">Settings</Heading>
-        <AccessLevels />
       </section>
     </div>
   </section>
@@ -97,7 +96,6 @@ import useToast from "@/components/Toast/useToast";
 import { CheckCircleIcon, MinusCircleIcon } from "@heroicons/vue/outline";
 import Heading from "@/components/Heading.vue";
 import { Community } from "@/typings/Community";
-import AccessLevels from "@/components/Community/AccessLevels.vue";
 import MembersList from "@/components/Community/MembersList.vue";
 import { Game } from "@/typings/Game";
 import { MemberWithMembership } from "@/typings/Member";
