@@ -1,5 +1,9 @@
 name: CI
 
+env:
+  VITE_SUPABASE_URL: https://ngswpesjxakdiljptvrv.supabase.co
+  VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYzODU5MjI0NywiZXhwIjoxOTU0MTY4MjQ3fQ.v8U0k0-NKE8prdsA-tkdrC9SS40eZ1j7yKZjldpArqE
+
 on:
   push:
     branches: [main]
@@ -58,8 +62,8 @@ jobs:
         run: yarn --frozen-lockfile
 
       ## Test
-      - name: Run component tests
-        run: yarn test:ci-components
+      # - name: Run component tests
+      #   run: yarn test:ci-components
 
       - name: Start Vite devserver
         run: yarn start
