@@ -65,7 +65,9 @@ const props = defineProps({
 });
 toRefs(props);
 
-const link = computed(() => `https://localhost:3000/invite/${props.invite}`);
+const link = computed(
+  () => `${import.meta.env.VITE_PLAYABL_URL}/invite/${props.invite}`
+);
 
 const { copy, copied } = useClipboard();
 </script>

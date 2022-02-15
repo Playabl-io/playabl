@@ -1,7 +1,7 @@
 <template>
   <textarea
     v-bind="$attrs"
-    class="p-2 mt-2 rounded-md border border-gray-300 text-slate-900 resize-y dark:bg-slate-200 focus-styles"
+    class="p-2 rounded-md border border-gray-300 text-slate-900 resize-y dark:bg-slate-200 focus-styles"
     :value="modelValue"
     @input="handleInput"
   />

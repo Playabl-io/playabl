@@ -13,7 +13,8 @@
       <p class="text-lg place-self-end font-semibold">{{ gamesCount }}</p>
     </div>
     <div class="section-container grow flex flex-col">
-      <Heading level="h6" as="h2" class="mb-4">Invite Links</Heading>
+      <Heading level="h6" as="h2">Invite Links</Heading>
+      <p class="text-xs text-slate-700 mt-1 mb-4">Click to copy</p>
       <div class="grow">
         <InviteLink
           v-for="invite in communityInvites"

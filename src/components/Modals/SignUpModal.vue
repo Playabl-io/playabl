@@ -1,6 +1,7 @@
 <template>
   <Modal title="One sec, let's make you an account" :open="open">
     <DismissButton
+      v-if="allowDismiss"
       class="absolute top-4 right-4"
       label="Close"
       @click="emit('cancel')"
@@ -11,13 +12,13 @@
         class="flex flex-col space-y-4 lg:max-w-xl mx-auto"
         @submit.prevent="handleSignUp"
       >
-        <form-label class="flex flex-col">
-          Email
+        <div class="flex flex-col">
+          <form-label> Email </form-label>
           <form-input v-model="email" type="email" required />
-        </form-label>
+        </div>
         <div>
-          <form-label class="flex flex-col">
-            Password
+          <div class="flex flex-col">
+            <form-label> Password </form-label>
             <div class="flex">
               <form-input
                 v-model="password"
@@ -34,7 +35,7 @@
                 <EyeIcon v-else class="h-5 w-6" />
               </GhostButton>
             </div>
-          </form-label>
+          </div>
           <p
             v-if="passwordError"
             class="text-red-500 text-sm font-semibold mt-1"
@@ -43,8 +44,8 @@
           </p>
         </div>
         <div>
-          <form-label class="flex flex-col">
-            Confirm password
+          <div class="flex flex-col">
+            <form-label> Confirm password </form-label>
             <div class="flex">
               <form-input
                 v-model="confirmPassword"
@@ -66,7 +67,7 @@
                 <EyeIcon v-else class="h-5 w-6" />
               </GhostButton>
             </div>
-          </form-label>
+          </div>
           <p
             v-if="passwordError"
             class="text-red-500 font-semibold text-sm mt-1"
@@ -122,6 +123,10 @@ const props = defineProps({
   open: {
     type: Boolean,
     required: true,
+  },
+  allowDismiss: {
+    type: Boolean,
+    default: true,
   },
 });
 toRefs(props);

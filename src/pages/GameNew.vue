@@ -321,7 +321,7 @@ const newGameMachine = createMachine<{
       },
       gameDetails: {
         invoke: {
-          src: (context, event) =>
+          src: (context) =>
             getAccessLevels(context.selectedCommunity?.id ?? ""),
           onDone: {
             actions: ["updateEnabledAccessLevels"],
@@ -373,7 +373,7 @@ const newGameMachine = createMachine<{
           return event.data;
         },
       }),
-      showErrorToast: (context, event) => {
+      showErrorToast: () => {
         showError({ message: "Unable to create game" });
       },
     },
