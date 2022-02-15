@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-wrap gap-6 items-baseline justify-between"></div>
   <section class="flex justify-between items-baseline text-sm">
-    <div class="flex space-x-4 py-2">
+    <div class="flex flex-wrap gap-4 py-2">
       <router-link
         v-if="store.user"
         to="/communities/joined"
@@ -13,7 +13,7 @@
         to="/communities/browse"
         active-class="border-b border-brand-500 dark:border-brand-300"
       >
-        Browse all
+        Browse
       </router-link>
       <router-link
         v-if="store.user"
@@ -22,7 +22,7 @@
       >
         Manage
       </router-link>
-      <router-link to="/communities/new"> Create a new community </router-link>
+      <router-link to="/communities/new"> New </router-link>
     </div>
   </section>
   <section class="grid grid-cols-1 gap-8 mt-12">
@@ -41,6 +41,7 @@ import { store } from "@/store";
 import { Community } from "@/typings/Community";
 import LoadingSpinner from "./LoadingSpinner.vue";
 import CommunityListing from "./CommunityListing.vue";
+
 const props = defineProps({
   isLoading: {
     type: Boolean,

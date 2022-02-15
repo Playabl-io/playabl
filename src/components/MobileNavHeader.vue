@@ -50,8 +50,8 @@
               Profile
             </router-link>
           </menu-item>
-          <menu-item>
-            <outline-button>Sign out</outline-button>
+          <menu-item v-if="store.user?.id">
+            <outline-button @click="signOut">Sign out</outline-button>
           </menu-item>
         </MenuItems>
       </transition>
@@ -59,9 +59,25 @@
   </header>
 </template>
 <script setup lang="ts">
-import { RouterLink } from "vue-router";
+import { ref } from "vue";
+import { supabase } from "@/supabase";
+import { RouterLink, useRouter } from "vue-router";
 import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue";
 import OutlineButton from "./Buttons/OutlineButton.vue";
 import { MenuIcon } from "@heroicons/vue/solid";
 import { store } from "@/store";
+import { log } from "@/util/logger";
+
+const isSigningOut = ref(false);
+const router = useRouter();
+
+async function signOut() {
+  isSigningOut.value = true;
+  const { error } = await supabase.auth.signOut();
+  router.push("/");
+  isSigningOut.value = false;
+  if (error) {
+    log(error);
+  }
+}
 </script>

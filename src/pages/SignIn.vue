@@ -83,24 +83,28 @@
       </form>
       <form
         v-else
-        class="flex flex-col space-y-4 lg:max-w-xl mx-auto"
+        class="flex flex-col lg:max-w-xl mx-auto"
         @submit.prevent="handleLogin"
       >
         <Heading level="h1" as="h5">Sign in</Heading>
-        <form-label class="flex flex-col" for="email">
-          Email
+        <div class="flex flex-col mt-8">
+          <form-label for="email"> Email </form-label>
           <form-input id="email" v-model="email" type="email" required />
-        </form-label>
-        <form-label class="flex flex-col" for="password">
-          Password
+        </div>
+        <div class="flex flex-col mt-4">
+          <form-label class="flex flex-col" for="password">
+            Password
+          </form-label>
           <form-input
             id="password"
             v-model="password"
             type="password"
             required
           />
-        </form-label>
-        <primary-button :is-loading="loading"> Sign in </primary-button>
+        </div>
+        <primary-button :is-loading="loading" class="mt-4">
+          Sign in
+        </primary-button>
 
         <!-- BLOCKED FOR BETA
         <LinkButton type="button" @click="displaySignUp = true">

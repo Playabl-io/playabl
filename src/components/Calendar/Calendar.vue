@@ -7,7 +7,9 @@
     }"
     @keydown.escape="emit('close')"
   >
-    <div class="px-2 flex justify-between items-center">
+    <div
+      class="px-2 pb-2 flex flex-wrap sm:gap-2 justify-center sm:justify-between items-center"
+    >
       <div class="py-2 flex space-x-2 items-center justify-center">
         <GhostButton
           type="button"

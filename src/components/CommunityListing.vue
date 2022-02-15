@@ -8,7 +8,7 @@
         >
           <heading level="h6">{{ community.name }}</heading>
         </router-link>
-        <Tooltip>
+        <Tooltip v-if="false">
           <template #trigger="{ toggleTooltip }">
             <BadgeCheckIcon
               v-if="community.code_of_conduct_url"
@@ -21,7 +21,7 @@
           </template>
           <template #tooltip> Has a community code of conduct </template>
         </Tooltip>
-        <Tooltip>
+        <Tooltip v-if="community.allow_public_signup">
           <template #trigger="{ toggleTooltip }">
             <LightningBoltIcon
               v-if="community.allow_public_signup"
@@ -38,6 +38,8 @@
       <a
         class="mt-1 hover:underline active:underline text-slate-600 dark:text-slate-400 text-sm"
         :href="community.website"
+        target="_blank"
+        rel="noreferrer noopener"
       >
         {{ community.website }}
       </a>
@@ -92,6 +94,7 @@
       </div>
     </section>
     <section
+      v-if="false"
       class="order-1 lg:order-2 lg:col-span-2 grid place-items-end content-center"
     >
       <div

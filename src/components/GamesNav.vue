@@ -20,7 +20,7 @@
     >
       Manage
     </router-link>
-    <router-link to="/games/new"> Create a new game </router-link>
+    <router-link to="/games/new"> New </router-link>
   </section>
 </template>
 <script setup lang="ts">
