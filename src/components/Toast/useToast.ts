@@ -36,7 +36,7 @@ export default function useToast() {
 
   const showToast = (message: Omit<ToastMessage, "id" | "timer">) => {
     const id = uuidv4();
-    messages.value.unshift({ id, ...message, timer: 7 });
+    messages.value.unshift({ id, ...message, timer: 5 });
     setTimer(id);
   };
 
