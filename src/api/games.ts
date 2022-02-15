@@ -125,7 +125,12 @@ export async function joinSession({
     {
       method: "POST",
     }
-  ).then((response) => response.json());
+  )
+    .then((response) => response.json())
+    .catch((error) => {
+      log({ error });
+      throw error;
+    });
   return data;
 }
 
@@ -141,6 +146,11 @@ export async function leaveSession({
     {
       method: "DELETE",
     }
-  ).then((response) => response.json());
+  )
+    .then((response) => response.json())
+    .catch((error) => {
+      log({ error });
+      throw error;
+    });
   return data;
 }
