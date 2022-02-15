@@ -9,7 +9,7 @@
     "test": "cypress open",
     "test-components": "cypress open-ct",
     "test:ci": "cypress run --headless",
-    "test:ci-components": "cypress run-ct",
+    "test:ci-components": "PLAYABL_PW=$PLAYABL_PW cypress run-ct",
     "lint": "eslint --ext .js,.vue,.ts src"
   },
   "dependencies": {
