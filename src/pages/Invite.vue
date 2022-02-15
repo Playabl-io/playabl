@@ -20,12 +20,17 @@
         <PrimaryButton
           class="w-full mt-4"
           :is-loading="joining"
-          :disabled="joining"
+          :disabled="notSignedIn || joining"
           @click="joinCommunity"
         >
           Join now
         </PrimaryButton>
       </div>
+      <SignUpModal
+        :open="notSignedIn"
+        :allow-dismiss="false"
+        @signed-in="notSignedIn = false"
+      />
     </div>
   </BaseTemplate>
 </template>
@@ -38,6 +43,7 @@ import { onMounted, ref } from "vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import useToast from "@/components/Toast/useToast";
+import SignUpModal from "@/components/Modals/SignUpModal.vue";
 
 const { showSuccess, showError } = useToast();
 
@@ -51,6 +57,7 @@ const inviteInfo = ref<{
 const isLoading = ref(false);
 const joining = ref(false);
 const alreadyJoined = ref(false);
+const notSignedIn = ref(false);
 
 async function loadCommunityInvite() {
   const { data, error } = await supabase
@@ -96,8 +103,7 @@ async function joinCommunity() {
 onMounted(async () => {
   isLoading.value = true;
   if (!store.user?.id) {
-    isLoading.value = false;
-    return;
+    notSignedIn.value = true;
   }
   await loadCommunityInvite();
   await checkCommunityMember();
