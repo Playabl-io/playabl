@@ -36,9 +36,7 @@
           <OutlineButton type="button" @click="emit('close')">
             Do this later
           </OutlineButton>
-          <primary-button :is-loading="loading">
-            Update profile
-          </primary-button>
+          <PrimaryButton :is-loading="loading"> Update profile </PrimaryButton>
         </div>
       </form>
     </div>
@@ -61,6 +59,7 @@ import {
   handleFileDrop,
 } from "@/components/Forms/fileInputUtil";
 import { uploadToAvatarStorage } from "@/api/storage";
+import { store } from "@/store";
 
 const { showSuccess, showError } = useToast();
 
@@ -95,21 +94,27 @@ function onFileChange(event: Event) {
 
 const updateProfile = async () => {
   let imagePath;
-  if (avatar.value) {
-    imagePath = await uploadToAvatarStorage(avatar.value);
-  }
   try {
     loading.value = true;
-    const { data, error } = await supabase.from("profiles").update({
-      username: username.value,
-      pronouns: pronouns.value,
-      avatar_url: imagePath,
-    });
-    if (error) throw error;
-    if (data) {
-      showSuccess({ message: "Profile updated" });
-      emit("close");
+    if (avatar.value) {
+      imagePath = await uploadToAvatarStorage(avatar.value);
     }
+    const { error } = await supabase
+      .from("profiles")
+      .update(
+        {
+          username: username.value,
+          pronouns: pronouns.value,
+          avatar_url: imagePath,
+        },
+        { returning: "minimal" }
+      )
+      .eq("id", store.user?.id);
+
+    if (error) throw error;
+
+    showSuccess({ message: "Profile updated" });
+    emit("close");
   } catch (error) {
     showError({ message: error?.error_description || error?.message });
     log({ error });

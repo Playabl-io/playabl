@@ -2,9 +2,6 @@
   <BaseTemplate>
     <div class="grid place-items-center">
       <LoadingSpinner v-if="isLoading" color="brand-500" />
-      <div v-else-if="!store.user?.id">
-        You need to sign in to accept an invite.
-      </div>
       <div v-else-if="inviteInfo?.is_revoked">
         <p>
           Sorry, that invite isn't valid. Please contact the community admin.
@@ -40,7 +37,6 @@ import { supabase } from "@/supabase";
 import { onMounted, ref } from "vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
-import { ROLES } from "@/util/roles";
 import useToast from "@/components/Toast/useToast";
 
 const { showSuccess, showError } = useToast();

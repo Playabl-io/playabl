@@ -66,6 +66,7 @@ const routes = [
     component: CommunitiesAll,
     meta: {
       title: "Playabl - Communities",
+      requiresAuth: true,
     },
   },
   {
@@ -81,6 +82,7 @@ const routes = [
     component: CommunityNew,
     meta: {
       title: "Playabl - New Community",
+      requiresAuth: true,
     },
   },
   {
@@ -88,6 +90,7 @@ const routes = [
     component: CommunityBase,
     meta: {
       title: "Playabl - Community",
+      requiresAuth: true,
     },
     children: [
       {
@@ -127,6 +130,7 @@ const routes = [
     component: GamesBrowse,
     meta: {
       title: "Playabl - Games",
+      requiresAuth: true,
     },
   },
   {
@@ -150,6 +154,7 @@ const routes = [
     component: GameBase,
     meta: {
       title: "Playabl - Community",
+      requiresAuth: true,
     },
     children: [
       {

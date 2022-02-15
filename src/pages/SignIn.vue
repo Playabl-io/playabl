@@ -20,7 +20,7 @@
         <div>
           <form-label class="flex flex-col">
             Password
-            <div class="flex">
+            <div class="flex items-end">
               <form-input
                 v-model="password"
                 class="grow"
@@ -47,7 +47,7 @@
         <div>
           <form-label class="flex flex-col">
             Confirm password
-            <div class="flex">
+            <div class="flex items-end">
               <form-input
                 v-model="confirmPassword"
                 :type="showConfirmPw ? 'text' : 'password'"
@@ -87,18 +87,25 @@
         @submit.prevent="handleLogin"
       >
         <Heading level="h1" as="h5">Sign in</Heading>
-        <form-label class="flex flex-col">
+        <form-label class="flex flex-col" for="email">
           Email
-          <form-input v-model="email" type="email" required />
+          <form-input id="email" v-model="email" type="email" required />
         </form-label>
-        <form-label class="flex flex-col">
+        <form-label class="flex flex-col" for="password">
           Password
-          <form-input v-model="password" type="password" required />
+          <form-input
+            id="password"
+            v-model="password"
+            type="password"
+            required
+          />
         </form-label>
         <primary-button :is-loading="loading"> Sign in </primary-button>
+
+        <!-- BLOCKED FOR BETA
         <LinkButton type="button" @click="displaySignUp = true">
           Need an account? Sign up
-        </LinkButton>
+        </LinkButton> -->
       </form>
     </section>
   </BaseTemplate>
@@ -133,7 +140,8 @@ const passwordsValid = ref(false);
 const loading = ref(false);
 const submitted = ref(false);
 
-const displaySignUp = ref(true);
+// FOR BETA: DO NOT ALLOW SIGNING UP - ONLY SIGN IN
+const displaySignUp = ref(false);
 
 function validatePasswordsMatch() {
   if (password.value !== confirmPassword.value) {
