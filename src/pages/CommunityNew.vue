@@ -495,7 +495,7 @@ async function createCommunity() {
     router.push(`/communities/${data.id}/manage`);
   } catch (error) {
     log({ error });
-    showError({ message: "Somethin went wrong" });
+    showError({ message: "Something went wrong" });
     send("ERROR");
   }
 }

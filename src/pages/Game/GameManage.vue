@@ -28,15 +28,12 @@
             <ClockIcon class="h-6 w-6 mr-2 text-slate-700" />
             <span class="flex flex-col space-y-1 text-sm mb-2">
               <p>
-                {{
-                  format(new Date(session.start_time), "EEE, MMM d hh:mm a z")
-                }}
+                {{ format(new Date(session.start_time), "EEE, MMM d hh:mm a") }}
               </p>
               <p>
-                {{
-                  format(new Date(session.start_time), "EEE, MMM d hh:mm a z")
-                }}
+                {{ format(new Date(session.end_time), "EEE, MMM d hh:mm a") }}
               </p>
+              <p>{{ format(new Date(session.end_time), "z") }}</p>
             </span>
           </div>
           <div class="flex items-center mt-2">

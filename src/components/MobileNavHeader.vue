@@ -23,7 +23,9 @@
           <MenuItem>
             <router-link
               class="px-2 py-1"
-              :to="`${store.user ? '/communities/joined' : '/communities/all'}`"
+              :to="`${
+                store.user ? '/communities/joined' : '/communities/browse'
+              }`"
               active-class="text-brand-500 border-l border-brand-500 dark:border-brand-300"
             >
               Communities

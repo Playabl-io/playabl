@@ -112,8 +112,8 @@ import Heading from "./Heading.vue";
 import { toRefs, PropType, onMounted, ref } from "vue";
 import { BadgeCheckIcon, LightningBoltIcon } from "@heroicons/vue/outline";
 import { Community } from "@/typings/Community";
-import { supabase } from "@/supabase";
 import Tooltip from "./Tooltip.vue";
+import { getCoverImageUrl } from "@/api/storage";
 
 const props = defineProps({
   community: {
@@ -124,18 +124,14 @@ const props = defineProps({
 
 const coverImageUrl = ref("");
 
-onMounted(() => {
+onMounted(async () => {
   if (props.community.cover_image) {
-    getCoverImageUrl(props.community.cover_image);
+    const publicUrl = await getCoverImageUrl(props.community.cover_image);
+    if (publicUrl) {
+      coverImageUrl.value = publicUrl;
+    }
   }
 });
-
-const getCoverImageUrl = async (path: string) => {
-  const { publicURL } = await supabase.storage
-    .from("cover-images")
-    .getPublicUrl(path);
-  coverImageUrl.value = publicURL ?? "";
-};
 
 toRefs(props);
 </script>

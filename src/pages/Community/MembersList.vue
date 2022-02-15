@@ -175,7 +175,6 @@ const memberManagementMachine = createMachine<{
       }),
       removeMember: assign({
         member: (context) => {
-          console.log(context);
           if (!context.member?.id) throw Error("no member");
           store.communityMembers = store.communityMembers.filter(
             (member) => member.id !== context.member?.id

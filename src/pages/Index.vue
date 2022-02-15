@@ -3,6 +3,12 @@
     class="h-full bg-gradient-to-b from-violet-500 to-violet-700 flex flex-col text-white"
   >
     <nav class="flex justify-end items-center gap-6 px-12 [height:72px] z-10">
+      <router-link v-if="store.user?.id" to="/communities/browse">
+        Communities
+      </router-link>
+      <router-link v-if="store.user?.id" to="/games/browse">
+        Games
+      </router-link>
       <UserMenu />
     </nav>
     <main class="grid justify-items-center h-screen absolute w-screen">
@@ -27,4 +33,5 @@
 </template>
 <script setup lang="ts">
 import UserMenu from "@/components/UserMenu.vue";
+import { store } from "@/store";
 </script>

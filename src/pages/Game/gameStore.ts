@@ -1,3 +1,4 @@
+import { Community } from "@/typings/Community";
 import { Game, GAME_DRAFT_STATE } from "@/typings/Game";
 import { Profile } from "@/typings/Profile";
 import { Session } from "@/typings/Session";
@@ -7,6 +8,7 @@ interface Store {
   game: Game;
   sessions: Session[];
   attendees: Record<string, Profile>;
+  community: Community;
 }
 
 export const gameStore = reactive<Store>({
@@ -22,4 +24,10 @@ export const gameStore = reactive<Store>({
   },
   sessions: [],
   attendees: {},
+  community: {
+    id: "",
+    name: "",
+    allow_public_signup: false,
+    created_at: "",
+  },
 });

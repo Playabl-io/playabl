@@ -62,7 +62,7 @@ const routes = [
     },
   },
   {
-    path: "/communities/all",
+    path: "/communities/browse",
     component: CommunitiesAll,
     meta: {
       title: "Playabl - Communities",

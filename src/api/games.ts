@@ -103,11 +103,10 @@ export async function loadPastManagedGames(userId: string) {
     .select("*, community_id (id, name), sessions (*)")
     .lt("sessions.start_time", today.getTime())
     .eq("creator_id", userId)
-    .order("start_time", { foreignTable: "sessions", ascending: false });
+    .order("start_time", { foreignTable: "sessions" });
   if (error) {
     log({ error });
   }
-  console.log(data);
 
   if (data) {
     return data;

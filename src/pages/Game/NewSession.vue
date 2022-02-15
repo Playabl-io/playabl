@@ -51,7 +51,7 @@
       </section>
     </div>
     <div
-      class="grow-0 flex justify-end bg-inherit p-6 border-t border-solid border-gray-200"
+      class="grow-0 flex justify-end bg-inherit px-6 py-4 border-t border-solid border-gray-200"
     >
       <PrimaryButton :is-loading="saving">Add session</PrimaryButton>
     </div>

@@ -10,7 +10,7 @@
         Joined
       </router-link>
       <router-link
-        to="/communities/all"
+        to="/communities/browse"
         active-class="border-b border-brand-500 dark:border-brand-300"
       >
         Browse all
@@ -39,7 +39,6 @@
 import { PropType, toRefs } from "vue";
 import { store } from "@/store";
 import { Community } from "@/typings/Community";
-import Heading from "./Heading.vue";
 import LoadingSpinner from "./LoadingSpinner.vue";
 import CommunityListing from "./CommunityListing.vue";
 const props = defineProps({

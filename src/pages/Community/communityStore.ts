@@ -39,13 +39,6 @@ export async function getGames(communityId: string) {
   }
 }
 
-export const getCoverImageUrl = async (path: string) => {
-  const { publicURL } = await supabase.storage
-    .from("cover-images")
-    .getPublicUrl(path);
-  communityStore.coverImageUrl = publicURL ?? "";
-};
-
 export async function getMemberCount(communityId: string) {
   const { error, count } = await supabase
     .from("community_memberships")
