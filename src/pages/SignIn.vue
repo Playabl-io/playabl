@@ -87,13 +87,18 @@
         @submit.prevent="handleLogin"
       >
         <Heading level="h1" as="h5">Sign in</Heading>
-        <form-label class="flex flex-col">
+        <form-label class="flex flex-col" for="email">
           Email
-          <form-input v-model="email" type="email" required />
+          <form-input id="email" v-model="email" type="email" required />
         </form-label>
-        <form-label class="flex flex-col">
+        <form-label class="flex flex-col" for="password">
           Password
-          <form-input v-model="password" type="password" required />
+          <form-input
+            id="password"
+            v-model="password"
+            type="password"
+            required
+          />
         </form-label>
         <primary-button :is-loading="loading"> Sign in </primary-button>
 
