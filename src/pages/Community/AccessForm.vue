@@ -15,11 +15,12 @@
           <FormInput
             v-model.number="priorityAccessTime"
             type="number"
+            class="m-0"
             required
           />
           <select
             v-model="timeDenomination"
-            class="rounded-md border border-solid border-gray-300 text-slate-900 dark:bg-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-700 dark:focus-visible:ring-sky-500"
+            class="rounded-md border border-solid border-gray-300 text-slate-900 dark:bg-slate-200 focus-styles"
             required
           >
             <option value="hours">hours</option>

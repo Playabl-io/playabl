@@ -62,12 +62,8 @@ import Heading from "@/components/Heading.vue";
 import { ADMIN, CREATOR, PLAYER } from "@/util/roles";
 import { store } from "@/store";
 import { Community } from "@/typings/Community";
-import {
-  communityStore,
-  getCoverImageUrl,
-  getGames,
-  getMemberCount,
-} from "./communityStore";
+import { communityStore, getGames, getMemberCount } from "./communityStore";
+import { getCoverImageUrl } from "@/api/storage";
 
 const route = useRoute();
 const { community_id: id } = route.params;

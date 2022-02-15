@@ -1,3 +1,4 @@
+import { Community } from "./Community";
 import { Profile } from "./Profile";
 import { Rsvp } from "./Rsvp";
 import { Session } from "./Session";
@@ -7,7 +8,7 @@ export enum GAME_DRAFT_STATE {
   published = "published",
 }
 
-export interface Game {
+export interface GameBase {
   id: number;
   title: string;
   description: string;
@@ -16,11 +17,14 @@ export interface Game {
   draft_state: GAME_DRAFT_STATE;
   deleted_at?: string | null;
   created_at: string;
-  community_id: string;
-  creator_id: string;
   system?: string;
   virtual_tabletop?: string;
   will_be_recorded?: boolean;
+}
+
+export interface Game extends GameBase {
+  community_id: string;
+  creator_id: string;
 }
 
 export type NewGame = Omit<Game, "id" | "created_at">;
@@ -31,10 +35,11 @@ export type GameListing = Game & {
   sessions: Session[];
 };
 
-export type GameWithSessionsAndRsvps = Omit<Game, "creator_id"> & {
+export interface GameWithCommunityAndSessions extends GameBase {
   sessions: Session[];
   creator_id: Profile;
-};
+  community_id: Community;
+}
 
 export interface RsvpWithSessionAndGame {
   id: string;

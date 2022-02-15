@@ -6,6 +6,12 @@
     <div v-else>
       <Heading level="h1">{{ gameStore.game.title }}</Heading>
       <p class="mt-6">By {{ gameData?.creator_id.username || "" }}</p>
+      <router-link
+        :to="`/communities/${gameStore.community.id}`"
+        class="mt-2 text-xs text-slate-700"
+      >
+        Part of {{ gameStore.community.name }}
+      </router-link>
       <div
         v-if="gameStore.game.deleted_at"
         class="mt-4 p-2 rounded-xl bg-red-700 text-white inline-flex"
@@ -51,7 +57,7 @@ import BaseTemplate from "@/components/BaseTemplate.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import Heading from "@/components/Heading.vue";
 import { store } from "@/store";
-import { GameWithSessionsAndRsvps } from "@/typings/Game";
+import { GameWithCommunityAndSessions } from "@/typings/Game";
 import { gameStore } from "./gameStore";
 import * as R from "ramda";
 import { Session } from "@/typings/Session";
@@ -59,7 +65,7 @@ import { Session } from "@/typings/Session";
 const currentRoute = useRoute();
 const { game_id: id } = currentRoute.params;
 
-const gameData = ref<GameWithSessionsAndRsvps>();
+const gameData = ref<GameWithCommunityAndSessions>();
 const isOwner = ref(false);
 const isLoading = ref(true);
 
@@ -70,8 +76,8 @@ onMounted(async () => {
 
 async function getGameData() {
   const { data, error } = await supabase
-    .from<GameWithSessionsAndRsvps>("games")
-    .select("*, creator_id (*), sessions (*)")
+    .from<GameWithCommunityAndSessions>("games")
+    .select("*, creator_id (*), sessions (*), community_id (*)")
     .eq("id", id as string)
     .order("start_time", { foreignTable: "sessions" })
     .single();
@@ -82,9 +88,11 @@ async function getGameData() {
 
   if (data) {
     gameStore.game = {
-      ...R.omit(["creator_id", "sessions"], data),
+      ...R.omit(["creator_id", "sessions", "community_id"], data),
       creator_id: data.creator_id.id,
+      community_id: data.community_id.id,
     };
+    gameStore.community = data.community_id;
     setSubscription(data.id);
     setSessionDataInStore(data.sessions);
     loadAndSetAttendeesInStore(
