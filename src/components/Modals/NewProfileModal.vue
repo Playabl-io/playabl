@@ -11,8 +11,10 @@
         @submit.prevent="updateProfile"
       >
         <div class="flex flex-col">
-          <form-label for="username" required> Display name </form-label>
-          <p class="text-xs text-slate-700">
+          <form-label for="username" class="mb-0" required>
+            Display name
+          </form-label>
+          <p class="text-xs text-slate-700 mb-2">
             The name you would like community members to know you by
           </p>
           <form-input id="username" v-model="username" class="grow" required />
