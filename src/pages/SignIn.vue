@@ -20,7 +20,7 @@
         <div>
           <form-label class="flex flex-col">
             Password
-            <div class="flex">
+            <div class="flex items-end">
               <form-input
                 v-model="password"
                 class="grow"
@@ -47,7 +47,7 @@
         <div>
           <form-label class="flex flex-col">
             Confirm password
-            <div class="flex">
+            <div class="flex items-end">
               <form-input
                 v-model="confirmPassword"
                 :type="showConfirmPw ? 'text' : 'password'"
@@ -96,9 +96,11 @@
           <form-input v-model="password" type="password" required />
         </form-label>
         <primary-button :is-loading="loading"> Sign in </primary-button>
+
+        <!-- BLOCKED FOR BETA
         <LinkButton type="button" @click="displaySignUp = true">
           Need an account? Sign up
-        </LinkButton>
+        </LinkButton> -->
       </form>
     </section>
   </BaseTemplate>
@@ -133,7 +135,8 @@ const passwordsValid = ref(false);
 const loading = ref(false);
 const submitted = ref(false);
 
-const displaySignUp = ref(true);
+// FOR BETA: DO NOT ALLOW SIGNING UP - ONLY SIGN IN
+const displaySignUp = ref(false);
 
 function validatePasswordsMatch() {
   if (password.value !== confirmPassword.value) {

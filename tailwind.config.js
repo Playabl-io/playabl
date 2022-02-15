@@ -2,6 +2,7 @@ const plugin = require("tailwindcss/plugin");
 const defaultTheme = require("tailwindcss/defaultTheme");
 
 module.exports = {
+  darkMode: "class",
   mode: "jit",
   content: ["./index.html", "./src/**/*.{vue,ts}"],
   theme: {

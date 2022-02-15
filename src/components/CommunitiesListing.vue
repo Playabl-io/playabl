@@ -1,11 +1,6 @@
 <template>
-  <div class="flex flex-wrap gap-6 items-baseline justify-between">
-    <Heading level="h1">Communities</Heading>
-    <router-link to="/communities/new" class="hover:underline">
-      Create a new community
-    </router-link>
-  </div>
-  <section class="mt-12 flex justify-between items-baseline text-sm">
+  <div class="flex flex-wrap gap-6 items-baseline justify-between"></div>
+  <section class="flex justify-between items-baseline text-sm">
     <div class="flex space-x-4 py-2">
       <router-link
         v-if="store.user"
@@ -27,6 +22,7 @@
       >
         Manage
       </router-link>
+      <router-link to="/communities/new"> Create a new community </router-link>
     </div>
   </section>
   <section class="grid grid-cols-1 gap-8 mt-12">
