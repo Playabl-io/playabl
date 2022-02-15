@@ -417,7 +417,7 @@ const startDateAndTime = computed(() => {
 const endDateAndTime = computed(() => {
   if (!sessionEndTime.value || !endDate.value) return 0;
   const [endHours, endMinutes] = sessionEndTime.value.split(":");
-  return set(startDate.value, {
+  return set(endDate.value, {
     hours: Number(endHours),
     minutes: Number(endMinutes),
   }).getTime();

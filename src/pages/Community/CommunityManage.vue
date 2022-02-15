@@ -1,5 +1,5 @@
 <template>
-  <section class="flex space-x-8">
+  <section class="flex flex-wrap gap-8">
     <div
       class="w-40 h-40 bg-blue-700 text-white grid border border-solid border-gray-300 rounded-lg p-4"
     >
@@ -33,7 +33,7 @@
       </GhostButton>
     </div>
   </section>
-  <section class="mt-12">
+  <section class="mt-4 md:mt-12">
     <div
       class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 settings-grid items-start"
     >

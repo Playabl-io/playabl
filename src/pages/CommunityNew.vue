@@ -180,7 +180,8 @@
             />
             <p class="text-xs text-slate-700 mt-1">
               Code of conducts aren't required, but highly encouraged!
-              <br />
+            </p>
+            <p class="text-xs text-slate-700 mt-2">
               Don't have one? Consider adopting or creating one based off of
               <a
                 href="https://www.gauntlet-rpg.com/community-code-of-conduct.html"
@@ -202,7 +203,7 @@
             </p>
           </div>
           <p class="text-lg">Select any social links to add</p>
-          <div class="flex space-x-4">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <SwitchGroup>
               <div class="flex items-center">
                 <SwitchLabel class="mr-2 text-sm">Twitter</SwitchLabel>

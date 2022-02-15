@@ -13,7 +13,7 @@
       read-only
     />
   </div>
-  <div class="mt-8 flex space-x-8">
+  <div class="mt-8 flex flex-wrap gap-8">
     <GameBadge
       v-if="gameStore.game?.system"
       title="System"

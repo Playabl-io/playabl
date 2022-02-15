@@ -1,17 +1,14 @@
 <template>
   <base-template>
     <GamesNav class="mb-12" />
-    <GamesHeading>
-      <template #heading>
-        <Heading level="h6" as="h2">From your communities</Heading>
-        <div class="w-40">
-          <SortMenu
-            :options="options"
-            :starting-option="{ label: 'Starting soon' }"
-          />
-        </div>
-      </template>
-    </GamesHeading>
+    <div class="flex justify-end">
+      <div class="w-40">
+        <SortMenu
+          :options="options"
+          :starting-option="{ label: 'Starting soon' }"
+        />
+      </div>
+    </div>
     <GamesListing :is-loading="isLoading" :games="games" />
   </base-template>
 </template>

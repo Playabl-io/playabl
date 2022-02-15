@@ -64,7 +64,7 @@ export async function loadCommunityGamesWithOpenings(communityIds: string[]) {
   const { data, error } = await supabase
     .from<GameListing>("games")
     .select(
-      "*, community_id (id, name), sessions (id, start_time, has_openings)"
+      "*, community_id (id, name), sessions!inner(id, start_time, has_openings)"
     )
     .is("deleted_at", null)
     .eq("sessions.has_openings", true)
