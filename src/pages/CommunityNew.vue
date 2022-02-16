@@ -31,38 +31,13 @@
           </div>
           <div class="flex flex-col">
             <FormLabel>Cover image</FormLabel>
-            <label
-              for="description"
-              class="h-40 w-full p-3 rounded-lg bg-gray-200 bg-opacity-70 mt-2"
-              @dragenter.prevent
-              @dragover.prevent
-              @drop.prevent="handleFileDrop"
-            >
-              <span
-                class="w-full h-full p-3 grid place-items-center border border-dashed border-gray-400 rounded-md"
-              >
-                <template v-if="coverImage">
-                  {{ coverImage.name }}
-                  <GhostButton type="button" @click="coverImage = undefined">
-                    Clear
-                  </GhostButton>
-                </template>
-                <template v-else>
-                  <PrimaryButton type="button" @click="fileInput?.click()">
-                    Choose a file
-                  </PrimaryButton>
-                  <p>or drop your file here</p>
-                  <p class="text-sm text-slate-700">3 MB max file size</p>
-                </template>
-              </span>
-              <input
-                ref="fileInput"
-                type="file"
-                accept="image/*"
-                class="hidden"
-                @change="handleFileChange"
-              />
-            </label>
+            <FormFileInput
+              :file="coverImage"
+              size-limit="3 MB"
+              @file-change="onFileChange"
+              @file-drop="onFileDrop"
+              @clear-file="coverImage = undefined"
+            />
           </div>
         </div>
         <OutlineButton class="mt-8 font-semibold">
@@ -349,13 +324,13 @@ import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import { supabase } from "@/supabase";
 import { log } from "@/util/logger";
 import { store } from "@/store";
-import {
-  AccessLevel,
-  ACCESS_LEVEL_TIME_DENOMINATION,
-} from "@/typings/AccessLevel";
 import useToast from "@/components/Toast/useToast";
-import GhostButton from "@/components/Buttons/GhostButton.vue";
 import { uploadToCoverImageStorage } from "@/api/storage";
+import FormFileInput from "@/components/Forms/FormFileInput.vue";
+import {
+  handleFileChange,
+  handleFileDrop,
+} from "@/components/Forms/fileInputUtil";
 
 const { showError } = useToast();
 
@@ -423,34 +398,18 @@ const facebook = ref("");
 const discord = ref("");
 const slack = ref("");
 
-const fileInput = ref<HTMLButtonElement>();
-
-function handleFileDrop(event: DragEvent) {
-  const dt = event.dataTransfer;
-  const file = dt?.files[0];
-  if (!file?.type.startsWith("image/")) {
-    showError({ message: "Only image files are allowed" });
-    return;
+function onFileDrop(event: DragEvent) {
+  const file = handleFileDrop(event, { value: 3000000, label: "3 MB" });
+  if (file) {
+    coverImage.value = file;
   }
-  if (file.size > 3000000) {
-    showError({
-      message: "That file is too large. Only files under 3 MB are allowed",
-    });
-    return;
-  }
-  coverImage.value = file;
 }
 
-function handleFileChange(event: Event) {
-  const target = event.target as HTMLInputElement;
-  const file = target.files?.[0];
-  if (!file) return;
-  if (file.size > 3000000) {
-    showError({
-      message: "That file is too large. Only files under 3 MB are allowed",
-    });
+function onFileChange(event: Event) {
+  const file = handleFileChange(event, { value: 3000000, label: "3 MB" });
+  if (file) {
+    coverImage.value = file;
   }
-  coverImage.value = file;
 }
 
 function validateAtLeastOneGameTypeChosen() {

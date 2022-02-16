@@ -83,7 +83,7 @@ export async function loadManagedGames(userId: string) {
   const today = new Date();
   const { data, error } = await supabase
     .from<GameListing>("games")
-    .select("*, community_id (id, name), sessions (*)")
+    .select("*, community_id (id, name), sessions!inner(*)")
     .gte("sessions.start_time", today.getTime())
     .eq("creator_id", userId)
     .order("start_time", { foreignTable: "sessions" });
@@ -100,7 +100,7 @@ export async function loadPastManagedGames(userId: string) {
   const today = new Date();
   const { data, error } = await supabase
     .from<GameListing>("games")
-    .select("*, community_id (id, name), sessions (*)")
+    .select("*, community_id (id, name), sessions!inner(*)")
     .lt("sessions.start_time", today.getTime())
     .eq("creator_id", userId)
     .order("start_time", { foreignTable: "sessions" });
