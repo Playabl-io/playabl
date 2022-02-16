@@ -16,21 +16,14 @@
       @dragover.prevent
       @drop.prevent="emit('fileDrop', $event)"
     >
-      <span class="w-full h-full p-3 grid md:grid-cols-2 rounded-md">
-        <div class="w-full">
-          <div class="aspect-w-16 aspect-h-9 w-full">
-            <img
-              v-if="imgPreview"
-              class="w-full object-center object-cover shadow-md rounded-lg"
-              :src="imgPreview"
-              alt="image preview"
-            />
-            <div
-              v-else
-              class="w-full h-full rounded-lg bg-gradient-to-tl from-blue-100 to-blue-200"
-            />
-          </div>
-        </div>
+      <span class="w-full h-full p-3 rounded-md flex justify-center gap-10">
+        <img
+          v-if="imgPreview"
+          class="h-20 w-20 rounded-full object-cover"
+          :src="imgPreview"
+          alt="image preview"
+        />
+        <div v-else class="h-20 w-20 rounded-full bg-green-100" />
         <div class="flex flex-col items-center justify-center mt-4 sm:mt-0">
           <button
             type="button"

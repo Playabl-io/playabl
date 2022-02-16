@@ -1,6 +1,6 @@
 <template>
-  <article class="grid lg:grid-cols-5 gap-6 lg:gap-12">
-    <section class="order-2 lg:order-1 lg:col-span-3 flex flex-col">
+  <article class="grid lg:grid-cols-2 gap-6 lg:gap-12">
+    <section class="order-2 lg:order-1 flex flex-col">
       <div class="flex space-x-4 items-end">
         <router-link
           :to="`/communities/${community.id}`"
@@ -94,12 +94,10 @@
       </div>
     </section>
     <section
-      v-if="false"
-      class="order-1 lg:order-2 lg:col-span-2 grid place-items-end content-center"
+      v-if="coverImageUrl"
+      class="order-1 lg:order-2 grid place-items-center"
     >
-      <div
-        class="aspect-w-4 aspect-h-3 lg:aspect-w-16 lg:aspect-h-9 w-full relative"
-      >
+      <div class="aspect-w-16 aspect-h-9 w-full relative">
         <img
           v-if="coverImageUrl"
           class="w-full h-full object-center object-cover shadow-md rounded-lg"
@@ -126,6 +124,8 @@ const props = defineProps({
 });
 
 const coverImageUrl = ref("");
+
+console.log(props.community.cover_image);
 
 onMounted(async () => {
   if (props.community.cover_image) {

@@ -78,7 +78,7 @@
       </div>
     </section>
     <section v-if="coverImageUrl">
-      <div class="aspect-w-4 aspect-h-3 lg:aspect-w-16 lg:aspect-h-9 w-full">
+      <div class="aspect-w-16 aspect-h-9 w-full">
         <img
           class="object-center object-cover shadow-md rounded-lg"
           :src="coverImageUrl"

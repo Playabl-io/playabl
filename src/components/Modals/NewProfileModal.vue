@@ -25,7 +25,7 @@
         </div>
         <div class="flex flex-col">
           <form-label class="flex flex-col" for="avatar"> Avatar </form-label>
-          <FormFileInput
+          <AvatarFileInput
             class="mt-2"
             :file="avatar"
             size-limit="1 MB"
@@ -55,13 +55,13 @@ import { supabase } from "@/supabase";
 import useToast from "@/components/Toast/useToast";
 import { log } from "@/util/logger";
 import DismissButton from "../Buttons/DismissButton.vue";
-import FormFileInput from "../Forms/FormFileInput.vue";
 import {
   handleFileChange,
   handleFileDrop,
 } from "@/components/Forms/fileInputUtil";
 import { uploadToAvatarStorage } from "@/api/storage";
 import { store } from "@/store";
+import AvatarFileInput from "../Forms/AvatarFileInput.vue";
 
 const { showSuccess, showError } = useToast();
 
