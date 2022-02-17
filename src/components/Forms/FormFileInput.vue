@@ -20,9 +20,9 @@
         <div class="w-full">
           <div class="aspect-w-16 aspect-h-9 w-full">
             <img
-              v-if="imgPreview"
+              v-if="imgPreview || currentImage"
               class="w-full object-center object-cover shadow-md rounded-lg"
-              :src="imgPreview"
+              :src="imgPreview || currentImage"
               alt="image preview"
             />
             <div
@@ -67,6 +67,10 @@ const props = defineProps({
   sizeLimit: {
     type: String,
     default: "3 MB",
+  },
+  currentImage: {
+    type: String,
+    default: "",
   },
 });
 

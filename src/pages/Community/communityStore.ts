@@ -1,4 +1,5 @@
 import { supabase } from "@/supabase";
+import { Community } from "@/typings/Community";
 import { Game } from "@/typings/Game";
 import { log } from "@/util/logger";
 import { reactive } from "vue";
@@ -11,6 +12,7 @@ interface Store {
   isAdmin: boolean;
   isCreator: boolean;
   isPlayer: boolean;
+  community: Community;
 }
 
 export const communityStore = reactive<Store>({
@@ -20,6 +22,12 @@ export const communityStore = reactive<Store>({
   isAdmin: false,
   isCreator: false,
   isPlayer: false,
+  community: {
+    id: "",
+    name: "",
+    allow_public_signup: false,
+    created_at: "",
+  },
 });
 
 export async function getGames(communityId: string) {

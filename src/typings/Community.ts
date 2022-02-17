@@ -13,5 +13,5 @@ export interface Community {
   facebook?: string;
   allow_public_signup: boolean;
   created_at: string;
-  furthest_posting_date?: string;
+  furthest_posting_date?: number | null; // unix epoch number
 }

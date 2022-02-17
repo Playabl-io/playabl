@@ -34,13 +34,14 @@
     </div>
   </section>
   <section class="mt-4 md:mt-12">
-    <div
-      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 settings-grid items-start"
-    >
-      <section class="section-container lg:col-span-2 grid grid-cols-2 gap-2">
-        <Heading level="h6" as="h2" class="mb-4 col-span-2">
-          Community Info
-        </Heading>
+    <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4 grid-flow-row-dense">
+      <section class="section-container grid grid-cols-2 gap-2">
+        <div class="flex justify-between items-center mb-4 col-span-2">
+          <Heading level="h6" as="h2"> Community Info </Heading>
+          <!-- <GhostButton>
+            <PencilAltIcon class="h-5 w-5" />
+          </GhostButton> -->
+        </div>
         <div class="flex items-center space-x-4">
           <CheckCircleIcon
             v-if="community.description"
@@ -78,13 +79,20 @@
           <p class="pt-1 prose dark:prose-invert">Facebook</p>
         </div>
       </section>
-      <section class="section-container lg:col-span-2 row-span-2">
+      <section
+        class="section-container row-span-2 md:col-start-2 xl:col-start-3"
+      >
         <Heading level="h6" as="h2" class="mb-4">Members</Heading>
         <MembersList :community-id="community.id" />
       </section>
-      <section class="section-container md:col-span-2 xl:col-span-2">
-        <Heading level="h6" as="h2" class="mb-4">Settings</Heading>
+      <section class="section-container row-span-2">
         <AccessLevels />
+      </section>
+      <section class="section-container">
+        <CalendarCutoff
+          :community-id="community.id"
+          :current-cutoff="community.furthest_posting_date"
+        />
       </section>
     </div>
   </section>
@@ -95,7 +103,11 @@ import { supabase } from "@/supabase";
 import { log } from "@/util/logger";
 import { useRoute } from "vue-router";
 import useToast from "@/components/Toast/useToast";
-import { CheckCircleIcon, MinusCircleIcon } from "@heroicons/vue/outline";
+import {
+  CheckCircleIcon,
+  MinusCircleIcon,
+  PencilAltIcon,
+} from "@heroicons/vue/outline";
 import Heading from "@/components/Heading.vue";
 import { Community } from "@/typings/Community";
 import { Game } from "@/typings/Game";
@@ -106,6 +118,7 @@ import { loadCommunityAccessTimes } from "@/api/communityAccess";
 import AccessLevels from "./AccessLevels.vue";
 import MembersList from "./MembersList.vue";
 import InviteLink from "./InviteLink.vue";
+import CalendarCutoff from "./CalendarCutoff.vue";
 
 const props = defineProps({
   community: {
@@ -222,7 +235,9 @@ async function getActiveInviteLinks() {
     .select()
     .eq("community_id", route.params.community_id)
     .eq("is_revoked", false);
-  communityInvites.value = data?.map((invite) => invite.id);
+  if (data) {
+    communityInvites.value = data.map((invite) => invite.id);
+  }
 }
 
 async function createInviteLink() {

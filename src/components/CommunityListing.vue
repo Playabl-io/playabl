@@ -125,8 +125,6 @@ const props = defineProps({
 
 const coverImageUrl = ref("");
 
-console.log(props.community.cover_image);
-
 onMounted(async () => {
   if (props.community.cover_image) {
     const publicUrl = await getCoverImageUrl(props.community.cover_image);
