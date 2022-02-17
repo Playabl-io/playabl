@@ -13,6 +13,7 @@ import CommunityHome from "@/pages/Community/CommunityHome.vue";
 import CommunityFeed from "@/pages/Community/CommunityFeed.vue";
 import CommunityCalendar from "@/pages/Community/CommunityCalendar.vue";
 import CommunityManage from "@/pages/Community/CommunityManage.vue";
+import CommunitySettings from "@/pages/Community/CommunitySettings.vue";
 import GamesJoined from "@/pages/GamesJoined.vue";
 import GamesBrowse from "@/pages/GamesBrowse.vue";
 import GamesManage from "@/pages/GamesManage.vue";
@@ -111,6 +112,13 @@ const routes = [
       {
         path: "manage",
         component: CommunityManage,
+        meta: {
+          requiresAuth: true,
+        },
+      },
+      {
+        path: "settings",
+        component: CommunitySettings,
         meta: {
           requiresAuth: true,
         },

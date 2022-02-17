@@ -1,5 +1,9 @@
 <template>
-  <label class="text-sm font-semibold text-slate-800 mb-2" v-bind="$attrs">
+  <label
+    class="text-sm font-semibold text-slate-800"
+    :class="{ 'mb-2': !noMargin }"
+    v-bind="$attrs"
+  >
     <slot></slot>
     <span
       v-if="required"
@@ -15,6 +19,10 @@ import { toRefs } from "vue";
 
 const props = defineProps({
   required: {
+    type: Boolean,
+    default: false,
+  },
+  noMargin: {
     type: Boolean,
     default: false,
   },

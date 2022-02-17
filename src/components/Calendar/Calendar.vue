@@ -7,9 +7,7 @@
     }"
     @keydown.escape="emit('close')"
   >
-    <div
-      class="px-2 pb-2 flex flex-wrap sm:gap-2 justify-center sm:justify-between items-center"
-    >
+    <div class="px-2 pb-2 flex flex-wrap sm:gap-2 justify-center items-center">
       <div class="py-2 flex space-x-2 items-center justify-center">
         <GhostButton
           type="button"
@@ -25,7 +23,9 @@
           <ChevronRightIcon class="h-6 w-6" />
         </GhostButton>
       </div>
-      <GhostButton type="button" @click="goToToday">Today</GhostButton>
+      <GhostButton type="button" :disabled="todayDisabled" @click="goToToday">
+        Today
+      </GhostButton>
     </div>
     <ol class="grid grid-cols-7 text-sm text-slate-600 dark:text-slate-400">
       <li
@@ -58,7 +58,7 @@
             : 'bg-slate-200',
         ]"
         type="button"
-        :disabled="notBefore ? isBefore(day, notBefore) : false"
+        :disabled="!dayIsWithinRange(day)"
         @focus="handleFocus(day)"
         @click="handleSelect(day)"
       >
@@ -87,6 +87,8 @@ import {
   addMonths,
   subMonths,
   startOfDay,
+  isAfter,
+  isWithinInterval,
 } from "date-fns";
 import GhostButton from "../Buttons/GhostButton.vue";
 const emit = defineEmits(["select", "close"]);
@@ -104,10 +106,19 @@ const props = defineProps({
     type: Date,
     default: null,
   },
+  notAfter: {
+    type: Date,
+    default: null,
+  },
 });
 toRefs(props);
 
 onMounted(focusActiveDay);
+
+const today = startOfDay(new Date());
+const todayDisabled =
+  computed(() => isBefore(today, props.notBefore)) ||
+  isAfter(today, props.notAfter);
 
 const weekdays = [
   { label: "Sun", abbr: "Sunday" },
@@ -128,6 +139,11 @@ const daysOfMonth = computed(() => {
   });
 });
 
+function dayIsWithinRange(day: Date) {
+  if (!props.notBefore || !props.notAfter) return true;
+  return isWithinInterval(day, { start: props.notBefore, end: props.notAfter });
+}
+
 function handleFocus(day: Date) {
   emit("select", day);
 }
@@ -136,7 +152,6 @@ function handleSelect(day: Date) {
   emit("close");
 }
 function goToToday() {
-  const today = startOfDay(new Date());
   emit("select", today);
   focusActiveDay();
 }
@@ -148,17 +163,20 @@ function nextDay() {
 function previousDay() {
   const nextDay = subDays(props.selected, 1);
   if (props.notBefore && isBefore(nextDay, props.notBefore)) return;
+  if (props.notAfter && isAfter(nextDay, props.notAfter)) return;
   emit("select", nextDay);
   focusActiveDay();
 }
 function nextWeek() {
   const nextDay = addWeeks(props.selected, 1);
+  if (props.notAfter && isAfter(nextDay, props.notAfter)) return;
   emit("select", nextDay);
   focusActiveDay();
 }
 function previousWeek() {
   const nextDay = subWeeks(props.selected, 1);
   if (props.notBefore && isBefore(nextDay, props.notBefore)) return;
+  if (props.notAfter && isAfter(nextDay, props.notAfter)) return;
   emit("select", nextDay);
   focusActiveDay();
 }
@@ -169,6 +187,7 @@ function previousMonth() {
 }
 function nextMonth() {
   const nextDate = addMonths(props.selected, 1);
+  if (props.notAfter && isAfter(nextDate, props.notAfter)) return;
   emit("select", nextDate);
   focusActiveDay();
 }

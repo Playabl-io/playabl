@@ -8,6 +8,7 @@
             <DatePicker
               :selected="startDate"
               :not-before="getStartOfToday()"
+              :not-after="communityPostingLimit"
               @select="updateStartDate"
             />
           </div>
@@ -27,6 +28,7 @@
             <DatePicker
               :selected="endDate"
               :not-before="startDate"
+              :not-after="communityPostingLimit"
               @select="updateEndDate"
             />
           </div>
@@ -72,6 +74,7 @@ import { supabase } from "@/supabase";
 import { NewSession } from "@/typings/Session";
 import { log } from "@/util/logger";
 import { gameStore } from "./gameStore";
+import { selectFromCommunity } from "@/api/communities";
 
 const emit = defineEmits(["addSession"]);
 
@@ -92,10 +95,13 @@ const startDate = ref<Date>(new Date());
 const endDate = ref<Date>(new Date());
 const accessLevels = ref<string[]>([]);
 const saving = ref(false);
+const communityPostingLimit = ref<Date>();
 
 function updateStartDate(date: Date) {
   startDate.value = date;
-  endDate.value = date;
+  if (startDate.value.getTime() > endDate.value.getTime()) {
+    endDate.value = date;
+  }
 }
 function updateEndDate(date: Date) {
   endDate.value = date;
@@ -141,6 +147,7 @@ async function addSession() {
 }
 
 onMounted(async () => {
+  await getCommunityPostingDate(props.communityId);
   const mandatory = await getAccessLevels(props.communityId);
   accessLevels.value = mandatory;
 });
@@ -156,5 +163,15 @@ async function getAccessLevels(communityId: string) {
     }
     return acc;
   }, [] as string[]);
+}
+
+async function getCommunityPostingDate(communityId: string) {
+  const data = await selectFromCommunity({
+    communityId,
+    select: "furthest_posting_date",
+  });
+  if (data) {
+    communityPostingLimit.value = new Date(data.furthest_posting_date);
+  }
 }
 </script>

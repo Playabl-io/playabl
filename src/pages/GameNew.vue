@@ -109,7 +109,7 @@
         </div>
         <div class="p-4 rounded-lg bg-gray-100 flex items-center space-x-2">
           <FormCheckbox id="recording" v-model="isRecorded" />
-          <FormLabel class="font-normal" for="recording">
+          <FormLabel class="font-normal" for="recording" :no-margin="true">
             This game may be recorded
           </FormLabel>
         </div>
@@ -134,6 +134,7 @@
               <DatePicker
                 :selected="startDate"
                 :not-before="getStartOfToday()"
+                :not-after="communityPostingLimit"
                 @select="updateStartDate"
               />
             </div>
@@ -152,6 +153,7 @@
               <DatePicker
                 :selected="endDate"
                 :not-before="startDate"
+                :not-after="communityPostingLimit"
                 @select="updateEndDate"
               />
             </div>
@@ -244,7 +246,10 @@ import FormTimeInput from "@/components/Forms/FormTimeInput.vue";
 import LinkButton from "@/components/Buttons/LinkButton.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import { NewSession } from "@/typings/Session";
-import { loadCreatorAndAdminCommunities } from "@/api/communities";
+import {
+  loadCreatorAndAdminCommunities,
+  selectFromCommunity,
+} from "@/api/communities";
 import { Community } from "@/typings/Community";
 import { GAME_DRAFT_STATE, NewGame } from "@/typings/Game";
 import AccessTimes from "@/components/Game/AccessTimes.vue";
@@ -320,13 +325,19 @@ const newGameMachine = createMachine<{
         },
       },
       gameDetails: {
-        invoke: {
-          src: (context) =>
-            getAccessLevels(context.selectedCommunity?.id ?? ""),
-          onDone: {
-            actions: ["updateEnabledAccessLevels"],
+        invoke: [
+          {
+            src: (context) =>
+              getAccessLevels(context.selectedCommunity?.id ?? ""),
+            onDone: {
+              actions: ["updateEnabledAccessLevels"],
+            },
           },
-        },
+          {
+            src: (context) =>
+              getCommunityPostingDate(context.selectedCommunity?.id ?? ""),
+          },
+        ],
         on: {
           CHOOSE_NEW_COMMUNITY: "chooseCommunity",
           ADVANCE: {
@@ -397,9 +408,13 @@ const sessionEndTime = ref("");
 const startDate = ref<Date>(new Date());
 const endDate = ref<Date>(new Date());
 
+const communityPostingLimit = ref<Date>();
+
 function updateStartDate(date: Date) {
   startDate.value = date;
-  endDate.value = date;
+  if (startDate.value.getTime() > endDate.value.getTime()) {
+    endDate.value = date;
+  }
 }
 function updateEndDate(date: Date) {
   endDate.value = date;
@@ -523,5 +538,15 @@ async function getAccessLevels(communityId: string) {
     }
     return acc;
   }, [] as string[]);
+}
+
+async function getCommunityPostingDate(communityId: string) {
+  const data = await selectFromCommunity({
+    communityId,
+    select: "furthest_posting_date",
+  });
+  if (data) {
+    communityPostingLimit.value = new Date(data.furthest_posting_date);
+  }
 }
 </script>

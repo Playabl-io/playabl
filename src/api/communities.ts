@@ -2,6 +2,7 @@ import { supabase } from "@/supabase";
 import { log } from "@/util/logger";
 import { store } from "@/store";
 import { ROLES } from "@/util/roles";
+import { Community } from "@/typings/Community";
 
 export async function loadJoinedCommunities() {
   if (!store.user) return;
@@ -70,5 +71,46 @@ export async function joinCommunity({
   }
   if (error) {
     throw error;
+  }
+}
+
+export async function updateCommunity({
+  communityId,
+  update,
+  returning = "representation",
+}: {
+  communityId: string;
+  update: Partial<Community>;
+  returning?: "representation" | "minimal";
+}) {
+  const { data, error } = await supabase
+    .from("communities")
+    .update(update, { returning })
+    .eq("id", communityId);
+  if (error) {
+    throw error;
+  }
+  if (data) {
+    return data;
+  }
+}
+
+export async function selectFromCommunity({
+  communityId,
+  select,
+}: {
+  communityId: string;
+  select: string;
+}) {
+  const { data, error } = await supabase
+    .from("communities")
+    .select(select)
+    .eq("id", communityId)
+    .single();
+  if (error) {
+    throw error;
+  }
+  if (data) {
+    return data;
   }
 }

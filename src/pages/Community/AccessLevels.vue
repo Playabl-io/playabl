@@ -1,6 +1,6 @@
 <template>
   <div class="flex justify-between mb-4">
-    <p class="font-bold text-lg">Priority access rules</p>
+    <Heading level="h6" as="h2">Access Levels</Heading>
     <LinkButton class="font-normal text-sm" @click="send('NEW_ACCESS_LEVEL')">
       Add new
     </LinkButton>
@@ -92,6 +92,7 @@ import {
 } from "@/api/accessLevels";
 import useToast from "@/components/Toast/useToast";
 import { AccessLevel } from "@/typings/AccessLevel";
+import Heading from "@/components/Heading.vue";
 import Tooltip from "@/components/Tooltip.vue";
 
 const route = useRoute();

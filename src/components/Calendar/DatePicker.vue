@@ -23,6 +23,7 @@
           size="medium"
           :selected="selected"
           :not-before="notBefore"
+          :not-after="notAfter"
           @select="emit('select', $event)"
           @close="handleClose"
         />
@@ -43,6 +44,10 @@ const props = defineProps({
     required: true,
   },
   notBefore: {
+    type: Date,
+    default: null,
+  },
+  notAfter: {
     type: Date,
     default: null,
   },
