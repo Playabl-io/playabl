@@ -1,9 +1,20 @@
 <template>
   <div class="grid gap-4">
     <ul>
-      <li v-for="member in store.communityMembers" :key="member.id">
+      <li
+        v-for="member in communityStore.members"
+        :key="member.id"
+        class="flex items-center space-x-2"
+      >
+        <input
+          v-if="expanded"
+          v-model="members"
+          class="text-brand-500 rounded-md shadow-sm border border-gray-300 dark:bg-slate-200 focus-styles"
+          type="checkbox"
+          :value="member.id"
+        />
         <button
-          class="w-full grid gap-1 p-4 rounded-md transition-all transform duration-150 hover:shadow-lg hover:-translate-y-1"
+          class="w-full grid grid-cols-2 gap-1 p-4 rounded-md transition transform duration-150 hover:shadow-lg hover:-translate-y-1"
           @click="
             send({
               type: 'EDIT_MEMBER',
@@ -22,26 +33,28 @@
               </p>
               <p class="text-slate-700 text-sm">{{ member.pronouns }}</p>
             </div>
+          </div>
+          <div class="place-self-end">
             <div
               class="rounded-md py-1 px-2 shadow-sm self-start"
               :class="{
-                'bg-blue-200': member.role === 'Admin',
-                'bg-gray-200': member.role === 'Player',
-                'bg-teal-200': member.role === 'Creator',
+                'bg-blue-200': member.role_id === ROLES.admin,
+                'bg-gray-200': member.role_id === ROLES.player,
+                'bg-teal-200': member.role_id === ROLES.creator,
               }"
             >
-              <p class="text-sm">{{ member.role }}</p>
+              <p class="text-sm capitalize">{{ ROLES[member.role_id] }}</p>
             </div>
+            <p class="mt-2 text-slate-500 text-sm max-h-16 text-right">
+              {{ store.communityMemberAccess[member.id]?.length || 0 }} access
+              {{
+                pluralize({
+                  count: store.communityMemberAccess[member.id]?.length,
+                  singular: "grant",
+                })
+              }}
+            </p>
           </div>
-          <p class="text-slate-500 text-sm max-h-16 text-right">
-            {{ store.communityMemberAccess[member.id]?.length || 0 }} access
-            {{
-              pluralize({
-                count: store.communityMemberAccess[member.id]?.length,
-                singular: "grant",
-              })
-            }}
-          </p>
         </button>
       </li>
     </ul>
@@ -64,6 +77,7 @@
   />
 </template>
 <script setup lang="ts">
+import { PropType, ref } from "vue";
 import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/vue";
 import { MemberWithMembership } from "@/typings/Member";
@@ -74,21 +88,37 @@ import MemberForm from "./MemberForm.vue";
 import { store } from "@/store";
 import Avatar from "@/components/Avatar.vue";
 import { supabase } from "@/supabase";
-import { PropType } from "vue";
 import { Community } from "@/typings/Community";
 import useToast from "@/components/Toast/useToast";
+import { ROLES } from "@/util/roles";
+import { communityStore } from "./communityStore";
 
 const { showError } = useToast();
 
-const props = defineProps({
+defineProps({
   communityId: {
     type: String as PropType<Community["id"]>,
     required: true,
   },
+  nameFilter: {
+    type: String,
+    default: "",
+  },
+  roleFilter: {
+    type: Number as PropType<ROLES>,
+    default: undefined,
+  },
+  expanded: {
+    type: Boolean,
+    default: false,
+  },
 });
+
+const members = ref([]);
 
 const memberManagementMachine = createMachine<{
   member?: MemberWithMembership;
+  members: MemberWithMembership[];
   drawerVisible: boolean;
   modalVisible: boolean;
 }>(
@@ -98,6 +128,7 @@ const memberManagementMachine = createMachine<{
       member: undefined,
       drawerVisible: false,
       modalVisible: false,
+      members: [],
     },
     initial: "closed",
     states: {
@@ -107,6 +138,7 @@ const memberManagementMachine = createMachine<{
             target: "editMember",
             actions: ["assignMember", "showDrawer"],
           },
+          BULK_EDIT: {},
         },
       },
       editMember: {
@@ -155,6 +187,13 @@ const memberManagementMachine = createMachine<{
   },
   {
     actions: {
+      addToList: assign({
+        members: (context, event) => context.members.concat(event.member),
+      }),
+      removeFromList: assign({
+        members: (context, event) =>
+          context.members.filter((member) => member.id !== event.member.id),
+      }),
       assignMember: assign({
         member: (context, event) => event.member,
       }),
@@ -176,7 +215,7 @@ const memberManagementMachine = createMachine<{
       removeMember: assign({
         member: (context) => {
           if (!context.member?.id) throw Error("no member");
-          store.communityMembers = store.communityMembers.filter(
+          communityStore.members = communityStore.members.filter(
             (member) => member.id !== context.member?.id
           );
           return undefined;
@@ -193,6 +232,6 @@ const { state, send } = useMachine(memberManagementMachine);
 </script>
 <style scoped>
 .member-list {
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto 1fr;
 }
 </style>

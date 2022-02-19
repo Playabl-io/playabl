@@ -1,5 +1,5 @@
 <template>
-  <Heading level="h6" as="h2" class="mb-4">Calendar cutoff</Heading>
+  <Heading level="h6" as="h2" class="mb-2">Calendar cutoff</Heading>
   <p class="text-sm text-slate-700 mb-4">
     Set a date for how far in advance calendar sessions can be posted. Members
     will not be able to post sessions after this date. Leave blank for no
