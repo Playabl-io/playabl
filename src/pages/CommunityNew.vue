@@ -98,7 +98,11 @@
           <div>
             <div class="p-4 rounded-lg bg-gray-100 flex items-center space-x-2">
               <FormCheckbox id="allow-public" v-model="allowPublicSignup" />
-              <FormLabel class="font-normal" for="allow-public">
+              <FormLabel
+                class="font-normal"
+                for="allow-public"
+                :no-margin="true"
+              >
                 Allow others to join without invite?
               </FormLabel>
             </div>
@@ -177,113 +181,66 @@
               </a>
             </p>
           </div>
-          <p class="text-lg">Select any social links to add</p>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <SwitchGroup>
-              <div class="flex items-center">
-                <SwitchLabel class="mr-2 text-sm">Twitter</SwitchLabel>
-                <Switch
-                  v-model="twitterEnabled"
-                  :class="
-                    twitterEnabled
-                      ? 'bg-green-500'
-                      : 'bg-gray-300 bg-opacity-70'
-                  "
-                  class="relative inline-flex flex-shrink-0 h-[24px] w-[48px] border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-700 focus-visible:ring-opacity-75"
-                >
-                  <span
-                    aria-hidden="true"
-                    :class="twitterEnabled ? 'translate-x-6' : 'translate-x-0'"
-                    class="pointer-events-none inline-block h-[20px] w-[20px] rounded-full bg-white shadow-lg transform ring-0 transition ease-in-out duration-200"
-                  />
-                </Switch>
-              </div>
-            </SwitchGroup>
-            <SwitchGroup>
-              <div class="flex items-center">
-                <SwitchLabel class="mr-2 text-sm">Facebook</SwitchLabel>
-                <Switch
-                  v-model="facebookEnabled"
-                  :class="
-                    facebookEnabled
-                      ? 'bg-green-500'
-                      : 'bg-gray-300 bg-opacity-70'
-                  "
-                  class="relative inline-flex flex-shrink-0 h-[24px] w-[48px] border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-700 focus-visible:ring-opacity-75"
-                >
-                  <span
-                    aria-hidden="true"
-                    :class="facebookEnabled ? 'translate-x-6' : 'translate-x-0'"
-                    class="pointer-events-none inline-block h-[20px] w-[20px] rounded-full bg-white shadow-lg transform ring-0 transition ease-in-out duration-200"
-                  />
-                </Switch>
-              </div>
-            </SwitchGroup>
-            <SwitchGroup>
-              <div class="flex items-center">
-                <SwitchLabel class="mr-2 text-sm">Discord</SwitchLabel>
-                <Switch
-                  v-model="discordEnabled"
-                  :class="
-                    discordEnabled
-                      ? 'bg-green-500'
-                      : 'bg-gray-300 bg-opacity-70'
-                  "
-                  class="relative inline-flex flex-shrink-0 h-[24px] w-[48px] border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-700 focus-visible:ring-opacity-75"
-                >
-                  <span
-                    aria-hidden="true"
-                    :class="discordEnabled ? 'translate-x-6' : 'translate-x-0'"
-                    class="pointer-events-none inline-block h-[20px] w-[20px] rounded-full bg-white shadow-lg transform ring-0 transition ease-in-out duration-200"
-                  />
-                </Switch>
-              </div>
-            </SwitchGroup>
-            <SwitchGroup>
-              <div class="flex items-center">
-                <SwitchLabel class="mr-2 text-sm">Slack</SwitchLabel>
-                <Switch
-                  v-model="slackEnabled"
-                  :class="
-                    slackEnabled ? 'bg-green-500' : 'bg-gray-300 bg-opacity-70'
-                  "
-                  class="relative inline-flex flex-shrink-0 h-[24px] w-[48px] border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-700 focus-visible:ring-opacity-75"
-                >
-                  <span
-                    aria-hidden="true"
-                    :class="slackEnabled ? 'translate-x-6' : 'translate-x-0'"
-                    class="pointer-events-none inline-block h-[20px] w-[20px] rounded-full bg-white shadow-lg transform ring-0 transition ease-in-out duration-200"
-                  />
-                </Switch>
-              </div>
-            </SwitchGroup>
+          <div>
+            <p class="text-lg">Select any social links to add</p>
+            <fieldset class="flex flex-wrap gap-4 mt-4">
+              <label
+                v-for="social in SOCIALS"
+                :key="social"
+                :for="social"
+                class="rounded-xl border border-solid border-gray-300 cursor-pointer focus-within:ring-1 focus-within:ring-blue-500 focus-within:ring-offset-2 select-none"
+                :class="{
+                  'border-blue-500 bg-blue-500 text-white':
+                    enabledSocials.includes(social),
+                }"
+              >
+                <input
+                  :id="social"
+                  v-model="enabledSocials"
+                  name="gameType"
+                  type="checkbox"
+                  class="w-0 h-0 opacity-0"
+                  :value="social"
+                />
+                <span class="p-2">
+                  {{ social }}
+                </span>
+              </label>
+            </fieldset>
           </div>
-          <div v-if="twitterEnabled" class="flex flex-col">
+          <div v-if="enabledSocials.includes('Twitter')" class="flex flex-col">
             <FormLabel for="twitter"> Twitter handle </FormLabel>
             <div class="relative flex items-center">
               <AtSymbolIcon class="h-5 w-5 absolute left-2 mt-2" />
               <FormInput id="twitter" v-model="twitter" class="pl-8 grow" />
             </div>
           </div>
-          <div v-if="facebookEnabled" class="flex flex-col">
+          <div v-if="enabledSocials.includes('Facebook')" class="flex flex-col">
             <FormLabel for="facebook">Facebook</FormLabel>
             <FormInput id="facebook" v-model="facebook" type="url" />
             <p class="text-xs text-slate-700 mt-1">
               Enter full address. Ex: https://www.facebook.com/YourCommunity
             </p>
           </div>
-          <div v-if="discordEnabled" class="flex flex-col">
+          <div v-if="enabledSocials.includes('Discord')" class="flex flex-col">
             <FormLabel for="discord"> Discord </FormLabel>
             <FormInput id="discord" v-model="discord" type="url" />
             <p class="text-xs text-slate-700 mt-1">
               Enter full address. Ex: https://YourCommunity.discord.com
             </p>
           </div>
-          <div v-if="slackEnabled" class="flex flex-col">
+          <div v-if="enabledSocials.includes('Slack')" class="flex flex-col">
             <FormLabel for="slack">Slack</FormLabel>
             <FormInput id="slack" v-model="slack" type="url" />
             <p class="text-xs text-slate-700 mt-1">
               Enter full address. Ex: https://YourCommunity.slack.com
+            </p>
+          </div>
+          <div v-if="enabledSocials.includes('Patreon')" class="flex flex-col">
+            <FormLabel for="patreon">Patreon</FormLabel>
+            <FormInput id="patreon" v-model="patreon" type="url" />
+            <p class="text-xs text-slate-700 mt-1">
+              Enter full address. Ex: https://patreon.com/YourCommunity
             </p>
           </div>
         </div>
@@ -311,7 +268,6 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useMachine } from "@xstate/vue";
 import { createMachine } from "xstate";
-import { SwitchGroup, SwitchLabel, Switch } from "@headlessui/vue";
 import BaseTemplate from "@/components/BaseTemplate.vue";
 import FormLabel from "@/components/Forms/FormLabel.vue";
 import FormInput from "@/components/Forms/FormInput.vue";
@@ -353,6 +309,10 @@ const GAME_TAGS = [
   "Story games",
 ];
 
+const SOCIALS = ["Twitter", "Facebook", "Discord", "Slack", "Patreon"];
+
+const enabledSocials = ref<string[]>([]);
+
 const router = useRouter();
 
 const newCommunityMachine = createMachine({
@@ -389,14 +349,11 @@ const allowPublicSignup = ref(false);
 const coverImage = ref<File>();
 const website = ref("");
 const codeOfConductUrl = ref("");
-const twitterEnabled = ref(false);
-const facebookEnabled = ref(false);
-const discordEnabled = ref(false);
-const slackEnabled = ref(false);
 const twitter = ref("");
 const facebook = ref("");
 const discord = ref("");
 const slack = ref("");
+const patreon = ref("");
 
 function onFileDrop(event: DragEvent) {
   const file = handleFileDrop(event, { value: 3000000, label: "3 MB" });
@@ -444,6 +401,7 @@ async function createCommunity() {
         facebook: facebook.value,
         discord: discord.value,
         slack: slack.value,
+        patreon: patreon.value,
         owner_id: store.user.id,
         allow_public_signup: allowPublicSignup.value,
         cover_image: imagePath,

@@ -9,14 +9,14 @@
           <FormLabel for="role">Role</FormLabel>
           <select
             id="role"
-            :value="member.role"
+            v-model="currentRole"
             class="mt-1 rounded-md border border-solid border-gray-300 text-slate-900 dark:bg-slate-200 focus-styles"
             :disabled="updatingRole"
             @change="handleRoleUpdate($event)"
           >
-            <option value="Admin">Admin</option>
-            <option value="Creator">Creator</option>
-            <option value="Player">Player</option>
+            <option :value="ROLES.admin">Admin</option>
+            <option :value="ROLES.creator">Creator</option>
+            <option :value="ROLES.player">Player</option>
           </select>
         </div>
       </section>
@@ -50,7 +50,6 @@
         >
           <p class="text-xs text-slate-700 mb-2">Available</p>
           <div class="grid grid-cols-2 gap-2 py-2">
-            <!-- Todo - don't show ones the member already has -->
             <PrimaryButton
               v-for="grant in availableAccess"
               :key="grant.id"
@@ -98,12 +97,9 @@ import {
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
 import useToast from "@/components/Toast/useToast";
+import { communityStore } from "./communityStore";
 
 const { showSuccess } = useToast();
-
-const addingAccess = ref(false);
-const removingAccess = ref(false);
-const updatingRole = ref(false);
 
 const emit = defineEmits(["close", "delete"]);
 
@@ -113,7 +109,11 @@ const props = defineProps({
     required: true,
   },
 });
-toRefs(props);
+
+const addingAccess = ref(false);
+const removingAccess = ref(false);
+const updatingRole = ref(false);
+const currentRole = ref(props.member.role_id);
 
 const availableAccess = computed(() => {
   const current = store.communityMemberAccess[props.member.id];
@@ -126,17 +126,19 @@ const availableAccess = computed(() => {
 async function handleRoleUpdate(event: Event) {
   updatingRole.value = true;
   const element = event.target as HTMLSelectElement;
-  const membershipMap: Record<string, ROLES> = {
-    Admin: ROLES.admin,
-    Creator: ROLES.creator,
-    Player: ROLES.player,
-  };
+  const newRoleId = Number(element.value) as ROLES;
   await updateMemberRole({
     communityMembershipId: props.member.membershipId,
-    role: membershipMap[element.value],
+    roleId: newRoleId,
   });
   updatingRole.value = false;
   showSuccess({ message: "Role updated" });
+  communityStore.members = communityStore.members.map((member) => {
+    if (member.id === props.member.id) {
+      return { ...member, role_id: newRoleId };
+    }
+    return member;
+  });
 }
 
 async function handleAddAccess(grant: AccessLevel) {

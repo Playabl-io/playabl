@@ -32,6 +32,7 @@ supabase.auth.onAuthStateChange(async (event, session) => {
     const profile = await loadProfile(session.user.id);
     store.user = profile;
     if (redirect) {
+      console.log({ redirect });
       if (redirect && typeof redirect === "string") {
         router.push(redirect);
       }

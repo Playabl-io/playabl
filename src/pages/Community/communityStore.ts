@@ -1,6 +1,7 @@
 import { supabase } from "@/supabase";
 import { Community } from "@/typings/Community";
 import { Game } from "@/typings/Game";
+import { Member, MemberWithMembership } from "@/typings/Member";
 import { log } from "@/util/logger";
 import { reactive } from "vue";
 
@@ -9,6 +10,7 @@ interface Store {
   gamesCount: number;
   games: Game[];
   membersCount: number;
+  members: MemberWithMembership[];
   isAdmin: boolean;
   isCreator: boolean;
   isPlayer: boolean;
@@ -19,6 +21,7 @@ export const communityStore = reactive<Store>({
   gamesCount: 0,
   games: [],
   membersCount: 0,
+  members: [],
   isAdmin: false,
   isCreator: false,
   isPlayer: false,

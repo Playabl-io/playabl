@@ -32,13 +32,17 @@
       <div class="p-4 rounded-lg bg-gray-100">
         <div class="flex items-center space-x-4">
           <FormCheckbox id="is-mandatory" v-model="isMandatory" />
-          <FormLabel class="font-normal" for="is-mandatory">
+          <FormLabel class="font-normal" for="is-mandatory" :no-margin="true">
             Make this access level mandatory for games?
           </FormLabel>
         </div>
         <div class="flex items-center space-x-4 mt-4">
           <FormCheckbox id="apply-to-new-members" v-model="applyOnJoin" />
-          <FormLabel class="font-normal" for="apply-to-new-members">
+          <FormLabel
+            class="font-normal"
+            for="apply-to-new-members"
+            :no-margin="true"
+          >
             Automatically grant to members when they join the community?
           </FormLabel>
         </div>

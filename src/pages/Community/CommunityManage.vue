@@ -1,10 +1,12 @@
 <template>
-  <section class="flex flex-wrap gap-8">
+  <section class="flex flex-wrap gap-4">
     <div
       class="w-40 h-40 bg-blue-700 text-white grid border border-solid border-gray-300 rounded-lg p-4"
     >
       <p>Members</p>
-      <p class="text-lg place-self-end font-semibold">{{ membersCount }}</p>
+      <p class="text-lg place-self-end font-semibold">
+        {{ communityStore.membersCount }}
+      </p>
     </div>
     <div
       class="w-40 h-40 bg-blue-700 text-white grid border border-solid border-gray-300 rounded-lg p-4"
@@ -33,72 +35,99 @@
       </GhostButton>
     </div>
   </section>
-  <section class="mt-4 md:mt-12">
-    <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4 grid-flow-row-dense">
-      <section class="section-container grid grid-cols-2 gap-2">
-        <div class="flex justify-between items-center mb-4 col-span-2">
-          <Heading level="h6" as="h2"> Community Info </Heading>
-          <!-- <GhostButton>
-            <PencilAltIcon class="h-5 w-5" />
-          </GhostButton> -->
-        </div>
-        <div class="flex items-center space-x-4">
-          <CheckCircleIcon
-            v-if="community.description"
-            class="h-6 w-6"
-            :class="{ 'text-blue-700': community.description }"
-          />
-          <MinusCircleIcon v-else class="h-6 w-6 text-slate-700" />
-          <p class="pt-1 prose dark:prose-invert">Description</p>
-        </div>
-        <div class="flex items-center space-x-4">
-          <CheckCircleIcon
-            v-if="community.website"
-            class="h-6 w-6"
-            :class="{ 'text-blue-700': community.website }"
-          />
-          <MinusCircleIcon v-else class="h-6 w-6 text-slate-700" />
-          <p class="pt-1 prose dark:prose-invert">Website</p>
-        </div>
-        <div class="flex items-center space-x-4">
-          <CheckCircleIcon
-            v-if="community.twitter"
-            class="h-6 w-6"
-            :class="{ 'text-blue-700': community.twitter }"
-          />
-          <MinusCircleIcon v-else class="h-6 w-6 text-slate-700" />
-          <p class="pt-1 prose dark:prose-invert">Twitter</p>
-        </div>
-        <div class="flex items-center space-x-4">
-          <CheckCircleIcon
-            v-if="community.facebook"
-            class="h-6 w-6"
-            :class="{ 'text-blue-700': community.facebook }"
-          />
-          <MinusCircleIcon v-else class="h-6 w-6 text-slate-700" />
-          <p class="pt-1 prose dark:prose-invert">Facebook</p>
-        </div>
-      </section>
-      <section
-        class="section-container row-span-2 md:col-start-2 xl:col-start-3"
+  <section class="mt-4">
+    <div class="grid lg:grid-cols-3 gap-4">
+      <div
+        class="grid xl:grid-cols-2 gap-4 grid-flow-row-dense items-start h-min"
+        :class="{
+          'xl:col-span-2': !expandMembers,
+          'col-span-full': expandMembers,
+        }"
       >
-        <Heading level="h6" as="h2" class="mb-4">Members</Heading>
-        <MembersList :community-id="community.id" />
-      </section>
-      <section class="section-container row-span-2">
-        <AccessLevels />
-      </section>
-      <section class="section-container">
-        <CalendarCutoff
-          :community-id="community.id"
-          :current-cutoff="community.furthest_posting_date"
-        />
+        <section class="section-container grid gap-2">
+          <div class="flex justify-between items-center mb-4 col-span-2">
+            <Heading level="h6" as="h2"> Community Info </Heading>
+            <GhostButton
+              aria-label="Edit community info"
+              @click="editInfoDrawerOpen = true"
+            >
+              <PencilAltIcon class="h-5 w-5 text-slate-700" />
+            </GhostButton>
+          </div>
+          <div
+            v-for="detail in details"
+            :key="detail.label"
+            class="flex items-center space-x-4"
+          >
+            <CheckCircleIcon
+              v-if="detail.value"
+              class="h-6 w-6"
+              :class="{ 'text-blue-700': detail.value }"
+            />
+            <MinusCircleIcon v-else class="h-6 w-6 text-slate-700" />
+            <p class="pt-1 prose dark:prose-invert">{{ detail.label }}</p>
+          </div>
+        </section>
+        <section class="section-container">
+          <AccessLevels />
+        </section>
+        <section class="section-container">
+          <CalendarCutoff
+            :community-id="communityStore.community.id"
+            :current-cutoff="communityStore.community.furthest_posting_date"
+          />
+        </section>
+      </div>
+      <section
+        class="section-container h-min"
+        :class="{
+          'col-span-full lg:row-start-1': expandMembers,
+          'lg:col-span-2 xl:col-span-1': !expandMembers,
+        }"
+      >
+        <div class="flex justify-between">
+          <Heading level="h6" as="h2" class="mb-4">Members</Heading>
+          <Tooltip v-if="!expandMembers">
+            <template #tooltip>
+              <p class="w-24">Expand for more search options</p>
+            </template>
+            <template #trigger="{ toggleTooltip }">
+              <GhostButton
+                @click="expandMembers = true"
+                @mouseenter="toggleTooltip"
+                @mouseleave="toggleTooltip"
+                @focus="toggleTooltip"
+                @blue="toggleTooltip"
+              >
+                <ArrowsExpandIcon class="h-5 w-5 text-slate-700" />
+              </GhostButton>
+            </template>
+          </Tooltip>
+          <Tooltip v-else>
+            <template #tooltip> Collapse </template>
+            <template #trigger="{ toggleTooltip }">
+              <GhostButton
+                @click="expandMembers = false"
+                @mouseenter="toggleTooltip"
+                @mouseleave="toggleTooltip"
+                @focus="toggleTooltip"
+                @blue="toggleTooltip"
+              >
+                <XCircleIcon class="h-5 w-5 text-slate-700" />
+              </GhostButton>
+            </template>
+          </Tooltip>
+        </div>
+        <MembersSearch :expanded="expandMembers" />
       </section>
     </div>
+    <Drawer :open="editInfoDrawerOpen" @close="editInfoDrawerOpen = false">
+      <EditCommunityInfo @close="editInfoDrawerOpen = false" />
+    </Drawer>
   </section>
 </template>
 <script setup lang="ts">
-import { ref, onMounted, PropType, toRefs } from "vue";
+import { ref, onMounted } from "vue";
 import { supabase } from "@/supabase";
 import { log } from "@/util/logger";
 import { useRoute } from "vue-router";
@@ -107,43 +136,52 @@ import {
   CheckCircleIcon,
   MinusCircleIcon,
   PencilAltIcon,
+  ArrowsExpandIcon,
+  XCircleIcon,
 } from "@heroicons/vue/outline";
 import Heading from "@/components/Heading.vue";
-import { Community } from "@/typings/Community";
 import { Game } from "@/typings/Game";
-import { MemberWithMembership } from "@/typings/Member";
 import { store } from "@/store";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
 import { loadCommunityAccessTimes } from "@/api/communityAccess";
 import AccessLevels from "./AccessLevels.vue";
-import MembersList from "./MembersList.vue";
 import InviteLink from "./InviteLink.vue";
 import CalendarCutoff from "./CalendarCutoff.vue";
-
-const props = defineProps({
-  community: {
-    type: Object as PropType<Community>,
-    required: true,
-  },
-});
-toRefs(props);
+import Drawer from "@/components/Drawer.vue";
+import EditCommunityInfo from "./EditCommunityInfo.vue";
+import { communityStore } from "./communityStore";
+import MembersSearch from "./MembersSearch.vue";
+import Tooltip from "@/components/Tooltip.vue";
 
 const { showSuccess } = useToast();
 
 const route = useRoute();
 const loading = ref(true);
+const editInfoDrawerOpen = ref(false);
+const expandMembers = ref(false);
 
-const members = ref<MemberWithMembership[]>([]);
-const membersCount = ref(0);
 const games = ref<Game[]>([]);
 const gamesCount = ref(0);
 const communityInvites = ref<string[]>([]);
 const creatingInvite = ref(false);
 
+const details = [
+  { value: communityStore.community.description, label: "Description" },
+  { value: communityStore.community.website, label: "Website" },
+  {
+    value: communityStore.community.code_of_conduct_url,
+    label: "Code of conduct",
+  },
+  { value: communityStore.community.twitter, label: "Twitter" },
+  { value: communityStore.community.facebook, label: "Facebook" },
+  { value: communityStore.community.discord, label: "Discord" },
+  { value: communityStore.community.slack, label: "Slack" },
+  { value: communityStore.community.patreon, label: "Patreon" },
+];
+
 onMounted(async () => {
   loading.value = true;
   await Promise.all([
-    getMembers(),
     getGames(),
     getMemberAccess(),
     getAccessLevels(),
@@ -151,28 +189,6 @@ onMounted(async () => {
   ]);
   loading.value = false;
 });
-
-async function getMembers() {
-  const { data, error, count } = await supabase
-    .from("community_memberships")
-    .select("id, role_id (name), user_id (*)", { count: "exact" })
-    .eq("community_id", route.params.community_id);
-  if (count !== null) {
-    membersCount.value = count;
-  }
-  if (data) {
-    const mappedMembers = data.map((membership) => ({
-      membershipId: membership.id,
-      ...membership.user_id,
-      role: membership.role_id.name,
-    }));
-    store.communityMembers = mappedMembers;
-    members.value = mappedMembers;
-  }
-  if (error) {
-    log({ error });
-  }
-}
 
 async function getMemberAccess() {
   // TODO: do this in a worker since this could be really expensive

@@ -4,15 +4,15 @@ import { ROLES } from "@/util/roles";
 
 export async function updateMemberRole({
   communityMembershipId,
-  role,
+  roleId,
 }: {
   communityMembershipId: string;
-  role: ROLES;
+  roleId: ROLES;
 }) {
   const { data, error } = await supabase
     .from("community_memberships")
     .update({
-      role_id: role,
+      role_id: roleId,
     })
     .eq("id", communityMembershipId);
   if (error) {

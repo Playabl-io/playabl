@@ -11,7 +11,7 @@
     >
       <p
         v-if="showTooltip"
-        class="absolute z-10 bg-neutral-50 bottom-8 text-sm p-3 rounded-md shadow-md border border-solid border-gray-100 w-max"
+        class="absolute z-10 bg-neutral-50 bottom-full mb-2 text-sm p-3 rounded-md shadow-md border border-solid border-gray-100 w-max"
       >
         <slot name="tooltip"></slot>
       </p>

@@ -13,7 +13,6 @@ export interface Member {
 export type NewMember = Omit<Member, "id" | "updated_at">;
 
 export type MemberWithMembership = Member & {
-  role: string;
-  access: { name: string; id: string; userId: string }[];
+  role_id: number;
   membershipId: string;
 };

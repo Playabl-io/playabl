@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <teleport to="body">
     <transition
       enter-active-class="transition-all duration-300 ease-out"
       enter-from-class="opacity-0"
@@ -32,7 +32,7 @@
         <slot></slot>
       </div>
     </transition>
-  </div>
+  </teleport>
 </template>
 <script setup lang="ts">
 import { toRefs, ref } from "vue";

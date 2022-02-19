@@ -114,6 +114,7 @@ const routes = [
         component: CommunityManage,
         meta: {
           requiresAuth: true,
+          requiresAdmin: true,
         },
       },
       {
