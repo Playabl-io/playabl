@@ -222,12 +222,15 @@ const memberManagementMachine = createMachine<{
       },
       deleting: {
         invoke: {
-          src: (context) => {
+          src: async (context) => {
             if (!context.member) throw Error("no member selected");
-            return supabase
+            const { error } = await supabase
               .from("community_memberships")
               .delete()
-              .eq("id", context.member.id);
+              .eq("id", context.member.membershipId);
+            if (error) {
+              throw error;
+            }
           },
           onDone: {
             target: "closed",

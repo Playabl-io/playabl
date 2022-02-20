@@ -1,6 +1,6 @@
 <template>
-  <div class="h-full relative">
-    <div class="grid gap-8 auto-rows-auto">
+  <div class="h-full flex flex-col relative">
+    <div class="grow flex flex-col gap-8 overflow-auto">
       <section class="px-6 pt-6">
         <Heading level="h6" as="h2" class="mb-6">
           Edit {{ possessive(member?.username || member?.email || "") }} role
@@ -64,9 +64,7 @@
         </div>
       </section>
     </div>
-    <div
-      class="absolute inset-x-0 bottom-0 px-6 py-4 flex justify-end space-x-2 border-t border-solid border-gray-200"
-    >
+    <DrawerFooter>
       <GhostButton
         type="button"
         class="mr-auto"
@@ -76,7 +74,7 @@
         <TrashIcon class="h-5 w-5 text-red-600" />
       </GhostButton>
       <OutlineButton type="button" @click="emit('close')">Close</OutlineButton>
-    </div>
+    </DrawerFooter>
   </div>
 </template>
 <script setup lang="ts">
@@ -99,6 +97,7 @@ import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
 import useToast from "@/components/Toast/useToast";
 import { communityStore } from "./communityStore";
+import DrawerFooter from "@/components/DrawerFooter.vue";
 
 const { showSuccess } = useToast();
 
