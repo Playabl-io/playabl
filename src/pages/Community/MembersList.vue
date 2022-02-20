@@ -1,4 +1,20 @@
 <template>
+  <div class="flex items-center gap-4 h-10">
+    <input
+      class="text-brand-500 rounded-md shadow-sm border border-gray-300 dark:bg-slate-200 focus-styles"
+      type="checkbox"
+      :checked="members.length === communityStore.members.length"
+      @change="toggleAll"
+    />
+    <p v-if="count" class="text-sm font-semibold">
+      {{ count }}
+      {{ pluralize({ count, singular: "result" })
+      }}<span v-if="members.length > 0">, {{ members.length }} selected</span>
+    </p>
+    <GhostButton v-if="members.length > 0" class="ml-auto" @click="handleEdit">
+      <PencilAltIcon class="h-5 w-5 text-slate-700" />
+    </GhostButton>
+  </div>
   <div class="grid gap-4">
     <ul>
       <li
@@ -7,20 +23,16 @@
         class="flex items-center space-x-2"
       >
         <input
-          v-if="expanded"
+          :id="member.id"
           v-model="members"
           class="text-brand-500 rounded-md shadow-sm border border-gray-300 dark:bg-slate-200 focus-styles"
           type="checkbox"
           :value="member.id"
         />
-        <button
-          class="w-full grid grid-cols-2 gap-1 p-4 rounded-md transition transform duration-150 hover:shadow-lg hover:-translate-y-1"
-          @click="
-            send({
-              type: 'EDIT_MEMBER',
-              member,
-            })
-          "
+        <label
+          :for="member.id"
+          class="w-full grid gap-1 py-4 pl-2 rounded-md cursor-pointer"
+          :class="[expanded ? 'grid-cols-3' : 'grid-cols-2']"
         >
           <div class="grid member-list gap-4">
             <Avatar
@@ -29,14 +41,17 @@
             />
             <div class="grid text-left">
               <p class="font-semibold truncate w-full">
-                {{ member.username || member.email }}
+                {{ member.username || "Name not set" }}
               </p>
               <p class="text-slate-700 text-sm">{{ member.pronouns }}</p>
             </div>
           </div>
+          <p v-if="expanded" class="self-start text-sm text-slate-700">
+            {{ member.email }}
+          </p>
           <div class="place-self-end">
             <div
-              class="rounded-md py-1 px-2 shadow-sm self-start"
+              class="rounded-md py-1 px-2 shadow-sm self-start text-center"
               :class="{
                 'bg-blue-200': member.role_id === ROLES.admin,
                 'bg-gray-200': member.role_id === ROLES.player,
@@ -55,16 +70,21 @@
               }}
             </p>
           </div>
-        </button>
+        </label>
       </li>
     </ul>
   </div>
   <Drawer :open="state.context.drawerVisible" @close="send('CANCEL')">
     <MemberForm
-      v-if="state.context.member"
+      v-if="state.value === 'editMember' && state.context.member"
       :member="state.context.member"
       @close="send('CANCEL')"
       @delete="send('DELETE_MEMBER')"
+    />
+    <BulkEditMembersForm
+      v-if="state.value === 'bulkEdit'"
+      :members="state.context.members"
+      @close="send('CANCEL')"
     />
   </Drawer>
   <DeleteModal
@@ -80,6 +100,7 @@
 import { PropType, ref } from "vue";
 import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/vue";
+import { PencilAltIcon } from "@heroicons/vue/outline";
 import { MemberWithMembership } from "@/typings/Member";
 import Drawer from "@/components/Drawer.vue";
 import DeleteModal from "@/components/Modals/DeleteModal.vue";
@@ -92,6 +113,8 @@ import { Community } from "@/typings/Community";
 import useToast from "@/components/Toast/useToast";
 import { ROLES } from "@/util/roles";
 import { communityStore } from "./communityStore";
+import GhostButton from "@/components/Buttons/GhostButton.vue";
+import BulkEditMembersForm from "./BulkEditMembersForm.vue";
 
 const { showError } = useToast();
 
@@ -100,21 +123,35 @@ defineProps({
     type: String as PropType<Community["id"]>,
     required: true,
   },
-  nameFilter: {
-    type: String,
-    default: "",
-  },
-  roleFilter: {
-    type: Number as PropType<ROLES>,
-    default: undefined,
-  },
   expanded: {
     type: Boolean,
     default: false,
   },
+  count: {
+    type: Number,
+    default: undefined,
+  },
 });
 
-const members = ref([]);
+const members = ref<MemberWithMembership["id"][]>([]);
+
+function toggleAll(event: Event) {
+  const target = event.target as HTMLInputElement;
+  if (target?.checked) {
+    members.value = communityStore.members.map(({ id }) => id);
+  } else {
+    members.value = [];
+  }
+}
+
+function handleEdit() {
+  send({
+    type: "EDIT",
+    members: members.value.map((id) =>
+      communityStore.members.find((member) => member.id === id)
+    ),
+  });
+}
 
 const memberManagementMachine = createMachine<{
   member?: MemberWithMembership;
@@ -134,11 +171,18 @@ const memberManagementMachine = createMachine<{
     states: {
       closed: {
         on: {
-          EDIT_MEMBER: {
-            target: "editMember",
-            actions: ["assignMember", "showDrawer"],
-          },
-          BULK_EDIT: {},
+          EDIT: [
+            {
+              cond: (context, event) => event.members.length === 1,
+              target: "editMember",
+              actions: ["assignMember", "showDrawer"],
+            },
+            {
+              cond: (context, event) => event.members.length > 1,
+              target: "bulkEdit",
+              actions: ["assignMembers", "showDrawer"],
+            },
+          ],
         },
       },
       editMember: {
@@ -146,6 +190,18 @@ const memberManagementMachine = createMachine<{
           CANCEL: {
             target: "closed",
             actions: ["clearMember", "hideDrawer"],
+          },
+          DELETE_MEMBER: {
+            target: "deleteMember",
+            actions: ["hideDrawer", "showModal"],
+          },
+        },
+      },
+      bulkEdit: {
+        on: {
+          CANCEL: {
+            target: "closed",
+            actions: ["clearMembers", "hideDrawer"],
           },
           DELETE_MEMBER: {
             target: "deleteMember",
@@ -166,12 +222,15 @@ const memberManagementMachine = createMachine<{
       },
       deleting: {
         invoke: {
-          src: (context) => {
+          src: async (context) => {
             if (!context.member) throw Error("no member selected");
-            return supabase
+            const { error } = await supabase
               .from("community_memberships")
               .delete()
               .eq("id", context.member.membershipId);
+            if (error) {
+              throw error;
+            }
           },
           onDone: {
             target: "closed",
@@ -195,10 +254,16 @@ const memberManagementMachine = createMachine<{
           context.members.filter((member) => member.id !== event.member.id),
       }),
       assignMember: assign({
-        member: (context, event) => event.member,
+        member: (context, event) => event.members[0],
+      }),
+      assignMembers: assign({
+        members: (context, event) => event.members,
       }),
       clearMember: assign({
         member: (_, __) => undefined,
+      }),
+      clearMembers: assign({
+        members: (_, __) => [],
       }),
       showDrawer: assign({
         drawerVisible: (context, event) => true,
@@ -214,7 +279,7 @@ const memberManagementMachine = createMachine<{
       }),
       removeMember: assign({
         member: (context) => {
-          if (!context.member?.id) throw Error("no member");
+          if (!context.member) throw Error("no member");
           communityStore.members = communityStore.members.filter(
             (member) => member.id !== context.member?.id
           );

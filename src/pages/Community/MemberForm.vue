@@ -1,9 +1,10 @@
 <template>
-  <div class="h-full relative">
-    <div class="grid gap-8 auto-rows-auto">
+  <div class="h-full flex flex-col relative">
+    <div class="grow flex flex-col gap-8 overflow-auto">
       <section class="px-6 pt-6">
         <Heading level="h6" as="h2" class="mb-6">
-          Edit {{ possessive(member.username || member.email) }} role and access
+          Edit {{ possessive(member?.username || member?.email || "") }} role
+          and access
         </Heading>
         <div class="flex flex-col relative">
           <FormLabel for="role">Role</FormLabel>
@@ -63,9 +64,7 @@
         </div>
       </section>
     </div>
-    <div
-      class="absolute inset-x-0 bottom-0 px-6 py-4 flex justify-end space-x-2 border-t border-solid border-gray-200"
-    >
+    <DrawerFooter>
       <GhostButton
         type="button"
         class="mr-auto"
@@ -75,11 +74,11 @@
         <TrashIcon class="h-5 w-5 text-red-600" />
       </GhostButton>
       <OutlineButton type="button" @click="emit('close')">Close</OutlineButton>
-    </div>
+    </DrawerFooter>
   </div>
 </template>
 <script setup lang="ts">
-import { PropType, toRefs, ref, computed } from "vue";
+import { PropType, ref, computed } from "vue";
 import { MemberWithMembership } from "@/typings/Member";
 import { AccessLevel } from "@/typings/AccessLevel";
 import { PlusCircleIcon, XCircleIcon, TrashIcon } from "@heroicons/vue/outline";
@@ -98,6 +97,7 @@ import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
 import useToast from "@/components/Toast/useToast";
 import { communityStore } from "./communityStore";
+import DrawerFooter from "@/components/DrawerFooter.vue";
 
 const { showSuccess } = useToast();
 
@@ -110,10 +110,18 @@ const props = defineProps({
   },
 });
 
+const member = computed(() =>
+  communityStore.members.find((member) => member.id === props.member.id)
+);
+
+if (!member.value) {
+  throw new Error("member not found in store");
+}
+
 const addingAccess = ref(false);
 const removingAccess = ref(false);
 const updatingRole = ref(false);
-const currentRole = ref(props.member.role_id);
+const currentRole = ref(member.value.role_id);
 
 const availableAccess = computed(() => {
   const current = store.communityMemberAccess[props.member.id];
@@ -124,11 +132,14 @@ const availableAccess = computed(() => {
 });
 
 async function handleRoleUpdate(event: Event) {
+  if (!member.value) {
+    throw new Error("No member loaded");
+  }
   updatingRole.value = true;
   const element = event.target as HTMLSelectElement;
   const newRoleId = Number(element.value) as ROLES;
   await updateMemberRole({
-    communityMembershipId: props.member.membershipId,
+    communityMembershipId: member.value.membershipId,
     roleId: newRoleId,
   });
   updatingRole.value = false;
@@ -143,32 +154,36 @@ async function handleRoleUpdate(event: Event) {
 
 async function handleAddAccess(grant: AccessLevel) {
   addingAccess.value = true;
-  await addAccessToMember({
+  const data = await addAccessToMember({
     userId: props.member.id,
     accessId: grant.id,
     communityId: grant.community_id,
   });
-  if (Array.isArray(store.communityMemberAccess[props.member.id])) {
-    store.communityMemberAccess[props.member.id].push({
-      id: grant.id,
-      name: grant.name,
-    });
-  } else {
-    store.communityMemberAccess[props.member.id] = [
-      { id: grant.id, name: grant.name },
-    ];
+  if (data) {
+    if (Array.isArray(store.communityMemberAccess[props.member.id])) {
+      store.communityMemberAccess[props.member.id].push({
+        id: data.id,
+        name: grant.name,
+      });
+    } else {
+      store.communityMemberAccess[props.member.id] = [
+        { id: data.id, name: grant.name },
+      ];
+    }
+    showSuccess({ message: "Access updated" });
   }
   addingAccess.value = false;
-  showSuccess({ message: "Access updated" });
 }
 
-async function handleRemoveAccess(communityAccessId: string) {
+async function handleRemoveAccess(communityAccessId: number) {
   removingAccess.value = true;
-  await removeAccessFromMember(communityAccessId);
-  store.communityMemberAccess[props.member.id] = store.communityMemberAccess[
-    props.member.id
-  ].filter((access) => access.id !== communityAccessId);
+  const data = await removeAccessFromMember(communityAccessId);
+  if (data) {
+    store.communityMemberAccess[props.member.id] = store.communityMemberAccess[
+      props.member.id
+    ].filter((access) => access.id !== communityAccessId);
+    showSuccess({ message: "Access updated" });
+  }
   removingAccess.value = false;
-  showSuccess({ message: "Access updated" });
 }
 </script>

@@ -97,7 +97,7 @@
                 @mouseenter="toggleTooltip"
                 @mouseleave="toggleTooltip"
                 @focus="toggleTooltip"
-                @blue="toggleTooltip"
+                @blur="toggleTooltip"
               >
                 <ArrowsExpandIcon class="h-5 w-5 text-slate-700" />
               </GhostButton>
@@ -111,7 +111,7 @@
                 @mouseenter="toggleTooltip"
                 @mouseleave="toggleTooltip"
                 @focus="toggleTooltip"
-                @blue="toggleTooltip"
+                @blur="toggleTooltip"
               >
                 <XCircleIcon class="h-5 w-5 text-slate-700" />
               </GhostButton>

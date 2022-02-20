@@ -8,7 +8,7 @@ export async function addAccessToMember({
   communityId,
 }: {
   userId: string;
-  accessId: string;
+  accessId: number;
   communityId: string;
 }) {
   const { data, error } = await supabase
@@ -25,7 +25,9 @@ export async function addAccessToMember({
   return data;
 }
 
-export async function removeAccessFromMember(communityAccessId: string) {
+export async function removeAccessFromMember(
+  communityAccessId: CommunityAccess["id"]
+) {
   const { data, error } = await supabase
     .from("community_access")
     .delete()

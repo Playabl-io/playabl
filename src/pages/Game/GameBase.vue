@@ -126,7 +126,6 @@ function loadAndSetAttendeesInStore(rsvps: string[]) {
 let subscription: RealtimeSubscription;
 onUnmounted(() => {
   removeSubscription();
-  store.sessionRsvps = {};
 });
 
 function setSubscription(gameId: number) {
