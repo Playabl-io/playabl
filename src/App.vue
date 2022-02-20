@@ -23,7 +23,6 @@ if (user) {
 
 const route = useRoute();
 const router = useRouter();
-const redirect = route.query.redirect;
 
 const showNewProfileModal = ref(false);
 
@@ -31,11 +30,8 @@ supabase.auth.onAuthStateChange(async (event, session) => {
   if (session !== null && session.user) {
     const profile = await loadProfile(session.user.id);
     store.user = profile;
-    if (redirect) {
-      console.log({ redirect });
-      if (redirect && typeof redirect === "string") {
-        router.push(redirect);
-      }
+    if (route.query.redirect && typeof route.query.redirect === "string") {
+      router.push(route.query.redirect);
     }
     if (!profile.username && !profile.pronouns) {
       showNewProfileModal.value = true;

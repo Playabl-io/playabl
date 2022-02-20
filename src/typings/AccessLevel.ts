@@ -5,7 +5,7 @@ export enum ACCESS_LEVEL_TIME_DENOMINATION {
 }
 
 export interface AccessLevel {
-  id: string;
+  id: number;
   name: string;
   priority_access_time: number;
   time_denomination: ACCESS_LEVEL_TIME_DENOMINATION;

@@ -18,12 +18,6 @@
       </FormSelect>
     </div>
   </div>
-  <div v-if="state.context.count" class="flex justify-end mb-4">
-    <p class="text-sm font-semibold">
-      {{ state.context.count }}
-      {{ pluralize({ count: state.context.count, singular: "result" }) }}
-    </p>
-  </div>
   <div class="relative">
     <LoadingSpinner
       v-if="state.value === 'searching'"
@@ -39,12 +33,13 @@
       <MembersList
         :community-id="communityStore.community.id"
         :expanded="expanded"
+        :count="state.context.count"
       />
-      <div class="flex justify-center">
+      <div class="flex justify-center mt-4">
         <Paginator
           v-if="state.context.count"
           :count="state.context.count"
-          :page-size="25"
+          :page-size="DEFAULT_PAGE_SIZE"
           :current-page="state.context.page"
           @page-select="send({ type: 'PAGE_SELECT', page: $event })"
         />
@@ -56,8 +51,8 @@
 import { onMounted, ref, watch } from "vue";
 import { debouncedWatch } from "@vueuse/core";
 import { SearchIcon } from "@heroicons/vue/outline";
+import { XCircleIcon } from "@heroicons/vue/solid";
 import FormSelect from "@/components/Forms/FormSelect.vue";
-import FormLabel from "@/components/Forms/FormLabel.vue";
 import { ROLES } from "@/util/roles";
 import { searchCommunityMembers } from "@/api/communityMemberships";
 import MembersList from "./MembersList.vue";
@@ -65,7 +60,6 @@ import { communityStore } from "./communityStore";
 import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
-import { pluralize } from "@/util/grammar";
 import Paginator from "@/components/Paginator.vue";
 import { DEFAULT_PAGE_SIZE } from "@/util/pagination";
 
