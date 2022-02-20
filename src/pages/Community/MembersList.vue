@@ -227,7 +227,7 @@ const memberManagementMachine = createMachine<{
             return supabase
               .from("community_memberships")
               .delete()
-              .eq("id", context.member);
+              .eq("id", context.member.id);
           },
           onDone: {
             target: "closed",
