@@ -50,6 +50,7 @@ export const handler: Handler = async (event, context) => {
       const user = await getUserProfile({ userId: userId });
       sendNewRsvpEmail({
         gameName: game.title,
+        gameId: game.id,
         sessionStartTime: session.start_time,
         toEmail: user.email,
         toName: user.username || user.email,
@@ -63,25 +64,7 @@ export const handler: Handler = async (event, context) => {
     };
   }
   if (method === "DELETE") {
-    // const rsvpIndex = beforeRsvps.indexOf(userId);
-    const { data, error } = await leaveSession({ sessionId, userId });
-    console.log(error);
-    // const newRsvps = data.rsvps;
-
-    // if (
-    //   rsvpIndex > -1 &&
-    //   rsvpIndex < game.participant_count &&
-    //   newRsvps.length !== 0
-    // ) {
-    // const newlyAdded = newRsvps[game.participant_count - 1];
-    // const user = await getUserProfile({ userId: newlyAdded });
-    // sendNewRsvpEmail({
-    //   gameName: game.title,
-    //   sessionStartTime: session.start_time,
-    //   toEmail: user.email,
-    //   toName: user.username || user.email,
-    // });
-    // }
+    const { data } = await leaveSession({ sessionId, userId });
     return {
       statusCode: 200,
       body: JSON.stringify({
@@ -190,7 +173,13 @@ async function leaveSession({
   return result;
 }
 
-function sendNewRsvpEmail({ gameName, sessionStartTime, toEmail, toName }) {
+function sendNewRsvpEmail({
+  gameName,
+  gameId,
+  sessionStartTime,
+  toEmail,
+  toName,
+}) {
   const formattedStartTime = format(sessionStartTime, "EEEE, MMMM do, HH:mm");
   axios.post(
     "https://api.mailjet.com/v3.1/send",
@@ -207,12 +196,14 @@ function sendNewRsvpEmail({ gameName, sessionStartTime, toEmail, toName }) {
               Name: toName,
             },
           ],
-          Subject: `RSVP Success - ${gameName}`,
-          TextPart: `You're RSVP'd to <b>${gameName}</b> on <b>${formattedStartTime}</b> GMT.</p>`,
+          Subject: `Playabl RSVP Success`,
+          TextPart: `You're in for ${gameName}`,
           HTMLPart: `
             <h3>Get ready to play, you're in!</h3>
             <br />
-            <p>You're RSVP'd to <b>${gameName}</b> on <b>${formattedStartTime}</b> GMT.</p>
+            <p>You're in for ${gameName}</p>
+            <br />
+            <p>View on <a href="https://playable.io/games/${gameId}">Playabl</a></p>
             `,
           CustomID: "AppGettingStartedTest",
         },
