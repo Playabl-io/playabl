@@ -26,7 +26,7 @@
       </div>
       <div class="p-4 rounded-lg bg-gray-100 flex items-center space-x-2">
         <FormCheckbox id="recording" v-model="isRecorded" />
-        <FormLabel class="font-normal" for="recording">
+        <FormLabel class="font-normal" for="recording" no-margin>
           This game may be recorded
         </FormLabel>
       </div>

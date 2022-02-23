@@ -29,6 +29,7 @@
     "uuid": "^8.3.2",
     "vue": "~3.2.30",
     "vue-router": "~4.0",
+    "web-push": "^3.4.5",
     "xstate": "^4.27.0"
   },
   "devDependencies": {

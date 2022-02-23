@@ -63,24 +63,25 @@ export const handler: Handler = async (event, context) => {
     };
   }
   if (method === "DELETE") {
-    const rsvpIndex = beforeRsvps.indexOf(userId);
-    const { data } = await leaveSession({ sessionId, userId });
-    const newRsvps = data.rsvps;
+    // const rsvpIndex = beforeRsvps.indexOf(userId);
+    const { data, error } = await leaveSession({ sessionId, userId });
+    console.log(error);
+    // const newRsvps = data.rsvps;
 
-    if (
-      rsvpIndex > -1 &&
-      rsvpIndex < game.participant_count &&
-      newRsvps.length !== 0
-    ) {
-      const newlyAdded = newRsvps[game.participant_count - 1];
-      const user = await getUserProfile({ userId: newlyAdded });
-      sendNewRsvpEmail({
-        gameName: game.title,
-        sessionStartTime: session.start_time,
-        toEmail: user.email,
-        toName: user.username || user.email,
-      });
-    }
+    // if (
+    //   rsvpIndex > -1 &&
+    //   rsvpIndex < game.participant_count &&
+    //   newRsvps.length !== 0
+    // ) {
+    // const newlyAdded = newRsvps[game.participant_count - 1];
+    // const user = await getUserProfile({ userId: newlyAdded });
+    // sendNewRsvpEmail({
+    //   gameName: game.title,
+    //   sessionStartTime: session.start_time,
+    //   toEmail: user.email,
+    //   toName: user.username || user.email,
+    // });
+    // }
     return {
       statusCode: 200,
       body: JSON.stringify({

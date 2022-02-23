@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json.schemastore.org/web-manifest-combined.json",
+  "name": "Playabl",
+  "short_name": "Playabl",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#fff",
+  "description": "Find roleplaying communities and games",
+  "icons": []
+}
