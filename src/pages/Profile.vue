@@ -1,5 +1,14 @@
 <template>
   <base-template>
+    <PrimaryButton
+      v-if="webPushSubscriptionStore.isSubscribed"
+      @click="unsubscribeUser"
+    >
+      Unsubscribe from notifications on this device
+    </PrimaryButton>
+    <PrimaryButton v-else @click="subscribeUser">
+      Subscribe to notifications
+    </PrimaryButton>
     <form class="flex flex-col space-y-4" @submit.prevent="updateProfile">
       <pre>
         {{ JSON.stringify(store.user, null, 2) }}
@@ -37,6 +46,12 @@ import { supabase } from "../supabase";
 import { store } from "../store";
 import { onMounted, ref } from "vue";
 import BaseTemplate from "@/components/BaseTemplate.vue";
+import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
+import {
+  subscribeUser,
+  unsubscribeUser,
+  webPushSubscriptionStore,
+} from "@/serviceWorkerRegistration";
 
 const loading = ref(true);
 const username = ref("");
