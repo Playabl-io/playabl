@@ -27,7 +27,7 @@
       <div
         v-if="open"
         ref="target"
-        class="h-screen w-screen sm:[width:460px] absolute inset-y-0 right-0 z-20 bg-neutral-50 shadow-md"
+        class="h-screen w-screen sm:[width:460px] fixed inset-y-0 right-0 z-20 bg-neutral-50 shadow-md"
       >
         <slot></slot>
       </div>

@@ -12,8 +12,10 @@ import { supabase } from "./supabase";
 import Toaster from "./components/Toast/Toaster.vue";
 import { useRoute, useRouter } from "vue-router";
 import NewProfileModal from "./components/Modals/NewProfileModal.vue";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { loadProfile } from "./api/profiles";
+import { log } from "./util/logger";
+import { Notification } from "./typings/Notification";
 
 const user = supabase.auth.user();
 
@@ -41,4 +43,21 @@ supabase.auth.onAuthStateChange(async (event, session) => {
     store.user = null;
   }
 });
+
+async function loadNotifications() {
+  if (!store.user?.id) return;
+  const { data, error } = await supabase
+    .from<Notification>("notifications")
+    .select("*")
+    .eq("read", false)
+    .eq("user_id", store.user.id);
+  if (error) {
+    log({ error });
+  }
+  if (data) {
+    store.notifications = data;
+  }
+}
+
+onMounted(loadNotifications);
 </script>

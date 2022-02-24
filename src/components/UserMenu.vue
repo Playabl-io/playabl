@@ -2,11 +2,17 @@
   <loading-spinner v-if="isSigningOut" />
   <section class="relative flex flex-col items-center justify-center h-14">
     <Menu v-if="store.user">
-      <MenuButton class="hover:underline">
+      <MenuButton class="hover:underline relative">
         <Avatar
           :avatar-url="store.user?.avatar_url"
           :username="store.user.username || store.user.email"
         />
+        <div
+          v-if="store.notifications.length"
+          class="h-5 w-5 grid place-content-center bg-blue-200 text-blue-700 text-xs font-semibold p-1 rounded-full absolute -bottom-2 -left-2"
+        >
+          {{ store.notifications.length }}
+        </div>
       </MenuButton>
       <transition
         enter-active-class="transition duration-100 ease-out"
@@ -17,21 +23,36 @@
         leave-to-class="transform scale-70 opacity-0"
       >
         <MenuItems
-          class="absolute top-full mt-2 p-2 flex flex-col items-start space-y-2 bg-white border border-grey-50 rounded-lg shadow-md text-slate-900"
+          class="absolute top-full right-0 mt-4 p-2 flex flex-col items-start space-y-2 bg-white border border-grey-50 rounded-lg shadow-md text-slate-900"
         >
           <MenuItem v-slot="{ active }">
             <router-link
               :class="{ [activeMenuItem]: active }"
-              class="px-2 py-1 rounded-md w-full"
+              class="px-2 py-1 rounded-md w-full text-right"
               to="/profile"
             >
               Profile
             </router-link>
           </MenuItem>
           <MenuItem v-slot="{ active }">
+            <router-link
+              :class="{ [activeMenuItem]: active }"
+              class="px-2 py-1 rounded-md w-full flex items-center text-right"
+              to="/notifications"
+            >
+              <div
+                v-if="store.notifications.length"
+                class="mr-2 h-5 w-5 grid place-content-center bg-blue-200 text-blue-700 text-xs font-semibold p-1 rounded-full"
+              >
+                {{ store.notifications.length }}
+              </div>
+              Notifications
+            </router-link>
+          </MenuItem>
+          <MenuItem v-slot="{ active }">
             <button
               :class="{ [activeMenuItem]: active }"
-              class="whitespace-nowrap px-2 py-1 rounded-md w-full bg-none"
+              class="px-2 py-1 rounded-md w-full text-right"
               @click="signOut"
             >
               Sign out

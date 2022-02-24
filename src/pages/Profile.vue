@@ -1,134 +1,100 @@
 <template>
-  <base-template>
-    <PrimaryButton
-      v-if="webPushSubscriptionStore.isSubscribed"
-      @click="unsubscribeUser"
-    >
-      Unsubscribe from notifications on this device
-    </PrimaryButton>
-    <PrimaryButton v-else @click="subscribeUser">
-      Subscribe to notifications
-    </PrimaryButton>
-    <form class="flex flex-col space-y-4" @submit.prevent="updateProfile">
-      <pre>
-        {{ JSON.stringify(store.user, null, 2) }}
-      </pre>
-      <div class="flex flex-col">
-        <form-label for="email">Email</form-label>
-        <p class="prose">{{ store.user.email }}</p>
-      </div>
-      <div class="flex flex-col">
-        <form-label for="username">Name</form-label>
-        <form-input id="username" v-model="username" type="text" />
-      </div>
-      <div class="flex flex-col">
-        <form-label for="pronouns">Pronouns</form-label>
-        <form-input id="pronouns" v-model="pronouns" />
-      </div>
-
-      <div>
-        <primary-button type="submit" :disabled="loading">{{
-          loading ? "Loading ..." : "Update"
-        }}</primary-button>
-      </div>
-
-      <div>
-        <secondary-button :disabled="loading" @click="signOut"
-          >Sign Out</secondary-button
-        >
-      </div>
-    </form>
-  </base-template>
+  <ProfileTemplate>
+    <section class="flex flex-col">
+      <Heading level="h1" as="h1" class="text-right">Update your info</Heading>
+      <hr class="my-10" />
+      <form @submit.prevent="updateProfile">
+        <fieldset class="flex flex-col gap-8" :disabled="loading">
+          <div class="flex flex-col">
+            <FormLabel for="display-name">Display name</FormLabel>
+            <FormInput id="display-name" v-model="username" />
+          </div>
+          <div class="flex flex-col">
+            <FormLabel for="pronouns">Pronouns</FormLabel>
+            <FormInput id="pronouns" v-model="pronouns" />
+          </div>
+          <div class="flex flex-col">
+            <FormLabel for="website">Website</FormLabel>
+            <FormInput id="website" v-model="website" />
+          </div>
+          <div class="flex flex-col">
+            <FormLabel for="twitter"> Twitter handle </FormLabel>
+            <div class="relative flex items-center">
+              <AtSymbolIcon class="h-6 w-6 absolute left-2" />
+              <FormInput id="twitter" v-model="twitter" class="pl-10 grow" />
+            </div>
+          </div>
+          <div class="flex flex-col">
+            <FormLabel for="bio">Bio</FormLabel>
+            <FormTextArea id="bio" v-model="bio" rows="6" />
+          </div>
+          <div class="flex justify-end">
+            <PrimaryButton :is-loading="loading">Update</PrimaryButton>
+          </div>
+        </fieldset>
+      </form>
+    </section>
+  </ProfileTemplate>
 </template>
 
 <script setup lang="ts">
 import { supabase } from "../supabase";
 import { store } from "../store";
-import { onMounted, ref } from "vue";
-import BaseTemplate from "@/components/BaseTemplate.vue";
+import { ref, watch } from "vue";
+import ProfileTemplate from "@/components/ProfileTemplate.vue";
+import Heading from "@/components/Heading.vue";
+import FormLabel from "@/components/Forms/FormLabel.vue";
+import { AtSymbolIcon } from "@heroicons/vue/outline";
+import { log } from "@/util/logger";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
-import {
-  subscribeUser,
-  unsubscribeUser,
-  webPushSubscriptionStore,
-} from "@/serviceWorkerRegistration";
+import FormTextArea from "@/components/Forms/FormTextArea.vue";
+import useToast from "@/components/Toast/useToast";
 
-const loading = ref(true);
-const username = ref("");
-const pronouns = ref("");
-const avatarUrl = ref("");
+const { showSuccess, showError } = useToast();
 
-async function getProfile() {
-  try {
-    loading.value = true;
-    const user = supabase.auth.user();
+const loading = ref(false);
+const username = ref(store.user?.username);
+const pronouns = ref(store.user?.pronouns);
+const website = ref(store.user?.website);
+const twitter = ref(store.user?.twitter);
+const bio = ref(store.user?.bio);
 
-    if (!user) return;
-
-    store.user = user;
-
-    const { data, error, status } = await supabase
-      .from("profiles")
-      .select(`username, pronouns, avatar_url`)
-      .eq("id", user.id)
-      .single();
-
-    if (error && status !== 406) throw error;
-
-    if (data) {
-      username.value = data.username;
-      pronouns.value = data.pronouns;
-      avatarUrl.value = data.avatar_url;
-    }
-  } catch (error) {
-    alert(error.message);
-  } finally {
-    loading.value = false;
+watch(
+  () => store.user,
+  (updated) => {
+    username.value = updated?.username;
+    pronouns.value = updated?.pronouns;
+    website.value = updated?.website;
+    twitter.value = updated?.twitter;
+    bio.value = updated?.bio;
   }
-}
+);
 
 async function updateProfile() {
+  if (!store.user?.id) return;
+  loading.value = true;
   try {
-    loading.value = true;
-    const user = supabase.auth.user();
-
-    if (!user) return;
-
-    store.user = user;
-
     const updates = {
-      id: store.user.id,
       username: username.value,
       pronouns: pronouns.value,
-      avatar_url: avatarUrl.value,
       updated_at: new Date(),
+      website: website.value,
+      twitter: twitter.value,
+      bio: bio.value,
     };
-
-    const { error } = await supabase.from("profiles").upsert(updates, {
-      returning: "minimal", // Don't return the value after inserting
-    });
-
+    const { error } = await supabase
+      .from("profiles")
+      .update(updates, {
+        returning: "minimal",
+      })
+      .eq("id", store.user.id);
     if (error) throw error;
+    showSuccess({ message: "Info updated" });
   } catch (error) {
-    alert(error.message);
+    log({ error });
+    showError({ message: "Something went wrong" });
   } finally {
     loading.value = false;
   }
 }
-
-async function signOut() {
-  try {
-    loading.value = true;
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
-  } catch (error) {
-    alert(error.message);
-  } finally {
-    loading.value = false;
-  }
-}
-
-onMounted(() => {
-  getProfile();
-});
 </script>
