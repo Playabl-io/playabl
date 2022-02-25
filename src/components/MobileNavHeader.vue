@@ -1,8 +1,23 @@
 <template>
   <header>
     <Menu>
-      <MenuButton class="m-2 p-2">
+      <MenuButton class="m-2 p-2 relative">
         <MenuIcon class="text-slate-900 dark:text-slate-100 h-6 w-6" />
+        <transition
+          enter-active-class="transition duration-100 ease-out"
+          enter-from-class="transform scale-70 opacity-0"
+          enter-to-class="transform scale-100 opacity-100"
+          leave-active-class="transition duration-75 ease-out"
+          leave-from-class="transform scale-100 opacity-100"
+          leave-to-class="transform scale-70 opacity-0"
+        >
+          <div
+            v-if="unreadNotifications.length"
+            class="absolute -bottom-2 -right-2 h-5 w-5 grid place-content-center bg-blue-200 text-blue-700 text-xs font-semibold p-1 rounded-full"
+          >
+            {{ unreadNotifications.length }}
+          </div>
+        </transition>
       </MenuButton>
       <transition
         enter-active-class="transition duration-100 ease-out"
@@ -50,6 +65,21 @@
               Profile
             </router-link>
           </menu-item>
+          <menu-item>
+            <router-link
+              class="px-2 py-1 flex items-center"
+              to="/notifications"
+              active-class="text-brand-500 border-l border-brand-500 dark:border-brand-300"
+            >
+              Notifications
+              <div
+                v-if="store.notifications.length"
+                class="ml-2 h-5 w-5 grid place-content-center bg-blue-200 text-blue-700 text-xs font-semibold p-1 rounded-full"
+              >
+                {{ store.notifications.length }}
+              </div>
+            </router-link>
+          </menu-item>
           <menu-item v-if="store.user?.id">
             <outline-button @click="signOut">Sign out</outline-button>
           </menu-item>
@@ -66,6 +96,7 @@ import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue";
 import OutlineButton from "./Buttons/OutlineButton.vue";
 import { MenuIcon } from "@heroicons/vue/solid";
 import { store } from "@/store";
+import { unreadNotifications } from "@/util/notifications";
 import { log } from "@/util/logger";
 
 const isSigningOut = ref(false);

@@ -4,6 +4,9 @@ import Index from "@/pages/Index.vue";
 import Invite from "@/pages/Invite.vue";
 import SignIn from "@/pages/SignIn.vue";
 import Profile from "@/pages/Profile.vue";
+import Notifications from "@/pages/Notifications.vue";
+import Media from "@/pages/Media.vue";
+import Settings from "@/pages/Settings.vue";
 import CommunitiesAll from "@/pages/CommunitiesAll.vue";
 import CommunitiesJoined from "@/pages/CommunitiesJoined.vue";
 import CommunitiesManage from "@/pages/CommunitiesManage.vue";
@@ -49,6 +52,30 @@ const routes = [
   {
     path: "/profile",
     component: Profile,
+    meta: {
+      title: "Playabl - Profile",
+      requiresAuth: true,
+    },
+  },
+  {
+    path: "/notifications",
+    component: Notifications,
+    meta: {
+      title: "Playabl - Profile",
+      requiresAuth: true,
+    },
+  },
+  {
+    path: "/media",
+    component: Media,
+    meta: {
+      title: "Playabl - Profile",
+      requiresAuth: true,
+    },
+  },
+  {
+    path: "/settings",
+    component: Settings,
     meta: {
       title: "Playabl - Profile",
       requiresAuth: true,
