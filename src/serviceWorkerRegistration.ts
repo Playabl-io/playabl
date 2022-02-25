@@ -48,8 +48,6 @@ export function subscribeUser() {
       applicationServerKey: applicationServerKey,
     })
     .then(function (subscription) {
-      console.log("User is subscribed.");
-
       storeSubscription(subscription);
 
       webPushSubscriptionStore.isSubscribed = true;
@@ -74,8 +72,6 @@ export function unsubscribeUser() {
     })
     .then(function () {
       removeSubscription(subscriptionToRemove);
-
-      console.log("User is unsubscribed.");
       webPushSubscriptionStore.isSubscribed = false;
     });
 }
@@ -84,8 +80,6 @@ async function storeSubscription(subscription?: PushSubscription | null) {
   if (!store.user?.id) {
     throw new Error("no signed in user");
   }
-
-  console.log(subscription);
 
   if (subscription) {
     const encoded = encodeURIComponent(JSON.stringify(subscription));

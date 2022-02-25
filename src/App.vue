@@ -44,7 +44,7 @@ supabase.auth.onAuthStateChange(async (event, session) => {
   }
 });
 
-async function loadNotifications() {
+async function loadNotificationsAndSubscribe() {
   if (!store.user?.id) return;
   const { data, error } = await supabase
     .from<Notification>("notifications")
@@ -57,7 +57,21 @@ async function loadNotifications() {
   if (data) {
     store.notifications = data;
   }
+  supabase
+    .from(`notifications:user_id=eq.${store.user.id}`)
+    .on("INSERT", (payload) => {
+      store.notifications = store.notifications.concat(payload.new);
+    })
+    .on("UPDATE", (payload) => {
+      store.notifications = store.notifications.map((notification) => {
+        if (notification.id === payload.new.id) {
+          return payload.new;
+        }
+        return notification;
+      });
+    })
+    .subscribe();
 }
 
-onMounted(loadNotifications);
+onMounted(loadNotificationsAndSubscribe);
 </script>

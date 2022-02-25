@@ -1,10 +1,10 @@
 <template>
   <ProfileTemplate>
     <section class="flex flex-col">
-      <section v-if="store.notifications.length">
+      <section v-if="unreadNotifications.length">
         <ul class="grid gap-6">
           <div
-            v-for="notification in store.notifications"
+            v-for="notification in unreadNotifications"
             :key="notification.id"
           >
             <a v-if="notification.related_url" :href="notification.related_url">
@@ -69,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-import { onUnmounted } from "vue";
+import { onUnmounted, ref } from "vue";
 import { formatRelative } from "date-fns";
 import { ClockIcon, BellIcon } from "@heroicons/vue/outline";
 import ProfileTemplate from "@/components/ProfileTemplate.vue";
@@ -83,19 +83,26 @@ import FormLabel from "@/components/Forms/FormLabel.vue";
 import OutlineButton from "@/components/Buttons/OutlineButton.vue";
 import { store } from "@/store";
 import { supabase } from "@/supabase";
+import { unreadNotifications } from "@/util/notifications";
+import { Notification } from "@/typings/Notification";
 
-const readTimeout = setTimeout(markNotificationsRead, 5000);
+const toBeCleared = ref<Notification[]>([]);
+const readTimeout = setTimeout(() => {
+  toBeCleared.value = [...unreadNotifications.value];
+}, 5000);
 
-async function markNotificationsRead() {
-  console.log("mark as read");
-  await supabase.from("notifications").upsert(
-    store.notifications.map((notification) => ({
-      id: notification.id,
-      read: true,
-      user_id: notification.user_id,
-    }))
-  );
+async function markNotificationsRead(notifications: Notification[]) {
+  if (notifications.length === 0) return;
+  const updatedNotifications = notifications.map((notification) => ({
+    id: notification.id,
+    read: true,
+    user_id: notification.user_id,
+  }));
+  await supabase.from("notifications").upsert(updatedNotifications);
 }
 
-onUnmounted(() => clearTimeout(readTimeout));
+onUnmounted(() => {
+  clearTimeout(readTimeout);
+  markNotificationsRead(toBeCleared.value);
+});
 </script>

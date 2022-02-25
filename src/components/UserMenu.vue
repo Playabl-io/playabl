@@ -7,12 +7,21 @@
           :avatar-url="store.user?.avatar_url"
           :username="store.user.username || store.user.email"
         />
-        <div
-          v-if="store.notifications.length"
-          class="h-5 w-5 grid place-content-center bg-blue-200 text-blue-700 text-xs font-semibold p-1 rounded-full absolute -bottom-2 -left-2"
+        <transition
+          enter-active-class="transition duration-100 ease-out"
+          enter-from-class="transform scale-70 opacity-0"
+          enter-to-class="transform scale-100 opacity-100"
+          leave-active-class="transition duration-75 ease-out"
+          leave-from-class="transform scale-100 opacity-100"
+          leave-to-class="transform scale-70 opacity-0"
         >
-          {{ store.notifications.length }}
-        </div>
+          <div
+            v-if="unreadNotifications.length"
+            class="h-5 w-5 grid place-content-center bg-blue-200 text-blue-700 text-xs font-semibold p-1 rounded-full absolute -bottom-1 -left-1"
+          >
+            {{ unreadNotifications.length }}
+          </div>
+        </transition>
       </MenuButton>
       <transition
         enter-active-class="transition duration-100 ease-out"
@@ -41,10 +50,10 @@
               to="/notifications"
             >
               <div
-                v-if="store.notifications.length"
+                v-if="unreadNotifications.length"
                 class="mr-2 h-5 w-5 grid place-content-center bg-blue-200 text-blue-700 text-xs font-semibold p-1 rounded-full"
               >
-                {{ store.notifications.length }}
+                {{ unreadNotifications.length }}
               </div>
               Notifications
             </router-link>
@@ -72,6 +81,7 @@ import { useRouter } from "vue-router";
 import { supabase } from "@/supabase";
 import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue";
 import { store } from "../store";
+import { unreadNotifications } from "@/util/notifications";
 import LoadingSpinner from "./LoadingSpinner.vue";
 import { log } from "@/util/logger";
 import Avatar from "./Avatar.vue";
