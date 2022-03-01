@@ -7,10 +7,9 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import BaseTemplate from "@/components/BaseTemplate.vue";
-import { GameListing, RsvpWithSessionAndGame } from "@/typings/Game";
+import { GameListing } from "@/typings/Game";
 import { store } from "@/store";
-import { loadJoinedGames } from "@/api/games";
-import GamesHeading from "@/components/GamesHeading.vue";
+import { loadJoinedGames } from "@/api/gamesAndSessions";
 import GamesNav from "@/components/GamesNav.vue";
 import GamesListing from "@/components/GamesListing.vue";
 

@@ -22,7 +22,7 @@ import BaseTemplate from "@/components/BaseTemplate.vue";
 import GamesListing from "@/components/GamesListing.vue";
 import { GameListing } from "@/typings/Game";
 import Heading from "@/components/Heading.vue";
-import { loadManagedGames, loadPastManagedGames } from "@/api/games";
+import { loadManagedGames, loadPastManagedGames } from "@/api/gamesAndSessions";
 import GamesHeading from "@/components/GamesHeading.vue";
 import GamesNav from "@/components/GamesNav.vue";
 import { store } from "@/store";

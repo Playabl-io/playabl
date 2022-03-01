@@ -68,7 +68,7 @@ import { computed, PropType, ref, toRefs } from "vue";
 import { format, formatRelative } from "date-fns";
 import * as R from "ramda";
 import { Session } from "@/typings/Session";
-import { joinSession, leaveSession } from "@/api/games";
+import { joinSession, leaveSession } from "@/api/gamesAndSessions";
 import PrimaryButton from "../Buttons/PrimaryButton.vue";
 import { CommunityAccess } from "@/typings/CommunityAccess";
 import { compareUserAccessToRsvpTimes, getSoonestRsvpTime } from "@/util/time";

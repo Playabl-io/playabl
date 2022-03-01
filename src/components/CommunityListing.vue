@@ -1,7 +1,7 @@
 <template>
   <article class="grid lg:grid-cols-2 gap-6 lg:gap-12">
     <section class="order-2 lg:order-1 flex flex-col">
-      <div class="flex space-x-4 items-end">
+      <div class="flex gap-4 items-end">
         <router-link
           :to="`/communities/${community.id}`"
           class="hover:underline"
