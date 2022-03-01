@@ -17,13 +17,11 @@ import { onMounted, ref } from "vue";
 import BaseTemplate from "@/components/BaseTemplate.vue";
 import GamesListing from "@/components/GamesListing.vue";
 import { GameListing } from "@/typings/Game";
-import Heading from "@/components/Heading.vue";
 import { loadJoinedCommunityIds } from "@/api/communities";
 import {
   loadChronologicalCommunityGames,
   loadCommunityGamesWithOpenings,
-} from "@/api/games";
-import GamesHeading from "@/components/GamesHeading.vue";
+} from "@/api/gamesAndSessions";
 import GamesNav from "@/components/GamesNav.vue";
 import SortMenu from "@/components/Menus/SortMenu.vue";
 

@@ -3,6 +3,8 @@ import { supabase } from "@/supabase";
 import { GameListing, NewGame } from "@/typings/Game";
 import { Session } from "@/typings/Session";
 import { log } from "@/util/logger";
+import { Community } from "@/typings/Community";
+import { startOfMonth, startOfDay, endOfMonth, endOfDay } from "date-fns";
 
 // helper functions
 const sortSessionByTimeAsc = (a: Session, b: Session) => {
@@ -108,6 +110,30 @@ export async function loadPastManagedGames(userId: string) {
     log({ error });
   }
 
+  if (data) {
+    return data;
+  }
+}
+
+export async function loadCommunitySessionsForMonth({
+  communityId,
+  referenceDate,
+}: {
+  communityId: Community["id"];
+  referenceDate: Date;
+}) {
+  const getStartOfMonth = R.compose(startOfDay, startOfMonth);
+  const getEndOfMonth = R.compose(endOfDay, endOfMonth);
+  const { data, error } = await supabase
+    .from("sessions")
+    .select("*, game_id (title, id)")
+    .eq("community_id", communityId)
+    .gte("start_time", getStartOfMonth(referenceDate).getTime())
+    .lte("start_time", getEndOfMonth(referenceDate).getTime())
+    .order("start_time", { ascending: true });
+  if (error) {
+    log({ error });
+  }
   if (data) {
     return data;
   }

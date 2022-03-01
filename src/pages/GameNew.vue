@@ -257,7 +257,7 @@ import ChooseCommunity from "@/components/Game/ChooseCommunity.vue";
 import { loadCommunityAccessTimes } from "@/api/communityAccess";
 import { store } from "@/store";
 import useToast from "@/components/Toast/useToast";
-import { createGame } from "@/api/games";
+import { createGame } from "@/api/gamesAndSessions";
 import { rsvpTimes, getStartOfToday } from "@/util/time";
 import FormFileInput from "@/components/Forms/FormFileInput.vue";
 import {
