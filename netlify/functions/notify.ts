@@ -28,7 +28,7 @@ export const handler: Handler = async (event, context) => {
   const { record } = JSON.parse(event.body);
 
   if (record.type === "rsvp") {
-    sendRsvpEmail({
+    await sendRsvpEmail({
       name: record.name,
       email: record.email,
       relatedUrl: record.related_url,
