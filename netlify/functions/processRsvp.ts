@@ -1,7 +1,6 @@
 import { Handler } from "@netlify/functions";
 import { createClient } from "@supabase/supabase-js";
 import axios from "axios";
-import { format } from "date-fns";
 import { compareUserAccessToRsvpTimes } from "../../src/util/time";
 
 export const supabase = createClient(
@@ -46,6 +45,7 @@ export const handler: Handler = async (event, context) => {
       };
     }
     const data = await joinSession({ sessionId, userId });
+    console.log(beforeRsvps);
     if (beforeRsvps.length < game.participant_count) {
       const user = await getUserProfile({ userId: userId });
       sendRsvpEmail({
@@ -176,6 +176,7 @@ async function leaveSession({
 }
 
 function sendRsvpEmail({ name, email, relatedUrl, gameName }) {
+  console.log("send rsvp email");
   axios.post(
     "https://api.mailjet.com/v3.1/send",
     {
