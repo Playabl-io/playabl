@@ -46,6 +46,7 @@ export const handler: Handler = async (event, context) => {
 };
 
 function sendRsvpEmail({ name, email, relatedUrl, gameName }) {
+  console.log("send rsvp email");
   return axios
     .post(
       "https://api.mailjet.com/v3.1/send",
@@ -93,7 +94,7 @@ const webPush = async ({ userId, message, relatedUrl }) => {
     .select("subscriptions")
     .eq("id", userId)
     .single();
-  if (Array.isArray(data.subscriptions)) {
+  if (Array.isArray(data?.subscriptions)) {
     data.subscriptions.forEach((subscription) => {
       const decoded = decodeURIComponent(subscription);
       const parsed = JSON.parse(decoded);
