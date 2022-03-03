@@ -32,7 +32,7 @@ export const handler: Handler = async (event, context) => {
       name: record.name,
       email: record.email,
       relatedUrl: record.related_url,
-      gameName: record.customFields.game_name,
+      gameName: record.custom_fields?.game_name,
     });
   }
   webPush({
