@@ -46,7 +46,6 @@ export const handler: Handler = async (event, context) => {
 };
 
 function sendRsvpEmail({ name, email, relatedUrl, gameName }) {
-  console.log("send rsvp email");
   return axios
     .post(
       "https://api.mailjet.com/v3.1/send",
