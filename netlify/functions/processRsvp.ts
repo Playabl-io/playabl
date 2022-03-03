@@ -176,37 +176,43 @@ async function leaveSession({
 }
 
 function sendRsvpEmail({ name, email, relatedUrl, gameName }) {
-  console.log("send rsvp email");
-  axios.post(
-    "https://api.mailjet.com/v3.1/send",
-    {
-      Messages: [
-        {
-          From: {
-            Email: "notifications@playabl.io",
-            Name: "Playabl Notifications",
-          },
-          To: [
-            {
-              Email: email,
-              Name: name,
+  return axios
+    .post(
+      "https://api.mailjet.com/v3.1/send",
+      {
+        Messages: [
+          {
+            From: {
+              Email: "notifications@playabl.io",
+              Name: "Playabl Notifications",
             },
-          ],
-          TemplateID: 3700697,
-          TemplateLanguage: true,
-          Subject: "Playabl RSVP Success",
-          Variables: {
-            game_name: gameName,
-            related_url: relatedUrl,
+            To: [
+              {
+                Email: email,
+                Name: name,
+              },
+            ],
+            TemplateID: 3700697,
+            TemplateLanguage: true,
+            Subject: "Playabl RSVP Success",
+            Variables: {
+              game_name: gameName,
+              related_url: relatedUrl,
+            },
           },
-        },
-      ],
-    },
-    {
-      auth: {
-        username: process.env.MJ_USER,
-        password: process.env.MJ_PW,
+        ],
       },
-    }
-  );
+      {
+        auth: {
+          username: process.env.MJ_USER,
+          password: process.env.MJ_PW,
+        },
+      }
+    )
+    .then((response) => {
+      console.log(response);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
 }
