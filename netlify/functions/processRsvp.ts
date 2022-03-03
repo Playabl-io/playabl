@@ -45,7 +45,6 @@ export const handler: Handler = async (event, context) => {
       };
     }
     const data = await joinSession({ sessionId, userId });
-    console.log(beforeRsvps);
     if (beforeRsvps.length < game.participant_count) {
       const user = await getUserProfile({ userId: userId });
       await sendRsvpEmail({
