@@ -48,12 +48,11 @@ export const handler: Handler = async (event, context) => {
     const data = await joinSession({ sessionId, userId });
     if (beforeRsvps.length < game.participant_count) {
       const user = await getUserProfile({ userId: userId });
-      sendNewRsvpEmail({
+      sendRsvpEmail({
         gameName: game.title,
-        gameId: game.id,
-        sessionStartTime: session.start_time,
-        toEmail: user.email,
-        toName: user.username || user.email,
+        relatedUrl: `https://playable.io/games/${game.id}`,
+        email: user.email,
+        name: user.username || user.email,
       });
     }
     return {
@@ -64,7 +63,7 @@ export const handler: Handler = async (event, context) => {
     };
   }
   if (method === "DELETE") {
-    const { data } = await leaveSession({ sessionId, userId });
+    const data = await leaveSession({ sessionId, userId });
     return {
       statusCode: 200,
       body: JSON.stringify({
@@ -166,46 +165,39 @@ async function leaveSession({
   sessionId: string;
   userId: string;
 }) {
-  const result = await supabase.rpc("leave_session", {
+  const { data, error } = await supabase.rpc("leave_session", {
     user_id: userId,
     session_id: Number(sessionId),
   });
-  return result;
+  if (error) {
+    console.log(error);
+  }
+  return data;
 }
 
-function sendNewRsvpEmail({
-  gameName,
-  gameId,
-  sessionStartTime,
-  toEmail,
-  toName,
-}) {
-  const formattedStartTime = format(sessionStartTime, "EEEE, MMMM do, HH:mm");
+function sendRsvpEmail({ name, email, relatedUrl, gameName }) {
   axios.post(
     "https://api.mailjet.com/v3.1/send",
     {
       Messages: [
         {
           From: {
-            Email: "jonjongrim@gmail.com",
-            Name: "Jonathan",
+            Email: "notifications@playabl.io",
+            Name: "Playabl Notifications",
           },
           To: [
             {
-              Email: toEmail,
-              Name: toName,
+              Email: email,
+              Name: name,
             },
           ],
-          Subject: `Playabl RSVP Success`,
-          TextPart: `You're in for ${gameName}`,
-          HTMLPart: `
-            <h3>Get ready to play, you're in!</h3>
-            <br />
-            <p>You're in for ${gameName}</p>
-            <br />
-            <p>View on <a href="https://playable.io/games/${gameId}">Playabl</a></p>
-            `,
-          CustomID: "AppGettingStartedTest",
+          TemplateID: 3700697,
+          TemplateLanguage: true,
+          Subject: "Playabl RSVP Success",
+          Variables: {
+            game_name: gameName,
+            related_url: relatedUrl,
+          },
         },
       ],
     },

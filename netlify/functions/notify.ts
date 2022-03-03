@@ -27,11 +27,14 @@ export const handler: Handler = async (event, context) => {
   }
   const { record } = JSON.parse(event.body);
 
-  sendEmail({
-    message: record.message,
-    email: record.email,
-    relatedUrl: record.related_url,
-  });
+  if (record.type === "rsvp") {
+    sendRsvpEmail({
+      name: record.name,
+      email: record.email,
+      relatedUrl: record.related_url,
+      gameName: record.customFields.game_name,
+    });
+  }
   webPush({
     userId: record.user_id,
     message: record.message,
@@ -42,30 +45,29 @@ export const handler: Handler = async (event, context) => {
   };
 };
 
-function sendEmail({ message, email, relatedUrl }) {
+function sendRsvpEmail({ name, email, relatedUrl, gameName }) {
   axios.post(
     "https://api.mailjet.com/v3.1/send",
     {
       Messages: [
         {
           From: {
-            Email: "jonjongrim@gmail.com",
-            Name: "Jonathan",
+            Email: "notifications@playabl.io",
+            Name: "Playabl Notifications",
           },
           To: [
             {
               Email: email,
+              Name: name,
             },
           ],
-          Subject: `Playabl RSVP Success`,
-          TextPart: message,
-          HTMLPart: `
-            <h3>Get ready to play, you're in!</h3>
-            <p>${message}</p>
-            <br />
-            <p>View on <a href="${relatedUrl}">Playabl</a></p>
-            `,
-          CustomID: "AppGettingStartedTest",
+          TemplateID: 3700697,
+          TemplateLanguage: true,
+          Subject: "Playabl RSVP Success",
+          Variables: {
+            game_name: gameName,
+            related_url: relatedUrl,
+          },
         },
       ],
     },
