@@ -48,7 +48,7 @@ export const handler: Handler = async (event, context) => {
     console.log(beforeRsvps);
     if (beforeRsvps.length < game.participant_count) {
       const user = await getUserProfile({ userId: userId });
-      sendRsvpEmail({
+      await sendRsvpEmail({
         gameName: game.title,
         relatedUrl: `https://playable.io/games/${game.id}`,
         email: user.email,
