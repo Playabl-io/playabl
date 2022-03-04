@@ -1,7 +1,7 @@
 <template>
   <router-link
     :to="`/games/${game.id}`"
-    class="border border-solid border-gray-300 rounded-lg"
+    class="border border-solid border-gray-300 rounded-lg focus-styles"
   >
     <div
       class="w-full relative"
@@ -52,14 +52,12 @@
   </router-link>
 </template>
 <script setup lang="ts">
-import { toRefs, PropType, ref, onMounted } from "vue";
+import { PropType, ref, onMounted } from "vue";
 import { format } from "date-fns";
-import { TagIcon, CogIcon, UsersIcon, FilmIcon } from "@heroicons/vue/outline";
 import { StarIcon } from "@heroicons/vue/solid";
 import { GameListing } from "@/typings/Game";
 import Heading from "../Heading.vue";
 import Tooltip from "../Tooltip.vue";
-import GameBadge from "./Game/GameBadge.vue";
 import { getCoverImageUrl } from "@/api/storage";
 
 const props = defineProps({

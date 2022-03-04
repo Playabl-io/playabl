@@ -1,30 +1,5 @@
 <template>
-  <div class="flex flex-wrap gap-6 items-baseline justify-between"></div>
-  <section class="flex justify-between items-baseline text-sm">
-    <div class="flex flex-wrap gap-4 py-2">
-      <router-link
-        v-if="store.user"
-        to="/communities/joined"
-        active-class="border-b border-brand-500 dark:border-brand-300"
-      >
-        Joined
-      </router-link>
-      <router-link
-        to="/communities/browse"
-        active-class="border-b border-brand-500 dark:border-brand-300"
-      >
-        Browse
-      </router-link>
-      <router-link
-        v-if="store.user"
-        to="/communities/manage"
-        active-class="border-b border-brand-500 dark:border-brand-300"
-      >
-        Manage
-      </router-link>
-      <router-link to="/communities/new"> New </router-link>
-    </div>
-  </section>
+  <CommunitiesNav />
   <section class="grid grid-cols-1 gap-8 mt-12">
     <span v-if="isLoading" class="place-self-center">
       <LoadingSpinner color="brand-500" />
@@ -36,13 +11,13 @@
   </section>
 </template>
 <script setup lang="ts">
-import { PropType, toRefs } from "vue";
-import { store } from "@/store";
+import { PropType } from "vue";
 import { Community } from "@/typings/Community";
 import LoadingSpinner from "./LoadingSpinner.vue";
 import CommunityListing from "./CommunityListing.vue";
+import CommunitiesNav from "./Community/CommunitiesNav.vue";
 
-const props = defineProps({
+defineProps({
   isLoading: {
     type: Boolean,
     required: true,
@@ -52,5 +27,4 @@ const props = defineProps({
     required: true,
   },
 });
-toRefs(props);
 </script>

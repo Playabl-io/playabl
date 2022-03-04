@@ -10,7 +10,7 @@
           <Heading level="h6" as="h2" class="mb-6">Your upcoming games</Heading>
         </template>
       </GamesHeading>
-      <section class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <section class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
         <GameCard v-for="game in games" :key="game.id" :game="game" />
       </section>
       <hr class="my-20" />
@@ -19,7 +19,7 @@
           <Heading level="h6" as="h2" class="mb-6">Your past games</Heading>
         </template>
       </GamesHeading>
-      <section class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <section class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
         <GameCard v-for="game in pastGames" :key="game.id" :game="game" />
       </section>
     </template>
