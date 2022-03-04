@@ -1,7 +1,12 @@
 <template>
   <base-template>
-    <GamesNav />
-    <GamesListing :is-loading="isLoading" :games="games" />
+    <GamesNav class="mb-12" />
+    <div v-if="isLoading" class="grid place-content-center">
+      <LoadingSpinner color="brand-500" />
+    </div>
+    <section v-else class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <GameCard v-for="game in games" :key="game.id" :game="game" />
+    </section>
   </base-template>
 </template>
 <script setup lang="ts">
@@ -9,9 +14,10 @@ import { onMounted, ref } from "vue";
 import BaseTemplate from "@/components/BaseTemplate.vue";
 import { GameListing } from "@/typings/Game";
 import { store } from "@/store";
-import { loadJoinedGames } from "@/api/gamesAndSessions";
+import { loadUpcomingJoinedGames } from "@/api/gamesAndSessions";
 import GamesNav from "@/components/GamesNav.vue";
-import GamesListing from "@/components/GamesListing.vue";
+import GameCard from "@/components/Game/GameCard.vue";
+import LoadingSpinner from "@/components/LoadingSpinner.vue";
 
 const isLoading = ref(true);
 const games = ref<GameListing[]>([]);
@@ -21,7 +27,7 @@ onMounted(loadAllGames);
 async function loadAllGames() {
   if (!store.user) return;
   isLoading.value = true;
-  const data = await loadJoinedGames(store.user.id);
+  const data = await loadUpcomingJoinedGames(store.user.id);
   if (data) {
     games.value = data;
   }

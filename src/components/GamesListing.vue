@@ -1,5 +1,5 @@
 <template>
-  <section class="grid grid-cols-1 gap-8 mt-12">
+  <section class="grid gap-8 mt-12">
     <span v-if="isLoading" class="place-self-center">
       <LoadingSpinner color="brand-500" />
     </span>
