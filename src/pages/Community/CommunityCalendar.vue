@@ -8,7 +8,10 @@
           {{ format(selectedDate, "LLLL do") }}
         </Heading>
         <ul class="grow flex flex-col gap-4 mt-6 overflow-auto">
-          <li v-for="session in sessionsForDay(selectedDate)" :key="session.id">
+          <li
+            v-for="session in sessionsForDay(selectedDate, selectedDate)"
+            :key="session.id"
+          >
             <router-link
               :to="`/games/${session.game_id.id}`"
               class="grid grid-flow-col gap-6"
@@ -43,7 +46,10 @@
       >
         <template #day="day">
           <ul class="grow flex flex-wrap justify-end items-end gap-2">
-            <li v-for="session in sessionsForDay(day)" :key="session.id">
+            <li
+              v-for="session in sessionsForDay(day, referenceDate)"
+              :key="session.id"
+            >
               <Tooltip>
                 <template #trigger="{ toggleTooltip }">
                   <div
@@ -72,7 +78,7 @@
 </template>
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
-import { isSameDay, format } from "date-fns";
+import { isSameDay, format, startOfMonth } from "date-fns";
 import { CheckCircleIcon, MinusCircleIcon } from "@heroicons/vue/outline";
 import { Session } from "@/typings/Session";
 import DisplayCalendar from "@/components/Calendar/DisplayCalendar.vue";
@@ -88,8 +94,8 @@ interface GameSession extends Session {
   };
 }
 
-const sessions = ref<GameSession[]>();
-const referenceDate = ref<Date>(new Date());
+const sessionsByMonth = ref<Record<number, GameSession[]>>({});
+const referenceDate = ref<Date>(startOfMonth(new Date()));
 const selectedDate = ref<Date>();
 
 onMounted(() => loadSessionBasedOnDate(referenceDate.value));
@@ -102,13 +108,16 @@ async function loadSessionBasedOnDate(date: Date) {
     referenceDate: date,
   });
   if (data) {
-    sessions.value = data;
+    sessionsByMonth.value[date.getTime()] = data;
   }
 }
 
-function sessionsForDay(day: Date) {
-  return sessions.value?.filter((session) =>
+function sessionsForDay(day: Date, referenceDate: Date) {
+  const firstDay = startOfMonth(referenceDate);
+  const monthSessions = sessionsByMonth.value[firstDay.getTime()];
+  const dateSessions = monthSessions?.filter((session) =>
     isSameDay(day, new Date(session.start_time))
   );
+  return dateSessions;
 }
 </script>

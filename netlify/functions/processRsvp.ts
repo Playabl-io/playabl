@@ -49,7 +49,7 @@ export const handler: Handler = async (event, context) => {
       const user = await getUserProfile({ userId: userId });
       await sendRsvpEmail({
         gameName: game.title,
-        relatedUrl: `https://playable.io/games/${game.id}`,
+        relatedUrl: `https://playabl.io/games/${game.id}`,
         email: user.email,
         name: user.username || user.email,
       });

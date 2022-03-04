@@ -1,48 +1,79 @@
 <template>
-  <article class="grid lg:grid-cols-2 gap-6 lg:gap-12">
-    <section class="order-2 lg:order-1 flex flex-col">
-      <div class="flex gap-4 items-end">
-        <router-link
-          :to="`/communities/${community.id}`"
-          class="hover:underline"
-        >
-          <heading level="h6">{{ community.name }}</heading>
-        </router-link>
-        <Tooltip v-if="false">
-          <template #trigger="{ toggleTooltip }">
-            <BadgeCheckIcon
-              v-if="community.code_of_conduct_url"
-              class="text-green-500 h-6 w-6 relative"
-              @mouseenter="toggleTooltip"
-              @mouseleave="toggleTooltip"
-              @focus="toggleTooltip"
-              @blur="toggleTooltip"
-            />
-          </template>
-          <template #tooltip> Has a community code of conduct </template>
-        </Tooltip>
-        <Tooltip v-if="community.allow_public_signup">
-          <template #trigger="{ toggleTooltip }">
-            <LightningBoltIcon
-              v-if="community.allow_public_signup"
-              class="text-yellow-500 h-6 w-6"
-              @mouseenter="toggleTooltip"
-              @mouseleave="toggleTooltip"
-              @focus="toggleTooltip"
-              @blur="toggleTooltip"
-            />
-          </template>
-          <template #tooltip> This community allows public joining </template>
-        </Tooltip>
-      </div>
-      <a
-        class="mt-1 hover:underline active:underline text-slate-600 dark:text-slate-400 text-sm"
-        :href="community.website"
-        target="_blank"
-        rel="noreferrer noopener"
+  <article class="grid gap-6 w-full max-w-4xl mx-auto">
+    <div
+      class="w-full relative"
+      :class="{
+        'aspect-w-16 aspect-h-9': coverImageUrl,
+      }"
+    >
+      <img
+        v-if="coverImageUrl"
+        class="w-full h-full object-center object-cover shadow-md rounded-lg"
+        :src="coverImageUrl"
+        :alt="`${community.name} cover image`"
+      />
+      <div
+        :class="{
+          'bg-gray-100': !coverImageUrl,
+          'bg-gradient-to-b from-transparent via-transparent to-black':
+            coverImageUrl,
+        }"
+        class="w-full h-full flex flex-col justify-end rounded-lg p-4"
       >
-        {{ community.website }}
-      </a>
+        <div class="flex gap-4 items-center">
+          <router-link
+            :to="`/communities/${community.id}`"
+            class="hover:underline"
+            :class="{
+              'text-white': coverImageUrl,
+            }"
+          >
+            <heading level="h5">
+              {{ community.name }}
+            </heading>
+          </router-link>
+          <Tooltip v-if="community.code_of_conduct_url">
+            <template #trigger="{ toggleTooltip }">
+              <BadgeCheckIcon
+                v-if="community.code_of_conduct_url"
+                class="text-green-500 h-6 w-6 relative"
+                @mouseenter="toggleTooltip"
+                @mouseleave="toggleTooltip"
+                @focus="toggleTooltip"
+                @blur="toggleTooltip"
+              />
+            </template>
+            <template #tooltip> Has a community code of conduct </template>
+          </Tooltip>
+          <Tooltip v-if="community.allow_public_signup">
+            <template #trigger="{ toggleTooltip }">
+              <LightningBoltIcon
+                v-if="community.allow_public_signup"
+                class="text-yellow-500 h-6 w-6"
+                @mouseenter="toggleTooltip"
+                @mouseleave="toggleTooltip"
+                @focus="toggleTooltip"
+                @blur="toggleTooltip"
+              />
+            </template>
+            <template #tooltip> This community allows public joining </template>
+          </Tooltip>
+        </div>
+        <a
+          class="mt-1 hover:underline active:underline text-sm"
+          :class="{
+            'text-neutral-200': coverImageUrl,
+          }"
+          :href="community.website"
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          {{ community.website }}
+        </a>
+      </div>
+    </div>
+
+    <section class="flex flex-col">
       <div class="flex flex-wrap gap-4 mt-4">
         <div
           v-for="gameType in community.game_types"
@@ -91,19 +122,6 @@
         >
           Slack
         </a>
-      </div>
-    </section>
-    <section
-      v-if="coverImageUrl"
-      class="order-1 lg:order-2 grid place-items-center"
-    >
-      <div class="aspect-w-16 aspect-h-9 w-full relative">
-        <img
-          v-if="coverImageUrl"
-          class="w-full h-full object-center object-cover shadow-md rounded-lg"
-          :src="coverImageUrl"
-          alt="image"
-        />
       </div>
     </section>
   </article>

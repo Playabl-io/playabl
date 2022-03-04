@@ -127,7 +127,7 @@
   </section>
 </template>
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { supabase } from "@/supabase";
 import { log } from "@/util/logger";
 import { useRoute } from "vue-router";
@@ -165,7 +165,7 @@ const gamesCount = ref(0);
 const communityInvites = ref<string[]>([]);
 const creatingInvite = ref(false);
 
-const details = [
+const details = computed(() => [
   { value: communityStore.community.description, label: "Description" },
   { value: communityStore.community.website, label: "Website" },
   {
@@ -177,7 +177,7 @@ const details = [
   { value: communityStore.community.discord, label: "Discord" },
   { value: communityStore.community.slack, label: "Slack" },
   { value: communityStore.community.patreon, label: "Patreon" },
-];
+]);
 
 onMounted(async () => {
   loading.value = true;

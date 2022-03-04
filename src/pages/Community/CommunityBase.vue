@@ -96,15 +96,9 @@ async function getMembershipStatus() {
     .eq("community_id", route.params.community_id)
     .eq("user_id", store.user.id)
     .single();
-  if (data && data.role_id === ADMIN) {
-    communityStore.isAdmin = true;
-  }
-  if (data && data.role_id === CREATOR) {
-    communityStore.isCreator = true;
-  }
-  if (data && data.role_id === PLAYER) {
-    communityStore.isPlayer = true;
-  }
+  communityStore.isAdmin = data && data.role_id === ADMIN;
+  communityStore.isCreator = data && data.role_id === CREATOR;
+  communityStore.isPlayer = data && data.role_id === PLAYER;
 }
 
 async function getCommunity() {
@@ -119,7 +113,7 @@ async function getCommunity() {
   }
 
   if (data.cover_image) {
-    getCoverImageUrl(data.cover_image);
+    communityStore.coverImageUrl = await getCoverImageUrl(data.cover_image);
   }
 
   if (data) {
