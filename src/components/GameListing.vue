@@ -25,11 +25,9 @@
           alt="image"
         />
         <div
-          :class="[
-            coverImageUrl
-              ? 'bg-gradient-to-b from-transparent via-transparent to-slate-900'
-              : 'bg-gray-100',
-          ]"
+          :class="{
+            'bg-gray-100': !coverImageUrl,
+          }"
           class="w-full h-full flex flex-col justify-end rounded-lg"
         >
           <div class="flex flex-wrap gap-6 px-6 py-4">

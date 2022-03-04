@@ -4,7 +4,7 @@
     <div v-if="isLoading" class="grid place-content-center">
       <LoadingSpinner color="brand-500" />
     </div>
-    <section v-else class="grid grid-cols-2 lg:grid-cols-3 gap-8">
+    <section v-else class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
       <GameCard v-for="game in games" :key="game.id" :game="game" />
     </section>
   </base-template>
