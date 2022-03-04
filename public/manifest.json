@@ -1,5 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/web-manifest-combined.json",
+  "theme_color": "#4622B8",
   "name": "Playabl",
   "short_name": "Playabl",
   "start_url": ".",

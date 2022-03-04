@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4 bg-sky-100 flex justify-center items-center rounded-lg">
+  <div class="px-4 py-2 bg-sky-100 flex justify-center items-center rounded-lg">
     <slot name="icon"></slot>
     <div class="flex flex-col items-end">
       <p class="font-semibold">{{ value }}</p>

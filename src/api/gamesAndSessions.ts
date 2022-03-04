@@ -29,12 +29,13 @@ export async function createGame(newGame: NewGame) {
   return data;
 }
 
-export async function loadJoinedGames(userId: string) {
+export async function loadUpcomingJoinedGames(userId: string) {
   const today = new Date();
   const { data, error } = await supabase
     .from<GameListing>("games")
     .select("*, community_id (id, name), sessions!inner(*)")
     .contains("sessions.rsvps", [userId])
+    .gte("sessions.start_time", today.getTime())
     .order("start_time", { foreignTable: "sessions", ascending: true });
   if (error) {
     log({ error });

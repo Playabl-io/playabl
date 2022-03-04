@@ -1,92 +1,101 @@
 <template>
-  <article class="grid gap-6">
-    <section class="flex flex-col">
-      <div class="grid heading-grid gap-6">
-        <div>
-          <router-link :to="`/games/${game.id}`" class="hover:underline">
-            <heading level="h6">{{ game.title }}</heading>
-          </router-link>
-          <router-link
-            class="mt-1 hover:underline active:underline text-slate-600 dark:text-slate-400 text-sm"
-            :to="`/communities/${game.community_id.id}`"
-          >
-            {{ game.community_id.name }}
-          </router-link>
-        </div>
-        <div class="lg:place-self-end flex flex-wrap gap-4">
-          <GameBadge v-if="game.system" title="System" :value="game.system">
-            <template #icon>
-              <TagIcon class="w-6 h-6 mr-4" />
-            </template>
-          </GameBadge>
-          <GameBadge
-            v-if="game.virtual_tabletop"
-            title="VTT"
-            :value="game.virtual_tabletop"
-          >
-            <template #icon>
-              <CogIcon class="w-6 h-6 mr-4" />
-            </template>
-          </GameBadge>
-          <GameBadge title="Players" :value="game.participant_count || 0">
-            <template #icon>
-              <UsersIcon class="w-6 h-6 mr-4" />
-            </template>
-          </GameBadge>
-          <GameBadge
-            title="Recorded"
-            :value="`${game.will_be_recorded ? 'Yes' : 'No'}`"
-          >
-            <template #icon>
-              <FilmIcon class="w-6 h-6 mr-4" />
-            </template>
-          </GameBadge>
-        </div>
-      </div>
-      <div class="bg-gray-200 bg-opacity-70 rounded-lg p-2 my-6">
-        <QuillEditor
-          theme="bubble"
-          :content="JSON.parse(game.description)"
-          read-only
-        />
-      </div>
-      <div class="flex flex-wrap items-center gap-4">
-        <div
-          v-for="session in game.sessions"
-          :key="session.id"
-          class="p-2 rounded-md flex items-center space-x-1"
-          :class="[
-            session.has_openings ? 'bg-green-200' : 'bg-gray-200 bg-opacity-70',
-          ]"
+  <section class="grid gap-6 w-full max-w-4xl mx-auto">
+    <div class="grid heading-grid gap-6">
+      <div>
+        <router-link :to="`/games/${game.id}`" class="hover:underline">
+          <heading level="h6">{{ game.title }}</heading>
+        </router-link>
+        <router-link
+          class="mt-1 hover:underline active:underline text-slate-600 dark:text-slate-400 text-sm"
+          :to="`/communities/${game.community_id.id}`"
         >
-          <p class="text-sm font-semibold">
-            {{ format(new Date(session.start_time), "LLL do") }}
-          </p>
-          <Tooltip v-if="session.has_openings">
-            <template #tooltip>Seats available</template>
-            <template #trigger="{ toggleTooltip }">
-              <StarIcon
-                class="h-4 w-4 text-emerald-600"
-                @mouseenter="toggleTooltip"
-                @mouseleave="toggleTooltip"
-                @focus="toggleTooltip"
-                @blur="toggleTooltip"
-              />
-            </template>
-          </Tooltip>
-        </div>
+          {{ game.community_id.name }}
+        </router-link>
       </div>
-    </section>
-    <section v-if="coverImageUrl">
-      <div class="aspect-w-16 aspect-h-9 w-full">
+      <div
+        class="w-full relative"
+        :class="{
+          'aspect-w-16 aspect-h-9': coverImageUrl,
+        }"
+      >
         <img
-          class="object-center object-cover shadow-md rounded-lg"
+          v-if="coverImageUrl"
+          class="w-full h-full object-center object-cover shadow-md rounded-lg"
           :src="coverImageUrl"
           alt="image"
         />
+        <div
+          :class="[
+            coverImageUrl
+              ? 'bg-gradient-to-b from-transparent via-transparent to-slate-900'
+              : 'bg-gray-100',
+          ]"
+          class="w-full h-full flex flex-col justify-end rounded-lg"
+        >
+          <div class="flex flex-wrap gap-6 px-6 py-4">
+            <div
+              v-for="session in game.sessions"
+              :key="session.id"
+              class="p-2 rounded-md flex items-center space-x-1 shadow-sm"
+              :class="[session.has_openings ? 'bg-green-200' : 'bg-gray-200']"
+            >
+              <p class="text-sm font-semibold">
+                {{ format(new Date(session.start_time), "LLL do") }}
+              </p>
+              <Tooltip v-if="session.has_openings">
+                <template #tooltip>Seats available</template>
+                <template #trigger="{ toggleTooltip }">
+                  <StarIcon
+                    class="h-4 w-4 text-emerald-600"
+                    @mouseenter="toggleTooltip"
+                    @mouseleave="toggleTooltip"
+                    @focus="toggleTooltip"
+                    @blur="toggleTooltip"
+                  />
+                </template>
+              </Tooltip>
+            </div>
+          </div>
+        </div>
       </div>
-    </section>
-  </article>
+      <div class="flex flex-wrap gap-4">
+        <GameBadge v-if="game.system" title="System" :value="game.system">
+          <template #icon>
+            <TagIcon class="w-6 h-6 mr-4" />
+          </template>
+        </GameBadge>
+        <GameBadge
+          v-if="game.virtual_tabletop"
+          title="VTT"
+          :value="game.virtual_tabletop"
+        >
+          <template #icon>
+            <CogIcon class="w-6 h-6 mr-4" />
+          </template>
+        </GameBadge>
+        <GameBadge title="Players" :value="game.participant_count || 0">
+          <template #icon>
+            <UsersIcon class="w-6 h-6 mr-4" />
+          </template>
+        </GameBadge>
+        <GameBadge
+          title="Recorded"
+          :value="`${game.will_be_recorded ? 'Yes' : 'No'}`"
+        >
+          <template #icon>
+            <FilmIcon class="w-6 h-6 mr-4" />
+          </template>
+        </GameBadge>
+      </div>
+    </div>
+    <div class="bg-gray-200 bg-opacity-70 rounded-lg p-2">
+      <QuillEditor
+        theme="bubble"
+        :content="JSON.parse(game.description)"
+        read-only
+      />
+    </div>
+  </section>
 </template>
 <script setup lang="ts">
 import { toRefs, PropType, ref, onMounted } from "vue";
@@ -116,10 +125,3 @@ onMounted(async () => {
 
 toRefs(props);
 </script>
-<style scoped>
-@media screen(lg) {
-  .heading-grid {
-    grid-template-columns: auto 1fr;
-  }
-}
-</style>

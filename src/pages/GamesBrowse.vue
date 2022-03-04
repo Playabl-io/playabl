@@ -25,7 +25,7 @@ import {
 import GamesNav from "@/components/GamesNav.vue";
 import SortMenu from "@/components/Menus/SortMenu.vue";
 
-const isLoading = ref(false);
+const isLoading = ref(true);
 const games = ref<GameListing[]>([]);
 const communityIds = ref<string[]>([]);
 
