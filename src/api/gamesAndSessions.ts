@@ -116,6 +116,31 @@ export async function loadPastManagedGames(userId: string) {
   }
 }
 
+export async function loadOpenCommunitySessionsForMonth({
+  communityId,
+  referenceDate,
+}: {
+  communityId: Community["id"];
+  referenceDate: Date;
+}) {
+  const getStartOfMonth = R.compose(startOfDay, startOfMonth);
+  const getEndOfMonth = R.compose(endOfDay, endOfMonth);
+  const { data, error } = await supabase
+    .from("sessions")
+    .select("*, game_id (title, id)")
+    .eq("community_id", communityId)
+    .eq("has_openings", true)
+    .gte("start_time", getStartOfMonth(referenceDate).getTime())
+    .lte("start_time", getEndOfMonth(referenceDate).getTime())
+    .order("start_time", { ascending: true });
+  if (error) {
+    log({ error });
+  }
+  if (data) {
+    return data;
+  }
+}
+
 export async function loadCommunitySessionsForMonth({
   communityId,
   referenceDate,
