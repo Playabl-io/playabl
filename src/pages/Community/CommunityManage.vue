@@ -69,6 +69,9 @@
           </div>
         </section>
         <section class="section-container">
+          <PublicAccess />
+        </section>
+        <section class="section-container">
           <AccessLevels />
         </section>
         <section class="section-container">
@@ -156,6 +159,7 @@ import { communityStore } from "./communityStore";
 import MembersSearch from "./MembersSearch.vue";
 import Tooltip from "@/components/Tooltip.vue";
 import CommunityImageLibrary from "./CommunityImageLibrary.vue";
+import PublicAccess from "./PublicAccess.vue";
 
 const { showSuccess } = useToast();
 
