@@ -69,6 +69,9 @@
           </div>
         </section>
         <section class="section-container">
+          <PublicAccess />
+        </section>
+        <section class="section-container">
           <AccessLevels />
         </section>
         <section class="section-container">
@@ -76,6 +79,9 @@
             :community-id="communityStore.community.id"
             :current-cutoff="communityStore.community.furthest_posting_date"
           />
+        </section>
+        <section class="section-container">
+          <CommunityImageLibrary />
         </section>
       </div>
       <section
@@ -152,6 +158,8 @@ import EditCommunityInfo from "./EditCommunityInfo.vue";
 import { communityStore } from "./communityStore";
 import MembersSearch from "./MembersSearch.vue";
 import Tooltip from "@/components/Tooltip.vue";
+import CommunityImageLibrary from "./CommunityImageLibrary.vue";
+import PublicAccess from "./PublicAccess.vue";
 
 const { showSuccess } = useToast();
 

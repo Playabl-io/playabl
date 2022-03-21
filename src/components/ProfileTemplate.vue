@@ -1,45 +1,29 @@
 <template>
-  <base-template>
-    <div class="grid profile-grid gap-8 items-start">
-      <nav class="flex flex-col gap-4 md:sticky md:top-[7.5rem]">
-        <router-link
-          to="profile"
-          class="flex gap-4 p-2 rounded-md"
-          active-class="bg-purple-100 text-brand-500"
-        >
+  <BaseTemplate>
+    <SideNavTemplate>
+      <template #nav>
+        <SideNavLink to="profile">
           <UserCircleIcon class="h-6 w-6" />
           Profile
-        </router-link>
-        <router-link
-          to="notifications"
-          class="flex gap-4 p-2 rounded-md"
-          active-class="bg-purple-100 text-brand-500"
-        >
+        </SideNavLink>
+        <SideNavLink to="notifications">
           <BellIcon class="h-6 w-6" />
           Notifications
-        </router-link>
-        <router-link
-          to="media"
-          class="flex gap-4 p-2 rounded-md"
-          active-class="bg-purple-100 text-brand-500"
-        >
+        </SideNavLink>
+        <SideNavLink to="media">
           <PhotographIcon class="h-6 w-6" />
           Media
-        </router-link>
-        <router-link
-          to="settings"
-          class="flex gap-4 p-2 rounded-md"
-          active-class="bg-purple-100 text-brand-500"
-        >
+        </SideNavLink>
+        <SideNavLink to="settings">
           <AdjustmentsIcon class="h-6 w-6" />
           Settings
-        </router-link>
-      </nav>
-      <div>
+        </SideNavLink>
+      </template>
+      <template #content>
         <slot></slot>
-      </div>
-    </div>
-  </base-template>
+      </template>
+    </SideNavTemplate>
+  </BaseTemplate>
 </template>
 
 <script setup lang="ts">
@@ -49,16 +33,7 @@ import {
   AdjustmentsIcon,
   PhotographIcon,
 } from "@heroicons/vue/outline";
-import BaseTemplate from "@/components/BaseTemplate.vue";
+import SideNavTemplate from "./SideNavTemplate.vue";
+import BaseTemplate from "./BaseTemplate.vue";
+import SideNavLink from "./Navigation/SideNavLink.vue";
 </script>
-<style scoped>
-.profile-grid {
-  grid-template-columns: 1fr;
-  grid-template-rows: auto;
-}
-@media screen(md) {
-  .profile-grid {
-    grid-template-columns: 10rem minmax(0, 1fr);
-  }
-}
-</style>

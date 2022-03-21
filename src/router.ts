@@ -141,7 +141,6 @@ const routes = [
         component: CommunityManage,
         meta: {
           requiresAuth: true,
-          requiresAdmin: true,
         },
       },
       {
@@ -190,7 +189,6 @@ const routes = [
     component: GameBase,
     meta: {
       title: "Playabl - Community",
-      requiresAuth: true,
     },
     children: [
       {

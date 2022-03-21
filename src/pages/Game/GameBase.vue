@@ -4,6 +4,19 @@
       <LoadingSpinner color="brand-500" />
     </div>
     <div v-else>
+      <transition
+        leave-active-class="transition duration-100 ease-in"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <InfoBanner
+          v-if="currentRoute.query.unauthorized"
+          class="mb-6"
+          @dismiss="router.replace(currentRoute.path)"
+        >
+          You are not authorized to view that page
+        </InfoBanner>
+      </transition>
       <Heading level="h1">{{ gameStore.game.title }}</Heading>
       <p class="mt-6">By {{ gameData?.creator_id.username || "" }}</p>
       <router-link
@@ -27,7 +40,7 @@
             Details
           </router-link>
           <router-link
-            v-if="isOwner"
+            v-if="canManage"
             :to="`/games/${id}/manage`"
             active-class="border-b border-brand-500 dark:border-brand-300"
           >
@@ -49,28 +62,35 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { supabase } from "@/supabase";
 import { RealtimeSubscription } from "@supabase/supabase-js";
 import { log } from "@/util/logger";
 import BaseTemplate from "@/components/BaseTemplate.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import Heading from "@/components/Heading.vue";
+import InfoBanner from "@/components/Banners/InfoBanner.vue";
 import { store } from "@/store";
 import { GameWithCommunityAndSessions } from "@/typings/Game";
 import { gameStore } from "./gameStore";
 import * as R from "ramda";
 import { Session } from "@/typings/Session";
+import { userIsCommunityAdmin } from "@/api/communityMemberships";
 
+const router = useRouter();
 const currentRoute = useRoute();
 const { game_id: id } = currentRoute.params;
 
 const gameData = ref<GameWithCommunityAndSessions>();
+const canManage = ref(false);
 const isOwner = ref(false);
 const isLoading = ref(true);
 
 onMounted(async () => {
   await getGameData();
+  if (currentRoute.path.includes("manage") && !canManage.value) {
+    router.replace(`/games/${id}?unauthorized=true`);
+  }
   isLoading.value = false;
 });
 
@@ -99,8 +119,14 @@ async function getGameData() {
       R.compose(R.uniq, R.flatten, R.pluck("rsvps"))(data.sessions)
     );
     gameData.value = data;
-    if (data.creator_id.id === store.user?.id) {
-      isOwner.value = true;
+
+    if (store.user?.id) {
+      isOwner.value = data.creator_id.id === store.user?.id;
+      const isAdmin = await userIsCommunityAdmin({
+        userId: store.user.id,
+        communityId: data.community_id.id,
+      });
+      canManage.value = isAdmin || isOwner.value;
     }
   }
 }

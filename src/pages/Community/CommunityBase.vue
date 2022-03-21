@@ -4,6 +4,19 @@
       <LoadingSpinner color="brand-500" />
     </div>
     <div v-else>
+      <transition
+        leave-active-class="transition duration-100 ease-in"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <InfoBanner
+          v-if="route.query.unauthorized"
+          class="mb-6"
+          @dismiss="router.replace(route.path)"
+        >
+          You are not authorized to view that page
+        </InfoBanner>
+      </transition>
       <div class="flex items-baseline justify-between">
         <router-link :to="`/communities/${id}`">
           <Heading level="h1">{{ communityData?.name }}</Heading>
@@ -51,7 +64,6 @@
           <component
             :is="Component"
             :key="route.meta.usePathKey ? route.path : undefined"
-            :community="communityStore.community"
           />
         </keep-alive>
       </router-view>
@@ -60,7 +72,7 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { supabase } from "@/supabase";
 import { log } from "@/util/logger";
 import BaseTemplate from "@/components/BaseTemplate.vue";
@@ -71,12 +83,13 @@ import { store } from "@/store";
 import { Community } from "@/typings/Community";
 import { communityStore, getGames, getMemberCount } from "./communityStore";
 import { getCoverImageUrl } from "@/api/storage";
+import InfoBanner from "@/components/Banners/InfoBanner.vue";
 
 const route = useRoute();
+const router = useRouter();
 const { community_id: id } = route.params;
 
 const communityData = ref<Community>();
-const isOwner = ref(false);
 const isLoading = ref(true);
 
 onMounted(async () => {
@@ -85,6 +98,9 @@ onMounted(async () => {
     getGames(route.params.community_id);
   }
   await Promise.allSettled([getMembershipStatus(), getCommunity()]);
+  if (route.path.includes("manage") && !communityStore.isAdmin) {
+    router.replace(`/communities/${id}?unauthorized=true`);
+  }
   isLoading.value = false;
 });
 
@@ -119,9 +135,6 @@ async function getCommunity() {
   if (data) {
     communityData.value = data;
     communityStore.community = data;
-    if (data.owner_id === store.user?.id) {
-      isOwner.value = true;
-    }
   }
 }
 </script>

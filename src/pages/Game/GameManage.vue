@@ -107,14 +107,6 @@ import { gameStore } from "./gameStore";
 import router from "@/router";
 import EditGameDetails from "./EditGameDetails.vue";
 
-const props = defineProps({
-  isOwner: {
-    type: Boolean,
-    required: true,
-  },
-});
-toRefs(props);
-
 const newSessionDrawerOpen = ref(false);
 const editDescriptionDrawerOpen = ref(false);
 const editDetailsDrawerOpen = ref(false);

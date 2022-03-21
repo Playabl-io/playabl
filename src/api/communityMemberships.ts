@@ -1,5 +1,26 @@
 import { supabase } from "@/supabase";
 import { log } from "@/util/logger";
+import { ROLES } from "@/util/roles";
+
+export async function userIsCommunityAdmin({
+  userId,
+  communityId,
+}: {
+  userId: string;
+  communityId: string;
+}) {
+  const { data } = await supabase
+    .from("community_memberships")
+    .select("*")
+    .eq("community_id", communityId)
+    .eq("user_id", userId)
+    .eq("role_id", ROLES.admin)
+    .single();
+  if (data) {
+    return true;
+  }
+  return false;
+}
 
 export async function searchCommunityMembers(query: {
   communityId: string;

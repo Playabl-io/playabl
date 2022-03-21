@@ -387,7 +387,10 @@ async function createCommunity() {
   try {
     let imagePath;
     if (coverImage.value) {
-      imagePath = await uploadToCoverImageStorage(coverImage.value);
+      imagePath = await uploadToCoverImageStorage({
+        file: coverImage.value,
+        id: store.user.id,
+      });
     }
     const { data, error } = await supabase
       .from("communities")

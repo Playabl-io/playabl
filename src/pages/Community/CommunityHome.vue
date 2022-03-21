@@ -33,19 +33,26 @@
             <span>
               <dt class="text-xs text-opacity-60">Community Since</dt>
               <dd class="font-semibold">
-                {{ format(new Date(community.created_at), "LLL do, yyyy") }}
+                {{
+                  format(
+                    new Date(communityStore.community.created_at),
+                    "LLL do, yyyy"
+                  )
+                }}
               </dd>
             </span>
           </dd>
           <a
-            v-if="community.how_to_join"
+            v-if="communityStore.community.how_to_join"
             href="#how-to-join"
             class="text-neutral-100 text-lg font-bold"
           >
             How to join
           </a>
           <PrimaryButton
-            v-else-if="community.allow_public_signup && !isCommunityMember"
+            v-else-if="
+              communityStore.community.allow_public_signup && !isCommunityMember
+            "
             :is-loading="isJoining"
             class="self-end"
             @click="handleJoinCommunity"
@@ -58,15 +65,20 @@
   </div>
   <div class="mt-12 p-8 bg-gray-200 bg-opacity-70 rounded-lg">
     <p class="mx-auto prose dark:prose-invert prose-lg whitespace-pre-wrap">
-      {{ community.description }}
+      {{ communityStore.community.description }}
     </p>
   </div>
   <div class="mt-12">
-    <Heading v-if="community.how_to_join" id="how-to-join" level="h6" as="h2">
+    <Heading
+      v-if="communityStore.community.how_to_join"
+      id="how-to-join"
+      level="h6"
+      as="h2"
+    >
       How to join
     </Heading>
     <p class="mt-2 whitespace-pre-wrap">
-      {{ community.how_to_join }}
+      {{ communityStore.community.how_to_join }}
     </p>
   </div>
   <div class="mt-12 flex flex-col">
@@ -74,8 +86,8 @@
     <div class="grid md:grid-cols-2 gap-10 py-8">
       <div class="flex flex-col space-y-4">
         <a
-          v-if="community.code_of_conduct_url"
-          :href="community.code_of_conduct_url"
+          v-if="communityStore.community.code_of_conduct_url"
+          :href="communityStore.community.code_of_conduct_url"
           target="_blank"
           rel="noreferrer noopener"
           class="text-brand-500 hover:underline font-semibold"
@@ -83,8 +95,8 @@
           Code of conduct
         </a>
         <a
-          v-if="community.website"
-          :href="community.website"
+          v-if="communityStore.community.website"
+          :href="communityStore.community.website"
           target="_blank"
           rel="noreferrer noopener"
           class="text-brand-500 hover:underline font-semibold"
@@ -92,8 +104,8 @@
           Website
         </a>
         <a
-          v-if="community.twitter"
-          :href="community.twitter"
+          v-if="communityStore.community.twitter"
+          :href="communityStore.community.twitter"
           target="_blank"
           rel="noreferrer noopener"
           class="text-brand-500 hover:underline font-semibold"
@@ -101,8 +113,8 @@
           Twitter
         </a>
         <a
-          v-if="community.facebook"
-          :href="community.facebook"
+          v-if="communityStore.community.facebook"
+          :href="communityStore.community.facebook"
           target="_blank"
           rel="noreferrer noopener"
           class="text-brand-500 hover:underline font-semibold"
@@ -110,8 +122,8 @@
           Facebook
         </a>
         <a
-          v-if="community.discord"
-          :href="community.discord"
+          v-if="communityStore.community.discord"
+          :href="communityStore.community.discord"
           target="_blank"
           rel="noreferrer noopener"
           class="text-brand-500 hover:underline font-semibold"
@@ -119,8 +131,8 @@
           Discord
         </a>
         <a
-          v-if="community.slack"
-          :href="community.slack"
+          v-if="communityStore.community.slack"
+          :href="communityStore.community.slack"
           target="_blank"
           rel="noreferrer noopener"
           class="text-brand-500 hover:underline font-semibold"
@@ -129,7 +141,7 @@
         </a>
       </div>
       <div
-        v-if="community.twitter"
+        v-if="communityStore.community.twitter"
         id="twitter-timeline"
         class="shadow-md rounded-lg [height:480px] overflow-auto"
       />
@@ -142,8 +154,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { Community } from "@/typings/Community";
-import { PropType, toRefs, computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { format } from "date-fns";
 import { communityStore } from "./communityStore";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
@@ -155,14 +166,6 @@ import useToast from "@/components/Toast/useToast";
 import { log } from "@/util/logger";
 
 const { showSuccess, showError } = useToast();
-
-const props = defineProps({
-  community: {
-    type: Object as PropType<Community>,
-    required: true,
-  },
-});
-toRefs(props);
 
 const isJoining = ref(false);
 const displaySignUp = ref(false);
@@ -176,11 +179,11 @@ const isCommunityMember = computed(() => {
 });
 
 onMounted(() => {
-  if (props.community.twitter) {
+  if (communityStore.community.twitter) {
     window.twttr?.widgets.createTimeline(
       {
         sourceType: "profile",
-        screenName: props.community.twitter,
+        screenName: communityStore.community.twitter,
       },
       document.getElementById("twitter-timeline")
     );
@@ -201,10 +204,10 @@ async function handleJoinCommunity() {
   try {
     await joinCommunity({
       userId: store.user.id,
-      communityId: props.community.id,
+      communityId: communityStore.community.id,
     });
     communityStore.isPlayer = true;
-    showSuccess({ message: `Welcome to ${props.community.name}` });
+    showSuccess({ message: `Welcome to ${communityStore.community.name}` });
   } catch (error) {
     showError({ message: "Something went wrong" });
     log({ error });
