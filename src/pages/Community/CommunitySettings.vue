@@ -1,10 +1,10 @@
 <template>
-  <div class="grid settings-grid gap-12">
-    <nav>
-      <p>Community Info</p>
-      <p>Access</p>
-    </nav>
-    <section>
+  <SideNavTemplate>
+    <template #nav>
+      <SideNavLink to="?activeTab=info">Community Info</SideNavLink>
+      <SideNavLink to="?activeTab=settings">Community Settings</SideNavLink>
+    </template>
+    <template #content>
       <SwitchGroup>
         <div class="flex items-center mt-10 mb-4">
           <SwitchLabel class="text-lg mr-4"> Allow public signup </SwitchLabel>
@@ -23,17 +23,8 @@
           </Switch>
         </div>
       </SwitchGroup>
-      <p class="text-lg mt-10 mb-1">Cover image</p>
-      <FormFileInput
-        :current-image="communityStore.coverImageUrl"
-        :file="newCoverImage"
-        size-limit="3 MB"
-        @file-change="onFileChange"
-        @file-drop="onFileDrop"
-        @clear-file="newCoverImage = undefined"
-      />
-    </section>
-  </div>
+    </template>
+  </SideNavTemplate>
 </template>
 <script setup lang="ts">
 import { ref, computed } from "vue";
@@ -44,6 +35,8 @@ import {
   handleFileDrop,
 } from "@/components/Forms/fileInputUtil";
 import { communityStore } from "./communityStore";
+import SideNavTemplate from "@/components/SideNavTemplate.vue";
+import SideNavLink from "@/components/Navigation/SideNavLink.vue";
 
 const newCoverImage = ref();
 const allowPublicSignup = ref(communityStore.community.allow_public_signup);

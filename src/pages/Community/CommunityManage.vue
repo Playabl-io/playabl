@@ -77,6 +77,9 @@
             :current-cutoff="communityStore.community.furthest_posting_date"
           />
         </section>
+        <section class="section-container">
+          <CommunityImageLibrary />
+        </section>
       </div>
       <section
         class="section-container h-min"
@@ -152,6 +155,7 @@ import EditCommunityInfo from "./EditCommunityInfo.vue";
 import { communityStore } from "./communityStore";
 import MembersSearch from "./MembersSearch.vue";
 import Tooltip from "@/components/Tooltip.vue";
+import CommunityImageLibrary from "./CommunityImageLibrary.vue";
 
 const { showSuccess } = useToast();
 
