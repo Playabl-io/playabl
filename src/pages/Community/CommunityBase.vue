@@ -130,6 +130,8 @@ async function getCommunity() {
 
   if (data.cover_image) {
     communityStore.coverImageUrl = await getCoverImageUrl(data.cover_image);
+  } else {
+    communityStore.coverImageUrl = undefined;
   }
 
   if (data) {

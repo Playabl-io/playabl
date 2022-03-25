@@ -22,7 +22,8 @@
           v-if="coverImageUrl"
           class="w-full h-full object-center object-cover shadow-md rounded-lg"
           :src="coverImageUrl"
-          alt="image"
+          alt=""
+          loading="lazy"
         />
         <div
           :class="{
