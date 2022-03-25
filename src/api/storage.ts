@@ -2,6 +2,21 @@ import { supabase } from "@/supabase";
 import { store } from "@/store";
 import { log } from "@/util/logger";
 
+export async function removeObjects({
+  bucket,
+  paths,
+}: {
+  bucket: string;
+  paths: string[];
+}) {
+  const { data, error } = await supabase.storage.from(bucket).remove(paths);
+  if (error) {
+    log(error);
+    throw error;
+  }
+  if (data) return data;
+}
+
 export async function uploadToCoverImageStorage({
   id,
   file,

@@ -39,14 +39,14 @@ export async function getGames(communityId: string) {
     .select("*, sessions!inner(start_time)", { count: "estimated" })
     .eq("community_id", communityId)
     .gte("sessions.start_time", new Date().getTime());
-  if (count) {
+  if (error) {
+    log({ error });
+  }
+  if (count !== null) {
     communityStore.gamesCount = count;
   }
   if (data) {
     communityStore.games = data;
-  }
-  if (error) {
-    log({ error });
   }
 }
 

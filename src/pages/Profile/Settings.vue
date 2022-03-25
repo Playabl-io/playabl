@@ -3,8 +3,8 @@
 </template>
 
 <script setup lang="ts">
-import { supabase } from "../supabase";
-import { store } from "../store";
+import { supabase } from "../../supabase";
+import { store } from "../../store";
 import { onMounted, ref } from "vue";
 import ProfileTemplate from "@/components/ProfileTemplate.vue";
 import {

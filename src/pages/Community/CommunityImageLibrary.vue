@@ -1,21 +1,29 @@
 <template>
   <Heading level="h6" as="h2" class="mb-2">Cover Image</Heading>
   <FormFileInput
-    :current-image="communityStore.coverImageUrl"
+    :current-image="existingImageToUse?.src || communityStore.coverImageUrl"
     :file="newCoverImage"
     size-limit="3 MB"
     @file-change="onFileChange"
     @file-drop="onFileDrop"
     @clear-file="newCoverImage = undefined"
   />
+  <LinkButton class="my-2 text-sm" @click="showGallery = true">
+    Or select from your media
+  </LinkButton>
   <PrimaryButton
-    :disabled="!newCoverImage"
+    :disabled="!newCoverImage && !existingImageToUse"
     class="w-full mt-2"
     :is-loading="isUpdating"
     @click="updateImage"
   >
     Update
   </PrimaryButton>
+  <ImageGalleryModal
+    :open="showGallery"
+    @close="showGallery = false"
+    @select="handleImageSelect"
+  />
 </template>
 <script setup lang="ts">
 import { ref } from "vue";
@@ -32,15 +40,21 @@ import { getCoverImageUrl, uploadToCoverImageStorage } from "@/api/storage";
 import { supabase } from "@/supabase";
 import useToast from "@/components/Toast/useToast";
 import { log } from "@/util/logger";
+import ImageGalleryModal from "@/components/Modals/ImageGalleryModal.vue";
+import LinkButton from "@/components/Buttons/LinkButton.vue";
+import { FileObject } from "@/typings/Storage";
 
 const { showError, showSuccess } = useToast();
 
 const newCoverImage = ref();
+const existingImageToUse = ref<{ image: FileObject; src: string }>();
 const isUpdating = ref(false);
+const showGallery = ref(false);
 
 function onFileDrop(event: DragEvent) {
   const file = handleFileDrop(event, { value: 3000000, label: "3 MB" });
   if (file) {
+    existingImageToUse.value = undefined;
     newCoverImage.value = file;
   }
 }
@@ -48,13 +62,35 @@ function onFileDrop(event: DragEvent) {
 function onFileChange(event: Event) {
   const file = handleFileChange(event, { value: 3000000, label: "3 MB" });
   if (file) {
+    existingImageToUse.value = undefined;
     newCoverImage.value = file;
   }
+}
+
+function handleImageSelect(selection: { image: FileObject; src: string }) {
+  existingImageToUse.value = selection;
+  showGallery.value = false;
 }
 
 async function updateImage() {
   if (!store.user?.id) return;
   isUpdating.value = true;
+
+  if (existingImageToUse.value) {
+    await supabase
+      .from("communities")
+      .update({
+        cover_image: `${store.user.id}/${existingImageToUse.value.image.name}`,
+      })
+      .eq("id", communityStore.community.id);
+    communityStore.coverImageUrl = existingImageToUse.value.src;
+    newCoverImage.value = null;
+    existingImageToUse.value = undefined;
+    isUpdating.value = false;
+    showSuccess({ message: "Cover image updated" });
+    return;
+  }
+
   try {
     const imagePath = await uploadToCoverImageStorage({
       file: newCoverImage.value,

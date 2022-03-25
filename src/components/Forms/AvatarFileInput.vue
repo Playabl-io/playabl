@@ -18,9 +18,9 @@
     >
       <span class="w-full h-full p-3 rounded-md flex justify-center gap-10">
         <img
-          v-if="imgPreview"
+          v-if="imgPreview || currentImageSrc"
           class="h-20 w-20 rounded-full object-cover"
-          :src="imgPreview"
+          :src="imgPreview || currentImageSrc"
           alt="image preview"
         />
         <div v-else class="h-20 w-20 rounded-full bg-green-100" />
@@ -48,9 +48,10 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, onMounted } from "vue";
 import { TrashIcon } from "@heroicons/vue/outline";
 import GhostButton from "../Buttons/GhostButton.vue";
+import { getAvatarImageUrl } from "@/api/storage";
 
 const props = defineProps({
   file: {
@@ -59,7 +60,11 @@ const props = defineProps({
   },
   sizeLimit: {
     type: String,
-    default: "3 MB",
+    default: "1 MB",
+  },
+  currentAvatarPath: {
+    type: String,
+    default: "",
   },
 });
 
@@ -68,6 +73,11 @@ const emit = defineEmits(["fileDrop", "fileChange", "clearFile"]);
 const fileInput = ref<HTMLElement>();
 
 const imgPreview = ref();
+const currentImageSrc = ref();
+
+onMounted(async () => {
+  currentImageSrc.value = await getAvatarImageUrl(props.currentAvatarPath);
+});
 
 const reader = new FileReader();
 reader.onload = (event) => {

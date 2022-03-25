@@ -38,8 +38,8 @@
 </template>
 
 <script setup lang="ts">
-import { supabase } from "../supabase";
-import { store } from "../store";
+import { supabase } from "../../supabase";
+import { store } from "../../store";
 import { ref, watch } from "vue";
 import ProfileTemplate from "@/components/ProfileTemplate.vue";
 import Heading from "@/components/Heading.vue";
