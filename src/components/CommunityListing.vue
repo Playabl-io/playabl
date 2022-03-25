@@ -11,6 +11,7 @@
         class="w-full h-full object-center object-cover shadow-md rounded-lg"
         :src="coverImageUrl"
         :alt="`${community.name} cover image`"
+        loading="lazy"
       />
       <div
         :class="{
