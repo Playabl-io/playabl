@@ -1,7 +1,5 @@
 <template>
-  <li
-    class="text-right p-4 rounded-lg bg-blue-200 hover:bg-opacity-80 hover:shadow-md hover:-translate-y-1 transition-all duration-300 ease-out"
-  >
+  <li class="text-right p-4 rounded-lg bg-rose-200 hover:bg-opacity-80">
     <div class="flex flex-col">
       <p class="font-semibold grow">
         {{ notification.custom_fields?.game_name }} has been canceled
