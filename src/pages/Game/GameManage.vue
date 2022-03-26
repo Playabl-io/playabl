@@ -146,8 +146,7 @@ async function handleDelete(session?: Session) {
 async function cancelGame() {
   isDeleting.value = true;
   try {
-    await Promise.all(gameStore.sessions.map(handleDelete));
-    const { data, error } = await supabase.rpc("cancel_game", {
+    const { error } = await supabase.rpc("cancel_game", {
       game_id: gameStore.game.id,
     });
     if (error) throw error;
