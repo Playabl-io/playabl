@@ -17,7 +17,15 @@
           You are not authorized to view that page
         </InfoBanner>
       </transition>
-      <Heading level="h1">{{ gameStore.game.title }}</Heading>
+      <div class="flex items-center">
+        <Heading level="h1" class="inline">{{ gameStore.game.title }}</Heading>
+        <div
+          v-if="gameStore.game.deleted_at"
+          class="ml-8 mt-4 p-2 rounded-xl bg-red-700 text-white inline-flex"
+        >
+          Cancelled
+        </div>
+      </div>
       <p class="mt-6">By {{ gameData?.creator_id.username || "" }}</p>
       <router-link
         :to="`/communities/${gameStore.community.id}`"
@@ -25,12 +33,7 @@
       >
         Part of {{ gameStore.community.name }}
       </router-link>
-      <div
-        v-if="gameStore.game.deleted_at"
-        class="mt-4 p-2 rounded-xl bg-red-700 text-white inline-flex"
-      >
-        Cancelled
-      </div>
+
       <section class="my-12 flex justify-between items-baseline text-sm">
         <div class="flex space-x-4 py-2">
           <router-link
@@ -40,7 +43,7 @@
             Details
           </router-link>
           <router-link
-            v-if="canManage"
+            v-if="canManage && !gameStore.game.deleted_at"
             :to="`/games/${id}/manage`"
             active-class="border-b border-brand-500 dark:border-brand-300"
           >
