@@ -45,7 +45,6 @@ export const handler: Handler = async (event, context) => {
   webPush({
     userId: record.user_id,
     message: record.message,
-    relatedUrl: record.related_url,
   });
   return {
     statusCode: 200,
@@ -112,7 +111,6 @@ function sendCancelEmail({ name, email, gameName }) {
             ],
             TemplateID: 3807927,
             TemplateLanguage: true,
-            Subject: "Playabl RSVP Success",
             Variables: {
               game_name: gameName,
             },
@@ -134,7 +132,7 @@ function sendCancelEmail({ name, email, gameName }) {
     });
 }
 
-const webPush = async ({ userId, message, relatedUrl }) => {
+const webPush = async ({ userId, message }) => {
   const { data } = await supabase
     .from("profiles")
     .select("subscriptions")
