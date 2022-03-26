@@ -46,6 +46,12 @@
       </div>
     </div>
     <div class="p-4 rounded-b-lg">
+      <p
+        v-if="game.deleted_at"
+        class="mb-2 p-2 rounded-xl bg-red-700 text-white w-min"
+      >
+        Cancelled
+      </p>
       <Heading as="h6" level="h6">{{ game.title }} </Heading>
       <p class="text-xs text-slate-700 mt-1">{{ game.community_id.name }}</p>
     </div>

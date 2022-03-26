@@ -35,6 +35,13 @@ export const handler: Handler = async (event, context) => {
       gameName: record.custom_fields?.game_name,
     });
   }
+  if (record.type === "cancel") {
+    await sendCancelEmail({
+      name: record.name,
+      email: record.email,
+      gameName: record.custom_fields?.game_name,
+    });
+  }
   webPush({
     userId: record.user_id,
     message: record.message,
@@ -68,6 +75,46 @@ function sendRsvpEmail({ name, email, relatedUrl, gameName }) {
             Variables: {
               game_name: gameName,
               related_url: relatedUrl,
+            },
+          },
+        ],
+      },
+      {
+        auth: {
+          username: process.env.MJ_USER,
+          password: process.env.MJ_PW,
+        },
+      }
+    )
+    .then((response) => {
+      console.log(response);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
+function sendCancelEmail({ name, email, gameName }) {
+  return axios
+    .post(
+      "https://api.mailjet.com/v3.1/send",
+      {
+        Messages: [
+          {
+            From: {
+              Email: "notifications@playabl.io",
+              Name: "Playabl Notifications",
+            },
+            To: [
+              {
+                Email: email,
+                Name: name,
+              },
+            ],
+            TemplateID: 3807927,
+            TemplateLanguage: true,
+            Subject: "Playabl RSVP Success",
+            Variables: {
+              game_name: gameName,
             },
           },
         ],

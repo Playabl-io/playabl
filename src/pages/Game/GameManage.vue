@@ -1,5 +1,8 @@
 <template>
-  <div class="grid gap-12">
+  <div v-if="gameStore.game.deleted_at">
+    <p>This game has been cancelled and cannot be edited</p>
+  </div>
+  <div v-else class="grid gap-12">
     <div class="flex flex-wrap gap-8">
       <OutlineButton @click="editDescriptionDrawerOpen = true">
         Edit description
@@ -83,7 +86,7 @@
   <DeleteModal
     :is-deleting="isDeleting"
     :open="cancelGameModalOpen"
-    title="Delete game"
+    title="Cancel game"
     message="Are you sure? This cannot be undone"
     @cancel="cancelGameModalOpen = false"
     @delete="cancelGame"
@@ -104,8 +107,11 @@ import { supabase } from "@/supabase";
 import OutlineButton from "@/components/Buttons/OutlineButton.vue";
 import EditDescription from "@/pages/Game/EditDescription.vue";
 import { gameStore } from "./gameStore";
-import router from "@/router";
 import EditGameDetails from "./EditGameDetails.vue";
+import useToast from "@/components/Toast/useToast";
+import { log } from "@/util/logger";
+
+const { showSuccess, showError } = useToast();
 
 const newSessionDrawerOpen = ref(false);
 const editDescriptionDrawerOpen = ref(false);
@@ -139,9 +145,21 @@ async function handleDelete(session?: Session) {
 }
 async function cancelGame() {
   isDeleting.value = true;
-  await Promise.all(gameStore.sessions.map(handleDelete));
-  await supabase.from("games").delete().match({ id: gameStore.game.id });
-  router.push("/games/browse");
+  try {
+    await Promise.all(gameStore.sessions.map(handleDelete));
+    const { data, error } = await supabase.rpc("cancel_game", {
+      game_id: gameStore.game.id,
+    });
+    if (error) throw error;
+    showSuccess({ message: "Game cancelled" });
+    cancelGameModalOpen.value = false;
+    gameStore.game.deleted_at = new Date().toLocaleDateString();
+  } catch (error) {
+    log({ error });
+    showError({ message: "Unable to cancel game" });
+  } finally {
+    isDeleting.value = false;
+  }
 }
 </script>
 <style scoped>
