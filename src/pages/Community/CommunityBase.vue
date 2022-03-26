@@ -50,13 +50,6 @@
           >
             Manage
           </router-link>
-          <router-link
-            v-if="communityStore.isAdmin"
-            :to="`/communities/${id}/settings`"
-            active-class="border-b border-brand-500 dark:border-brand-300"
-          >
-            Settings
-          </router-link>
         </div>
       </section>
       <router-view v-slot="{ Component, route }">

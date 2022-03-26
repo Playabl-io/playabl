@@ -143,13 +143,6 @@ const routes = [
           requiresAuth: true,
         },
       },
-      {
-        path: "settings",
-        component: CommunitySettings,
-        meta: {
-          requiresAuth: true,
-        },
-      },
     ],
   },
   {

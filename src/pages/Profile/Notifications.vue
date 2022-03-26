@@ -3,33 +3,12 @@
     <section class="flex flex-col">
       <section v-if="unreadNotifications.length">
         <ul class="grid gap-6">
-          <div
+          <component
+            :is="notificationComponent(notification.type)"
             v-for="notification in unreadNotifications"
             :key="notification.id"
-          >
-            <a v-if="notification.related_url" :href="notification.related_url">
-              <li
-                class="text-right p-4 rounded-lg bg-blue-200 hover:bg-opacity-80 hover:shadow-md hover:-translate-y-1 transition-all duration-300 ease-out"
-              >
-                <div class="flex flex-col">
-                  <p class="font-semibold grow">
-                    {{ notification.message }}
-                  </p>
-                  <div class="self-end flex space-x-2 items-center mt-1">
-                    <ClockIcon class="h-4 w-4 text-brand-500" />
-                    <p class="text-sm text-brand-500">
-                      {{
-                        formatRelative(
-                          new Date(notification.created_at),
-                          new Date()
-                        )
-                      }}
-                    </p>
-                  </div>
-                </div>
-              </li>
-            </a>
-          </div>
+            :notification="notification"
+          />
         </ul>
       </section>
       <p
@@ -81,10 +60,11 @@ import {
 } from "@/serviceWorkerRegistration";
 import FormLabel from "@/components/Forms/FormLabel.vue";
 import OutlineButton from "@/components/Buttons/OutlineButton.vue";
-import { store } from "@/store";
 import { supabase } from "@/supabase";
 import { unreadNotifications } from "@/util/notifications";
 import { Notification } from "@/typings/Notification";
+import RsvpNotification from "./RsvpNotification.vue";
+import CancelNotification from "./CancelNotification.vue";
 
 const toBeCleared = ref<Notification[]>([]);
 const readTimeout = setTimeout(() => {
@@ -105,4 +85,15 @@ onUnmounted(() => {
   clearTimeout(readTimeout);
   markNotificationsRead(toBeCleared.value);
 });
+
+function notificationComponent(type: Notification["type"]) {
+  switch (type) {
+    case "cancel":
+      return CancelNotification;
+    case "rsvp":
+      return RsvpNotification;
+    default:
+      return "div";
+  }
+}
 </script>

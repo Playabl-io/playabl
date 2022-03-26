@@ -176,7 +176,7 @@
         <SecondaryButton
           type="button"
           class="my-2 w-full"
-          :disabled="Boolean(dateError)"
+          :disabled="Boolean(dateError) || dateIncomplete"
           @click="addSession"
         >
           Add session
@@ -448,6 +448,10 @@ const dateError = computed(() => {
   return "";
 });
 
+const dateIncomplete = computed(() => {
+  return startDateAndTime.value === 0 || endDateAndTime.value === 0;
+});
+
 function onFileDrop(event: DragEvent) {
   const file = handleFileDrop(event);
   if (file) {
@@ -548,7 +552,7 @@ async function getCommunityPostingDate(communityId: string) {
     communityId,
     select: "furthest_posting_date",
   });
-  if (data) {
+  if (data?.furthest_posting_date) {
     communityPostingLimit.value = new Date(data.furthest_posting_date);
   }
 }
