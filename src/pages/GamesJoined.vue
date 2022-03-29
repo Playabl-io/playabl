@@ -5,6 +5,15 @@
       <LoadingSpinner color="brand-500" />
     </div>
     <section v-else class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div v-if="games.length === 0" class="col-span-full">
+        <p class="prose">You do not have any upcoming games.</p>
+        <router-link
+          to="/games/browse"
+          class="text-brand-500 font-semibold hover:border-b hover:border-solid hover:border-brand-500"
+        >
+          You can browse available games here.
+        </router-link>
+      </div>
       <GameCard v-for="game in games" :key="game.id" :game="game" />
     </section>
   </base-template>

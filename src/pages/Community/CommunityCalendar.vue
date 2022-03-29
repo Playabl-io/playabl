@@ -9,20 +9,20 @@
     </div>
     <div class="flex flex-col lg:flex-row gap-4 justify-center mt-6">
       <section
-        class="w-full lg:w-80 p-4 bg-white rounded-md border border-solid border-gray-200"
+        class="w-full lg:w-80 pt-4 bg-white rounded-md border border-solid border-gray-200"
       >
         <template v-if="selectedDate">
-          <Heading level="h5" as="h5">
+          <Heading level="h5" as="h5" class="px-4">
             {{ format(selectedDate, "LLLL do") }}
           </Heading>
-          <ul class="grow flex flex-col gap-4 mt-6 overflow-auto">
+          <ul class="grow flex flex-col mt-4 overflow-auto">
             <li
               v-for="session in sessionsForDay(selectedDate, selectedDate)"
               :key="session.id"
             >
               <router-link
                 :to="`/games/${session.game_id.id}`"
-                class="grid grid-flow-col gap-6"
+                class="py-2 px-4 grid grid-flow-col gap-6 hover:bg-gray-100"
               >
                 <span>
                   <p>{{ session.game_id.title }}</p>

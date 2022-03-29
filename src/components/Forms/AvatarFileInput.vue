@@ -77,6 +77,7 @@ const currentImageSrc = ref();
 
 onMounted(async () => {
   currentImageSrc.value = await getAvatarImageUrl(props.currentAvatarPath);
+  console.log(currentImageSrc.value);
 });
 
 const reader = new FileReader();
