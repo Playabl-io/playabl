@@ -66,7 +66,8 @@ export async function uploadToAvatarStorage(file: File) {
   }
 }
 
-export const getAvatarImageUrl = async (path: string) => {
+export const getAvatarImageUrl = async (path?: string) => {
+  if (!path) return "";
   const { publicURL } = await supabase.storage
     .from("avatars")
     .getPublicUrl(path);
