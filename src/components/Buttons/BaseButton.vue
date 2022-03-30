@@ -1,6 +1,7 @@
 <template>
-  <button
-    class="flex justify-center items-center font-mediumcursor-pointer focus-styles"
+  <component
+    :is="element"
+    class="flex justify-center items-center font-medium cursor-pointer focus-styles"
     :class="{
       'p-3 h-10': size === 'default',
       'p-2 h-6': size === 'small',
@@ -10,12 +11,13 @@
       'rounded-md': !round,
     }"
     v-bind="$attrs"
+    :to="to"
   >
     <slot></slot>
-  </button>
+  </component>
 </template>
 <script setup lang="ts">
-import { toRefs } from "vue";
+import { computed, toRefs } from "vue";
 
 const props = defineProps({
   size: {
@@ -26,6 +28,12 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  to: {
+    type: String,
+    default: undefined,
+  },
 });
 toRefs(props);
+
+const element = computed(() => (props.to ? "router-link" : "button"));
 </script>

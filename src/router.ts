@@ -16,7 +16,6 @@ import CommunityHome from "@/pages/Community/CommunityHome.vue";
 import CommunityFeed from "@/pages/Community/CommunityFeed.vue";
 import CommunityCalendar from "@/pages/Community/CommunityCalendar.vue";
 import CommunityManage from "@/pages/Community/CommunityManage.vue";
-import CommunitySettings from "@/pages/Community/CommunitySettings.vue";
 import GamesJoined from "@/pages/GamesJoined.vue";
 import GamesBrowse from "@/pages/GamesBrowse.vue";
 import GamesManage from "@/pages/GamesManage.vue";
@@ -25,6 +24,7 @@ import GameBase from "@/pages/Game/GameBase.vue";
 import GameHome from "@/pages/Game/GameHome.vue";
 import GameMessages from "@/pages/GameMessages.vue";
 import GameManage from "@/pages/Game/GameManage.vue";
+import NotFound from "@/pages/NotFound.vue";
 import { store } from "./store";
 
 const routes = [
@@ -204,6 +204,7 @@ const routes = [
       },
     ],
   },
+  { path: "/:pathMatch(.*)*", name: "NotFound", component: NotFound },
 ];
 
 const router = createRouter({
