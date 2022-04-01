@@ -48,16 +48,15 @@
   </div>
   <section v-if="!gameStore.game.deleted_at" class="mt-12">
     <Heading level="h6" as="h2">Sessions</Heading>
-    <div class="grid gap-8 mt-8">
-      <template v-for="session in gameStore.sessions" :key="session.id">
-        <SessionBlock
-          :session="session"
-          :participant-count="session.participant_count"
-          :user-access="userAccess"
-          :is-owner="isOwner"
-        />
-        <hr class="last:hidden border-slate-200" />
-      </template>
+    <div class="grid md:grid-cols-2 gap-8 mt-8">
+      <SessionBlock
+        v-for="session in gameStore.sessions"
+        :key="session.id"
+        :session="session"
+        :participant-count="session.participant_count"
+        :user-access="userAccess"
+        :is-owner="isOwner"
+      />
     </div>
   </section>
 </template>
