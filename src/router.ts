@@ -25,6 +25,8 @@ import GameHome from "@/pages/Game/GameHome.vue";
 import GameMessages from "@/pages/GameMessages.vue";
 import GameManage from "@/pages/Game/GameManage.vue";
 import NotFound from "@/pages/NotFound.vue";
+import TOS from "@/pages/TOS.vue";
+import PrivacyPolicy from "@/pages/PrivacyPolicy.vue";
 import { store } from "./store";
 
 const routes = [
@@ -203,6 +205,20 @@ const routes = [
         },
       },
     ],
+  },
+  {
+    path: "/tos",
+    component: TOS,
+    meta: {
+      title: "Playable - Terms of Service",
+    },
+  },
+  {
+    path: "/privacy",
+    component: PrivacyPolicy,
+    meta: {
+      title: "Playable - Privacy Policy",
+    },
   },
   { path: "/:pathMatch(.*)*", name: "NotFound", component: NotFound },
 ];

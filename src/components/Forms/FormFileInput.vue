@@ -61,7 +61,7 @@ import GhostButton from "../Buttons/GhostButton.vue";
 
 const props = defineProps({
   file: {
-    type: File,
+    type: [File, String],
     default: undefined,
   },
   sizeLimit: {
@@ -89,7 +89,11 @@ watch(
   () => props.file,
   (newFile) => {
     if (newFile) {
-      reader.readAsDataURL(newFile);
+      if (typeof newFile === "string") {
+        imgPreview.value = newFile;
+      } else {
+        reader.readAsDataURL(newFile);
+      }
     }
   }
 );

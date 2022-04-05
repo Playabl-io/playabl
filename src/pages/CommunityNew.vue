@@ -32,11 +32,23 @@
           <div class="flex flex-col">
             <FormLabel>Cover image</FormLabel>
             <FormFileInput
-              :file="coverImage"
+              :file="existingImageToUse?.src || coverImage"
               size-limit="3 MB"
               @file-change="onFileChange"
               @file-drop="onFileDrop"
-              @clear-file="coverImage = undefined"
+              @clear-file="clearFile"
+            />
+            <LinkButton
+              class="text-sm mt-2"
+              type="button"
+              @click="showGallery = true"
+            >
+              Or select from your media
+            </LinkButton>
+            <ImageGalleryModal
+              :open="showGallery"
+              @close="showGallery = false"
+              @select="handleImageSelect"
             />
           </div>
         </div>
@@ -277,6 +289,7 @@ import { AtSymbolIcon } from "@heroicons/vue/outline";
 import { ArrowSmRightIcon, ArrowSmLeftIcon } from "@heroicons/vue/solid";
 import OutlineButton from "@/components/Buttons/OutlineButton.vue";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
+import LinkButton from "@/components/Buttons/LinkButton.vue";
 import { supabase } from "@/supabase";
 import { log } from "@/util/logger";
 import { store } from "@/store";
@@ -287,6 +300,8 @@ import {
   handleFileChange,
   handleFileDrop,
 } from "@/components/Forms/fileInputUtil";
+import ImageGalleryModal from "@/components/Modals/ImageGalleryModal.vue";
+import { FileObject } from "@/typings/Storage";
 
 const { showError } = useToast();
 
@@ -355,10 +370,18 @@ const discord = ref("");
 const slack = ref("");
 const patreon = ref("");
 
+const existingImageToUse = ref<{ image: FileObject; src: string }>();
+const showGallery = ref(false);
+function handleImageSelect(selection: { image: FileObject; src: string }) {
+  existingImageToUse.value = selection;
+  showGallery.value = false;
+}
+
 function onFileDrop(event: DragEvent) {
   const file = handleFileDrop(event, { value: 3000000, label: "3 MB" });
   if (file) {
     coverImage.value = file;
+    existingImageToUse.value = undefined;
   }
 }
 
@@ -366,7 +389,13 @@ function onFileChange(event: Event) {
   const file = handleFileChange(event, { value: 3000000, label: "3 MB" });
   if (file) {
     coverImage.value = file;
+    existingImageToUse.value = undefined;
   }
+}
+
+function clearFile() {
+  coverImage.value = undefined;
+  existingImageToUse.value = undefined;
 }
 
 function validateAtLeastOneGameTypeChosen() {
@@ -386,7 +415,9 @@ async function createCommunity() {
   send("SUBMIT");
   try {
     let imagePath;
-    if (coverImage.value) {
+    if (existingImageToUse.value) {
+      imagePath = `${store.user.id}/${existingImageToUse.value.image.name}`;
+    } else if (coverImage.value) {
       imagePath = await uploadToCoverImageStorage({
         file: coverImage.value,
         id: store.user.id,
