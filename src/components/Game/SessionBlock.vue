@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col">
-    <div class="p-4 rounded-md border border-solid border-gray-100 shadow-md">
+    <div class="p-4 rounded-md border border-solid border-gray-200">
       <div>
         <p class="text-lg font-bold">
           {{ format(new Date(session.start_time), "EEE, MMM do") }}
@@ -48,7 +48,7 @@
           </ul>
         </div>
         <div>
-          <h6 class="text-xs text-slate-600 mb-2">Waitlist</h6>
+          <h6 class="text-xs text-slate-600 mb-2 text-right">Waitlist</h6>
           <ul>
             <SessionAttendee
               v-for="rsvp in participants[1]"

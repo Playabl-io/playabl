@@ -101,10 +101,22 @@
           <FormLabel>Game cover image</FormLabel>
           <FormFileInput
             class="mt-2"
-            :file="coverImage"
+            :file="existingImageToUse?.src || coverImage"
             @file-change="onFileChange"
             @file-drop="onFileDrop"
-            @clear-file="coverImage = undefined"
+            @clear-file="clearFile"
+          />
+          <LinkButton
+            class="text-sm mt-2"
+            type="button"
+            @click="showGallery = true"
+          >
+            Or select from your media
+          </LinkButton>
+          <ImageGalleryModal
+            :open="showGallery"
+            @close="showGallery = false"
+            @select="handleImageSelect"
           />
         </div>
         <div class="p-4 rounded-lg bg-gray-100 flex items-center space-x-2">
@@ -267,6 +279,8 @@ import {
 import AddSessions from "@/components/Game/AddSessions.vue";
 import { uploadToCoverImageStorage } from "@/api/storage";
 import { Delta } from "@vueup/vue-quill";
+import ImageGalleryModal from "@/components/Modals/ImageGalleryModal.vue";
+import { FileObject } from "@/typings/Storage";
 
 const { showSuccess, showError } = useToast();
 const router = useRouter();
@@ -393,6 +407,13 @@ const newGameMachine = createMachine<{
 
 const { state, send } = useMachine(newGameMachine);
 
+const existingImageToUse = ref<{ image: FileObject; src: string }>();
+const showGallery = ref(false);
+function handleImageSelect(selection: { image: FileObject; src: string }) {
+  existingImageToUse.value = selection;
+  showGallery.value = false;
+}
+
 const title = ref("");
 const system = ref("");
 const tabletop = ref("");
@@ -456,6 +477,7 @@ function onFileDrop(event: DragEvent) {
   const file = handleFileDrop(event);
   if (file) {
     coverImage.value = file;
+    existingImageToUse.value = undefined;
   }
 }
 
@@ -463,7 +485,13 @@ function onFileChange(event: Event) {
   const file = handleFileChange(event);
   if (file) {
     coverImage.value = file;
+    existingImageToUse.value = undefined;
   }
+}
+
+function clearFile() {
+  coverImage.value = undefined;
+  existingImageToUse.value = undefined;
 }
 
 function addSession() {
@@ -496,7 +524,9 @@ async function submitGame() {
   const times = rsvpTimes(levels);
 
   let imagePath;
-  if (coverImage.value) {
+  if (existingImageToUse.value) {
+    imagePath = `${store.user.id}/${existingImageToUse.value.image.name}`;
+  } else if (coverImage.value) {
     imagePath = await uploadToCoverImageStorage({
       file: coverImage.value,
       id: store.user.id,
