@@ -66,7 +66,11 @@
         </div>
         <div class="flex flex-col">
           <FormLabel for="system" required> Game system </FormLabel>
-          <FormInput id="system" v-model="system" required />
+          <FilterDropdown
+            v-model="system"
+            :options="gameSystemList"
+            placeholder="Select or specify a system"
+          />
         </div>
         <div class="flex flex-col">
           <FormLabel for="participantCount" required> Player count </FormLabel>
@@ -281,6 +285,8 @@ import { uploadToCoverImageStorage } from "@/api/storage";
 import { Delta } from "@vueup/vue-quill";
 import ImageGalleryModal from "@/components/Modals/ImageGalleryModal.vue";
 import { FileObject } from "@/typings/Storage";
+import gameSystemList from "@/util/gameSystemList";
+import FilterDropdown from "@/components/Dropdown/FilterDropdown.vue";
 
 const { showSuccess, showError } = useToast();
 const router = useRouter();
