@@ -10,11 +10,7 @@
         </Heading>
         <div class="flex flex-col relative">
           <FormLabel for="role">Role</FormLabel>
-          <FormSelect
-            id="role"
-            v-model.number="roleToAssign"
-            class="mt-1 rounded-md border border-solid border-gray-300 text-slate-900 dark:bg-slate-200 focus-styles"
-          >
+          <FormSelect id="role" v-model.number="roleToAssign" class="mt-1">
             <option value="">Select a role</option>
             <option :value="ROLES.admin">Admin</option>
             <option :value="ROLES.creator">Creator</option>
