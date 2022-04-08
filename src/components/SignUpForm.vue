@@ -3,8 +3,10 @@
     class="flex flex-col lg:max-w-xl mx-auto"
     @submit.prevent="handleSubmit"
   >
-    <Heading level="h1" as="h5">Sign up</Heading>
-    <p class="text-sm font-medium mt-4">
+    <slot name="heading">
+      <Heading level="h1" as="h5" class="mb-4">Sign up</Heading>
+    </slot>
+    <p class="text-sm font-medium">
       Sign up to join or start communities and play in games
     </p>
     <LinkButton

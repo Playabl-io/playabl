@@ -6,111 +6,57 @@
       label="Close"
       @click="emit('cancel')"
     />
-    <div class="my-12">
-      <form
-        v-if="showSignUpForm"
-        class="flex flex-col space-y-4 lg:max-w-xl mx-auto"
-        @submit.prevent="handleSignUp"
+    <SignUpForm
+      v-if="showSignUpForm"
+      :loading="loading"
+      @sign-in="showSignUpForm = false"
+      @sign-up-with-email="handleSignUp"
+      @sign-up-with-google="signInWithGoogle"
+    >
+      <template #heading>
+        <div />
+      </template>
+    </SignUpForm>
+    <form
+      v-else
+      class="flex flex-col space-y-4 lg:max-w-xl mx-auto"
+      @submit.prevent="handleLogin"
+    >
+      <LinkButton
+        type="button"
+        class="text-sm text-brand-500 mr-auto"
+        @click="showSignUpForm = true"
       >
-        <div class="flex flex-col">
-          <form-label> Email </form-label>
-          <form-input v-model="email" type="email" required />
-        </div>
-        <div>
-          <div class="flex flex-col">
-            <form-label> Password </form-label>
-            <div class="flex">
-              <form-input
-                v-model="password"
-                class="grow"
-                :class="{
-                  'border-green-500': passwordsValid,
-                  'border-red-500': passwordError,
-                }"
-                :type="showPw ? 'text' : 'password'"
-                required
-              />
-              <GhostButton type="button" class="ml-1" @click="showPw = !showPw">
-                <EyeOffIcon v-if="showPw" class="h-5 w-6" />
-                <EyeIcon v-else class="h-5 w-6" />
-              </GhostButton>
-            </div>
-          </div>
-          <p
-            v-if="passwordError"
-            class="text-red-500 text-sm font-semibold mt-1"
-          >
-            {{ passwordError }}
-          </p>
-        </div>
-        <div>
-          <div class="flex flex-col">
-            <form-label> Confirm password </form-label>
-            <div class="flex">
-              <form-input
-                v-model="confirmPassword"
-                :type="showConfirmPw ? 'text' : 'password'"
-                class="grow"
-                :class="{
-                  'border-green-500': passwordsValid,
-                  'border-red-500': passwordError,
-                }"
-                required
-                @blur="validatePasswordsMatch"
-              />
-              <GhostButton
-                type="button"
-                class="ml-1"
-                @click="showConfirmPw = !showConfirmPw"
-              >
-                <EyeOffIcon v-if="showConfirmPw" class="h-5 w-6" />
-                <EyeIcon v-else class="h-5 w-6" />
-              </GhostButton>
-            </div>
-          </div>
-          <p
-            v-if="passwordError"
-            class="text-red-500 font-semibold text-sm mt-1"
-          >
-            {{ passwordError }}
-          </p>
-        </div>
-        <primary-button :is-loading="loading"> Sign up </primary-button>
-        <LinkButton type="button" @click="showSignUpForm = false">
-          Have an account already? Sign in
-        </LinkButton>
-      </form>
-      <form
-        v-else
-        class="flex flex-col space-y-4 lg:max-w-xl mx-auto"
-        @submit.prevent="handleLogin"
-      >
-        <form-label class="flex flex-col">
-          Email
-          <form-input v-model="email" type="email" required />
-        </form-label>
-        <form-label class="flex flex-col">
-          Password
-          <form-input v-model="password" type="password" required />
-        </form-label>
-        <primary-button :is-loading="loading"> Sign in </primary-button>
-        <LinkButton type="button" @click="showSignUpForm = true">
-          Need an account? Sign up
-        </LinkButton>
-      </form>
-    </div>
+        Need an account? Sign up
+      </LinkButton>
+      <div class="flex flex-col mt-6">
+        <form-label for="email"> Email </form-label>
+        <form-input id="email" v-model="email" type="email" required />
+      </div>
+      <div class="flex flex-col mt-4">
+        <form-label class="flex flex-col" for="password"> Password </form-label>
+        <form-input id="password" v-model="password" type="password" required />
+      </div>
+      <primary-button :is-loading="loading" class="mt-4">
+        Sign in
+      </primary-button>
+      <p class="text-xs text-slate-700 text-center my-4">OR</p>
+      <div class="flex justify-center">
+        <GoogleButton @click="signInWithGoogle" />
+      </div>
+    </form>
   </Modal>
 </template>
 <script setup lang="ts">
 import { toRefs, ref } from "vue";
 import Modal from "./Modal.vue";
-import { EyeIcon, EyeOffIcon } from "@heroicons/vue/outline";
 import FormLabel from "@/components/Forms/FormLabel.vue";
 import FormInput from "@/components/Forms/FormInput.vue";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
+import SignUpForm from "@/components/SignUpForm.vue";
+import GoogleButton from "@/components/Buttons/GoogleButton.vue";
 import { supabase } from "@/supabase";
 import LinkButton from "@/components/Buttons/LinkButton.vue";
-import GhostButton from "@/components/Buttons/GhostButton.vue";
 import useToast from "@/components/Toast/useToast";
 import { log } from "@/util/logger";
 import { store } from "@/store";
@@ -135,31 +81,22 @@ const emit = defineEmits(["signedIn", "cancel"]);
 
 const email = ref("");
 const password = ref("");
-const showPw = ref(false);
-const confirmPassword = ref("");
-const showConfirmPw = ref(false);
-const passwordError = ref("");
-const passwordsValid = ref(false);
 const loading = ref(false);
 
 const showSignUpForm = ref(true);
 
-function validatePasswordsMatch() {
-  if (password.value !== confirmPassword.value) {
-    passwordError.value = "Passwords do no match";
-    passwordsValid.value = false;
-  } else {
-    passwordError.value = "";
-    passwordsValid.value = true;
-  }
-}
-
-const handleSignUp = async () => {
+const handleSignUp = async ({
+  email,
+  password,
+}: {
+  email: string;
+  password: string;
+}) => {
   try {
     loading.value = true;
     const { user, error } = await supabase.auth.signUp({
-      email: email.value,
-      password: password.value,
+      email,
+      password,
     });
     if (error) throw error;
     if (user) {
@@ -194,4 +131,17 @@ const handleLogin = async () => {
     loading.value = false;
   }
 };
+
+async function signInWithGoogle() {
+  const { user, error } = await supabase.auth.signIn({
+    provider: "google",
+  });
+  if (error) {
+    log({ error });
+    showError({ message: "Unable to sign in with Google" });
+  }
+  if (user) {
+    store.user = user;
+  }
+}
 </script>
