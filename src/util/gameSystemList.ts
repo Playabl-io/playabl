@@ -17,6 +17,7 @@ export default [
   "Mörk Borg",
   "Mothership",
   "Night Witches",
+  "Numenera",
   "Old-School Essentials",
   "The One Ring",
   "Pathfinder 2nd Edition",
