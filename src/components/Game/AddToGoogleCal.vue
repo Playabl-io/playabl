@@ -7,7 +7,7 @@ action=TEMPLATE
 &details=Game details: https://playabl.io/games/${gameStore.game.id}
 &location=https://playabl.io/games/${gameStore.game.id}`"
     target="_blank"
-    rel="nofollow"
+    rel="noreferrer noopener"
     class="flex items-center gap-2 p-2 bg-white rounded-md hover:shadow-md focus-styles text-sm font-medium"
   >
     <img :src="GoogleIcon" class="w-6" />

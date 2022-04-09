@@ -139,6 +139,8 @@
           <p class="text-xs text-slate-800 mt-1">
             Not familiar with safety tools? Learn more from the
             <a
+              target="_blank"
+              rel="noreferrer noopener"
               href="https://drive.google.com/drive/folders/114jRmhzBpdqkAlhmveis0nmW73qkAZCj"
               class="text-brand-500 hover:underline"
             >

@@ -9,12 +9,22 @@
     </p>
     <ul class="mt-8 list-disc list-inside prose">
       <li>
-        <a href="https://supabase.com/" target="_blank">Supabase</a> for data
-        storage and authentication
+        <a
+          href="https://supabase.com/"
+          target="_blank"
+          rel="noreferrer noopener"
+          >Supabase</a
+        >
+        for data storage and authentication
       </li>
       <li>
-        <a href="https://www.mailjet.com/" target="_blank">Mailjet</a> for
-        transactional emails
+        <a
+          href="https://www.mailjet.com/"
+          target="_blank"
+          rel="noreferrer noopener"
+          >Mailjet</a
+        >
+        for transactional emails
       </li>
     </ul>
     <p class="prose mt-12">
