@@ -20,6 +20,7 @@ export interface GameBase {
   system?: string;
   virtual_tabletop?: string;
   will_be_recorded?: boolean;
+  uses_safety_tools?: boolean;
 }
 
 export interface Game extends GameBase {
