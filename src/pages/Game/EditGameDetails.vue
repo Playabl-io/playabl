@@ -24,11 +24,19 @@
         <FormLabel for="tabletop"> Virtual tabletop </FormLabel>
         <FormInput id="tabletop" v-model="tabletop" />
       </div>
-      <div class="p-4 rounded-lg bg-gray-100 flex items-center space-x-2">
-        <FormCheckbox id="recording" v-model="isRecorded" />
-        <FormLabel class="font-normal" for="recording" no-margin>
-          This game may be recorded
-        </FormLabel>
+      <div class="p-4 rounded-lg bg-gray-100">
+        <div class="mt-4 flex items-center space-x-2">
+          <FormCheckbox id="recording" v-model="isRecorded" />
+          <FormLabel class="font-normal" for="recording" no-margin>
+            This game may be recorded
+          </FormLabel>
+        </div>
+        <div class="mt-4 flex items-center space-x-2">
+          <FormCheckbox id="safety" v-model="usesSafetyTools" />
+          <FormLabel class="font-normal" for="safety" :no-margin="true">
+            This game will use safety tools
+          </FormLabel>
+        </div>
       </div>
     </section>
     <div
@@ -51,6 +59,7 @@ import { gameStore } from "./gameStore";
 
 import useToast from "@/components/Toast/useToast";
 import { supabase } from "@/supabase";
+import { log } from "@/util/logger";
 
 const { showError, showSuccess } = useToast();
 
@@ -61,6 +70,7 @@ const system = ref(gameStore.game?.system);
 const tabletop = ref(gameStore.game?.virtual_tabletop);
 const participantCount = ref<number>(gameStore.game?.participant_count || 0);
 const isRecorded = ref(gameStore.game?.will_be_recorded);
+const usesSafetyTools = ref(gameStore.game?.uses_safety_tools);
 
 const saving = ref(false);
 
@@ -75,11 +85,13 @@ async function handleSave() {
       virtual_tabletop: tabletop.value,
       participant_count: participantCount.value,
       will_be_recorded: isRecorded.value,
+      uses_safety_tools: usesSafetyTools.value,
     })
     .eq("id", gameStore.game.id)
     .single();
   if (error) {
     showError({ message: "Something went wrong" });
+    log({ error });
     saving.value = false;
     return;
   }

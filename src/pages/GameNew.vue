@@ -123,11 +123,30 @@
             @select="handleImageSelect"
           />
         </div>
-        <div class="p-4 rounded-lg bg-gray-100 flex items-center space-x-2">
-          <FormCheckbox id="recording" v-model="isRecorded" />
-          <FormLabel class="font-normal" for="recording" :no-margin="true">
-            This game may be recorded
-          </FormLabel>
+        <div class="p-4 rounded-lg bg-gray-100">
+          <div class="flex items-center space-x-2">
+            <FormCheckbox id="recording" v-model="isRecorded" />
+            <FormLabel class="font-normal" for="recording" :no-margin="true">
+              This game may be recorded
+            </FormLabel>
+          </div>
+          <div class="mt-4 flex items-center space-x-2">
+            <FormCheckbox id="safety" v-model="usesSafetyTools" />
+            <FormLabel class="font-normal" for="safety" :no-margin="true">
+              This game will use safety tools
+            </FormLabel>
+          </div>
+          <p class="text-xs text-slate-800 mt-1">
+            Not familiar with safety tools? Learn more from the
+            <a
+              target="_blank"
+              rel="noreferrer noopener"
+              href="https://drive.google.com/drive/folders/114jRmhzBpdqkAlhmveis0nmW73qkAZCj"
+              class="text-brand-500 hover:underline"
+            >
+              TTRPG Safety Toolkit
+            </a>
+          </p>
         </div>
         <PrimaryButton>
           Next <ArrowSmRightIcon class="h-6 w-6" />
@@ -429,6 +448,7 @@ const sessionIds = ref<string[]>([]);
 const coverImage = ref<File>();
 const participantCount = ref<number>();
 const isRecorded = ref(false);
+const usesSafetyTools = ref(false);
 
 const sessionStartTime = ref("");
 const sessionEndTime = ref("");
@@ -547,6 +567,7 @@ async function submitGame() {
     community_id: state.value.context.selectedCommunity.id,
     creator_id: store.user.id,
     will_be_recorded: isRecorded.value,
+    uses_safety_tools: usesSafetyTools.value,
     system: system.value,
     virtual_tabletop: tabletop.value,
     cover_image: imagePath,

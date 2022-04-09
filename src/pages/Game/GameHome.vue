@@ -45,6 +45,14 @@
         <FilmIcon class="w-6 h-6 mr-4" />
       </template>
     </GameBadge>
+    <GameBadge
+      title="Safety tools"
+      :value="`${gameStore.game?.uses_safety_tools ? 'Yes' : 'No'}`"
+    >
+      <template #icon>
+        <SupportIcon class="w-6 h-6 mr-4" />
+      </template>
+    </GameBadge>
   </div>
   <section v-if="!gameStore.game.deleted_at" class="mt-12">
     <Heading level="h6" as="h2">Sessions</Heading>
@@ -62,7 +70,13 @@
 </template>
 <script setup lang="ts">
 import { onMounted, ref, toRefs } from "vue";
-import { UsersIcon, TagIcon, CogIcon, FilmIcon } from "@heroicons/vue/outline";
+import {
+  UsersIcon,
+  TagIcon,
+  CogIcon,
+  FilmIcon,
+  SupportIcon,
+} from "@heroicons/vue/outline";
 import Heading from "@/components/Heading.vue";
 import SessionBlock from "@/components/Game/SessionBlock.vue";
 import { loadUserCommunityAccess } from "@/api/communityAccess";

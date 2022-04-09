@@ -85,6 +85,14 @@
             <FilmIcon class="w-6 h-6 mr-4" />
           </template>
         </GameBadge>
+        <GameBadge
+          title="Safety tools"
+          :value="`${game.uses_safety_tools ? 'Yes' : 'No'}`"
+        >
+          <template #icon>
+            <SupportIcon class="w-6 h-6 mr-4" />
+          </template>
+        </GameBadge>
       </div>
     </div>
     <div class="bg-gray-200 bg-opacity-70 rounded-lg p-2">
@@ -99,7 +107,13 @@
 <script setup lang="ts">
 import { toRefs, PropType, ref, onMounted } from "vue";
 import { format } from "date-fns";
-import { TagIcon, CogIcon, UsersIcon, FilmIcon } from "@heroicons/vue/outline";
+import {
+  TagIcon,
+  CogIcon,
+  UsersIcon,
+  FilmIcon,
+  SupportIcon,
+} from "@heroicons/vue/outline";
 import { StarIcon } from "@heroicons/vue/solid";
 import Heading from "./Heading.vue";
 import { GameListing } from "@/typings/Game";
