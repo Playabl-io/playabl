@@ -1,6 +1,6 @@
 import * as R from "ramda";
 import { supabase } from "@/supabase";
-import { GameListing, NewGame } from "@/typings/Game";
+import { GameDetailBlock, GameListing, NewGame } from "@/typings/Game";
 import { Session } from "@/typings/Session";
 import { log } from "@/util/logger";
 import { Community } from "@/typings/Community";
@@ -205,4 +205,43 @@ export async function leaveSession({
       throw error;
     });
   return data;
+}
+
+export async function loadGameDetails(gameId: number) {
+  const { data, error } = await supabase
+    .from("game_details")
+    .select("*")
+    .eq("game_id", gameId)
+    .single();
+  if (error) {
+    log({ error });
+  }
+  if (data) {
+    return data;
+  }
+}
+
+export async function saveGameDetails({
+  id,
+  gameId,
+  detailBlocks,
+}: {
+  id?: number;
+  gameId: number;
+  detailBlocks: GameDetailBlock[];
+}) {
+  const { data, error } = await supabase
+    .from("game_details")
+    .upsert({
+      id,
+      detail_blocks: detailBlocks,
+      game_id: gameId,
+    })
+    .single();
+  if (error) {
+    log({ error });
+  }
+  if (data) {
+    return data;
+  }
 }

@@ -10,7 +10,6 @@ import Settings from "@/pages/Profile/Settings.vue";
 import CommunitiesAll from "@/pages/CommunitiesAll.vue";
 import CommunitiesJoined from "@/pages/CommunitiesJoined.vue";
 import CommunitiesManage from "@/pages/CommunitiesManage.vue";
-import CommunityNew from "@/pages/CommunityNew.vue";
 import CommunityBase from "@/pages/Community/CommunityBase.vue";
 import CommunityHome from "@/pages/Community/CommunityHome.vue";
 import CommunityFeed from "@/pages/Community/CommunityFeed.vue";
@@ -19,11 +18,8 @@ import CommunityManage from "@/pages/Community/CommunityManage.vue";
 import GamesJoined from "@/pages/GamesJoined.vue";
 import GamesBrowse from "@/pages/GamesBrowse.vue";
 import GamesManage from "@/pages/GamesManage.vue";
-import GameNew from "@/pages/GameNew.vue";
 import GameBase from "@/pages/Game/GameBase.vue";
 import GameHome from "@/pages/Game/GameHome.vue";
-import GameMessages from "@/pages/GameMessages.vue";
-import GameManage from "@/pages/Game/GameManage.vue";
 import NotFound from "@/pages/NotFound.vue";
 import TOS from "@/pages/TOS.vue";
 import PrivacyPolicy from "@/pages/PrivacyPolicy.vue";
@@ -109,7 +105,7 @@ const routes = [
   },
   {
     path: "/communities/new",
-    component: CommunityNew,
+    component: () => import("@/pages/CommunityNew.vue"),
     meta: {
       title: "Playabl - New Community",
       requiresAuth: true,
@@ -173,7 +169,7 @@ const routes = [
   },
   {
     path: "/games/new",
-    component: GameNew,
+    component: () => import("@/pages/GameNew.vue"),
     meta: {
       title: "Playabl - New Game",
       requiresAuth: true,
@@ -191,15 +187,22 @@ const routes = [
         component: GameHome,
       },
       {
+        path: "details",
+        component: () => import("@/pages/Game/GameDetails.vue"),
+        meta: {
+          requiresAuth: true,
+        },
+      },
+      {
         path: "messages",
-        component: GameMessages,
+        component: () => import("@/pages/Game/GameMessages.vue"),
         meta: {
           requiresAuth: true,
         },
       },
       {
         path: "manage",
-        component: GameManage,
+        component: () => import("@/pages/Game/GameManage.vue"),
         meta: {
           requiresAuth: true,
         },

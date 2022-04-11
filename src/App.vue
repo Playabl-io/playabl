@@ -33,6 +33,10 @@ supabase.auth.onAuthStateChange(async (event, session) => {
     const profile = await loadProfile(session.user.id);
     store.user = profile;
     if (route.query.redirect && typeof route.query.redirect === "string") {
+      log({
+        level: "info",
+        message: `Attempting redirect to ${route.query.redirect}`,
+      });
       router.push(route.query.redirect);
     }
     if (!profile.username && !profile.pronouns) {

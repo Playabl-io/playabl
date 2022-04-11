@@ -1,7 +1,15 @@
+import { Delta } from "@vueup/vue-quill";
 import { Community } from "./Community";
 import { Profile } from "./Profile";
 import { Rsvp } from "./Rsvp";
 import { Session } from "./Session";
+
+export interface GameDetailBlock {
+  id: string;
+  title: string;
+  content: Delta;
+  width?: string;
+}
 
 export enum GAME_DRAFT_STATE {
   draft = "draft",
