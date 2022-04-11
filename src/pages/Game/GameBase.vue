@@ -34,10 +34,62 @@
         Part of {{ gameStore.community.name }}
       </router-link>
 
+      <div class="mt-8 flex flex-wrap gap-8">
+        <GameBadge
+          v-if="gameStore.game?.system"
+          title="System"
+          :value="gameStore.game?.system"
+        >
+          <template #icon>
+            <TagIcon class="w-6 h-6 mr-4" />
+          </template>
+        </GameBadge>
+        <GameBadge
+          v-if="gameStore.game?.virtual_tabletop"
+          title="VTT"
+          :value="gameStore.game?.virtual_tabletop"
+        >
+          <template #icon>
+            <CogIcon class="w-6 h-6 mr-4" />
+          </template>
+        </GameBadge>
+        <GameBadge
+          title="Players"
+          :value="gameStore.game?.participant_count || 0"
+        >
+          <template #icon>
+            <UsersIcon class="w-6 h-6 mr-4" />
+          </template>
+        </GameBadge>
+        <GameBadge
+          title="Recorded"
+          :value="`${gameStore.game?.will_be_recorded ? 'Yes' : 'No'}`"
+        >
+          <template #icon>
+            <FilmIcon class="w-6 h-6 mr-4" />
+          </template>
+        </GameBadge>
+        <GameBadge
+          title="Safety tools"
+          :value="`${gameStore.game?.uses_safety_tools ? 'Yes' : 'No'}`"
+        >
+          <template #icon>
+            <SupportIcon class="w-6 h-6 mr-4" />
+          </template>
+        </GameBadge>
+      </div>
+
       <section class="my-12 flex justify-between items-baseline text-sm">
         <div class="flex space-x-4 py-2">
           <router-link
             :to="`/games/${id}`"
+            exact-active-class="border-b border-brand-500 dark:border-brand-300"
+          >
+            Sessions
+          </router-link>
+          <router-link
+            v-if="canManage || userIsInTheGame"
+            :to="`/games/${id}/details`"
             exact-active-class="border-b border-brand-500 dark:border-brand-300"
           >
             Details
@@ -64,7 +116,7 @@
   </BaseTemplate>
 </template>
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { supabase } from "@/supabase";
 import { RealtimeSubscription } from "@supabase/supabase-js";
@@ -79,6 +131,14 @@ import { gameStore } from "./gameStore";
 import * as R from "ramda";
 import { Session } from "@/typings/Session";
 import { userIsCommunityAdmin } from "@/api/communityMemberships";
+import {
+  UsersIcon,
+  TagIcon,
+  CogIcon,
+  FilmIcon,
+  SupportIcon,
+} from "@heroicons/vue/outline";
+import GameBadge from "@/components/Game/GameBadge.vue";
 
 const router = useRouter();
 const currentRoute = useRoute();
@@ -88,6 +148,12 @@ const gameData = ref<GameWithCommunityAndSessions>();
 const canManage = ref(false);
 const isOwner = ref(false);
 const isLoading = ref(true);
+
+const userIsInTheGame = computed(() =>
+  gameStore.sessions.some((session) =>
+    session.rsvps.includes(store.user?.id ?? "")
+  )
+);
 
 onMounted(async () => {
   await getGameData();

@@ -3,7 +3,11 @@
     <div class="grow overflow-auto pt-6 px-6">
       <Heading as="h3" level="h6">Update description</Heading>
       <div class="rounded-md border border-solid border-gray-300 mt-6">
-        <QuillEditor v-model:content="localCopyOfDescription" theme="bubble" />
+        <QuillEditor
+          v-model:content="localCopyOfDescription"
+          theme="bubble"
+          toolbar="essential"
+        />
       </div>
     </div>
     <div
