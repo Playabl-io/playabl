@@ -34,8 +34,8 @@ export const handler: Handler = async (event, context) => {
     contacts = await loadCommunityAdmins(params.communityId);
   }
 
-  contacts.forEach((contact) =>
-    sendCommunityContactEmail({
+  const messages = contacts.map((contact) =>
+    buildMessage({
       name: contact.name,
       email: contact.email,
       message: params.message,
@@ -43,6 +43,13 @@ export const handler: Handler = async (event, context) => {
       communityName: community.name,
     })
   );
+
+  try {
+    await sendCommunityContactEmail({ messages });
+    console.info("succesfully sent messages");
+  } catch (error) {
+    console.error("unable to send messages", error);
+  }
 
   return {
     statusCode: 200,
@@ -85,51 +92,41 @@ async function loadCommunityAdmins(communityId: string) {
   }
 }
 
-function sendCommunityContactEmail({
-  name,
-  email,
-  message,
-  responseEmail,
-  communityName,
-}) {
-  return axios
-    .post(
-      "https://api.mailjet.com/v3.1/send",
-      {
-        Messages: [
-          {
-            From: {
-              Email: "notifications@playabl.io",
-              Name: "Playabl Notifications",
-            },
-            To: [
-              {
-                Email: email,
-                Name: name,
-              },
-            ],
-            TemplateID: 3904163,
-            TemplateLanguage: true,
-            Subject: "New Community Message",
-            Variables: {
-              communityName,
-              message,
-              responseEmail: responseEmail || "Anonymous",
-            },
-          },
-        ],
+function sendCommunityContactEmail({ messages }: { messages: unknown[] }) {
+  return axios.post(
+    "https://api.mailjet.com/v3.1/send",
+    {
+      Messages: messages,
+    },
+    {
+      auth: {
+        username: process.env.MJ_USER,
+        password: process.env.MJ_PW,
       },
+      timeout: 7000,
+    }
+  );
+}
+
+function buildMessage({ name, email, message, responseEmail, communityName }) {
+  return {
+    From: {
+      Email: "notifications@playabl.io",
+      Name: "Playabl Notifications",
+    },
+    To: [
       {
-        auth: {
-          username: process.env.MJ_USER,
-          password: process.env.MJ_PW,
-        },
-      }
-    )
-    .then((response) => {
-      console.log(response);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+        Email: email,
+        Name: name,
+      },
+    ],
+    TemplateID: 3904163,
+    TemplateLanguage: true,
+    Subject: "New Community Message",
+    Variables: {
+      communityName,
+      message,
+      responseEmail: responseEmail || "Anonymous",
+    },
+  };
 }
