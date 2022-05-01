@@ -122,7 +122,7 @@ function buildMessage({ name, email, message, responseEmail, communityName }) {
     ],
     TemplateID: 3904163,
     TemplateLanguage: true,
-    Subject: "New Community Message",
+    Subject: `New Community Message on Playabl - ${communityName}`,
     Variables: {
       communityName,
       message,

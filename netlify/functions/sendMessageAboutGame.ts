@@ -72,8 +72,8 @@ export const handler: Handler = async (event, context) => {
     );
   }
 
-  contacts.forEach((contact) =>
-    sendGameMessage({
+  const messages = contacts.map((contact) =>
+    buildMessage({
       name: contact.name,
       email: contact.email,
       message: params.message,
@@ -82,6 +82,13 @@ export const handler: Handler = async (event, context) => {
       responseEmail: params.responseEmail,
     })
   );
+
+  try {
+    await sendGameMessages({ messages });
+    console.info("successfully sent messages");
+  } catch (error) {
+    console.error("unable to send messages", error);
+  }
 
   return {
     statusCode: 200,
@@ -135,7 +142,22 @@ async function loadSessions(gameId: number) {
   }
 }
 
-function sendGameMessage({
+function sendGameMessages({ messages }: { messages: unknown[] }) {
+  return axios.post(
+    "https://api.mailjet.com/v3.1/send",
+    {
+      Messages: messages,
+    },
+    {
+      auth: {
+        username: process.env.MJ_USER,
+        password: process.env.MJ_PW,
+      },
+    }
+  );
+}
+
+function buildMessage({
   name,
   email,
   message,
@@ -143,47 +165,27 @@ function sendGameMessage({
   fromName,
   responseEmail,
 }) {
-  return axios
-    .post(
-      "https://api.mailjet.com/v3.1/send",
+  return {
+    From: {
+      Email: "notifications@playabl.io",
+      Name: "Playabl Notifications",
+    },
+    To: [
       {
-        Messages: [
-          {
-            From: {
-              Email: "notifications@playabl.io",
-              Name: "Playabl Notifications",
-            },
-            To: [
-              {
-                Email: email,
-                Name: name,
-              },
-            ],
-            TemplateID: 3904227,
-            TemplateLanguage: true,
-            Subject: "New Message on Playabl",
-            Variables: {
-              game_name: gameName,
-              from_name: fromName,
-              message,
-              response_email: responseEmail
-                ? `They shared their email: ${responseEmail}`
-                : "They did not share their email",
-            },
-          },
-        ],
+        Email: email,
+        Name: name,
       },
-      {
-        auth: {
-          username: process.env.MJ_USER,
-          password: process.env.MJ_PW,
-        },
-      }
-    )
-    .then((response) => {
-      console.log(response);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+    ],
+    TemplateID: 3904227,
+    TemplateLanguage: true,
+    Subject: `New Message on Playabl - ${gameName}`,
+    Variables: {
+      game_name: gameName,
+      from_name: fromName,
+      message,
+      response_email: responseEmail
+        ? `They shared their email: ${responseEmail}`
+        : "They did not share their email",
+    },
+  };
 }
