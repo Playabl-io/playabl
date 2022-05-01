@@ -15,6 +15,7 @@ interface Store {
   isCreator: boolean;
   isPlayer: boolean;
   community: Community;
+  admins: Member[];
 }
 
 export const communityStore = reactive<Store>({
@@ -31,24 +32,8 @@ export const communityStore = reactive<Store>({
     allow_public_signup: false,
     created_at: "",
   },
+  admins: [],
 });
-
-export async function getGames(communityId: string) {
-  const { data, error, count } = await supabase
-    .from("games")
-    .select("*, sessions!inner(start_time)", { count: "estimated" })
-    .eq("community_id", communityId)
-    .gte("sessions.start_time", new Date().getTime());
-  if (error) {
-    log({ error });
-  }
-  if (count !== null) {
-    communityStore.gamesCount = count;
-  }
-  if (data) {
-    communityStore.games = data;
-  }
-}
 
 export async function getMemberCount(communityId: string) {
   const { error, count } = await supabase

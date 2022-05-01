@@ -63,6 +63,25 @@
       </div>
     </div>
   </div>
+  <div class="my-12">
+    <Heading level="h6" as="h2" class="mb-6">Community managers</Heading>
+    <div class="flex flex-wrap gap-8">
+      <div
+        v-for="admin in communityStore.admins"
+        :key="admin.id"
+        class="flex gap-4 items-center"
+      >
+        <Avatar
+          :username="admin.username || admin.email"
+          :avatar-url="admin.avatar_url"
+        />
+        <div class="flex flex-col">
+          <p>{{ admin.username || admin.email }}</p>
+          <p class="text-sm text-slate-700">{{ admin.pronouns }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="mt-12 p-8 bg-gray-200 bg-opacity-70 rounded-lg">
     <p class="mx-auto prose dark:prose-invert prose-lg whitespace-pre-wrap">
       {{ communityStore.community.description }}
@@ -84,7 +103,14 @@
   <div class="mt-12 flex flex-col">
     <Heading level="h6" as="h2">Community links and happenings</Heading>
     <div class="grid md:grid-cols-2 gap-10 py-8">
-      <div class="flex flex-col space-y-4">
+      <div class="flex flex-col space-y-4 items-start">
+        <button
+          class="text-brand-500 font-semibold flex items-center hover:underline"
+          @click="openContactBox"
+        >
+          <MailIcon class="w-6 h-6 mr-2" />
+          Contact
+        </button>
         <a
           v-if="communityStore.community.code_of_conduct_url"
           :href="communityStore.community.code_of_conduct_url"
@@ -156,6 +182,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { format } from "date-fns";
+import { MailIcon } from "@heroicons/vue/outline";
 import { communityStore } from "./communityStore";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import Heading from "@/components/Heading.vue";
@@ -164,7 +191,12 @@ import { store } from "@/store";
 import { joinCommunity } from "@/api/communities";
 import useToast from "@/components/Toast/useToast";
 import { log } from "@/util/logger";
+import Avatar from "@/components/Avatar.vue";
+import useMessageBox from "@/components/MessageBox/useMessageBox";
+import { sendMessageToCommunity } from "@/api/contact";
 
+const { openMessageBox, closeMessageBox, setMessageIsSubmitting } =
+  useMessageBox();
 const { showSuccess, showError } = useToast();
 
 const isJoining = ref(false);
@@ -214,5 +246,34 @@ async function handleJoinCommunity() {
   } finally {
     isJoining.value = false;
   }
+}
+
+function openContactBox() {
+  if (!store.user?.email) {
+    showError({ message: "You must be signed in to send messages" });
+    return;
+  }
+  openMessageBox({
+    to: communityStore.community.name,
+    onSend: async function handleSend({ message, shareEmail, messageId }) {
+      setMessageIsSubmitting({ messageId, isSubmitting: true });
+      try {
+        await sendMessageToCommunity({
+          message,
+          communityId: communityStore.community.id,
+          responseEmail: shareEmail ? store.user?.email : "",
+        });
+        showSuccess({ message: "Message sent" });
+        closeMessageBox(messageId);
+      } catch (error) {
+        showError({
+          message:
+            "Unable to send message. Please try again or contact support.",
+        });
+      } finally {
+        setMessageIsSubmitting({ messageId, isSubmitting: false });
+      }
+    },
+  });
 }
 </script>

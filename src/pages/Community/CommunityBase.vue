@@ -66,7 +66,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { supabase } from "@/supabase";
 import { log } from "@/util/logger";
 import BaseTemplate from "@/components/BaseTemplate.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
@@ -74,9 +73,15 @@ import Heading from "@/components/Heading.vue";
 import { ADMIN, CREATOR, PLAYER } from "@/util/roles";
 import { store } from "@/store";
 import { Community } from "@/typings/Community";
-import { communityStore, getGames, getMemberCount } from "./communityStore";
+import { communityStore, getMemberCount } from "./communityStore";
 import { getCoverImageUrl } from "@/api/storage";
 import InfoBanner from "@/components/Banners/InfoBanner.vue";
+import { loadUpcomingCommunityGamesWithCount } from "@/api/gamesAndSessions";
+import {
+  loadCommunityAdmins,
+  loadUserCommunityMembership,
+} from "@/api/communityMemberships";
+import { selectFromCommunity } from "@/api/communities";
 
 const route = useRoute();
 const router = useRouter();
@@ -88,9 +93,13 @@ const isLoading = ref(true);
 onMounted(async () => {
   if (typeof route.params.community_id === "string") {
     getMemberCount(route.params.community_id);
-    getGames(route.params.community_id);
   }
-  await Promise.allSettled([getMembershipStatus(), getCommunity()]);
+  await Promise.allSettled([
+    getMembershipStatus(),
+    getCommunity(),
+    loadUpcomingGames(),
+    loadAdmins(),
+  ]);
   if (route.path.includes("manage") && !communityStore.isAdmin) {
     router.replace(`/communities/${id}?unauthorized=true`);
   }
@@ -99,37 +108,59 @@ onMounted(async () => {
 
 async function getMembershipStatus() {
   if (!store.user) return;
-  const { data } = await supabase
-    .from("community_memberships")
-    .select(`user_id, role_id`)
-    .eq("community_id", route.params.community_id)
-    .eq("user_id", store.user.id)
-    .single();
+  let communityId = "";
+  if (typeof route.params.community_id === "string") {
+    communityId = route.params.community_id;
+  }
+  const data = await loadUserCommunityMembership({
+    communityId,
+    userId: store.user.id,
+  });
   communityStore.isAdmin = data && data.role_id === ADMIN;
   communityStore.isCreator = data && data.role_id === CREATOR;
   communityStore.isPlayer = data && data.role_id === PLAYER;
 }
 
 async function getCommunity() {
-  const { data, error, status } = await supabase
-    .from("communities")
-    .select()
-    .eq("id", id)
-    .single();
+  if (typeof id === "string") {
+    const data = await selectFromCommunity({ communityId: id, select: "*" });
 
-  if (error && status !== 406) {
-    log({ error });
+    if (data.cover_image) {
+      communityStore.coverImageUrl = await getCoverImageUrl(data.cover_image);
+    } else {
+      communityStore.coverImageUrl = undefined;
+    }
+
+    if (data) {
+      communityData.value = data;
+      communityStore.community = data;
+    }
   }
+}
 
-  if (data.cover_image) {
-    communityStore.coverImageUrl = await getCoverImageUrl(data.cover_image);
+async function loadUpcomingGames() {
+  if (typeof id === "string") {
+    const { data, count } = await loadUpcomingCommunityGamesWithCount(id);
+    if (count !== null) {
+      communityStore.gamesCount = count;
+    }
+    if (data) {
+      communityStore.games = data;
+    }
   } else {
-    communityStore.coverImageUrl = undefined;
+    log({
+      level: "error",
+      message: "Community ID is array of strings in loadUpcomingGames",
+    });
   }
+}
 
-  if (data) {
-    communityData.value = data;
-    communityStore.community = data;
+async function loadAdmins() {
+  if (typeof id === "string") {
+    const data = await loadCommunityAdmins(id);
+    if (data) {
+      communityStore.admins = data;
+    }
   }
 }
 </script>
