@@ -28,108 +28,111 @@ export const handler: Handler = async (event, context) => {
   const { record } = JSON.parse(event.body);
 
   if (record.type === "rsvp") {
-    await sendRsvpEmail({
-      name: record.name,
-      email: record.email,
-      relatedUrl: record.related_url,
-      gameName: record.custom_fields?.game_name,
-    });
+    try {
+      await sendRsvpEmail({
+        name: record.name,
+        email: record.email,
+        relatedUrl: record.related_url,
+        gameName: record.custom_fields?.game_name,
+      });
+      console.info("successfully sent rsvp email");
+    } catch (error) {
+      console.error("failed to send rsvp email", error);
+    }
   }
   if (record.type === "cancel") {
-    await sendCancelEmail({
-      name: record.name,
-      email: record.email,
-      gameName: record.custom_fields?.game_name,
-    });
+    try {
+      await sendCancelEmail({
+        name: record.name,
+        email: record.email,
+        gameName: record.custom_fields?.game_name,
+      });
+      console.info("successfully sent cancel email");
+    } catch (error) {
+      console.error("failed to send cancel email", error);
+    }
   }
-  webPush({
-    userId: record.user_id,
-    message: record.message,
-  });
+  try {
+    await webPush({
+      userId: record.user_id,
+      message: record.message,
+    });
+  } catch (error) {
+    console.error("error sending web push", error);
+  }
   return {
     statusCode: 200,
   };
 };
 
 function sendRsvpEmail({ name, email, relatedUrl, gameName }) {
-  return axios
-    .post(
-      "https://api.mailjet.com/v3.1/send",
-      {
-        Messages: [
-          {
-            From: {
-              Email: "notifications@playabl.io",
-              Name: "Playabl Notifications",
-            },
-            To: [
-              {
-                Email: email,
-                Name: name,
-              },
-            ],
-            TemplateID: 3700697,
-            TemplateLanguage: true,
-            Subject: "Playabl RSVP Success",
-            Variables: {
-              game_name: gameName,
-              related_url: relatedUrl,
-            },
+  return axios.post(
+    "https://api.mailjet.com/v3.1/send",
+    {
+      Messages: [
+        {
+          From: {
+            Email: "notifications@playabl.io",
+            Name: "Playabl Notifications",
           },
-        ],
-      },
-      {
-        auth: {
-          username: process.env.MJ_USER,
-          password: process.env.MJ_PW,
+          To: [
+            {
+              Email: email,
+              Name: name,
+            },
+          ],
+          TemplateID: 3700697,
+          TemplateLanguage: true,
+          Subject: "Playabl RSVP Success",
+          Variables: {
+            game_name: gameName,
+            related_url: relatedUrl,
+          },
         },
-      }
-    )
-    .then((response) => {
-      console.log(response);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+      ],
+    },
+    {
+      auth: {
+        username: process.env.MJ_USER,
+        password: process.env.MJ_PW,
+      },
+      timeout: 7000,
+    }
+  );
 }
+
 function sendCancelEmail({ name, email, gameName }) {
-  return axios
-    .post(
-      "https://api.mailjet.com/v3.1/send",
-      {
-        Messages: [
-          {
-            From: {
-              Email: "notifications@playabl.io",
-              Name: "Playabl Notifications",
-            },
-            To: [
-              {
-                Email: email,
-                Name: name,
-              },
-            ],
-            TemplateID: 3807927,
-            TemplateLanguage: true,
-            Variables: {
-              game_name: gameName,
-            },
+  return axios.post(
+    "https://api.mailjet.com/v3.1/send",
+    {
+      Messages: [
+        {
+          From: {
+            Email: "notifications@playabl.io",
+            Name: "Playabl Notifications",
           },
-        ],
-      },
-      {
-        auth: {
-          username: process.env.MJ_USER,
-          password: process.env.MJ_PW,
+          To: [
+            {
+              Email: email,
+              Name: name,
+            },
+          ],
+          TemplateID: 3807927,
+          TemplateLanguage: true,
+          Variables: {
+            game_name: gameName,
+          },
         },
-      }
-    )
-    .then((response) => {
-      console.log(response);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+      ],
+    },
+    {
+      auth: {
+        username: process.env.MJ_USER,
+        password: process.env.MJ_PW,
+      },
+      timeout: 7000,
+    }
+  );
 }
 
 const webPush = async ({ userId, message }) => {

@@ -153,6 +153,7 @@ function sendGameMessages({ messages }: { messages: unknown[] }) {
         username: process.env.MJ_USER,
         password: process.env.MJ_PW,
       },
+      timeout: 7000,
     }
   );
 }
