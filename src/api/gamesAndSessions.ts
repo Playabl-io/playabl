@@ -29,6 +29,18 @@ export async function createGame(newGame: NewGame) {
   return data;
 }
 
+export async function loadUpcomingCommunityGamesWithCount(communityId: string) {
+  const { data, error, count } = await supabase
+    .from("games")
+    .select("*, sessions!inner(start_time)", { count: "estimated" })
+    .eq("community_id", communityId)
+    .gte("sessions.start_time", new Date().getTime());
+  if (error) {
+    log({ error });
+  }
+  return { data, count };
+}
+
 export async function loadUpcomingJoinedGames(userId: string) {
   const today = new Date();
   const { data, error } = await supabase
@@ -208,13 +220,14 @@ export async function leaveSession({
 }
 
 export async function loadGameDetails(gameId: number) {
-  const { data, error } = await supabase
+  const { data, error, status } = await supabase
     .from("game_details")
     .select("*")
     .eq("game_id", gameId)
     .single();
-  if (error) {
+  if (error && status !== 406) {
     log({ error });
+    throw error;
   }
   if (data) {
     return data;
@@ -240,6 +253,7 @@ export async function saveGameDetails({
     .single();
   if (error) {
     log({ error });
+    throw error;
   }
   if (data) {
     return data;

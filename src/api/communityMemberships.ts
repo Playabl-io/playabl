@@ -1,6 +1,43 @@
 import { supabase } from "@/supabase";
 import { log } from "@/util/logger";
-import { ROLES } from "@/util/roles";
+import { ADMIN, ROLES } from "@/util/roles";
+
+export async function loadUserCommunityMembership({
+  communityId,
+  userId,
+}: {
+  communityId: string;
+  userId: string;
+}) {
+  const { data, error } = await supabase
+    .from("community_memberships")
+    .select(`user_id, role_id`)
+    .eq("community_id", communityId)
+    .eq("user_id", userId)
+    .single();
+  if (error) {
+    log({ error });
+    throw error;
+  }
+  if (data) {
+    return data;
+  }
+}
+
+export async function loadCommunityAdmins(communityId: string) {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*, community_memberships!inner(community_id, role_id)")
+    .eq("community_memberships.community_id", communityId)
+    .eq("community_memberships.role_id", ADMIN);
+
+  if (error) {
+    log({ error });
+  }
+  if (data) {
+    return data;
+  }
+}
 
 export async function userIsCommunityAdmin({
   userId,

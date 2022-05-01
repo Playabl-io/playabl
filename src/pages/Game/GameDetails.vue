@@ -215,6 +215,7 @@ import ResponsiveQuill from "./ResponsiveQuill.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import { loadGameDetails, saveGameDetails } from "@/api/gamesAndSessions";
 import useToast from "@/components/Toast/useToast";
+import { log } from "@/util/logger";
 
 const { showSuccess, showError } = useToast();
 
@@ -274,6 +275,10 @@ const gameDetailsMachine = createMachine(
               actions: ["setBlocks"],
             },
           ],
+          onError: {
+            target: "preview",
+            actions: ["showLoadError"],
+          },
         },
       },
       preview: {},
@@ -309,6 +314,10 @@ const gameDetailsMachine = createMachine(
           onDone: {
             target: "editing",
             actions: ["showSaveSuccess", "setGameDetailsId"],
+          },
+          onError: {
+            target: "editing",
+            actions: ["showSaveError"],
           },
         },
       },
@@ -402,6 +411,13 @@ const gameDetailsMachine = createMachine(
         };
       }),
       showSaveSuccess: () => showSuccess({ message: "Game details updated" }),
+      showSaveError: () =>
+        showError({ message: "Unable to save game details" }),
+      showLoadError: () =>
+        showError({
+          message:
+            "Unable to load game details. Please try again or contact support.",
+        }),
     },
   }
 );

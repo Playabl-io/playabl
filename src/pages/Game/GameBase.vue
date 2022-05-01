@@ -101,6 +101,29 @@
           >
             Manage
           </router-link>
+          <DropdownMenu v-if="userIsInTheGame || canManage">
+            <template #title> Message </template>
+            <template #items>
+              <DropdownMenuItem
+                v-if="userIsInTheGame"
+                @click="openContactBoxToGameCreator"
+              >
+                Message Game Creator
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                v-if="canManage"
+                @click="openContactBoxToRsvpGamePlayers"
+              >
+                Message RSVP'd Players
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                v-if="canManage"
+                @click="openContactBoxToAllGamePlayers"
+              >
+                Message All Players
+              </DropdownMenuItem>
+            </template>
+          </DropdownMenu>
         </div>
       </section>
       <router-view v-slot="{ Component, route }">
@@ -139,7 +162,15 @@ import {
   SupportIcon,
 } from "@heroicons/vue/outline";
 import GameBadge from "@/components/Game/GameBadge.vue";
+import useMessageBox from "@/components/MessageBox/useMessageBox";
+import useToast from "@/components/Toast/useToast";
+import { sendMessageAboutGame } from "@/api/contact";
+import DropdownMenu from "@/components/Menus/DropdownMenu.vue";
+import DropdownMenuItem from "@/components/Menus/DropdownMenuItem.vue";
 
+const { openMessageBox, closeMessageBox, setMessageIsSubmitting } =
+  useMessageBox();
+const { showError, showSuccess } = useToast();
 const router = useRouter();
 const currentRoute = useRoute();
 const { game_id: id } = currentRoute.params;
@@ -251,5 +282,95 @@ function setSubscription(gameId: number) {
 }
 function removeSubscription() {
   supabase.removeSubscription(subscription);
+}
+
+function openContactBoxToGameCreator() {
+  if (!store.user?.email) {
+    showError({ message: "You must be signed in to send messages" });
+    return;
+  }
+  openMessageBox({
+    to: gameData.value?.creator_id.username || "Game creator",
+    onSend: async function handleSend({ message, shareEmail, messageId }) {
+      setMessageIsSubmitting({ messageId, isSubmitting: true });
+      try {
+        await sendMessageAboutGame({
+          message,
+          responseEmail: shareEmail ? store.user?.email : "",
+          group: "creator",
+          gameId: gameStore.game.id,
+        });
+        showSuccess({ message: "Message sent" });
+        closeMessageBox(messageId);
+      } catch (error) {
+        showError({
+          message:
+            "Unable to send message. Please try again or contact support.",
+        });
+      } finally {
+        setMessageIsSubmitting({ messageId, isSubmitting: false });
+      }
+    },
+  });
+}
+
+function openContactBoxToRsvpGamePlayers() {
+  if (!store.user?.email) {
+    showError({ message: "You must be signed in to send messages" });
+    return;
+  }
+  openMessageBox({
+    to: "RSVP'd game players",
+    onSend: async function handleSend({ message, shareEmail, messageId }) {
+      setMessageIsSubmitting({ messageId, isSubmitting: true });
+      try {
+        await sendMessageAboutGame({
+          message,
+          responseEmail: shareEmail ? store.user?.email : "",
+          group: "rsvp only",
+          gameId: gameStore.game.id,
+        });
+        showSuccess({ message: "Message sent" });
+        closeMessageBox(messageId);
+      } catch (error) {
+        showError({
+          message:
+            "Unable to send message. Please try again or contact support.",
+        });
+      } finally {
+        setMessageIsSubmitting({ messageId, isSubmitting: false });
+      }
+    },
+  });
+}
+
+function openContactBoxToAllGamePlayers() {
+  if (!store.user?.email) {
+    showError({ message: "You must be signed in to send messages" });
+    return;
+  }
+  openMessageBox({
+    to: "all game players (includes RSVP'd and waitlisted)",
+    onSend: async function handleSend({ message, shareEmail, messageId }) {
+      setMessageIsSubmitting({ messageId, isSubmitting: true });
+      try {
+        await sendMessageAboutGame({
+          message,
+          responseEmail: shareEmail ? store.user?.email : "",
+          group: "all players",
+          gameId: gameStore.game.id,
+        });
+        showSuccess({ message: "Message sent" });
+        closeMessageBox(messageId);
+      } catch (error) {
+        showError({
+          message:
+            "Unable to send message. Please try again or contact support.",
+        });
+      } finally {
+        setMessageIsSubmitting({ messageId, isSubmitting: false });
+      }
+    },
+  });
 }
 </script>
