@@ -53,7 +53,7 @@ export const handler: Handler = async (event, context) => {
     }
   }
   try {
-    await webPush({
+    await sendWebPush({
       userId: record.user_id,
       message: record.message,
     });
@@ -135,7 +135,7 @@ function sendCancelEmail({ name, email, gameName }) {
   );
 }
 
-const webPush = async ({ userId, message }) => {
+async function sendWebPush({ userId, message }) {
   const { data } = await supabase
     .from("profiles")
     .select("subscriptions")
@@ -148,4 +148,4 @@ const webPush = async ({ userId, message }) => {
       webpush.sendNotification(parsed, message);
     });
   }
-};
+}
