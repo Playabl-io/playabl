@@ -6,6 +6,7 @@
     @close="showNewProfileModal = false"
   />
   <MessageBox />
+  <OfflineIndicator />
 </template>
 <script setup lang="ts">
 import { store } from "./store";
@@ -14,6 +15,7 @@ import Toaster from "./components/Toast/Toaster.vue";
 import MessageBox from "./components/MessageBox/MessageBox.vue";
 import { useRoute, useRouter } from "vue-router";
 import NewProfileModal from "./components/Modals/NewProfileModal.vue";
+import OfflineIndicator from "./components/OfflineIndicator.vue";
 import { onMounted, ref } from "vue";
 import { loadProfile } from "./api/profiles";
 import { log } from "./util/logger";

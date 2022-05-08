@@ -37,40 +37,42 @@ export const handler: Handler = async (event, context) => {
   const fromUser = await loadProfile(user.user.id);
   const creator = await loadProfile(game.creator_id);
 
-  const contacts = [];
-  if (params.group === "creator") {
-    contacts.push({ name: creator.name, email: creator.email });
-  } else if (params.group === "rsvp only") {
-    const sessions = await loadSessions(params.gameId);
-    const allRsvpd = sessions.flatMap((session) => {
-      return session.rsvps.slice(0, session.participant_count);
-    });
-    const dedupedRsvps = [...new Set(allRsvpd)];
-    const profiles = await Promise.all(
-      dedupedRsvps.map((userId) => loadProfile(userId))
-    );
-    contacts.push(
-      ...profiles.map((profile) => ({
-        name: profile.username,
-        email: profile.email,
-      }))
-    );
-  } else if (params.group === "all players") {
-    const sessions = await loadSessions(params.gameId);
-    const allRsvpd = sessions.flatMap((session) => {
-      return session.rsvps;
-    });
-    const dedupedRsvps = [...new Set(allRsvpd)];
-    const profiles = await Promise.all(
-      dedupedRsvps.map((userId) => loadProfile(userId))
-    );
-    contacts.push(
-      ...profiles.map((profile) => ({
-        name: profile.username,
-        email: profile.email,
-      }))
-    );
+  const playerIds = await loadAllPlayersForGame(game.id);
+  if (!playerIds.includes(user.user.id) && creator.id !== user.user.id) {
+    return {
+      statusCode: 403,
+      boday: JSON.stringify({
+        status: "not authorized",
+      }),
+    };
   }
+  const allIds = playerIds.concat(creator.id);
+  await writeMessageToDb({
+    from: fromUser.id,
+    to: allIds,
+    message: params.message,
+    topicId: String(game.id),
+  });
+  const contacts = [];
+  // TODO: check profile for notification preference
+  // if (params.group === "creator") {
+  //   contacts.push({ name: creator.name, email: creator.email });
+  // } else if (params.group === "rsvp only") {
+  //   const sessions = await loadSessions(params.gameId);
+  //   const allRsvpd = sessions.flatMap((session) => {
+  //     return session.rsvps.slice(0, session.participant_count);
+  //   });
+  //   const dedupedRsvps = [...new Set(allRsvpd)];
+  //   const profiles = await Promise.all(
+  //     dedupedRsvps.map((userId) => loadProfile(userId))
+  //   );
+  //   contacts.push(
+  //     ...profiles.map((profile) => ({
+  //       name: profile.username,
+  //       email: profile.email,
+  //     }))
+  //   );
+  // }
 
   const messages = contacts.map((contact) =>
     buildMessage({
@@ -83,12 +85,12 @@ export const handler: Handler = async (event, context) => {
     })
   );
 
-  try {
-    await sendGameMessages({ messages });
-    console.info("successfully sent messages");
-  } catch (error) {
-    console.error("unable to send messages", error);
-  }
+  // try {
+  //   await sendGameMessages({ messages });
+  //   console.info("successfully sent messages");
+  // } catch (error) {
+  //   console.error("unable to send messages", error);
+  // }
 
   return {
     statusCode: 200,
@@ -97,6 +99,32 @@ export const handler: Handler = async (event, context) => {
     }),
   };
 };
+
+async function loadAllPlayersForGame(gameId) {
+  const sessions = await loadSessions(gameId);
+  const allRsvpd = sessions.flatMap((session) => {
+    return session.rsvps;
+  });
+  const dedupedRsvps = [...new Set(allRsvpd)];
+  return dedupedRsvps;
+}
+
+async function writeMessageToDb({ from, to, message, topicId }) {
+  const { data, error } = await supabase.from("messages").insert({
+    from,
+    to,
+    message,
+    topic_type: "game",
+    topic_id: topicId,
+    record_type: "text",
+  });
+  if (error) {
+    console.error({ error });
+  }
+  if (data) {
+    return data;
+  }
+}
 
 async function loadGame(gameId: number) {
   const { data, error } = await supabase

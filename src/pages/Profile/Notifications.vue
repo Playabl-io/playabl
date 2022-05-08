@@ -49,8 +49,7 @@
 
 <script setup lang="ts">
 import { onUnmounted, ref } from "vue";
-import { formatRelative } from "date-fns";
-import { ClockIcon, BellIcon } from "@heroicons/vue/outline";
+import { BellIcon } from "@heroicons/vue/outline";
 import ProfileTemplate from "@/components/ProfileTemplate.vue";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import {

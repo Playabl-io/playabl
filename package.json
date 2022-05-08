@@ -16,8 +16,13 @@
   "dependencies": {
     "@headlessui/vue": "^1.5.0",
     "@heroicons/vue": "^1.0.6",
+    "@iconify/vue": "^3.2.1",
     "@netlify/functions": "^1.0.0",
     "@supabase/supabase-js": "^1.32.2",
+    "@tiptap/core": "^2.0.0-beta.1",
+    "@tiptap/extension-placeholder": "^2.0.0-beta.48",
+    "@tiptap/starter-kit": "^2.0.0-beta.184",
+    "@tiptap/vue-3": "^2.0.0-beta.91",
     "@types/node": "^17.0.23",
     "@vueup/vue-quill": "^1.0.0-beta.7",
     "@vueuse/core": "^8.2.0",

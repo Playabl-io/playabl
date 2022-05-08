@@ -7,14 +7,13 @@ import Profile from "@/pages/Profile/Profile.vue";
 import Notifications from "@/pages/Profile/Notifications.vue";
 import Media from "@/pages/Profile/Media.vue";
 import Settings from "@/pages/Profile/Settings.vue";
+import Messages from "@/pages/Profile/Messages.vue";
 import CommunitiesAll from "@/pages/CommunitiesAll.vue";
 import CommunitiesJoined from "@/pages/CommunitiesJoined.vue";
 import CommunitiesManage from "@/pages/CommunitiesManage.vue";
 import CommunityBase from "@/pages/Community/CommunityBase.vue";
 import CommunityHome from "@/pages/Community/CommunityHome.vue";
 import CommunityFeed from "@/pages/Community/CommunityFeed.vue";
-import CommunityCalendar from "@/pages/Community/CommunityCalendar.vue";
-import CommunityManage from "@/pages/Community/CommunityManage.vue";
 import GamesJoined from "@/pages/GamesJoined.vue";
 import GamesBrowse from "@/pages/GamesBrowse.vue";
 import GamesManage from "@/pages/GamesManage.vue";
@@ -59,7 +58,7 @@ const routes = [
     path: "/notifications",
     component: Notifications,
     meta: {
-      title: "Playabl - Profile",
+      title: "Playabl - Notifications",
       requiresAuth: true,
     },
   },
@@ -67,7 +66,7 @@ const routes = [
     path: "/media",
     component: Media,
     meta: {
-      title: "Playabl - Profile",
+      title: "Playabl - Media",
       requiresAuth: true,
     },
   },
@@ -75,7 +74,15 @@ const routes = [
     path: "/settings",
     component: Settings,
     meta: {
-      title: "Playabl - Profile",
+      title: "Playabl - Settings",
+      requiresAuth: true,
+    },
+  },
+  {
+    path: "/messages",
+    component: Messages,
+    meta: {
+      title: "Playabl - Messages",
       requiresAuth: true,
     },
   },
@@ -132,11 +139,11 @@ const routes = [
       },
       {
         path: "calendar",
-        component: CommunityCalendar,
+        component: () => import("@/pages/Community/CommunityCalendar.vue"),
       },
       {
         path: "manage",
-        component: CommunityManage,
+        component: () => import("@/pages/Community/CommunityManage.vue"),
         meta: {
           requiresAuth: true,
         },

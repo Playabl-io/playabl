@@ -1,14 +1,13 @@
 <template>
   <img
     v-if="imagePath"
-    class="h-14 w-14 rounded-full object-cover"
+    :class="`${SIZE_MAP[size]} rounded-full object-cover`"
     :src="imagePath"
     :alt="`${username}'s avatar`"
   />
   <div
     v-else
-    class="h-14 w-14 rounded-full grid place-items-center"
-    :class="avatarStyles"
+    :class="`${SIZE_MAP[size]} rounded-full grid place-items-center ${avatarStyles}`"
   >
     <p>
       {{ username.charAt(0) }}
@@ -27,7 +26,16 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  size: {
+    type: String,
+    default: "regular",
+  },
 });
+
+const SIZE_MAP = {
+  regular: "h-14 w-14",
+  small: "h-8 w-8",
+};
 
 const imagePath = ref("");
 

@@ -2,6 +2,32 @@ import { supabase } from "@/supabase";
 import { log } from "@/util/logger";
 import axios from "axios";
 
+export async function loadMessages(topicId: string) {
+  const { data, error, status } = await supabase
+    .from("messages")
+    .select("*")
+    .eq("topic_id", topicId);
+  if (error && status !== 406) {
+    log({ error });
+  }
+  if (data) {
+    return data;
+  }
+}
+
+export async function loadMessagesToUser(userId: string) {
+  const { data, error, status } = await supabase
+    .from("messages")
+    .select("*")
+    .contains("to", [userId]);
+  if (error && status !== 406) {
+    log({ error });
+  }
+  if (data) {
+    return data;
+  }
+}
+
 export async function sendMessageToCommunity({
   message,
   responseEmail,
@@ -41,7 +67,7 @@ export async function sendMessageAboutGame({
 }: {
   message: string;
   responseEmail?: string;
-  group: "rsvp only" | "all players" | "creator" | "all";
+  group: "all";
   gameId: number;
 }) {
   const session = supabase.auth.session();

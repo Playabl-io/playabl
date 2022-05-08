@@ -28,7 +28,7 @@
   </section>
 </template>
 <script setup lang="ts">
-import { onMounted, ref, toRefs, computed } from "vue";
+import { onMounted, ref, toRefs } from "vue";
 import SessionBlock from "@/components/Game/SessionBlock.vue";
 import { loadUserCommunityAccess } from "@/api/communityAccess";
 import { store } from "@/store";

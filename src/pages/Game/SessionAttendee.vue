@@ -4,6 +4,7 @@
       <Avatar
         :username="display"
         :avatar-url="gameStore.attendees[id].avatar_url"
+        size="regular"
       />
       <div class="flex flex-col">
         <p>
