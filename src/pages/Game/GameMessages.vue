@@ -26,8 +26,8 @@
               message.from === userId
                 ? message.failedToSend
                   ? 'bg-rose-100 rounded-br-sm ml-auto'
-                  : 'bg-sky-200 bg-opacity-60 ml-auto rounded-br-sm'
-                : 'bg-gray-200 bg-opacity-60 rounded-bl-sm',
+                  : 'bg-sky-200/60 ml-auto rounded-br-sm'
+                : 'bg-gray-200/60 rounded-bl-sm',
             ]"
           >
             <UserBadge
@@ -76,7 +76,7 @@
           @submit="sendMessage"
         />
         <button
-          class="rounded-full h-10 w-10 grid place-content-center hover:bg-gray-200 hover:bg-opacity-70"
+          class="rounded-full h-10 w-10 grid place-content-center hover:bg-gray-200/60"
         >
           <PaperAirplaneIcon class="w-5 h-5 rotate-90" />
         </button>

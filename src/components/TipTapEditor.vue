@@ -3,9 +3,9 @@
     <button
       type="button"
       :class="{
-        'bg-gray-200 bg-opacity-60': editor?.isActive('bold'),
+        'bg-gray-200/60': editor?.isActive('bold'),
       }"
-      class="p-2 rounded-md focus-styles hover:bg-gray-200 hover:bg-opacity-60"
+      class="p-2 rounded-md focus-styles hover:bg-gray-200/60"
       @click="editor?.chain().focus().toggleBold().run()"
     >
       <Icon icon="bi:type-bold" />
@@ -13,9 +13,9 @@
     <button
       type="button"
       :class="{
-        'bg-gray-200 bg-opacity-60': editor?.isActive('italic'),
+        'bg-gray-200/60': editor?.isActive('italic'),
       }"
-      class="p-2 rounded-md focus-styles hover:bg-gray-200 hover:bg-opacity-60"
+      class="p-2 rounded-md focus-styles hover:bg-gray-200/60"
       @click="editor?.chain().focus().toggleItalic().run()"
     >
       <Icon icon="bi:type-italic" />
@@ -23,9 +23,9 @@
     <button
       type="button"
       :class="{
-        'bg-gray-200 bg-opacity-60': editor?.isActive('heading', { level: 1 }),
+        'bg-gray-200/60': editor?.isActive('heading', { level: 1 }),
       }"
-      class="p-2 rounded-md focus-styles hover:bg-gray-200 hover:bg-opacity-60"
+      class="p-2 rounded-md focus-styles hover:bg-gray-200/60"
       @click="editor?.chain().focus().toggleHeading({ level: 1 }).run()"
     >
       <Icon icon="bi:type-h1" />
@@ -33,9 +33,9 @@
     <button
       type="button"
       :class="{
-        'bg-gray-200 bg-opacity-60': editor?.isActive('heading', { level: 2 }),
+        'bg-gray-200/60': editor?.isActive('heading', { level: 2 }),
       }"
-      class="p-2 rounded-md focus-styles hover:bg-gray-200 hover:bg-opacity-60"
+      class="p-2 rounded-md focus-styles hover:bg-gray-200/60"
       @click="editor?.chain().focus().toggleHeading({ level: 2 }).run()"
     >
       <Icon icon="bi:type-h2" />
@@ -43,9 +43,9 @@
     <button
       type="button"
       :class="{
-        'bg-gray-200 bg-opacity-60': editor?.isActive('heading', { level: 3 }),
+        'bg-gray-200/60': editor?.isActive('heading', { level: 3 }),
       }"
-      class="p-2 rounded-md focus-styles hover:bg-gray-200 hover:bg-opacity-60"
+      class="p-2 rounded-md focus-styles hover:bg-gray-200/60"
       @click="editor?.chain().focus().toggleHeading({ level: 3 }).run()"
     >
       <Icon icon="bi:type-h3" />
@@ -53,9 +53,9 @@
     <button
       type="button"
       :class="{
-        'bg-gray-200 bg-opacity-60': editor?.isActive('ol'),
+        'bg-gray-200/60': editor?.isActive('ol'),
       }"
-      class="p-2 rounded-md focus-styles hover:bg-gray-200 hover:bg-opacity-60"
+      class="p-2 rounded-md focus-styles hover:bg-gray-200/60"
       @click="editor?.chain().focus().toggleOrderedList().run()"
     >
       <Icon icon="bi:list-ol" />
@@ -63,9 +63,9 @@
     <button
       type="button"
       :class="{
-        'bg-gray-200 bg-opacity-60': editor?.isActive('ul'),
+        'bg-gray-200/60': editor?.isActive('ul'),
       }"
-      class="p-2 rounded-md focus-styles hover:bg-gray-200 hover:bg-opacity-60"
+      class="p-2 rounded-md focus-styles hover:bg-gray-200/60"
       @click="editor?.chain().focus().toggleBulletList().run()"
     >
       <Icon icon="bi:list-ul" />
