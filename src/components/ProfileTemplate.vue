@@ -2,21 +2,27 @@
   <BaseTemplate>
     <SideNavTemplate>
       <template #nav>
-        <SideNavLink to="profile">
+        <SideNavLink to="/profile">
           <UserCircleIcon class="h-6 w-6" />
-          Profile
+          <div class="inline-block sm:hidden lg:inline-block">Profile</div>
         </SideNavLink>
-        <SideNavLink to="notifications">
+        <SideNavLink to="/messages">
+          <MailIcon class="h-6 w-6" />
+          <div class="inline-block sm:hidden lg:inline-block">Messages</div>
+        </SideNavLink>
+        <SideNavLink to="/notifications">
           <BellIcon class="h-6 w-6" />
-          Notifications
+          <div class="inline-block sm:hidden lg:inline-block">
+            Notifications
+          </div>
         </SideNavLink>
-        <SideNavLink to="media">
+        <SideNavLink to="/media">
           <PhotographIcon class="h-6 w-6" />
-          Media
+          <div class="inline-block sm:hidden lg:inline-block">Media</div>
         </SideNavLink>
-        <SideNavLink to="settings">
+        <SideNavLink to="/settings">
           <AdjustmentsIcon class="h-6 w-6" />
-          Settings
+          <div class="inline-block sm:hidden lg:inline-block">Settings</div>
         </SideNavLink>
       </template>
       <template #content>
@@ -32,6 +38,7 @@ import {
   UserCircleIcon,
   AdjustmentsIcon,
   PhotographIcon,
+  MailIcon,
 } from "@heroicons/vue/outline";
 import SideNavTemplate from "./SideNavTemplate.vue";
 import BaseTemplate from "./BaseTemplate.vue";

@@ -6,11 +6,10 @@
     <p class="text-sm font-semibold p-4 border-b border-solid border-gray-200">
       Messaging {{ message.to }}
     </p>
-    <textarea
+    <TipTapEditor
       v-model="messageBody"
-      rows="12"
       placeholder="Compose a message"
-      class="w-full border-none resize-none px-4 m-0"
+      editor-height="h-80"
     />
     <div class="p-4 rounded-lg bg-gray-100 m-2 flex items-center gap-2">
       <FormCheckbox id="share-email" v-model="shareEmail" />
@@ -41,6 +40,7 @@ import PrimaryButton from "../Buttons/PrimaryButton.vue";
 import GhostButton from "../Buttons/GhostButton.vue";
 import FormCheckbox from "../Forms/FormCheckbox.vue";
 import FormLabel from "../Forms/FormLabel.vue";
+import TipTapEditor from "../TipTapEditor.vue";
 
 const props = defineProps({
   message: {

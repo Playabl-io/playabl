@@ -193,7 +193,7 @@ import useToast from "@/components/Toast/useToast";
 import { log } from "@/util/logger";
 import Avatar from "@/components/Avatar.vue";
 import useMessageBox from "@/components/MessageBox/useMessageBox";
-import { sendMessageToCommunity } from "@/api/contact";
+import { sendMessageToCommunity } from "@/api/messages";
 
 const { openMessageBox, closeMessageBox, setMessageIsSubmitting } =
   useMessageBox();
