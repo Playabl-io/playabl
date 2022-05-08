@@ -219,6 +219,22 @@ export async function leaveSession({
   return data;
 }
 
+export async function loadGameIfHasUpcomingSession(gameId: number) {
+  const today = new Date();
+  const { data, error } = await supabase
+    .from("games")
+    .select("*, sessions!inner(*)")
+    .eq("id", gameId)
+    .gte("sessions.start_time", today.getTime())
+    .single();
+  if (error) {
+    log({ error });
+  }
+  if (data) {
+    return data;
+  }
+}
+
 export async function loadGameDetails(gameId: number) {
   const { data, error, status } = await supabase
     .from("game_details")

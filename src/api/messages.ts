@@ -15,6 +15,19 @@ export async function loadMessages(topicId: string) {
   }
 }
 
+export async function loadMessagesToUser(userId: string) {
+  const { data, error, status } = await supabase
+    .from("messages")
+    .select("*")
+    .contains("to", [userId]);
+  if (error && status !== 406) {
+    log({ error });
+  }
+  if (data) {
+    return data;
+  }
+}
+
 export async function sendMessageToCommunity({
   message,
   responseEmail,

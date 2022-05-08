@@ -1,79 +1,72 @@
 <template>
-  <section class="flex flex-col gap-1">
+  <LoadingSpinner v-if="loading" color="brand-500" class="mx-auto" />
+  <section v-else class="flex flex-col gap-1">
     <router-link
-      v-for="(message, index) in mockMessages"
-      :key="index"
+      v-for="(group, id) in messagesGroupedByTopicId"
+      :key="id"
       class="p-2 text-left mx-1 rounded-md focus-styles hover:bg-gray-100"
-      :to="`/messages/${message.id}`"
+      :to="`/games/${id}/messages`"
     >
       <Heading level="h6" as="h6">
-        {{ message.title }}
+        {{ topics[id] }}
       </Heading>
-      <p class="line-clamp-2">
-        {{ message.message }}
+      <p class="mt-2">{{ group.length }} messages</p>
+      <p class="text-sm text-slate-700">
+        Last message
+        {{
+          formatRelative(new Date(group[group.length - 1].created_at), today)
+        }}
       </p>
     </router-link>
   </section>
 </template>
 <script setup lang="ts">
+import { onMounted, ref } from "vue";
+import * as R from "ramda";
+import { formatRelative } from "date-fns";
 import Heading from "@/components/Heading.vue";
+import { Message } from "@/typings/Message";
+import { loadMessagesToUser } from "@/api/messages";
+import { store } from "@/store";
+import { loadGameIfHasUpcomingSession } from "@/api/gamesAndSessions";
+import LoadingSpinner from "@/components/LoadingSpinner.vue";
+import useToast from "@/components/Toast/useToast";
+import { log } from "@/util/logger";
 
-const mockMessages = [
-  {
-    id: "foo",
-    type: "game",
-    title: "Great game",
-    message:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-  },
-  {
-    id: "foo",
-    type: "game",
-    title: "Great game",
-    message:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-  },
-  {
-    id: "bar",
-    type: "community",
-    title: "Grimlin Games",
-    message:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-  },
-  {
-    id: "foo",
-    type: "game",
-    title: "Great game",
-    message:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-  },
-  {
-    id: "bar",
-    type: "community",
-    title: "Grimlin Games",
-    message:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-  },
-  {
-    id: "foo",
-    type: "game",
-    title: "Great game",
-    message:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-  },
-  {
-    id: "foo",
-    type: "game",
-    title: "Great game",
-    message:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-  },
-  {
-    id: "foo",
-    type: "game",
-    title: "Great game",
-    message:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-  },
-];
+const { showError } = useToast();
+
+const loading = ref(true);
+const messages = ref<Message[]>([]);
+const messagesGroupedByTopicId = ref<Record<string, Message[]>>({});
+const topics = ref<Record<string, string>>({});
+const today = new Date();
+
+onMounted(async () => {
+  if (!store.user?.id) return;
+  try {
+    const data = await loadMessagesToUser(store.user.id);
+    if (data) {
+      messages.value = data;
+    }
+
+    messagesGroupedByTopicId.value = R.groupBy(
+      (message: Message) => message.topic_id
+    )(messages.value);
+
+    await Promise.all(
+      Object.keys(messagesGroupedByTopicId.value).map((id) => {
+        return loadGameIfHasUpcomingSession(Number(id)).then((data) => {
+          if (data) {
+            topics.value[id] = data.title;
+          }
+        });
+      })
+    );
+  } catch (error) {
+    showError({ message: "Unable to load messages" });
+    log({ error });
+  } finally {
+    loading.value = false;
+  }
+});
 </script>
