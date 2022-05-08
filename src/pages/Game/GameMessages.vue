@@ -25,9 +25,9 @@
             :class="[
               message.from === userId
                 ? message.failedToSend
-                  ? 'bg-rose-100 rounded-br-none ml-auto'
-                  : 'bg-sky-200 bg-opacity-60 ml-auto rounded-br-none'
-                : 'bg-gray-200 bg-opacity-60 rounded-bl-none',
+                  ? 'bg-rose-100 rounded-br-sm ml-auto'
+                  : 'bg-sky-200 bg-opacity-60 ml-auto rounded-br-sm'
+                : 'bg-gray-200 bg-opacity-60 rounded-bl-sm',
             ]"
           >
             <UserBadge
@@ -86,7 +86,9 @@
           <template #trigger="{ toggleTooltip }">
             <Switch
               :model-value="sendShortcut === 'enter'"
-              :class="sendShortcut === 'enter' ? 'bg-pink-400' : 'bg-gray-200'"
+              :class="
+                sendShortcut === 'enter' ? 'bg-indigo-400' : 'bg-gray-200'
+              "
               class="focus-styles relative inline-flex h-6 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
               @update:model-value="toggleSendShortcut"
               @mouseenter="toggleTooltip"
