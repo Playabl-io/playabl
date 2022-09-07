@@ -19,8 +19,9 @@
       </p>
     </div>
     <ChooseCommunity
-      v-if="state.value === 'chooseCommunity'"
+      v-if="['chooseCommunity', 'getCommunityPostingDate'].includes(state.value as string)"
       :communities="state.context.communities"
+      :loading="['getCommunityPostingDate'].includes(state.value as string)"
       @select="send('SELECT', $event)"
     />
     <div
@@ -58,7 +59,17 @@
       class="grid grid-cols-1 gap-12 max-w-2xl mx-auto relative"
       @submit.prevent="send('ADVANCE')"
     >
-      <div class="grid grid-cols-1 gap-8">
+      <div v-if="furthestPostingDateIsInPast">
+        <p>
+          This community has limited game sessions to a date that is in the
+          past. Please contact the community manager.
+        </p>
+        <p class="mt-4 font-semibold">
+          Furthest posting date:
+          {{ communityPostingLimit?.toLocaleDateString() }}
+        </p>
+      </div>
+      <div v-else class="grid grid-cols-1 gap-8">
         <Heading level="h6" as="h2">Game info</Heading>
         <div class="flex flex-col">
           <FormLabel for="title" required> Game title </FormLabel>
@@ -313,7 +324,7 @@ const router = useRouter();
 const newGameMachine = createMachine<{
   communities: Community[];
   selectedCommunity?: Community;
-  enabledAccessLevels: string[];
+  enabledAccessLevels: number[];
 }>(
   {
     context: {
@@ -358,9 +369,16 @@ const newGameMachine = createMachine<{
       chooseCommunity: {
         on: {
           SELECT: {
-            target: "gameDetails",
+            target: "getCommunityPostingDate",
             actions: ["assignCommunity"],
           },
+        },
+      },
+      getCommunityPostingDate: {
+        invoke: {
+          src: (context) =>
+            getCommunityPostingDate(context.selectedCommunity?.id ?? ""),
+          onDone: "gameDetails",
         },
       },
       gameDetails: {
@@ -371,10 +389,6 @@ const newGameMachine = createMachine<{
             onDone: {
               actions: ["updateEnabledAccessLevels"],
             },
-          },
-          {
-            src: (context) =>
-              getCommunityPostingDate(context.selectedCommunity?.id ?? ""),
           },
         ],
         on: {
@@ -456,6 +470,11 @@ const startDate = ref<Date>(new Date());
 const endDate = ref<Date>(new Date());
 
 const communityPostingLimit = ref<Date>();
+
+const furthestPostingDateIsInPast = computed(() => {
+  if (!communityPostingLimit.value) return false;
+  return getStartOfToday().getTime() > communityPostingLimit.value.getTime();
+});
 
 function updateStartDate(date: Date) {
   startDate.value = date;
@@ -601,10 +620,11 @@ async function getAccessLevels(communityId: string) {
       acc.push(level.id);
     }
     return acc;
-  }, [] as string[]);
+  }, [] as number[]);
 }
 
 async function getCommunityPostingDate(communityId: string) {
+  communityPostingLimit.value = undefined;
   const data = await selectFromCommunity({
     communityId,
     select: "furthest_posting_date",

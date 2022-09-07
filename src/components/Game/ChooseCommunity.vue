@@ -59,6 +59,7 @@
     <PrimaryButton
       class="w-full mt-6"
       :disabled="!selectedCommunity"
+      :is-loading="loading"
       @click="emit('select', { community: selectedCommunity })"
     >
       Next
@@ -85,6 +86,10 @@ const emit = defineEmits(["select"]);
 const props = defineProps({
   communities: {
     type: Array as PropType<Community[]>,
+    required: true,
+  },
+  loading: {
+    type: Boolean,
     required: true,
   },
 });

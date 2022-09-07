@@ -3,7 +3,8 @@
   <p class="text-sm text-slate-700 mb-2">
     Public access allows other to join from the listing page without any
     invitation or need to request membership.
-    <br />
+  </p>
+  <p class="text-sm text-slate-700 mb-2">
     Public access is currently
     <span class="font-bold">
       {{

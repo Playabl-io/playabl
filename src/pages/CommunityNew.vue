@@ -76,7 +76,7 @@
             </p>
             <p
               v-if="gameTypesError"
-              class="text-sm text-red-500 font-semibold mt-4"
+              class="text-sm text-red-700 font-semibold mt-4"
             >
               {{ gameTypesError }}
             </p>

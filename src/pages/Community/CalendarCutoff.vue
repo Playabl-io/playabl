@@ -1,11 +1,14 @@
 <template>
   <Heading level="h6" as="h2" class="mb-2">Calendar Cutoff</Heading>
-  <p class="text-sm text-slate-700 mb-4">
+  <p class="text-sm text-slate-700">
     Set a date for how far in advance calendar sessions can be posted. Members
     will not be able to post sessions after this date. Leave blank for no
     cutoff.
   </p>
-  <p v-if="dateIsBeforeOrEqualToToday" class="text-red-500 my-2 text-sm">
+  <p
+    v-if="dateIsBeforeOrEqualToToday"
+    class="text-red-700 font-semibold mt-2 mb-1 text-sm"
+  >
     Date cannot be today or ealier
   </p>
   <input
