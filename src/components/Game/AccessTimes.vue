@@ -9,7 +9,7 @@
       <label
         v-for="level in store.communityAccessLevels"
         :key="level.id"
-        :for="level.id"
+        :for="String(level.id)"
         class="relative p-4 rounded-md border border-solid grid place-items-center cursor-pointer transition-all duration-150 ease-out"
         :class="[
           enabledLevels.includes(level.id)
@@ -22,7 +22,7 @@
           :class="[level.is_mandatory ? 'text-amber-300' : 'text-slate-400']"
         />
         <input
-          :id="level.id"
+          :id="String(level.id)"
           type="checkbox"
           class="hidden"
           :checked="enabledLevels.includes(level.id)"
@@ -50,7 +50,7 @@ const emit = defineEmits(["update"]);
 
 const props = defineProps({
   enabledLevels: {
-    type: Array as PropType<string[]>,
+    type: Array as PropType<number[]>,
     required: true,
   },
   grid: {
@@ -60,7 +60,7 @@ const props = defineProps({
 });
 toRefs(props);
 
-function handleChange(event: Event, id: string) {
+function handleChange(event: Event, id: number) {
   const element = event.target as HTMLInputElement;
   const nextVal = element.checked
     ? props.enabledLevels.concat(id)
