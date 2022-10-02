@@ -133,7 +133,7 @@
                 :class="playAudio ? 'translate-x-6' : 'translate-x-0'"
                 class="pointer-events-none h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out grid place-content-center"
               >
-                <MusicNoteIcon class="h-3 w-3 text-slate-700" />
+                <MusicalNoteIcon class="h-3 w-3 text-slate-700" />
               </span>
             </Switch>
           </template>
@@ -155,8 +155,8 @@ import { onMounted, onUnmounted, ref } from "vue";
 import { useLocalStorage } from "@vueuse/core";
 import { formatRelative } from "date-fns";
 import { Switch } from "@headlessui/vue";
-import { PaperAirplaneIcon } from "@heroicons/vue/outline";
-import { MusicNoteIcon } from "@heroicons/vue/solid";
+import { PaperAirplaneIcon } from "@heroicons/vue/24/outline";
+import { MusicalNoteIcon } from "@heroicons/vue/20/solid";
 import { loadProfile } from "@/api/profiles";
 import UserBadge from "@/components/UserBadge.vue";
 import TipTapReply from "@/components/TipTapReply.vue";

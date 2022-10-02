@@ -8,7 +8,7 @@
         <span
           class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
         >
-          <SelectorIcon class="w-5 h-5 text-gray-400" aria-hidden="true" />
+          <ChevronUpDownIcon class="w-5 h-5 text-gray-400" aria-hidden="true" />
         </span>
       </ListboxButton>
       <transition
@@ -54,7 +54,7 @@ import {
   ListboxOptions,
   ListboxOption,
 } from "@headlessui/vue";
-import { SelectorIcon } from "@heroicons/vue/solid";
+import { ChevronUpDownIcon } from "@heroicons/vue/20/solid";
 import { PropType, ref, toRefs, watch } from "vue";
 
 const props = defineProps({

@@ -12,7 +12,7 @@
       }}<span v-if="members.length > 0">, {{ members.length }} selected</span>
     </p>
     <GhostButton v-if="members.length > 0" class="ml-auto" @click="handleEdit">
-      <PencilAltIcon class="h-5 w-5 text-slate-700" />
+      <PencilSquareIcon class="h-5 w-5 text-slate-700" />
     </GhostButton>
   </div>
   <div class="grid gap-4">
@@ -100,7 +100,7 @@
 import { PropType, ref } from "vue";
 import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/vue";
-import { PencilAltIcon } from "@heroicons/vue/outline";
+import { PencilSquareIcon } from "@heroicons/vue/24/outline";
 import { MemberWithMembership } from "@/typings/Member";
 import Drawer from "@/components/Drawer.vue";
 import DeleteModal from "@/components/Modals/DeleteModal.vue";

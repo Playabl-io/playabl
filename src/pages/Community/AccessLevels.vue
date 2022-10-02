@@ -78,7 +78,7 @@
 <script setup lang="ts">
 import { store } from "@/store";
 import { useRoute } from "vue-router";
-import { CheckCircleIcon, CogIcon } from "@heroicons/vue/outline";
+import { CheckCircleIcon, CogIcon } from "@heroicons/vue/24/outline";
 import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/vue";
 import LinkButton from "@/components/Buttons/LinkButton.vue";

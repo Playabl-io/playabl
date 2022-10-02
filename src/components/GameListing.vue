@@ -90,7 +90,7 @@
           :value="`${game.uses_safety_tools ? 'Yes' : 'No'}`"
         >
           <template #icon>
-            <SupportIcon class="w-6 h-6 mr-4" />
+            <LifebuoyIcon class="w-6 h-6 mr-4" />
           </template>
         </GameBadge>
       </div>
@@ -112,9 +112,9 @@ import {
   CogIcon,
   UsersIcon,
   FilmIcon,
-  SupportIcon,
-} from "@heroicons/vue/outline";
-import { StarIcon } from "@heroicons/vue/solid";
+  LifebuoyIcon,
+} from "@heroicons/vue/24/outline";
+import { StarIcon } from "@heroicons/vue/20/solid";
 import Heading from "./Heading.vue";
 import { GameListing } from "@/typings/Game";
 import Tooltip from "./Tooltip.vue";

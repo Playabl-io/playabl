@@ -90,7 +90,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
 import { isSameDay, format, startOfMonth } from "date-fns";
-import { CheckCircleIcon, MinusCircleIcon } from "@heroicons/vue/outline";
+import { CheckCircleIcon, MinusCircleIcon } from "@heroicons/vue/24/outline";
 import { Session } from "@/typings/Session";
 import DisplayCalendar from "@/components/Calendar/DisplayCalendar.vue";
 import {

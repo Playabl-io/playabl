@@ -115,7 +115,7 @@
 </template>
 <script setup lang="ts">
 import { ref } from "vue";
-import { AtSymbolIcon } from "@heroicons/vue/outline";
+import { AtSymbolIcon } from "@heroicons/vue/24/outline";
 import DrawerFooter from "@/components/DrawerFooter.vue";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import OutlineButton from "@/components/Buttons/OutlineButton.vue";

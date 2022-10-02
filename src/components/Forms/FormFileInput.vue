@@ -56,7 +56,7 @@
 </template>
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import { TrashIcon } from "@heroicons/vue/outline";
+import { TrashIcon } from "@heroicons/vue/24/outline";
 import GhostButton from "../Buttons/GhostButton.vue";
 
 const props = defineProps({

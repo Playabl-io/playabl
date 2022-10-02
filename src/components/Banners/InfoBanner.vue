@@ -10,7 +10,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { InformationCircleIcon } from "@heroicons/vue/outline";
+import { InformationCircleIcon } from "@heroicons/vue/24/outline";
 import DismissButton from "../Buttons/DismissButton.vue";
 const emit = defineEmits(["dismiss"]);
 </script>

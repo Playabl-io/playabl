@@ -51,7 +51,7 @@
               aria-label="Edit community info"
               @click="editInfoDrawerOpen = true"
             >
-              <PencilAltIcon class="h-5 w-5 text-slate-700" />
+              <PencilSquareIcon class="h-5 w-5 text-slate-700" />
             </GhostButton>
           </div>
           <div
@@ -105,7 +105,7 @@
                 @focus="toggleTooltip"
                 @blur="toggleTooltip"
               >
-                <ArrowsExpandIcon class="h-5 w-5 text-slate-700" />
+                <ArrowsPointingOutIcon class="h-5 w-5 text-slate-700" />
               </GhostButton>
             </template>
           </Tooltip>
@@ -141,10 +141,10 @@ import useToast from "@/components/Toast/useToast";
 import {
   CheckCircleIcon,
   MinusCircleIcon,
-  PencilAltIcon,
-  ArrowsExpandIcon,
+  PencilSquareIcon,
+  ArrowsPointingOutIcon,
   XCircleIcon,
-} from "@heroicons/vue/outline";
+} from "@heroicons/vue/24/outline";
 import Heading from "@/components/Heading.vue";
 import { Game } from "@/typings/Game";
 import { store } from "@/store";

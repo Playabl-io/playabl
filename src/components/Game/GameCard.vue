@@ -60,7 +60,7 @@
 <script setup lang="ts">
 import { PropType, ref, onMounted } from "vue";
 import { format } from "date-fns";
-import { StarIcon } from "@heroicons/vue/solid";
+import { StarIcon } from "@heroicons/vue/20/solid";
 import { GameListing } from "@/typings/Game";
 import Heading from "../Heading.vue";
 import Tooltip from "../Tooltip.vue";

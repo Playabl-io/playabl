@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { format } from "date-fns";
-import { CalendarIcon } from "@heroicons/vue/outline";
+import { CalendarIcon } from "@heroicons/vue/24/outline";
 import { gameStore } from "@/pages/Game/gameStore";
 import * as ics from "ics";
 

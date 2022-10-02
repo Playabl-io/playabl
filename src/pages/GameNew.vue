@@ -160,7 +160,7 @@
           </p>
         </div>
         <PrimaryButton>
-          Next <ArrowSmRightIcon class="h-6 w-6" />
+          Next <ArrowSmallRightIcon class="h-6 w-6" />
         </PrimaryButton>
       </div>
     </form>
@@ -253,7 +253,7 @@
             class="font-semibold"
             @click="send('BACK')"
           >
-            <ArrowSmLeftIcon class="h-6 w-6" /> Back
+            <ArrowSmallLeftIcon class="h-6 w-6" /> Back
           </OutlineButton>
           <PrimaryButton
             :is-loading="state.value === 'submitting'"
@@ -276,9 +276,9 @@ import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/vue";
 import {
   UserGroupIcon,
-  ArrowSmRightIcon,
-  ArrowSmLeftIcon,
-} from "@heroicons/vue/outline";
+  ArrowSmallRightIcon,
+  ArrowSmallLeftIcon,
+} from "@heroicons/vue/24/outline";
 import BaseTemplate from "@/components/BaseTemplate.vue";
 import FormCheckbox from "@/components/Forms/FormCheckbox.vue";
 import FormLabel from "@/components/Forms/FormLabel.vue";

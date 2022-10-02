@@ -96,7 +96,7 @@
 import { ref, toRefs } from "vue";
 import { format } from "date-fns";
 import Heading from "@/components/Heading.vue";
-import { ClockIcon, UsersIcon, TrashIcon } from "@heroicons/vue/outline";
+import { ClockIcon, UsersIcon, TrashIcon } from "@heroicons/vue/24/outline";
 import Drawer from "@/components/Drawer.vue";
 import NewSession from "@/pages/Game/NewSession.vue";
 import LinkButton from "@/components/Buttons/LinkButton.vue";

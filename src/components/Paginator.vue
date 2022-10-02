@@ -43,7 +43,7 @@ import { computed } from "vue";
 import {
   ChevronDoubleLeftIcon,
   ChevronDoubleRightIcon,
-} from "@heroicons/vue/solid";
+} from "@heroicons/vue/20/solid";
 import GhostButton from "./Buttons/GhostButton.vue";
 import BaseButton from "./Buttons/BaseButton.vue";
 

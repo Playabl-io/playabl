@@ -2,7 +2,7 @@
   <header>
     <Menu>
       <MenuButton class="m-2 p-2 relative">
-        <MenuIcon class="text-slate-900 dark:text-slate-100 h-6 w-6" />
+        <Bars3Icon class="text-slate-900 dark:text-slate-100 h-6 w-6" />
         <transition
           enter-active-class="transition duration-100 ease-out"
           enter-from-class="transform scale-70 opacity-0"
@@ -94,7 +94,7 @@ import { supabase } from "@/supabase";
 import { RouterLink, useRouter } from "vue-router";
 import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue";
 import OutlineButton from "./Buttons/OutlineButton.vue";
-import { MenuIcon } from "@heroicons/vue/solid";
+import { Bars3Icon } from "@heroicons/vue/20/solid";
 import { store } from "@/store";
 import { unreadNotifications } from "@/util/notifications";
 import { log } from "@/util/logger";

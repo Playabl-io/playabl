@@ -18,7 +18,7 @@
       tabindex="-1"
       class="absolute inset-y-0 right-0 flex items-center px-2"
     >
-      <SelectorIcon class="w-5 h-5 text-gray-400" aria-hidden="true" />
+      <ChevronUpDownIcon class="w-5 h-5 text-gray-400" aria-hidden="true" />
     </button>
     <transition
       leave-active-class="transition duration-100 ease-in"
@@ -63,7 +63,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { SelectorIcon } from "@heroicons/vue/solid";
+import { ChevronUpDownIcon } from "@heroicons/vue/20/solid";
 import { PropType, ref, watch } from "vue";
 import { computed } from "@vue/reactivity";
 import { useFocusWithin } from "@vueuse/core";

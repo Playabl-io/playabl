@@ -35,7 +35,7 @@
 import { ref, toRefs } from "vue";
 import { onClickOutside } from "@vueuse/core";
 import { format } from "date-fns";
-import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/vue/solid";
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/vue/20/solid";
 import Calendar from "./Calendar.vue";
 const emit = defineEmits(["select"]);
 const props = defineProps({

@@ -43,7 +43,7 @@
 <script setup lang="ts">
 import { PropType, toRefs } from "vue";
 import { store } from "@/store";
-import { StarIcon } from "@heroicons/vue/solid";
+import { StarIcon } from "@heroicons/vue/20/solid";
 import Heading from "../Heading.vue";
 
 const emit = defineEmits(["update"]);

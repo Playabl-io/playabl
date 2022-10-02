@@ -44,7 +44,7 @@ import { ref, watch } from "vue";
 import ProfileTemplate from "@/components/ProfileTemplate.vue";
 import Heading from "@/components/Heading.vue";
 import FormLabel from "@/components/Forms/FormLabel.vue";
-import { AtSymbolIcon } from "@heroicons/vue/outline";
+import { AtSymbolIcon } from "@heroicons/vue/24/outline";
 import { log } from "@/util/logger";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import FormTextArea from "@/components/Forms/FormTextArea.vue";
