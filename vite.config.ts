@@ -9,13 +9,10 @@ if (process.env.NODE_ENV === "production") {
 }
 
 export default defineConfig({
-  plugins: [
-    vue({
-      script: {
-        refSugar: true,
-      },
-    }),
-  ],
+  server: {
+    port: 3000,
+  },
+  plugins: [vue()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
