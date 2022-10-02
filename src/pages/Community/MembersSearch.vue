@@ -51,7 +51,7 @@
 import { onMounted, ref, watch } from "vue";
 import { debouncedWatch } from "@vueuse/core";
 import { SearchIcon } from "@heroicons/vue/outline";
-import { XCircleIcon } from "@heroicons/vue/solid";
+import FormInput from "@/components/Forms/FormInput.vue";
 import FormSelect from "@/components/Forms/FormSelect.vue";
 import { ROLES } from "@/util/roles";
 import { searchCommunityMembers } from "@/api/communityMemberships";
@@ -178,14 +178,14 @@ const searchMachine = createMachine<
         });
       },
       incrementPage: assign({
-        from: (context, event) => context.from + context.pageSize,
-        to: (context, event) => context.to + context.pageSize,
-        page: (context, event) => context.page + 1,
+        from: (context) => context.from + context.pageSize,
+        to: (context) => context.to + context.pageSize,
+        page: (context) => context.page + 1,
       }),
       decrementPage: assign({
-        from: (context, event) => context.from - context.pageSize,
-        to: (context, event) => context.to - context.pageSize,
-        page: (context, event) => context.page - 1,
+        from: (context) => context.from - context.pageSize,
+        to: (context) => context.to - context.pageSize,
+        page: (context) => context.page - 1,
       }),
       setPage: assign({
         from: (context, event) => event.page * context.pageSize,

@@ -8,7 +8,10 @@
 </template>
 <script setup lang="ts">
 defineProps({
-  modelValue: [String, Number],
+  modelValue: {
+    type: [String, Number],
+    required: true,
+  },
 });
 const emit = defineEmits(["update:modelValue"]);
 
