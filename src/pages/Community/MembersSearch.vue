@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-end flex-wrap mt-2 mb-4 gap-6">
     <div class="relative flex items-center grow">
-      <SearchIcon class="h-5 w-5 absolute left-2" />
+      <MagnifyingGlassIcon class="h-5 w-5 absolute left-2" />
       <FormInput
         id="membersSearchTerm"
         v-model="membersSearchTerm"
@@ -50,7 +50,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
 import { debouncedWatch } from "@vueuse/core";
-import { SearchIcon } from "@heroicons/vue/outline";
+import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
 import FormInput from "@/components/Forms/FormInput.vue";
 import FormSelect from "@/components/Forms/FormSelect.vue";
 import { ROLES } from "@/util/roles";

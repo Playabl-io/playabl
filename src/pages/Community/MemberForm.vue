@@ -81,7 +81,11 @@
 import { PropType, ref, computed } from "vue";
 import { MemberWithMembership } from "@/typings/Member";
 import { AccessLevel } from "@/typings/AccessLevel";
-import { PlusCircleIcon, XCircleIcon, TrashIcon } from "@heroicons/vue/outline";
+import {
+  PlusCircleIcon,
+  XCircleIcon,
+  TrashIcon,
+} from "@heroicons/vue/24/outline";
 import Heading from "@/components/Heading.vue";
 import { possessive } from "@/util/grammar";
 import OutlineButton from "@/components/Buttons/OutlineButton.vue";

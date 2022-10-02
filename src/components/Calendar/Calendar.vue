@@ -69,7 +69,7 @@
 </template>
 <script setup lang="ts">
 import { computed, nextTick, toRefs, onMounted } from "vue";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/solid";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/20/solid";
 import {
   isBefore,
   isEqual,

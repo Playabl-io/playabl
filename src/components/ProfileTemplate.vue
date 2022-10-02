@@ -7,7 +7,7 @@
           <div class="inline-block sm:hidden lg:inline-block">Profile</div>
         </SideNavLink>
         <SideNavLink to="/messages">
-          <MailIcon class="h-6 w-6" />
+          <EnvelopeIcon class="h-6 w-6" />
           <div class="inline-block sm:hidden lg:inline-block">Messages</div>
         </SideNavLink>
         <SideNavLink to="/notifications">
@@ -17,11 +17,11 @@
           </div>
         </SideNavLink>
         <SideNavLink to="/media">
-          <PhotographIcon class="h-6 w-6" />
+          <PhotoIcon class="h-6 w-6" />
           <div class="inline-block sm:hidden lg:inline-block">Media</div>
         </SideNavLink>
         <SideNavLink to="/settings">
-          <AdjustmentsIcon class="h-6 w-6" />
+          <AdjustmentsVerticalIcon class="h-6 w-6" />
           <div class="inline-block sm:hidden lg:inline-block">Settings</div>
         </SideNavLink>
       </template>
@@ -36,10 +36,10 @@
 import {
   BellIcon,
   UserCircleIcon,
-  AdjustmentsIcon,
-  PhotographIcon,
-  MailIcon,
-} from "@heroicons/vue/outline";
+  AdjustmentsVerticalIcon,
+  PhotoIcon,
+  EnvelopeIcon,
+} from "@heroicons/vue/24/outline";
 import SideNavTemplate from "./SideNavTemplate.vue";
 import BaseTemplate from "./BaseTemplate.vue";
 import SideNavLink from "./Navigation/SideNavLink.vue";

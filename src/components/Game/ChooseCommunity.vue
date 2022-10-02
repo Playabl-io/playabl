@@ -12,7 +12,10 @@
           <span
             class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
           >
-            <SelectorIcon class="w-5 h-5 text-gray-400" aria-hidden="true" />
+            <ChevronUpDownIcon
+              class="w-5 h-5 text-gray-400"
+              aria-hidden="true"
+            />
           </span>
         </ListboxButton>
         <transition
@@ -69,7 +72,7 @@
 <script setup lang="ts">
 import { PropType, ref, toRefs } from "vue";
 import { Community } from "@/typings/Community";
-import { CheckIcon, SelectorIcon } from "@heroicons/vue/outline";
+import { CheckIcon, ChevronUpDownIcon } from "@heroicons/vue/24/outline";
 import PrimaryButton from "../Buttons/PrimaryButton.vue";
 import {
   Listbox,

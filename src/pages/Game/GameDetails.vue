@@ -30,7 +30,7 @@
         :is-loading="state.value === 'saving'"
         @click="send('SAVE_BLOCKS')"
       >
-        <CloudUploadIcon class="w-5 h-5 mr-2" />
+        <CloudArrowUpIcon class="w-5 h-5 mr-2" />
         Save details page
       </SecondaryButton>
     </div>
@@ -58,7 +58,7 @@
                 })
               "
             >
-              <ArrowSmLeftIcon class="w-5 h-5" />
+              <ArrowSmallLeftIcon class="w-5 h-5" />
             </GhostButton>
             <GhostButton
               size="small"
@@ -70,13 +70,13 @@
                 })
               "
             >
-              <ArrowSmRightIcon class="w-5 h-5" />
+              <ArrowSmallRightIcon class="w-5 h-5" />
             </GhostButton>
             <GhostButton
               size="small"
               @click="send({ type: 'SET_ACTIVE_BLOCK', payload: { index } })"
             >
-              <PencilAltIcon class="w-5 h-5" />
+              <PencilSquareIcon class="w-5 h-5" />
             </GhostButton>
             <GhostButton
               size="small"
@@ -93,7 +93,7 @@
           </div>
         </div>
         <PrimaryButton class="col-span-full" @click="send('ADD_BLOCK')">
-          <DocumentAddIcon class="w-5 h-5 mr-2" />
+          <DocumentPlusIcon class="w-5 h-5 mr-2" />
           Add block
         </PrimaryButton>
       </div>
@@ -196,13 +196,13 @@ import { Delta } from "@vueup/vue-quill";
 import { useMachine } from "@xstate/vue";
 import { createMachine, assign } from "xstate";
 import {
-  ArrowSmLeftIcon,
-  ArrowSmRightIcon,
+  ArrowSmallLeftIcon,
+  ArrowSmallRightIcon,
   TrashIcon,
-  PencilAltIcon,
-  CloudUploadIcon,
-  DocumentAddIcon,
-} from "@heroicons/vue/outline";
+  PencilSquareIcon,
+  CloudArrowUpIcon,
+  DocumentPlusIcon,
+} from "@heroicons/vue/24/outline";
 import { store } from "@/store";
 import { gameStore } from "./gameStore";
 import { GameDetailBlock } from "@/typings/Game";
@@ -215,7 +215,6 @@ import ResponsiveQuill from "./ResponsiveQuill.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import { loadGameDetails, saveGameDetails } from "@/api/gamesAndSessions";
 import useToast from "@/components/Toast/useToast";
-import { log } from "@/util/logger";
 
 const { showSuccess, showError } = useToast();
 

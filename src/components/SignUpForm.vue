@@ -59,7 +59,7 @@
             required
           />
           <GhostButton type="button" class="ml-1" @click="showPw = !showPw">
-            <EyeOffIcon v-if="showPw" class="h-5 w-6" />
+            <EyeSlashIcon v-if="showPw" class="h-5 w-6" />
             <EyeIcon v-else class="h-5 w-6" />
           </GhostButton>
         </div>
@@ -84,7 +84,7 @@
             class="ml-1"
             @click="showConfirmPw = !showConfirmPw"
           >
-            <EyeOffIcon v-if="showConfirmPw" class="h-5 w-6" />
+            <EyeSlashIcon v-if="showConfirmPw" class="h-5 w-6" />
             <EyeIcon v-else class="h-5 w-6" />
           </GhostButton>
         </div>
@@ -126,9 +126,9 @@
 import { ref } from "vue";
 import {
   EyeIcon,
-  EyeOffIcon,
+  EyeSlashIcon,
   InformationCircleIcon,
-} from "@heroicons/vue/outline";
+} from "@heroicons/vue/24/outline";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue";
 import FormLabel from "@/components/Forms/FormLabel.vue";
 import FormInput from "@/components/Forms/FormInput.vue";

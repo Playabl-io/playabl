@@ -65,7 +65,7 @@ import {
   AccessLevel,
   ACCESS_LEVEL_TIME_DENOMINATION,
 } from "@/typings/AccessLevel";
-import { TrashIcon } from "@heroicons/vue/outline";
+import { TrashIcon } from "@heroicons/vue/24/outline";
 import FormLabel from "@/components/Forms/FormLabel.vue";
 import FormInput from "@/components/Forms/FormInput.vue";
 import Heading from "@/components/Heading.vue";

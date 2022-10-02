@@ -108,7 +108,7 @@
           class="text-brand-500 font-semibold flex items-center hover:underline"
           @click="openContactBox"
         >
-          <MailIcon class="w-6 h-6 mr-2" />
+          <EnvelopeIcon class="w-6 h-6 mr-2" />
           Contact
         </button>
         <a
@@ -182,7 +182,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { format } from "date-fns";
-import { MailIcon } from "@heroicons/vue/outline";
+import { EnvelopeIcon } from "@heroicons/vue/24/outline";
 import { communityStore } from "./communityStore";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import Heading from "@/components/Heading.vue";

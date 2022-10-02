@@ -35,7 +35,7 @@
           </router-link>
           <Tooltip v-if="community.code_of_conduct_url">
             <template #trigger="{ toggleTooltip }">
-              <BadgeCheckIcon
+              <CheckBadgeIcon
                 v-if="community.code_of_conduct_url"
                 class="text-green-500 h-6 w-6 relative"
                 @mouseenter="toggleTooltip"
@@ -48,7 +48,7 @@
           </Tooltip>
           <Tooltip v-if="community.allow_public_signup">
             <template #trigger="{ toggleTooltip }">
-              <LightningBoltIcon
+              <BoltIcon
                 v-if="community.allow_public_signup"
                 class="text-yellow-500 h-6 w-6"
                 @mouseenter="toggleTooltip"
@@ -230,7 +230,7 @@
 <script setup lang="ts">
 import Heading from "./Heading.vue";
 import { toRefs, PropType, onMounted, ref } from "vue";
-import { BadgeCheckIcon, LightningBoltIcon } from "@heroicons/vue/outline";
+import { CheckBadgeIcon, BoltIcon } from "@heroicons/vue/24/outline";
 import { Community } from "@/typings/Community";
 import Tooltip from "./Tooltip.vue";
 import { getCoverImageUrl } from "@/api/storage";

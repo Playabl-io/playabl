@@ -41,7 +41,7 @@ import { getCoverImageUrl } from "@/api/storage";
 import { store } from "@/store";
 import { FileObject } from "@/typings/Storage";
 import { onMounted, PropType, ref } from "vue";
-import { CheckIcon } from "@heroicons/vue/outline";
+import { CheckIcon } from "@heroicons/vue/24/outline";
 import { bytesToMb } from "@/util/math";
 
 const emit = defineEmits(["select"]);

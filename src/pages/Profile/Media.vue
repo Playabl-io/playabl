@@ -81,7 +81,7 @@ import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import { removeObjects, uploadToAvatarStorage } from "@/api/storage";
 import useToast from "@/components/Toast/useToast";
 import { updateProfile } from "@/api/profiles";
-import { TrashIcon } from "@heroicons/vue/outline";
+import { TrashIcon } from "@heroicons/vue/24/outline";
 
 const { showSuccess, showError } = useToast();
 

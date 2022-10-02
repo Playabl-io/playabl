@@ -53,7 +53,7 @@
           </div>
         </div>
         <OutlineButton class="mt-8 font-semibold">
-          Next <ArrowSmRightIcon class="h-6 w-6" />
+          Next <ArrowSmallRightIcon class="h-6 w-6" />
         </OutlineButton>
       </form>
     </div>
@@ -141,10 +141,10 @@
             class="mt-8 font-semibold"
             @click="send('BACK')"
           >
-            <ArrowSmLeftIcon class="h-6 w-6" /> Back
+            <ArrowSmallLeftIcon class="h-6 w-6" /> Back
           </OutlineButton>
           <PrimaryButton class="mt-8">
-            Next <ArrowSmRightIcon class="h-6 w-6" />
+            Next <ArrowSmallRightIcon class="h-6 w-6" />
           </PrimaryButton>
         </div>
       </form>
@@ -262,7 +262,7 @@
             class="mt-8 font-semibold"
             @click="send('BACK')"
           >
-            <ArrowSmLeftIcon class="h-6 w-6" /> Back
+            <ArrowSmallLeftIcon class="h-6 w-6" /> Back
           </OutlineButton>
           <PrimaryButton
             class="mt-8"
@@ -285,8 +285,11 @@ import FormLabel from "@/components/Forms/FormLabel.vue";
 import FormInput from "@/components/Forms/FormInput.vue";
 import FormCheckbox from "@/components/Forms/FormCheckbox.vue";
 import FormTextArea from "@/components/Forms/FormTextArea.vue";
-import { AtSymbolIcon } from "@heroicons/vue/outline";
-import { ArrowSmRightIcon, ArrowSmLeftIcon } from "@heroicons/vue/solid";
+import { AtSymbolIcon } from "@heroicons/vue/24/outline";
+import {
+  ArrowSmallRightIcon,
+  ArrowSmallLeftIcon,
+} from "@heroicons/vue/20/solid";
 import OutlineButton from "@/components/Buttons/OutlineButton.vue";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import LinkButton from "@/components/Buttons/LinkButton.vue";

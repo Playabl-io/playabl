@@ -38,14 +38,14 @@
           Revoke
         </p>
       </transition>
-      <BanIcon class="h-4 w-4" />
+      <NoSymbolIcon class="h-4 w-4" />
     </GhostButton>
   </div>
 </template>
 <script setup lang="ts">
 import { useClipboard } from "@vueuse/core";
 import { computed, toRefs, ref } from "vue";
-import { BanIcon } from "@heroicons/vue/outline";
+import { NoSymbolIcon } from "@heroicons/vue/24/outline";
 import LinkButton from "@/components/Buttons/LinkButton.vue";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
 

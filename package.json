@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.3",
-    "@heroicons/vue": "^1.0.6",
+    "@heroicons/vue": "^2.0.11",
     "@iconify/vue": "^3.2.1",
     "@netlify/functions": "^1.0.0",
     "@supabase/supabase-js": "^1.32.2",

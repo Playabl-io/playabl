@@ -8,7 +8,7 @@
   </button>
 </template>
 <script setup lang="ts">
-import { XCircleIcon } from "@heroicons/vue/outline";
+import { XCircleIcon } from "@heroicons/vue/24/outline";
 const props = defineProps({
   label: {
     type: String,

@@ -25,7 +25,7 @@
           >Discard</GhostButton
         >
         <PrimaryButton :is-loading="message.isSubmitting">
-          <MailIcon class="w-6 h-6 mr-2" />
+          <EnvelopeIcon class="w-6 h-6 mr-2" />
           Send
         </PrimaryButton>
       </div>
@@ -35,7 +35,7 @@
 <script setup lang="ts">
 import { PropType, ref } from "vue";
 import { MessageBoxMessage } from "./useMessageBox";
-import { MailIcon } from "@heroicons/vue/outline";
+import { EnvelopeIcon } from "@heroicons/vue/24/outline";
 import PrimaryButton from "../Buttons/PrimaryButton.vue";
 import GhostButton from "../Buttons/GhostButton.vue";
 import FormCheckbox from "../Forms/FormCheckbox.vue";

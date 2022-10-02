@@ -74,7 +74,7 @@
           :value="`${gameStore.game?.uses_safety_tools ? 'Yes' : 'No'}`"
         >
           <template #icon>
-            <SupportIcon class="w-6 h-6 mr-4" />
+            <LifebuoyIcon class="w-6 h-6 mr-4" />
           </template>
         </GameBadge>
       </div>
@@ -143,8 +143,8 @@ import {
   TagIcon,
   CogIcon,
   FilmIcon,
-  SupportIcon,
-} from "@heroicons/vue/outline";
+  LifebuoyIcon,
+} from "@heroicons/vue/24/outline";
 import GameBadge from "@/components/Game/GameBadge.vue";
 
 const router = useRouter();
