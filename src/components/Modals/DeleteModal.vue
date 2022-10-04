@@ -1,5 +1,5 @@
 <template>
-  <Modal :title="title" :open="open">
+  <BaseModal :title="title" :open="open">
     <p class="prose">
       {{ message }}
     </p>
@@ -9,12 +9,12 @@
         Delete
       </WarningButton>
     </div>
-  </Modal>
+  </BaseModal>
 </template>
 <script setup lang="ts">
 import { toRefs } from "vue";
 import WarningButton from "../Buttons/WarningButton.vue";
-import Modal from "./Modal.vue";
+import BaseModal from "./BaseModal.vue";
 import GhostButton from "../Buttons/GhostButton.vue";
 
 const props = defineProps({

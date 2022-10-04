@@ -36,7 +36,7 @@
         :count="state.context.count"
       />
       <div class="flex justify-center mt-4">
-        <Paginator
+        <PaginatorControls
           v-if="state.context.count"
           :count="state.context.count"
           :page-size="DEFAULT_PAGE_SIZE"
@@ -60,7 +60,7 @@ import { communityStore } from "./communityStore";
 import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
-import Paginator from "@/components/Paginator.vue";
+import PaginatorControls from "@/components/PaginatorControls.vue";
 import { DEFAULT_PAGE_SIZE } from "@/util/pagination";
 
 defineProps({

@@ -10,7 +10,7 @@
 defineProps({
   modelValue: {
     type: [String, Number],
-    required: true,
+    default: "",
   },
 });
 const emit = defineEmits(["update:modelValue"]);

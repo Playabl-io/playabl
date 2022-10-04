@@ -55,14 +55,17 @@
       </div>
     </section>
   </div>
-  <Drawer :open="newSessionDrawerOpen" @close="newSessionDrawerOpen = false">
+  <SideDrawer
+    :open="newSessionDrawerOpen"
+    @close="newSessionDrawerOpen = false"
+  >
     <NewSession
       :game-id="gameStore.game.id"
       :community-id="gameStore.game.community_id"
       @add-session="addSession"
     />
-  </Drawer>
-  <Drawer
+  </SideDrawer>
+  <SideDrawer
     :open="editDescriptionDrawerOpen"
     @close="editDescriptionDrawerOpen = false"
   >
@@ -71,10 +74,13 @@
       :game-id="gameStore.game.id"
       @close="editDescriptionDrawerOpen = false"
     />
-  </Drawer>
-  <Drawer :open="editDetailsDrawerOpen" @close="editDetailsDrawerOpen = false">
+  </SideDrawer>
+  <SideDrawer
+    :open="editDetailsDrawerOpen"
+    @close="editDetailsDrawerOpen = false"
+  >
     <EditGameDetails @close="editDetailsDrawerOpen = false" />
-  </Drawer>
+  </SideDrawer>
   <DeleteModal
     :is-deleting="isDeleting"
     :open="deleteSessionModalOpen"
@@ -93,11 +99,11 @@
   />
 </template>
 <script setup lang="ts">
-import { ref, toRefs } from "vue";
+import { ref } from "vue";
 import { format } from "date-fns";
 import Heading from "@/components/Heading.vue";
 import { ClockIcon, UsersIcon, TrashIcon } from "@heroicons/vue/24/outline";
-import Drawer from "@/components/Drawer.vue";
+import SideDrawer from "@/components/SideDrawer.vue";
 import NewSession from "@/pages/Game/NewSession.vue";
 import LinkButton from "@/components/Buttons/LinkButton.vue";
 import { Session } from "@/typings/Session";

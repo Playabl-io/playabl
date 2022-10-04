@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center space-x-4">
-    <Avatar :username="username" :avatar-url="avatarUrl" :size="size" />
+    <UserAvatar :username="username" :avatar-url="avatarUrl" :size="size" />
     <div class="flex flex-col">
       <p
         :class="{
@@ -22,7 +22,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from "vue";
-import Avatar from "./Avatar.vue";
+import UserAvatar from "./UserAvatar.vue";
 const props = defineProps({
   username: {
     type: String,

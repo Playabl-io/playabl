@@ -1,5 +1,5 @@
 <template>
-  <Modal title="Welcome! Let's get to know you" :open="open">
+  <BaseModal title="Welcome! Let's get to know you" :open="open">
     <DismissButton
       class="absolute top-4 right-4"
       label="Close"
@@ -42,11 +42,11 @@
         </div>
       </form>
     </div>
-  </Modal>
+  </BaseModal>
 </template>
 <script setup lang="ts">
 import { toRefs, ref } from "vue";
-import Modal from "./Modal.vue";
+import BaseModal from "./BaseModal.vue";
 import FormLabel from "@/components/Forms/FormLabel.vue";
 import FormInput from "@/components/Forms/FormInput.vue";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";

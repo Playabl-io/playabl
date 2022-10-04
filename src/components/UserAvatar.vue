@@ -32,7 +32,7 @@ const props = defineProps({
   },
 });
 
-const SIZE_MAP = {
+const SIZE_MAP: Record<string, string> = {
   regular: "h-14 w-14",
   small: "h-8 w-8",
 };

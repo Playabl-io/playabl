@@ -127,9 +127,9 @@
         <MembersSearch :expanded="expandMembers" />
       </section>
     </div>
-    <Drawer :open="editInfoDrawerOpen" @close="editInfoDrawerOpen = false">
+    <SideDrawer :open="editInfoDrawerOpen" @close="editInfoDrawerOpen = false">
       <EditCommunityInfo @close="editInfoDrawerOpen = false" />
-    </Drawer>
+    </SideDrawer>
   </section>
 </template>
 <script setup lang="ts">
@@ -153,7 +153,7 @@ import { loadCommunityAccessTimes } from "@/api/communityAccess";
 import AccessLevels from "./AccessLevels.vue";
 import InviteLink from "./InviteLink.vue";
 import CalendarCutoff from "./CalendarCutoff.vue";
-import Drawer from "@/components/Drawer.vue";
+import SideDrawer from "@/components/SideDrawer.vue";
 import EditCommunityInfo from "./EditCommunityInfo.vue";
 import { communityStore } from "./communityStore";
 import MembersSearch from "./MembersSearch.vue";

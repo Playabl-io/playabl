@@ -13,9 +13,7 @@
     >
       <button
         class="flex justify-between items-center p-4 rounded-md transition-all transform duration-150 hover:shadow-lg hover:-translate-y-1"
-        @click="
-          send({ type: 'EDIT_ACCESS_LEVEL', payload: { accessLevel: level } })
-        "
+        @click="send({ type: 'EDIT_ACCESS_LEVEL', accessLevel: level })"
       >
         <div class="flex flex-col items-start">
           <p class="block truncate font-semibold">
@@ -28,8 +26,8 @@
         <div class="flex space-x-2">
           <Tooltip v-if="level.is_mandatory">
             <template #trigger="{ toggleTooltip }">
-              <CheckCircleIcon
-                class="h-6 w-6 text-slate-700 justify-self-center"
+              <LockClosedIcon
+                class="h-5 w-5 text-slate-700 justify-self-center"
                 @mouseenter="toggleTooltip"
                 @mouseleave="toggleTooltip"
                 @focus="toggleTooltip"
@@ -40,8 +38,8 @@
           </Tooltip>
           <Tooltip v-if="level.apply_on_join">
             <template #trigger="{ toggleTooltip }">
-              <CogIcon
-                class="h-6 w-6 text-slate-700 justify-self-center"
+              <BoltIcon
+                class="h-5 w-5 text-slate-700 justify-self-center"
                 @mouseenter="toggleTooltip"
                 @mouseleave="toggleTooltip"
                 @focus="toggleTooltip"
@@ -56,7 +54,7 @@
       </button>
     </li>
   </ul>
-  <Drawer :open="state.context.drawerVisible" @close="send('CANCEL')">
+  <SideDrawer :open="state.context.drawerVisible" @close="send('CANCEL')">
     <AccessLevelForm
       :access-level="state.context.accessLevel"
       :community-id="(route.params.community_id as string)"
@@ -65,7 +63,7 @@
       @save="send('SAVE', $event)"
       @delete="send('DELETE_ACCESS_LEVEL')"
     />
-  </Drawer>
+  </SideDrawer>
   <DeleteModal
     :is-deleting="state.value === 'deleting'"
     :open="state.context.modalVisible"
@@ -78,11 +76,11 @@
 <script setup lang="ts">
 import { store } from "@/store";
 import { useRoute } from "vue-router";
-import { CheckCircleIcon, CogIcon } from "@heroicons/vue/24/outline";
+import { LockClosedIcon, BoltIcon } from "@heroicons/vue/24/outline";
 import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/vue";
 import LinkButton from "@/components/Buttons/LinkButton.vue";
-import Drawer from "@/components/Drawer.vue";
+import SideDrawer from "@/components/SideDrawer.vue";
 import AccessLevelForm from "./AccessForm.vue";
 import DeleteModal from "@/components/Modals/DeleteModal.vue";
 import {
@@ -98,13 +96,24 @@ import Tooltip from "@/components/Tooltip.vue";
 const route = useRoute();
 const { showSuccess, showError } = useToast();
 
-const accessLevelsMachine = createMachine<{
-  accessLevel?: AccessLevel;
-  drawerVisible: boolean;
-  modalVisible: boolean;
-}>(
+const accessLevelsMachine = createMachine(
   {
+    schema: {
+      context: {} as {
+        accessLevel?: AccessLevel;
+        drawerVisible: boolean;
+        modalVisible: boolean;
+      },
+      events: {} as
+        | { type: "EDIT_ACCESS_LEVEL"; accessLevel: AccessLevel }
+        | { type: "NEW_ACCESS_LEVEL" }
+        | { type: "CANCEL" }
+        | { type: "DELETE"; accessLevel: AccessLevel }
+        | { type: "SAVE"; accessLevel: AccessLevel }
+        | { type: "DELETE_ACCESS_LEVEL" },
+    },
     id: "accessLevelsMachine",
+    predictableActionArguments: true,
     context: {
       accessLevel: undefined,
       drawerVisible: false,
@@ -141,7 +150,11 @@ const accessLevelsMachine = createMachine<{
       },
       updating: {
         invoke: {
-          src: (context, event) => updateAccessLevel(event.accessLevel),
+          src: async (context, event) => {
+            if (event.type === "SAVE") {
+              return updateAccessLevel(event.accessLevel);
+            }
+          },
           onDone: {
             target: "closed",
             actions: ["updateAccessLevel", "clearAccessLevel", "hideDrawer"],
@@ -165,11 +178,14 @@ const accessLevelsMachine = createMachine<{
       },
       creating: {
         invoke: {
-          src: (context, event) =>
-            createAccessLevel({
-              ...event.accessLevel,
-              community_id: route.params.community_id,
-            }),
+          src: async (context, event) => {
+            if (event.type === "SAVE") {
+              return createAccessLevel({
+                ...event.accessLevel,
+                community_id: route.params.community_id as string,
+              });
+            }
+          },
           onDone: {
             target: "closed",
             actions: ["addAccessLevel", "hideDrawer"],
@@ -193,11 +209,14 @@ const accessLevelsMachine = createMachine<{
       },
       deleting: {
         invoke: {
-          src: (context, event) =>
-            deleteAccessLevel({
-              ...event.accessLevel,
-              community_id: route.params.community_id,
-            }),
+          src: async (context, event) => {
+            if (event.type === "DELETE") {
+              return deleteAccessLevel({
+                ...event.accessLevel,
+                community_id: route.params.community_id as string,
+              });
+            }
+          },
           onDone: {
             target: "closed",
             actions: [
@@ -230,34 +249,42 @@ const accessLevelsMachine = createMachine<{
         modalVisible: (context, event) => false,
       }),
       assignAccessLevel: assign({
-        accessLevel: (context, event) => event.payload.accessLevel,
+        accessLevel: (context, event) => {
+          if (event.type === "EDIT_ACCESS_LEVEL") {
+            return event.accessLevel;
+          }
+        },
       }),
       clearAccessLevel: assign({
         accessLevel: (_, __) => undefined,
       }),
-      updateAccessLevel: (context, event) => {
+      updateAccessLevel: (context, event: Record<string, unknown>) => {
+        const data = event.data as AccessLevel;
         store.communityAccessLevels = store.communityAccessLevels.map(
           (level) => {
-            if (level.id === event.data.id) {
-              return event.data;
+            if (level.id === data.id) {
+              return data;
             }
             return level;
           }
         );
         showSuccess({ message: "Access rule updated" });
       },
-      addAccessLevel: (context, event) => {
-        store.communityAccessLevels.push(event.data);
+      addAccessLevel: (context, event: Record<string, unknown>) => {
+        const data = event.data as AccessLevel;
+        store.communityAccessLevels.push(data);
         showSuccess({ message: "Access rule added" });
       },
-      removeAccessLevel: (context, event) => {
+      removeAccessLevel: (context, event: Record<string, unknown>) => {
+        const data = event.data as AccessLevel;
         store.communityAccessLevels = store.communityAccessLevels.filter(
-          (level) => level.id !== event.data.id
+          (level) => level.id !== data.id
         );
         showSuccess({ message: "Access rule deleted" });
       },
-      showError: (context, event) => {
-        showError({ message: event?.data?.message || "Something went wrong" });
+      showError: (context, event: Record<string, unknown>) => {
+        // @ts-expect-error cannot type xstate event to provide enough info
+        showError({ message: event.data?.message || "Something went wrong" });
       },
     },
   }

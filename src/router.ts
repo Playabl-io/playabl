@@ -1,13 +1,13 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import Index from "@/pages/Index.vue";
-import Invite from "@/pages/Invite.vue";
+import IndexPage from "@/pages/IndexPage.vue";
+import InvitePage from "@/pages/InvitePage.vue";
 import SignIn from "@/pages/SignIn.vue";
-import Profile from "@/pages/Profile/Profile.vue";
-import Notifications from "@/pages/Profile/Notifications.vue";
-import Media from "@/pages/Profile/Media.vue";
-import Settings from "@/pages/Profile/Settings.vue";
-import Messages from "@/pages/Profile/Messages.vue";
+import ProfilePage from "@/pages/Profile/ProfilePage.vue";
+import NotificationsPage from "@/pages/Profile/NotificationsPage.vue";
+import MediaPage from "@/pages/Profile/MediaPage.vue";
+import SettingsPage from "@/pages/Profile/SettingsPage.vue";
+import MessagesPage from "@/pages/Profile/MessagesPage.vue";
 import CommunitiesAll from "@/pages/CommunitiesAll.vue";
 import CommunitiesJoined from "@/pages/CommunitiesJoined.vue";
 import CommunitiesManage from "@/pages/CommunitiesManage.vue";
@@ -20,21 +20,21 @@ import GamesManage from "@/pages/GamesManage.vue";
 import GameBase from "@/pages/Game/GameBase.vue";
 import GameHome from "@/pages/Game/GameHome.vue";
 import NotFound from "@/pages/NotFound.vue";
-import TOS from "@/pages/TOS.vue";
+import TosPage from "@/pages/TosPage.vue";
 import PrivacyPolicy from "@/pages/PrivacyPolicy.vue";
 import { store } from "./store";
 
 const routes = [
   {
     path: "/",
-    component: Index,
+    component: IndexPage,
     meta: {
       title: "Playabl",
     },
   },
   {
     path: "/invite/:invite_id",
-    component: Invite,
+    component: InvitePage,
     meta: {
       title: "Playabl",
     },
@@ -48,7 +48,7 @@ const routes = [
   },
   {
     path: "/profile",
-    component: Profile,
+    component: ProfilePage,
     meta: {
       title: "Playabl - Profile",
       requiresAuth: true,
@@ -56,7 +56,7 @@ const routes = [
   },
   {
     path: "/notifications",
-    component: Notifications,
+    component: NotificationsPage,
     meta: {
       title: "Playabl - Notifications",
       requiresAuth: true,
@@ -64,7 +64,7 @@ const routes = [
   },
   {
     path: "/media",
-    component: Media,
+    component: MediaPage,
     meta: {
       title: "Playabl - Media",
       requiresAuth: true,
@@ -72,7 +72,7 @@ const routes = [
   },
   {
     path: "/settings",
-    component: Settings,
+    component: SettingsPage,
     meta: {
       title: "Playabl - Settings",
       requiresAuth: true,
@@ -80,7 +80,7 @@ const routes = [
   },
   {
     path: "/messages",
-    component: Messages,
+    component: MessagesPage,
     meta: {
       title: "Playabl - Messages",
       requiresAuth: true,
@@ -218,7 +218,7 @@ const routes = [
   },
   {
     path: "/tos",
-    component: TOS,
+    component: TosPage,
     meta: {
       title: "Playable - Terms of Service",
     },

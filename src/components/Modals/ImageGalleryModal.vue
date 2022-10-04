@@ -1,5 +1,5 @@
 <template>
-  <Modal title="Select an image" :open="open">
+  <BaseModal title="Select an image" :open="open">
     <DismissButton
       class="absolute top-4 right-4"
       label="Close"
@@ -14,12 +14,12 @@
         @select="emit('select', $event)"
       />
     </section>
-  </Modal>
+  </BaseModal>
 </template>
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { supabase } from "@/supabase";
-import Modal from "./Modal.vue";
+import BaseModal from "./BaseModal.vue";
 import { store } from "@/store";
 import { FileObject } from "@/typings/Storage";
 import ImageButton from "../ImageButton.vue";

@@ -9,8 +9,10 @@ export function log({
   error?: Error | PostgrestError | unknown;
   message?: string;
 }) {
-  if (error?.message === "JWT expired") {
-    window.location.href = `/login?redirect=${window.location.href}`;
+  if (error instanceof Error) {
+    if (error?.message === "JWT expired") {
+      window.location.href = `/login?redirect=${window.location.href}`;
+    }
   }
   if (level === "error") {
     console.error(error || message);
