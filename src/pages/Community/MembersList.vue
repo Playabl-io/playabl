@@ -160,6 +160,7 @@ const memberManagementMachine = createMachine<{
   modalVisible: boolean;
 }>(
   {
+    predictableActionArguments: true,
     id: "memberManagementMachine",
     context: {
       member: undefined,
@@ -260,22 +261,22 @@ const memberManagementMachine = createMachine<{
         members: (context, event) => event.members,
       }),
       clearMember: assign({
-        member: (_, __) => undefined,
+        member: (_) => undefined,
       }),
       clearMembers: assign({
-        members: (_, __) => [],
+        members: (_) => [],
       }),
       showDrawer: assign({
-        drawerVisible: (context, event) => true,
+        drawerVisible: (_) => true,
       }),
       hideDrawer: assign({
-        drawerVisible: (context, event) => false,
+        drawerVisible: (_) => false,
       }),
       showModal: assign({
-        modalVisible: (context, event) => true,
+        modalVisible: (_) => true,
       }),
       hideModal: assign({
-        modalVisible: (context, event) => false,
+        modalVisible: (_) => false,
       }),
       removeMember: assign({
         member: (context) => {

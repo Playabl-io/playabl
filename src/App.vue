@@ -22,9 +22,11 @@ import { log } from "./util/logger";
 import { Notification } from "./typings/Notification";
 
 const user = supabase.auth.user();
-
 if (user) {
-  store.user = user;
+  store.user = {
+    id: user.id,
+    email: user.email || "",
+  };
 }
 
 const route = useRoute();

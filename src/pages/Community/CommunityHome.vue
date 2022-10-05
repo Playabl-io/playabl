@@ -212,6 +212,7 @@ const isCommunityMember = computed(() => {
 
 onMounted(() => {
   if (communityStore.community.twitter) {
+    // @ts-expect-error TS doesn't know we loaded twitter
     window.twttr?.widgets.createTimeline(
       {
         sourceType: "profile",

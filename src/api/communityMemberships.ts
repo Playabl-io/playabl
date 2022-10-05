@@ -66,8 +66,9 @@ export async function searchCommunityMembers(query: {
   from: number;
   to: number;
 }) {
-  if (typeof query.roleId === "number") {
-    return searchByTermAndRole(query);
+  const roleId = query.roleId;
+  if (roleId) {
+    return searchByTermAndRole({ ...query, roleId });
   }
   return searchByTermAlone(query);
 }

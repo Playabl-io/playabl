@@ -21,10 +21,10 @@ import { onMounted, ref } from "vue";
 import { supabase } from "@/supabase";
 import BaseModal from "./BaseModal.vue";
 import { store } from "@/store";
-import { FileObject } from "@/typings/Storage";
 import ImageButton from "../ImageButton.vue";
 import LoadingSpinner from "../LoadingSpinner.vue";
 import DismissButton from "../Buttons/DismissButton.vue";
+import { FileObject } from "@supabase/storage-js";
 
 const emit = defineEmits(["select", "close"]);
 

@@ -42,12 +42,12 @@ import useToast from "@/components/Toast/useToast";
 import { log } from "@/util/logger";
 import ImageGalleryModal from "@/components/Modals/ImageGalleryModal.vue";
 import LinkButton from "@/components/Buttons/LinkButton.vue";
-import { FileObject } from "@/typings/Storage";
+import { EnhancedFileObject } from "@/typings/Storage";
 
 const { showError, showSuccess } = useToast();
 
 const newCoverImage = ref();
-const existingImageToUse = ref<{ image: FileObject; src: string }>();
+const existingImageToUse = ref<{ image: EnhancedFileObject; src: string }>();
 const isUpdating = ref(false);
 const showGallery = ref(false);
 
@@ -67,7 +67,10 @@ function onFileChange(event: Event) {
   }
 }
 
-function handleImageSelect(selection: { image: FileObject; src: string }) {
+function handleImageSelect(selection: {
+  image: EnhancedFileObject;
+  src: string;
+}) {
   existingImageToUse.value = selection;
   showGallery.value = false;
 }

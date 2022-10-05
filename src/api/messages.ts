@@ -1,12 +1,13 @@
 import { supabase } from "@/supabase";
+import { Message } from "@/typings/Message";
 import { log } from "@/util/logger";
 import axios from "axios";
 
-export async function loadMessages(topicId: string) {
+export async function loadMessages(topicId: number) {
   const { data, error, status } = await supabase
-    .from("messages")
+    .from<Message>("messages")
     .select("*")
-    .eq("topic_id", topicId);
+    .eq("topic_id", String(topicId));
   if (error && status !== 406) {
     log({ error });
   }

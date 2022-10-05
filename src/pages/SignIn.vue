@@ -108,9 +108,14 @@ const handleLogin = async () => {
       email: email.value,
       password: password.value,
     });
-    if (error) throw error;
-    // makes sure other pages don't immediately redirect while App loads profile
-    store.user = user;
+    if (error) throw new Error(error.message);
+    if (user) {
+      // makes sure other pages don't immediately redirect while App loads profile
+      store.user = {
+        id: user.id,
+        email: user?.email || "",
+      };
+    }
     const redirect = route.query.redirect;
     if (redirect && typeof redirect === "string") {
       router.push(redirect);
@@ -118,7 +123,9 @@ const handleLogin = async () => {
       router.push("/profile");
     }
   } catch (error) {
-    showError({ message: error?.error_description || error?.message });
+    if (error instanceof Error) {
+      showError({ message: error?.message });
+    }
     log({ error });
   } finally {
     loading.value = false;
@@ -134,7 +141,10 @@ async function signInWithGoogle() {
     showError({ message: "Unable to sign in with Google" });
   }
   if (user) {
-    store.user = user;
+    store.user = {
+      id: user.id,
+      email: user?.email || "",
+    };
   }
 }
 </script>

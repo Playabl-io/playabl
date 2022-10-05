@@ -98,14 +98,16 @@ const handleSignUp = async ({
       email,
       password,
     });
-    if (error) throw error;
+    if (error) throw new Error(error.message);
     if (user) {
       store.user = await loadProfile(user.id);
       showSuccess({ message: "Account created" });
       emit("signedIn");
     }
   } catch (error) {
-    showError({ message: error?.error_description || error?.message });
+    if (error instanceof Error) {
+      showError({ message: error?.message });
+    }
     log({ error });
   } finally {
     loading.value = false;
@@ -125,7 +127,9 @@ const handleLogin = async () => {
     }
     if (error) throw error;
   } catch (error) {
-    showError({ message: error?.error_description || error?.message });
+    if (error instanceof Error) {
+      showError({ message: error?.message });
+    }
     log({ error });
   } finally {
     loading.value = false;
@@ -141,7 +145,10 @@ async function signInWithGoogle() {
     showError({ message: "Unable to sign in with Google" });
   }
   if (user) {
-    store.user = user;
+    store.user = {
+      id: user.id,
+      email: user?.email || "",
+    };
   }
 }
 </script>

@@ -314,7 +314,7 @@ import AddSessions from "@/components/Game/AddSessions.vue";
 import { uploadToCoverImageStorage } from "@/api/storage";
 import { Delta } from "@vueup/vue-quill";
 import ImageGalleryModal from "@/components/Modals/ImageGalleryModal.vue";
-import { FileObject } from "@/typings/Storage";
+import { EnhancedFileObject } from "@/typings/Storage";
 import gameSystemList from "@/util/gameSystemList";
 import FilterDropdown from "@/components/Dropdown/FilterDropdown.vue";
 
@@ -327,6 +327,7 @@ const newGameMachine = createMachine<{
   enabledAccessLevels: number[];
 }>(
   {
+    predictableActionArguments: true,
     context: {
       communities: [],
       selectedCommunity: undefined,
@@ -446,9 +447,12 @@ const newGameMachine = createMachine<{
 
 const { state, send } = useMachine(newGameMachine);
 
-const existingImageToUse = ref<{ image: FileObject; src: string }>();
+const existingImageToUse = ref<{ image: EnhancedFileObject; src: string }>();
 const showGallery = ref(false);
-function handleImageSelect(selection: { image: FileObject; src: string }) {
+function handleImageSelect(selection: {
+  image: EnhancedFileObject;
+  src: string;
+}) {
   existingImageToUse.value = selection;
   showGallery.value = false;
 }

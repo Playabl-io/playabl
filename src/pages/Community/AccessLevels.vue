@@ -237,16 +237,16 @@ const accessLevelsMachine = createMachine(
   {
     actions: {
       showDrawer: assign({
-        drawerVisible: (context, event) => true,
+        drawerVisible: (context) => true,
       }),
       hideDrawer: assign({
-        drawerVisible: (context, event) => false,
+        drawerVisible: (context) => false,
       }),
       showModal: assign({
-        modalVisible: (context, event) => true,
+        modalVisible: (context) => true,
       }),
       hideModal: assign({
-        modalVisible: (context, event) => false,
+        modalVisible: (context) => false,
       }),
       assignAccessLevel: assign({
         accessLevel: (context, event) => {

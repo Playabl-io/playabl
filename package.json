@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "vite",
-    "type-check": "vue-tsc --noEmit",
+    "type-check": "vue-tsc --noEmit --skipLibCheck",
     "devtools": "vue-devtools",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite build && vite preview",
@@ -19,7 +19,7 @@
     "@heroicons/vue": "^2.0.11",
     "@iconify/vue": "^3.2.1",
     "@netlify/functions": "^1.0.0",
-    "@supabase/supabase-js": "^1.32.2",
+    "@supabase/supabase-js": "^1.35.7",
     "@tiptap/core": "^2.0.0-beta.1",
     "@tiptap/extension-placeholder": "^2.0.0-beta.48",
     "@tiptap/starter-kit": "^2.0.0-beta.184",

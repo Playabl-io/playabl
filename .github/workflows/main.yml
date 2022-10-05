@@ -54,9 +54,9 @@ jobs:
       # - name: Run tests
       #   run: yarn test:ci
 
-      - name: Upload artifacts on fail
-        uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: videos
-          path: tests/e2e/videos/
+      # - name: Upload artifacts on fail
+      #   uses: actions/upload-artifact@v2
+      #   if: failure()
+      #   with:
+      #     name: videos
+      #     path: tests/e2e/videos/

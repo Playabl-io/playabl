@@ -113,12 +113,14 @@ const updateProfile = async () => {
       )
       .eq("id", store.user?.id);
 
-    if (error) throw error;
+    if (error) throw new Error(error.message);
 
     showSuccess({ message: "Profile updated" });
     emit("close");
   } catch (error) {
-    showError({ message: error?.error_description || error?.message });
+    if (error instanceof Error) {
+      showError({ message: error.message });
+    }
     log({ error });
   } finally {
     loading.value = false;

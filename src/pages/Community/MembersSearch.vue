@@ -70,25 +70,28 @@ defineProps({
   },
 });
 
-const searchMachine = createMachine<
+const searchMachine = createMachine(
   {
-    searchTerm: string;
-    roleId?: number;
-    pageSize: number;
-    page: number;
-    from: number;
-    to: number;
-    hasPriorPage: boolean;
-    hasNextPage: boolean;
-    results: unknown[];
-    count?: number;
-  },
-  | { type: "SEARCH"; searchTerm: string; roleId?: number }
-  | { type: "PAGE_NEXT" }
-  | { type: "PAGE_PREVIOUS" }
-  | { type: "PAGE_SELECT"; page: number }
->(
-  {
+    schema: {
+      context: {} as {
+        searchTerm: string;
+        roleId?: number;
+        pageSize: number;
+        page: number;
+        from: number;
+        to: number;
+        hasPriorPage: boolean;
+        hasNextPage: boolean;
+        results: unknown[];
+        count?: number;
+      },
+      events: {} as
+        | { type: "SEARCH"; searchTerm: string; roleId?: number }
+        | { type: "PAGE_NEXT" }
+        | { type: "PAGE_PREVIOUS" }
+        | { type: "PAGE_SELECT"; page: number },
+    },
+    predictableActionArguments: true,
     id: "searchMachine",
     context: {
       searchTerm: "",
@@ -150,24 +153,40 @@ const searchMachine = createMachine<
   {
     actions: {
       assignSearchTerm: assign({
-        searchTerm: (context, event) => event.searchTerm,
+        searchTerm: (context, event) => {
+          if (event.type !== "SEARCH") {
+            throw new Error("incorrect event sent to assignSearchTerm");
+          }
+          return event.searchTerm;
+        },
       }),
       assignRoleFilter: assign({
-        roleId: (context, event) => event.roleId,
+        roleId: (context, event) => {
+          if (event.type !== "SEARCH") {
+            throw new Error("incorrect event sent to assignRoleFilter");
+          }
+          return event.roleId;
+        },
       }),
       resetPaging: assign({
-        from: (context, event) => 0,
-        to: (context, event) => context.pageSize - 1,
-        page: 0,
+        from: (_) => 0,
+        // minus 1 because zero index
+        to: (context) => context.pageSize - 1,
+        page: (_) => 0,
       }),
       assignResults: assign({
+        // @ts-expect-error xstate doesn't have types for done
         results: (context, event) => event.data.data,
+        // @ts-expect-error xstate doesn't have types for done
         hasNextPage: (context, event) => event.data.count > context.to + 1,
-        hasPriorPage: (context, event) => context.from > 0,
+        hasPriorPage: (context) => context.from > 0,
+        // @ts-expect-error xstate doesn't have types for done
         count: (context, event) => event.data.count,
       }),
       assignToCommunityStore: (context, event) => {
+        // @ts-expect-error xstate doesn't have types for done
         communityStore.membersCount = event.data.count;
+        // @ts-expect-error xstate doesn't have types for done
         communityStore.members = event.data.data?.map((member) => {
           const communityMembership = member.community_memberships[0];
           return {
@@ -188,10 +207,24 @@ const searchMachine = createMachine<
         page: (context) => context.page - 1,
       }),
       setPage: assign({
-        from: (context, event) => event.page * context.pageSize,
-        to: (context, event) =>
-          event.page * context.pageSize + (context.pageSize - 1),
-        page: (context, event) => event.page,
+        from: (context, event) => {
+          if (event.type !== "PAGE_SELECT") {
+            throw new Error("incorrect event sent to setPage");
+          }
+          return event.page * context.pageSize;
+        },
+        to: (context, event) => {
+          if (event.type !== "PAGE_SELECT") {
+            throw new Error("incorrect event sent to setPage");
+          }
+          return event.page * context.pageSize + (context.pageSize - 1);
+        },
+        page: (context, event) => {
+          if (event.type !== "PAGE_SELECT") {
+            throw new Error("incorrect event sent to setPage");
+          }
+          return event.page;
+        },
       }),
     },
   }

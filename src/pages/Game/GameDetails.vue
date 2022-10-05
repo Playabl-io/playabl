@@ -103,12 +103,7 @@
           <FormInput
             :value="activeBlock?.title"
             required
-            @input="
-              send({
-                type: 'UPDATE_BLOCK',
-                payload: { title: $event.target?.value },
-              })
-            "
+            @input="updateBlockProperty($event, 'title')"
           />
         </div>
         <div class="flex flex-col mt-6">
@@ -129,12 +124,7 @@
                 name="width"
                 class="text-blue-500"
                 :checked="activeBlock?.width === 'col-span-full'"
-                @change="
-                  send({
-                    type: 'UPDATE_BLOCK',
-                    payload: { width: $event.target?.value },
-                  })
-                "
+                @change="updateBlockProperty($event, 'width')"
               />
               Full
             </label>
@@ -153,12 +143,7 @@
                 name="width"
                 class="text-blue-500"
                 :checked="activeBlock?.width === 'w-full'"
-                @change="
-                  send({
-                    type: 'UPDATE_BLOCK',
-                    payload: { width: $event.target?.value },
-                  })
-                "
+                @change="updateBlockProperty($event, 'width')"
               />
               Half
             </label>
@@ -253,6 +238,7 @@ const gameDetailsMachine = createMachine(
         | { type: "REMOVE_BLOCK"; payload: { index: number } }
         | { type: "SAVE_BLOCKS" },
     },
+    predictableActionArguments: true,
     id: "gameDetailsMachine",
     initial: "loading",
     context: {
@@ -338,12 +324,14 @@ const gameDetailsMachine = createMachine(
     actions: {
       setBlocks: assign((context, event) => {
         return {
+          // @ts-expect-error xstate doesn't have the right event
           blocks: event.data?.detail_blocks ?? [],
           activeIndex: 0,
         };
       }),
       setGameDetailsId: assign((context, event) => {
         return {
+          // @ts-expect-error xstate doesn't have the right event
           gameDetailsId: event.data?.id,
         };
       }),
@@ -367,6 +355,9 @@ const gameDetailsMachine = createMachine(
         };
       }),
       updateBlock: assign((context, event) => {
+        if (event.type !== "UPDATE_BLOCK") {
+          throw new Error("Incorrect event sent to updateBlock");
+        }
         const block = context.blocks[context.activeIndex];
         const blocks = [...context.blocks];
         blocks.splice(context.activeIndex, 1, {
@@ -379,6 +370,9 @@ const gameDetailsMachine = createMachine(
         };
       }),
       setActiveBlock: assign((context, event) => {
+        if (event.type !== "SET_ACTIVE_BLOCK") {
+          throw new Error("Incorrect event sent to setActiveBlock");
+        }
         const activeBlock = context.blocks[event.payload.index];
         editor.value.setContents(activeBlock.content);
         return {
@@ -387,6 +381,9 @@ const gameDetailsMachine = createMachine(
       }),
       swapBlocks: assign({
         blocks: (context, event) => {
+          if (event.type !== "MOVE_BLOCK") {
+            throw new Error("Incorrect event sent to swapBlocks");
+          }
           const blockA = context.blocks[event.payload.currentIndex];
           const blockB = context.blocks[event.payload.nextIndex];
           const nextBlocks = [...context.blocks];
@@ -396,6 +393,9 @@ const gameDetailsMachine = createMachine(
         },
       }),
       removeBlock: assign((context, event) => {
+        if (event.type !== "REMOVE_BLOCK") {
+          throw new Error("Incorrect event sent to removeBlock");
+        }
         const nextBlocks = [...context.blocks];
         nextBlocks.splice(event.payload.index, 1);
         const nextActiveIndex = Math.min(
@@ -426,6 +426,14 @@ const { state, send } = useMachine(gameDetailsMachine);
 const activeBlock = computed(
   () => state.value.context.blocks[state.value.context.activeIndex]
 );
+
+function updateBlockProperty(event: Event, property: string) {
+  const target = event.target as HTMLInputElement;
+  send({
+    type: "UPDATE_BLOCK",
+    payload: { [property]: target.value },
+  });
+}
 </script>
 <style scoped>
 .edit-grid {
