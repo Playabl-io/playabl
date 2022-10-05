@@ -5,7 +5,7 @@
     "dev": "vite",
     "type-check": "vue-tsc --noEmit --skipLibCheck",
     "devtools": "vue-devtools",
-    "build": "vue-tsc --noEmit && vite build",
+    "build": "vue-tsc --noEmit --skipLibCheck && vite build",
     "preview": "vite build && vite preview",
     "start": "yarn dev & wait-on tcp:3000 -v",
     "test": "cypress open",
