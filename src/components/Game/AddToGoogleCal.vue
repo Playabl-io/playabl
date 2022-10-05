@@ -4,8 +4,8 @@
 action=TEMPLATE
 &text=${gameStore.game.title}
 &dates=${formattedStartTime}/${formattedEndTime}
-&details=Game details: https://playabl.io/games/${gameStore.game.id}
-&location=https://playabl.io/games/${gameStore.game.id}`"
+&details=Game details: https://app.playabl.io/games/${gameStore.game.id}
+&location=https://app.playabl.io/games/${gameStore.game.id}`"
     target="_blank"
     rel="noreferrer noopener"
     class="flex items-center gap-2 p-2 bg-white rounded-md hover:shadow-md focus-styles text-sm font-medium"
@@ -33,12 +33,12 @@ const props = defineProps({
 
 const formattedStartTime = computed(() => {
   const dateString = format(props.startTime, "yyyyMMdd");
-  const timeString = format(props.startTime, "kkmmX");
+  const timeString = format(props.startTime, "kkmmssX");
   return `${dateString}T${timeString}`;
 });
 const formattedEndTime = computed(() => {
   const dateString = format(props.endTime, "yyyyMMdd");
-  const timeString = format(props.endTime, "kkmmX");
+  const timeString = format(props.endTime, "kkmmssX");
   return `${dateString}T${timeString}`;
 });
 </script>

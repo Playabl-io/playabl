@@ -1,7 +1,7 @@
 <template>
   <li class="py-4">
     <div v-if="gameStore.attendees[id]" class="flex items-center space-x-4">
-      <Avatar
+      <UserAvatar
         :username="display"
         :avatar-url="gameStore.attendees[id].avatar_url"
         size="regular"
@@ -22,7 +22,7 @@
 import { computed } from "vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import { gameStore } from "./gameStore";
-import Avatar from "@/components/Avatar.vue";
+import UserAvatar from "@/components/UserAvatar.vue";
 
 const props = defineProps({
   id: {

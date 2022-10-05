@@ -9,7 +9,7 @@
       leave-from-class="opacity-1 scale-100"
       move-class="transform-gpu duration-300 ease-in"
     >
-      <Message
+      <MessageEditor
         v-for="message in messages"
         :key="message.id"
         class="w-full max-w-md shadow-md"
@@ -21,7 +21,7 @@
 </template>
 <script setup lang="ts">
 import useMessageBox from "./useMessageBox";
-import Message from "./Message.vue";
+import MessageEditor from "./MessageEditor.vue";
 
 const { messages, closeMessageBox } = useMessageBox();
 </script>

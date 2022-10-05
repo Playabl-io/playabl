@@ -71,7 +71,7 @@
         :key="admin.id"
         class="flex gap-4 items-center"
       >
-        <Avatar
+        <UserAvatar
           :username="admin.username || admin.email"
           :avatar-url="admin.avatar_url"
         />
@@ -191,7 +191,7 @@ import { store } from "@/store";
 import { joinCommunity } from "@/api/communities";
 import useToast from "@/components/Toast/useToast";
 import { log } from "@/util/logger";
-import Avatar from "@/components/Avatar.vue";
+import UserAvatar from "@/components/UserAvatar.vue";
 import useMessageBox from "@/components/MessageBox/useMessageBox";
 import { sendMessageToCommunity } from "@/api/messages";
 
@@ -212,6 +212,7 @@ const isCommunityMember = computed(() => {
 
 onMounted(() => {
   if (communityStore.community.twitter) {
+    // @ts-expect-error TS doesn't know we loaded twitter
     window.twttr?.widgets.createTimeline(
       {
         sourceType: "profile",

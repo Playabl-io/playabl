@@ -102,12 +102,12 @@ import Tooltip from "@/components/Tooltip.vue";
 import Heading from "@/components/Heading.vue";
 import SortMenu from "@/components/Menus/SortMenu.vue";
 
-interface GameSession extends Session {
+type GameSession = Omit<Session, "game_id"> & {
   game_id: {
     title: string;
     id: number;
   };
-}
+};
 
 const sessionsByMonth = ref<Record<number, GameSession[]>>({});
 const referenceDate = ref<Date>(startOfMonth(new Date()));

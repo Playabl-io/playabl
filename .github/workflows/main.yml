@@ -40,19 +40,23 @@ jobs:
           steps.cache-yarn-cache.outputs.cache-hit != 'true'
         run: yarn --frozen-lockfile
 
+      ## Build
+      - name: Build
+        run: yarn build
+
       ## Test
       # - name: Run component tests
       #   run: yarn test:ci-components
 
-      - name: Start Vite devserver
-        run: yarn start
+      # - name: Start Vite devserver
+      #   run: yarn start
 
-      - name: Run tests
-        run: yarn test:ci
+      # - name: Run tests
+      #   run: yarn test:ci
 
-      - name: Upload artifacts on fail
-        uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: videos
-          path: tests/e2e/videos/
+      # - name: Upload artifacts on fail
+      #   uses: actions/upload-artifact@v2
+      #   if: failure()
+      #   with:
+      #     name: videos
+      #     path: tests/e2e/videos/

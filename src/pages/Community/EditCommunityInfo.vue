@@ -143,13 +143,15 @@ const enabledSocials = ref<string[]>(
   }, [] as string[])
 );
 const description = ref(communityStore.community.description ?? "");
-const website = ref(communityStore.community.website);
-const codeOfConductUrl = ref(communityStore.community.code_of_conduct_url);
-const twitter = ref(communityStore.community.twitter);
-const facebook = ref(communityStore.community.facebook);
-const discord = ref(communityStore.community.discord);
-const slack = ref(communityStore.community.slack);
-const patreon = ref(communityStore.community.patreon);
+const website = ref(communityStore.community.website ?? "");
+const codeOfConductUrl = ref(
+  communityStore.community.code_of_conduct_url ?? ""
+);
+const twitter = ref(communityStore.community.twitter ?? "");
+const facebook = ref(communityStore.community.facebook ?? "");
+const discord = ref(communityStore.community.discord ?? "");
+const slack = ref(communityStore.community.slack ?? "");
+const patreon = ref(communityStore.community.patreon ?? "");
 
 const isSaving = ref(false);
 

@@ -44,7 +44,7 @@ export async function loadUpcomingCommunityGamesWithCount(communityId: string) {
 export async function loadUpcomingJoinedGames(userId: string) {
   const today = new Date();
   const { data, error } = await supabase
-    .from<GameListing>("games")
+    .from("games")
     .select("*, community_id (id, name), sessions!inner(*)")
     .contains("sessions.rsvps", [userId])
     .gte("sessions.start_time", today.getTime())
@@ -60,7 +60,7 @@ export async function loadUpcomingJoinedGames(userId: string) {
 export async function loadChronologicalCommunityGames(communityIds: string[]) {
   const today = new Date();
   const { data, error } = await supabase
-    .from<GameListing>("games")
+    .from("games")
     .select("*, community_id (id, name), sessions!inner(*)")
     .is("deleted_at", null)
     .gte("sessions.start_time", today.getTime())
@@ -77,7 +77,7 @@ export async function loadChronologicalCommunityGames(communityIds: string[]) {
 export async function loadCommunityGamesWithOpenings(communityIds: string[]) {
   const today = new Date();
   const { data, error } = await supabase
-    .from<GameListing>("games")
+    .from("games")
     .select(
       "*, community_id (id, name), sessions!inner(id, start_time, has_openings)"
     )
@@ -97,7 +97,7 @@ export async function loadCommunityGamesWithOpenings(communityIds: string[]) {
 export async function loadManagedGames(userId: string) {
   const today = new Date();
   const { data, error } = await supabase
-    .from<GameListing>("games")
+    .from("games")
     .select("*, community_id (id, name), sessions!inner(*)")
     .gte("sessions.start_time", today.getTime())
     .eq("creator_id", userId)
@@ -114,7 +114,7 @@ export async function loadManagedGames(userId: string) {
 export async function loadPastManagedGames(userId: string) {
   const today = new Date();
   const { data, error } = await supabase
-    .from<GameListing>("games")
+    .from("games")
     .select("*, community_id (id, name), sessions!inner(*)")
     .lt("sessions.start_time", today.getTime())
     .eq("creator_id", userId)

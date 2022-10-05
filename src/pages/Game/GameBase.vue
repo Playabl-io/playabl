@@ -175,6 +175,7 @@ async function getGameData() {
     .from<GameWithCommunityAndSessions>("games")
     .select("*, creator_id (*), sessions (*), community_id (*)")
     .eq("id", id as string)
+    // @ts-expect-error unable to detect key from foreign table
     .order("start_time", { foreignTable: "sessions" })
     .single();
 

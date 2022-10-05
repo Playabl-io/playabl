@@ -93,7 +93,7 @@ const sessionStartTime = ref("");
 const sessionEndTime = ref("");
 const startDate = ref<Date>(new Date());
 const endDate = ref<Date>(new Date());
-const accessLevels = ref<string[]>([]);
+const accessLevels = ref<number[]>([]);
 const saving = ref(false);
 const communityPostingLimit = ref<Date>();
 
@@ -162,7 +162,7 @@ async function getAccessLevels(communityId: string) {
       acc.push(level.id);
     }
     return acc;
-  }, [] as string[]);
+  }, [] as number[]);
 }
 
 async function getCommunityPostingDate(communityId: string) {

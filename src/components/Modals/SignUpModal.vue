@@ -1,5 +1,5 @@
 <template>
-  <Modal title="One sec, let's make you an account" :open="open">
+  <BaseModal title="One sec, let's make you an account" :open="open">
     <DismissButton
       v-if="allowDismiss"
       class="absolute top-4 right-4"
@@ -45,11 +45,11 @@
         <GoogleButton @click="signInWithGoogle" />
       </div>
     </form>
-  </Modal>
+  </BaseModal>
 </template>
 <script setup lang="ts">
 import { toRefs, ref } from "vue";
-import Modal from "./Modal.vue";
+import BaseModal from "./BaseModal.vue";
 import FormLabel from "@/components/Forms/FormLabel.vue";
 import FormInput from "@/components/Forms/FormInput.vue";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
@@ -98,14 +98,16 @@ const handleSignUp = async ({
       email,
       password,
     });
-    if (error) throw error;
+    if (error) throw new Error(error.message);
     if (user) {
       store.user = await loadProfile(user.id);
       showSuccess({ message: "Account created" });
       emit("signedIn");
     }
   } catch (error) {
-    showError({ message: error?.error_description || error?.message });
+    if (error instanceof Error) {
+      showError({ message: error?.message });
+    }
     log({ error });
   } finally {
     loading.value = false;
@@ -125,7 +127,9 @@ const handleLogin = async () => {
     }
     if (error) throw error;
   } catch (error) {
-    showError({ message: error?.error_description || error?.message });
+    if (error instanceof Error) {
+      showError({ message: error?.message });
+    }
     log({ error });
   } finally {
     loading.value = false;
@@ -141,7 +145,10 @@ async function signInWithGoogle() {
     showError({ message: "Unable to sign in with Google" });
   }
   if (user) {
-    store.user = user;
+    store.user = {
+      id: user.id,
+      email: user?.email || "",
+    };
   }
 }
 </script>

@@ -90,7 +90,6 @@ const props = defineProps({
 
 const emit = defineEmits(["close", "save", "delete"]);
 
-const id = ref(props.accessLevel?.id);
 const title = ref(props.accessLevel?.name || "");
 const priorityAccessTime = ref(props.accessLevel?.priority_access_time || 0);
 const timeDenomination = ref(
@@ -100,8 +99,8 @@ const isMandatory = ref(props.accessLevel?.is_mandatory || false);
 const applyOnJoin = ref(props.accessLevel?.apply_on_join || false);
 
 function handleSave() {
-  const updatedAccessLevel: AccessLevel = {
-    id: id.value,
+  const updatedAccessLevel: Partial<AccessLevel> = {
+    id: props.accessLevel?.id,
     name: title.value,
     priority_access_time: priorityAccessTime.value,
     time_denomination: timeDenomination.value,

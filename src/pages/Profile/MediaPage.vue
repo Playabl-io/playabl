@@ -67,7 +67,6 @@ import { supabase } from "@/supabase";
 import ProfileTemplate from "@/components/ProfileTemplate.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import { store } from "@/store";
-import { FileObject } from "@/typings/Storage";
 import OutlineButton from "@/components/Buttons/OutlineButton.vue";
 import Heading from "@/components/Heading.vue";
 import AvatarFileInput from "@/components/Forms/AvatarFileInput.vue";
@@ -82,13 +81,14 @@ import { removeObjects, uploadToAvatarStorage } from "@/api/storage";
 import useToast from "@/components/Toast/useToast";
 import { updateProfile } from "@/api/profiles";
 import { TrashIcon } from "@heroicons/vue/24/outline";
+import { EnhancedFileObject } from "@/typings/Storage";
 
 const { showSuccess, showError } = useToast();
 
 const loading = ref(true);
-const coverImages = ref<FileObject[]>([]);
-const avatars = ref<FileObject[]>([]);
-const selectedCoverImages = ref<FileObject[]>([]);
+const coverImages = ref<EnhancedFileObject[]>([]);
+const avatars = ref<EnhancedFileObject[]>([]);
+const selectedCoverImages = ref<EnhancedFileObject[]>([]);
 const removingImages = ref(false);
 const newAvatar = ref<File>();
 const updatingAvatar = ref(false);
@@ -121,7 +121,7 @@ function handleSelect({
   image,
   checked,
 }: {
-  image: FileObject;
+  image: EnhancedFileObject;
   checked: boolean;
 }) {
   if (checked) {
@@ -143,7 +143,7 @@ async function getUserCoverImages() {
       sortBy: { column: "name", order: "asc" },
     });
   if (data) {
-    coverImages.value = data;
+    coverImages.value = data as EnhancedFileObject[];
   }
 }
 
@@ -155,7 +155,7 @@ async function getUserAvatars() {
     sortBy: { column: "name", order: "asc" },
   });
   if (data) {
-    avatars.value = data;
+    avatars.value = data as EnhancedFileObject[];
   }
 }
 
@@ -197,7 +197,7 @@ async function removeCoverImages() {
     await removeObjects({
       bucket: "cover-images",
       paths: selectedCoverImages.value.map(
-        (image) => `${store.user.id}/${image.name}`
+        (image) => `${store.user?.id}/${image.name}`
       ),
     });
     showSuccess({ message: "Cover images removed" });

@@ -35,7 +35,7 @@
           :class="[expanded ? 'grid-cols-3' : 'grid-cols-2']"
         >
           <div class="grid member-list gap-4">
-            <Avatar
+            <UserAvatar
               :username="member.username || member.email"
               :avatar-url="member.avatar_url"
             />
@@ -74,7 +74,7 @@
       </li>
     </ul>
   </div>
-  <Drawer :open="state.context.drawerVisible" @close="send('CANCEL')">
+  <SideDrawer :open="state.context.drawerVisible" @close="send('CANCEL')">
     <MemberForm
       v-if="state.value === 'editMember' && state.context.member"
       :member="state.context.member"
@@ -86,7 +86,7 @@
       :members="state.context.members"
       @close="send('CANCEL')"
     />
-  </Drawer>
+  </SideDrawer>
   <DeleteModal
     :is-deleting="state.value === 'deleting'"
     :open="state.context.modalVisible"
@@ -102,12 +102,12 @@ import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/vue";
 import { PencilSquareIcon } from "@heroicons/vue/24/outline";
 import { MemberWithMembership } from "@/typings/Member";
-import Drawer from "@/components/Drawer.vue";
+import SideDrawer from "@/components/SideDrawer.vue";
 import DeleteModal from "@/components/Modals/DeleteModal.vue";
 import { pluralize } from "@/util/grammar";
 import MemberForm from "./MemberForm.vue";
 import { store } from "@/store";
-import Avatar from "@/components/Avatar.vue";
+import UserAvatar from "@/components/UserAvatar.vue";
 import { supabase } from "@/supabase";
 import { Community } from "@/typings/Community";
 import useToast from "@/components/Toast/useToast";
@@ -160,6 +160,7 @@ const memberManagementMachine = createMachine<{
   modalVisible: boolean;
 }>(
   {
+    predictableActionArguments: true,
     id: "memberManagementMachine",
     context: {
       member: undefined,
@@ -260,22 +261,22 @@ const memberManagementMachine = createMachine<{
         members: (context, event) => event.members,
       }),
       clearMember: assign({
-        member: (_, __) => undefined,
+        member: (_) => undefined,
       }),
       clearMembers: assign({
-        members: (_, __) => [],
+        members: (_) => [],
       }),
       showDrawer: assign({
-        drawerVisible: (context, event) => true,
+        drawerVisible: (_) => true,
       }),
       hideDrawer: assign({
-        drawerVisible: (context, event) => false,
+        drawerVisible: (_) => false,
       }),
       showModal: assign({
-        modalVisible: (context, event) => true,
+        modalVisible: (_) => true,
       }),
       hideModal: assign({
-        modalVisible: (context, event) => false,
+        modalVisible: (_) => false,
       }),
       removeMember: assign({
         member: (context) => {

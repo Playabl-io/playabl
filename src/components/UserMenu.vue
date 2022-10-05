@@ -3,7 +3,7 @@
   <section class="relative flex flex-col items-center justify-center h-14">
     <Menu v-if="store.user">
       <MenuButton class="hover:underline relative">
-        <Avatar
+        <UserAvatar
           :avatar-url="store.user?.avatar_url"
           :username="store.user.username || store.user.email"
         />
@@ -84,7 +84,7 @@ import { store } from "../store";
 import { unreadNotifications } from "@/util/notifications";
 import LoadingSpinner from "./LoadingSpinner.vue";
 import { log } from "@/util/logger";
-import Avatar from "./Avatar.vue";
+import UserAvatar from "./UserAvatar.vue";
 const activeMenuItem = "bg-gray-100 cursor-pointer";
 
 const isSigningOut = ref(false);

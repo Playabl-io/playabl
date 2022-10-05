@@ -19,7 +19,7 @@
       leave-from-class="opacity-1 scale-100"
     >
       <div v-if="showCalendar" ref="calendar" class="absolute z-10 mt-2">
-        <Calendar
+        <CalendarPicker
           size="medium"
           :selected="selected"
           :not-before="notBefore"
@@ -36,7 +36,7 @@ import { ref, toRefs } from "vue";
 import { onClickOutside } from "@vueuse/core";
 import { format } from "date-fns";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/vue/20/solid";
-import Calendar from "./Calendar.vue";
+import CalendarPicker from "./CalendarPicker.vue";
 const emit = defineEmits(["select"]);
 const props = defineProps({
   selected: {

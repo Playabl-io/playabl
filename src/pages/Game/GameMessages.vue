@@ -171,6 +171,7 @@ import { RealtimeSubscription } from "@supabase/supabase-js";
 import Tooltip from "@/components/Tooltip.vue";
 import useToast from "@/components/Toast/useToast";
 import LinkButton from "@/components/Buttons/LinkButton.vue";
+import { Profile } from "@/typings/Profile";
 
 const { showError } = useToast();
 
@@ -194,7 +195,7 @@ const userId = store.user?.id;
 const loading = ref(true);
 
 const content = ref();
-const profilesById = ref({});
+const profilesById = ref<Record<string, Profile>>({});
 const messages = ref<Message[]>([]);
 const now = new Date();
 const scrollable = ref<HTMLDivElement>();
@@ -202,14 +203,14 @@ const willScroll = ref(false);
 
 let subscription: RealtimeSubscription;
 onMounted(async () => {
-  const gameMessages = await loadMessages(String(gameId));
+  const gameMessages = await loadMessages(gameId);
   if (gameMessages) {
     messages.value = gameMessages;
     const messageUsers = gameMessages.reduce((acc, cur) => {
       acc.push(cur.from);
       acc.push(...cur.to);
       return acc;
-    }, []);
+    }, [] as string[]);
     const dedupedUsers = [...new Set(messageUsers)];
     const users = await Promise.all(dedupedUsers.map(loadProfile));
     profilesById.value = users.reduce((acc, cur) => {
@@ -239,7 +240,7 @@ async function retryMessage({ id, message }: { id: string; message: string }) {
     await sendMessageAboutGame({
       message,
       group: "all",
-      gameId: gameId,
+      gameId,
     });
     messages.value = messages.value.map((cur) => {
       if (cur.id === id) {
@@ -274,7 +275,7 @@ async function sendMessage() {
     await sendMessageAboutGame({
       message,
       group: "all",
-      gameId: gameId,
+      gameId,
     });
   } catch (error) {
     messages.value = messages.value.map((message) => {

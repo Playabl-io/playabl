@@ -304,7 +304,7 @@ import {
   handleFileDrop,
 } from "@/components/Forms/fileInputUtil";
 import ImageGalleryModal from "@/components/Modals/ImageGalleryModal.vue";
-import { FileObject } from "@/typings/Storage";
+import { EnhancedFileObject } from "@/typings/Storage";
 
 const { showError } = useToast();
 
@@ -373,9 +373,12 @@ const discord = ref("");
 const slack = ref("");
 const patreon = ref("");
 
-const existingImageToUse = ref<{ image: FileObject; src: string }>();
+const existingImageToUse = ref<{ image: EnhancedFileObject; src: string }>();
 const showGallery = ref(false);
-function handleImageSelect(selection: { image: FileObject; src: string }) {
+function handleImageSelect(selection: {
+  image: EnhancedFileObject;
+  src: string;
+}) {
   existingImageToUse.value = selection;
   showGallery.value = false;
 }

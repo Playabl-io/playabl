@@ -19,7 +19,7 @@
 <script lang="ts" setup>
 import { getCoverImageUrl } from "@/api/storage";
 import { store } from "@/store";
-import { FileObject } from "@/typings/Storage";
+import { FileObject } from "@supabase/storage-js";
 import { onMounted, PropType, ref } from "vue";
 import BaseButton from "./Buttons/BaseButton.vue";
 

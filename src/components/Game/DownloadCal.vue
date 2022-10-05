@@ -30,12 +30,12 @@ const event = computed(() => {
   const { value } = ics.createEvent({
     start: format(props.startTime, "yyyy-M-d-H-m")
       .split("-")
-      .map((val) => parseInt(val)),
+      .map((val) => parseInt(val)) as [number, number, number, number, number],
     end: format(props.endTime, "yyyy-M-d-H-m")
       .split("-")
-      .map((val) => parseInt(val)),
+      .map((val) => parseInt(val)) as [number, number, number, number, number],
     title: gameStore.game.title,
-    description: `Game details: https://playabl.io/games/${gameStore.game.id}`,
+    description: `Game details: https://app.playabl.io/games/${gameStore.game.id}`,
   });
   return encodeURIComponent(value || "");
 });

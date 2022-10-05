@@ -39,16 +39,16 @@
 <script lang="ts" setup>
 import { getCoverImageUrl } from "@/api/storage";
 import { store } from "@/store";
-import { FileObject } from "@/typings/Storage";
 import { onMounted, PropType, ref } from "vue";
 import { CheckIcon } from "@heroicons/vue/24/outline";
 import { bytesToMb } from "@/util/math";
+import { EnhancedFileObject } from "@/typings/Storage";
 
 const emit = defineEmits(["select"]);
 
 const props = defineProps({
   image: {
-    type: Object as PropType<FileObject>,
+    type: Object as PropType<EnhancedFileObject>,
     required: true,
   },
   selected: {

@@ -64,8 +64,7 @@
 </template>
 <script setup lang="ts">
 import { ChevronUpDownIcon } from "@heroicons/vue/20/solid";
-import { PropType, ref, watch } from "vue";
-import { computed } from "@vue/reactivity";
+import { PropType, ref, watch, computed } from "vue";
 import { useFocusWithin } from "@vueuse/core";
 
 const props = defineProps({

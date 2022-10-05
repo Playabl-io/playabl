@@ -9,9 +9,11 @@ export function log({
   error?: Error | PostgrestError | unknown;
   message?: string;
 }) {
+  // @ts-expect-error unsure how to handle this
   if (error?.message === "JWT expired") {
     window.location.href = `/login?redirect=${window.location.href}`;
   }
+
   if (level === "error") {
     console.error(error || message);
   }

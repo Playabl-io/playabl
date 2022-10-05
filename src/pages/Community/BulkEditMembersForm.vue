@@ -101,7 +101,7 @@ const props = defineProps({
   },
 });
 
-const roleToAssign = ref<ROLES>();
+const roleToAssign = ref<number>();
 const processing = ref(false);
 const grantsToAdd = ref<AccessLevel[]>([]);
 const grantsToRemove = ref<AccessLevel[]>([]);
@@ -117,11 +117,10 @@ async function handleSubmit() {
   processing.value = true;
   try {
     const promises = [];
-    if (roleToAssign.value) {
+    const roleId = roleToAssign.value;
+    if (roleId) {
       promises.push(
-        props.members.map((member) =>
-          handleRoleUpdate({ member: member, roleId: roleToAssign.value })
-        )
+        props.members.map((member) => handleRoleUpdate({ member, roleId }))
       );
     }
     if (grantsToAdd.value.length > 0) {
