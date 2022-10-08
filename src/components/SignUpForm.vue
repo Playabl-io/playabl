@@ -167,6 +167,6 @@ function validatePasswordsMatch() {
 
 function handleSubmit() {
   if (!passwordsValid.value) return;
-  emit("signUpWithEmail", { email, password });
+  emit("signUpWithEmail", { email: email.value, password: password.value });
 }
 </script>
