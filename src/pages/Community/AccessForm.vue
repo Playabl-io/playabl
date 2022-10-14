@@ -1,7 +1,7 @@
 <template>
   <form class="relative h-full flex flex-col" @submit.prevent="handleSave">
     <div class="grow flex flex-col space-y-6 p-6">
-      <Heading v-if="props.accessLevel" level="h6" as="h2">
+      <Heading v-if="accessLevel" level="h6" as="h2">
         Edit access level
       </Heading>
       <Heading v-else level="h6" as="h2"> New access level </Heading>

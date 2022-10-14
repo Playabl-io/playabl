@@ -22,6 +22,7 @@ import GameHome from "@/pages/Game/GameHome.vue";
 import NotFound from "@/pages/NotFound.vue";
 import TosPage from "@/pages/TosPage.vue";
 import PrivacyPolicy from "@/pages/PrivacyPolicy.vue";
+import SlackAuthorization from "@/pages/SlackAuthorization.vue";
 import { store } from "./store";
 
 const routes = [
@@ -229,6 +230,11 @@ const routes = [
     meta: {
       title: "Playable - Privacy Policy",
     },
+  },
+  {
+    path: "/authorize/slack",
+    name: "SlackAuthorization",
+    component: SlackAuthorization,
   },
   { path: "/:pathMatch(.*)*", name: "NotFound", component: NotFound },
 ];

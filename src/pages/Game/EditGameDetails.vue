@@ -69,8 +69,8 @@ const title = ref(gameStore.game?.title);
 const system = ref(gameStore.game?.system);
 const tabletop = ref(gameStore.game?.virtual_tabletop);
 const participantCount = ref<number>(gameStore.game?.participant_count || 0);
-const isRecorded = ref(gameStore.game?.will_be_recorded);
-const usesSafetyTools = ref(gameStore.game?.uses_safety_tools);
+const isRecorded = ref(gameStore.game?.will_be_recorded || false);
+const usesSafetyTools = ref(gameStore.game?.uses_safety_tools || false);
 
 const saving = ref(false);
 
