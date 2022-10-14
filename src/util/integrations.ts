@@ -22,7 +22,7 @@ export function makeNewIntegration(
     endpoint: "",
     name: "",
     community_id: communityId,
-    isActive: false,
+    is_active: false,
   };
 }
 

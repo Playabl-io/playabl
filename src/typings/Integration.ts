@@ -10,7 +10,7 @@ export interface IntegrationTrigger {
 export interface Integration {
   id: number;
   type: "slack" | "discord" | "http";
-  isActive: boolean;
+  is_active: boolean;
   endpoint: string;
   name: string;
   triggers: IntegrationTrigger[];

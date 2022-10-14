@@ -35,13 +35,13 @@
           @activate="
             send({
               type: 'SET_ACTIVE_STATUS',
-              integration: { ...integration, isActive: true },
+              integration: { ...integration, is_active: true },
             })
           "
           @deactivate="
             send({
               type: 'SET_ACTIVE_STATUS',
-              integration: { ...integration, isActive: false },
+              integration: { ...integration, is_active: false },
             })
           "
         />
@@ -151,6 +151,7 @@ const integrationsMachine = createMachine(
       loadingPremiumStatus: {
         invoke: {
           src: () => {
+            // TODO: Check real premium status after that's created
             return new Promise((resolve) => {
               setTimeout(() => resolve(true), 1500);
             });

@@ -6,12 +6,12 @@
         <p
           class="text-xs uppercase text-left"
           :class="
-            integration.isActive
+            integration.is_active
               ? 'text-emerald-700 font-semibold'
               : 'text-slate-700'
           "
         >
-          {{ integration.isActive ? "active" : "inactive" }}
+          {{ integration.is_active ? "active" : "inactive" }}
         </p>
         <div class="flex gap-2">
           <Tooltip
@@ -57,9 +57,9 @@
     </ListItemButton>
     <div class="flex gap-2">
       <SecondaryButton
-        @click="integration.isActive ? emit('deactivate') : emit('activate')"
+        @click="integration.is_active ? emit('deactivate') : emit('activate')"
       >
-        {{ integration.isActive ? "Deactivate" : "Activate" }}
+        {{ integration.is_active ? "Deactivate" : "Activate" }}
       </SecondaryButton>
       <SecondaryButton @click="testModalOpen = true">Test</SecondaryButton>
     </div>
