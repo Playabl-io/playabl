@@ -2,7 +2,7 @@ import { Integration } from "@/typings/Integration";
 
 export function makeNewIntegration(
   communityId: string
-): Omit<Integration, "id"> {
+): Omit<Integration, "id" | "created_at" | "updated_at"> {
   return {
     type: "slack",
     triggers: [

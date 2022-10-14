@@ -34,7 +34,7 @@ export async function createCommunityIntegration(
 export async function updateCommunityIntegration(integration: Integration) {
   const { data, error } = await supabase
     .from("integrations")
-    .update(integration)
+    .update({ ...integration, updated_at: new Date() })
     .eq("id", integration.id)
     .single();
   if (error) {
