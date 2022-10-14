@@ -37,62 +37,53 @@
         </p>
       </PopoverPanel>
     </Popover>
-    <transition
-      enter-active-class="transition duration-700 ease-out"
-      enter-from-class="transform opacity-0"
-      enter-to-class="transform opacity-100"
-      leave-active-class="transition duration-300 ease-out"
-      leave-from-class="transform opacity-100"
-      leave-to-class="transform opacity-0"
-    >
-      <div v-if="email" class="mt-4">
-        <form-label class="flex flex-col"> Password </form-label>
-        <div class="flex items-end">
-          <form-input
-            v-model="password"
-            class="grow"
-            :class="{
-              'border-green-500': passwordsValid,
-              'border-red-500': passwordError,
-            }"
-            :type="showPw ? 'text' : 'password'"
-            required
-          />
-          <GhostButton type="button" class="ml-1" @click="showPw = !showPw">
-            <EyeSlashIcon v-if="showPw" class="h-5 w-6" />
-            <EyeIcon v-else class="h-5 w-6" />
-          </GhostButton>
-        </div>
-        <p v-if="passwordError" class="text-red-500 text-sm font-semibold mt-1">
-          {{ passwordError }}
-        </p>
-        <form-label class="flex flex-col mt-4"> Confirm password </form-label>
-        <div class="flex items-end">
-          <form-input
-            v-model="confirmPassword"
-            :type="showConfirmPw ? 'text' : 'password'"
-            class="grow"
-            :class="{
-              'border-green-500': passwordsValid,
-              'border-red-500': passwordError,
-            }"
-            required
-            @blur="validatePasswordsMatch"
-          />
-          <GhostButton
-            type="button"
-            class="ml-1"
-            @click="showConfirmPw = !showConfirmPw"
-          >
-            <EyeSlashIcon v-if="showConfirmPw" class="h-5 w-6" />
-            <EyeIcon v-else class="h-5 w-6" />
-          </GhostButton>
-        </div>
-        <p v-if="passwordError" class="text-red-500 font-semibold text-sm mt-1">
-          {{ passwordError }}
-        </p>
+    <div class="mt-4">
+      <form-label class="flex flex-col"> Password </form-label>
+      <div class="flex items-end">
+        <form-input
+          v-model="password"
+          class="grow"
+          :class="{
+            'border-green-500': passwordsValid,
+            'border-red-500': passwordError,
+          }"
+          :type="showPw ? 'text' : 'password'"
+          required
+        />
+        <GhostButton type="button" class="ml-1" @click="showPw = !showPw">
+          <EyeSlashIcon v-if="showPw" class="h-5 w-6" />
+          <EyeIcon v-else class="h-5 w-6" />
+        </GhostButton>
       </div>
-    </transition>
+      <p v-if="passwordError" class="text-red-500 text-sm font-semibold mt-1">
+        {{ passwordError }}
+      </p>
+      <form-label class="flex flex-col mt-4"> Confirm password </form-label>
+      <div class="flex items-end">
+        <form-input
+          v-model="confirmPassword"
+          :type="showConfirmPw ? 'text' : 'password'"
+          class="grow"
+          :class="{
+            'border-green-500': passwordsValid,
+            'border-red-500': passwordError,
+          }"
+          required
+          @blur="validatePasswordsMatch"
+        />
+        <GhostButton
+          type="button"
+          class="ml-1"
+          @click="showConfirmPw = !showConfirmPw"
+        >
+          <EyeSlashIcon v-if="showConfirmPw" class="h-5 w-6" />
+          <EyeIcon v-else class="h-5 w-6" />
+        </GhostButton>
+      </div>
+      <p v-if="passwordError" class="text-red-500 font-semibold text-sm mt-1">
+        {{ passwordError }}
+      </p>
+    </div>
     <div class="text-xs text-slate-700 mt-6">
       By signing up, you agree to the Playabl
       <router-link

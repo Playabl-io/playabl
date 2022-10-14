@@ -1,9 +1,13 @@
 <template>
   <div class="flex justify-between mb-4">
     <Heading level="h6" as="h2">Access Levels</Heading>
-    <LinkButton class="font-normal text-sm" @click="send('NEW_ACCESS_LEVEL')">
-      Add new
-    </LinkButton>
+    <GhostButton
+      class="font-normal text-sm"
+      aria-label="Add new access level"
+      @click="send('NEW_ACCESS_LEVEL')"
+    >
+      <PlusCircleIcon class="h-6 w-6 text-slate-700" />
+    </GhostButton>
   </div>
   <ul>
     <li
@@ -11,8 +15,8 @@
       :key="level.id"
       class="grid gap-y-4"
     >
-      <button
-        class="flex justify-between items-center p-4 rounded-md transition-all transform duration-150 hover:shadow-lg hover:-translate-y-1"
+      <ListItemButton
+        class="flex justify-between items-center"
         @click="send({ type: 'EDIT_ACCESS_LEVEL', accessLevel: level })"
       >
         <div class="flex flex-col items-start">
@@ -47,11 +51,11 @@
               />
             </template>
             <template #tooltip>
-              All members receive this access when joining
+              <p class="w-32">All members receive this access when joining</p>
             </template>
           </Tooltip>
         </div>
-      </button>
+      </ListItemButton>
     </li>
   </ul>
   <SideDrawer :open="state.context.drawerVisible" @close="send('CANCEL')">
@@ -76,10 +80,13 @@
 <script setup lang="ts">
 import { store } from "@/store";
 import { useRoute } from "vue-router";
-import { LockClosedIcon, BoltIcon } from "@heroicons/vue/24/outline";
+import {
+  LockClosedIcon,
+  BoltIcon,
+  PlusCircleIcon,
+} from "@heroicons/vue/24/outline";
 import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/vue";
-import LinkButton from "@/components/Buttons/LinkButton.vue";
 import SideDrawer from "@/components/SideDrawer.vue";
 import AccessLevelForm from "./AccessForm.vue";
 import DeleteModal from "@/components/Modals/DeleteModal.vue";
@@ -92,6 +99,9 @@ import useToast from "@/components/Toast/useToast";
 import { AccessLevel } from "@/typings/AccessLevel";
 import Heading from "@/components/Heading.vue";
 import Tooltip from "@/components/Tooltip.vue";
+import GhostButton from "@/components/Buttons/GhostButton.vue";
+import ListItemButton from "@/components/Buttons/ListItemButton.vue";
+import { drawerActions } from "@/util/machineActions";
 
 const route = useRoute();
 const { showSuccess, showError } = useToast();
@@ -236,12 +246,7 @@ const accessLevelsMachine = createMachine(
   },
   {
     actions: {
-      showDrawer: assign({
-        drawerVisible: (context) => true,
-      }),
-      hideDrawer: assign({
-        drawerVisible: (context) => false,
-      }),
+      ...drawerActions,
       showModal: assign({
         modalVisible: (context) => true,
       }),

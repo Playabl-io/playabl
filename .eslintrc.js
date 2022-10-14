@@ -6,6 +6,8 @@ module.exports = {
   extends: [
     "plugin:vue/vue3-essential",
     "plugin:vue/vue3-recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
     "@vue/standard",
     "@vue/typescript/recommended",
     "prettier",
@@ -26,5 +28,15 @@ module.exports = {
     defineEmits: "readonly",
     defineExpose: "readonly",
     withDefaults: "readonly",
+  },
+  settings: {
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"],
+    },
+    "import/resolver": {
+      typescript: {
+        alwaysTryTypes: true,
+      },
+    },
   },
 };

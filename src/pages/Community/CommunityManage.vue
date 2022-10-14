@@ -14,83 +14,55 @@
       <p>Games</p>
       <p class="text-lg place-self-end font-semibold">{{ gamesCount }}</p>
     </div>
-    <div class="section-container grow flex flex-col">
-      <Heading level="h6" as="h2">Invite Links</Heading>
-      <p class="text-xs text-slate-700 mt-1 mb-4">Click to copy</p>
-      <div class="grow">
-        <InviteLink
-          v-for="invite in communityInvites"
-          :key="invite"
-          :invite="invite"
-          @revoke="revokeInviteLink(invite)"
-        />
-      </div>
-      <GhostButton
-        :is-loading="creatingInvite"
-        :disabled="creatingInvite"
-        class="w-full mt-4"
-        @click="createInviteLink"
-      >
-        Create new invite link
-      </GhostButton>
+    <div class="section-container grow">
+      <InviteLinks />
     </div>
   </section>
   <section class="mt-4">
-    <div class="grid lg:grid-cols-3 gap-4">
-      <div
-        class="grid xl:grid-cols-2 gap-4 grid-flow-row-dense items-start h-min"
-        :class="{
-          'xl:col-span-2': !expandMembers,
-          'col-span-full': expandMembers,
-        }"
-      >
-        <section class="section-container grid gap-2">
-          <div class="flex justify-between items-center mb-4 col-span-2">
-            <Heading level="h6" as="h2"> Community Info </Heading>
-            <GhostButton
-              aria-label="Edit community info"
-              @click="editInfoDrawerOpen = true"
-            >
-              <PencilSquareIcon class="h-5 w-5 text-slate-700" />
-            </GhostButton>
-          </div>
-          <div
-            v-for="detail in details"
-            :key="detail.label"
-            class="flex items-center space-x-4"
+    <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+      <section class="section-container grid gap-2">
+        <div class="flex justify-between items-center mb-4 col-span-2">
+          <Heading level="h6" as="h2"> Community Info </Heading>
+          <GhostButton
+            aria-label="Edit community info"
+            @click="editInfoDrawerOpen = true"
           >
-            <CheckCircleIcon
-              v-if="detail.value"
-              class="h-6 w-6"
-              :class="{ 'text-blue-700': detail.value }"
-            />
-            <MinusCircleIcon v-else class="h-6 w-6 text-slate-700" />
-            <p class="pt-1 prose dark:prose-invert">{{ detail.label }}</p>
-          </div>
-        </section>
-        <section class="section-container">
-          <PublicAccess />
-        </section>
-        <section class="section-container">
-          <AccessLevels />
-        </section>
-        <section class="section-container">
-          <CalendarCutoff
-            :community-id="communityStore.community.id"
-            :current-cutoff="communityStore.community.furthest_posting_date"
+            <PencilSquareIcon class="h-5 w-5 text-slate-700" />
+          </GhostButton>
+        </div>
+        <div
+          v-for="detail in details"
+          :key="detail.label"
+          class="flex items-center space-x-4"
+        >
+          <CheckCircleIcon
+            v-if="detail.value"
+            class="h-6 w-6"
+            :class="{ 'text-blue-700': detail.value }"
           />
-        </section>
-        <section class="section-container">
-          <CommunityImageLibrary />
-        </section>
-      </div>
-      <section
-        class="section-container h-min"
-        :class="{
-          'col-span-full lg:row-start-1': expandMembers,
-          'lg:col-span-2 xl:col-span-1': !expandMembers,
-        }"
-      >
+          <MinusCircleIcon v-else class="h-6 w-6 text-slate-700" />
+          <p class="prose dark:prose-invert">{{ detail.label }}</p>
+        </div>
+      </section>
+      <section class="section-container">
+        <PublicAccess />
+      </section>
+      <section class="section-container">
+        <AccessLevels />
+      </section>
+      <section class="section-container">
+        <CalendarCutoff
+          :community-id="communityStore.community.id"
+          :current-cutoff="communityStore.community.furthest_posting_date"
+        />
+      </section>
+      <section class="section-container">
+        <CommunityImageLibrary />
+      </section>
+      <section class="section-container">
+        <CommunityIntegrations />
+      </section>
+      <section class="section-container col-span-full">
         <div class="flex justify-between">
           <Heading level="h6" as="h2" class="mb-4">Members</Heading>
           <Tooltip v-if="!expandMembers">
@@ -137,7 +109,6 @@ import { ref, onMounted, computed } from "vue";
 import { supabase } from "@/supabase";
 import { log } from "@/util/logger";
 import { useRoute } from "vue-router";
-import useToast from "@/components/Toast/useToast";
 import {
   CheckCircleIcon,
   MinusCircleIcon,
@@ -151,7 +122,6 @@ import { store } from "@/store";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
 import { loadCommunityAccessTimes } from "@/api/communityAccess";
 import AccessLevels from "./AccessLevels.vue";
-import InviteLink from "./InviteLink.vue";
 import CalendarCutoff from "./CalendarCutoff.vue";
 import SideDrawer from "@/components/SideDrawer.vue";
 import EditCommunityInfo from "./EditCommunityInfo.vue";
@@ -160,18 +130,16 @@ import MembersSearch from "./MembersSearch.vue";
 import Tooltip from "@/components/Tooltip.vue";
 import CommunityImageLibrary from "./CommunityImageLibrary.vue";
 import PublicAccess from "./PublicAccess.vue";
-
-const { showSuccess } = useToast();
+import InviteLinks from "./InviteLinks.vue";
+import CommunityIntegrations from "./CommunityIntegrations.vue";
 
 const route = useRoute();
 const loading = ref(true);
 const editInfoDrawerOpen = ref(false);
-const expandMembers = ref(false);
+const expandMembers = ref(true);
 
 const games = ref<Game[]>([]);
 const gamesCount = ref(0);
-const communityInvites = ref<string[]>([]);
-const creatingInvite = ref(false);
 
 const details = computed(() => [
   { value: communityStore.community.description, label: "Description" },
@@ -189,12 +157,7 @@ const details = computed(() => [
 
 onMounted(async () => {
   loading.value = true;
-  await Promise.all([
-    getGames(),
-    getMemberAccess(),
-    getAccessLevels(),
-    getActiveInviteLinks(),
-  ]);
+  await Promise.all([getGames(), getMemberAccess(), getAccessLevels()]);
   loading.value = false;
 });
 
@@ -250,48 +213,6 @@ async function getAccessLevels() {
   );
   if (data) {
     store.communityAccessLevels = data;
-  }
-}
-
-async function getActiveInviteLinks() {
-  const { data } = await supabase
-    .from("community_invites")
-    .select()
-    .eq("community_id", route.params.community_id)
-    .eq("is_revoked", false);
-  if (data) {
-    communityInvites.value = data.map((invite) => invite.id);
-  }
-}
-
-async function createInviteLink() {
-  creatingInvite.value = true;
-  const { data } = await supabase
-    .from("community_invites")
-    .insert({
-      community_id: route.params.community_id,
-    })
-    .single();
-  if (data) {
-    communityInvites.value = communityInvites.value?.concat(data.id);
-    showSuccess({ message: "Invite link created!" });
-  }
-  creatingInvite.value = false;
-}
-
-async function revokeInviteLink(id: string) {
-  const { data } = await supabase
-    .from("community_invites")
-    .update({
-      is_revoked: true,
-    })
-    .match({ id })
-    .single();
-  if (data) {
-    communityInvites.value = communityInvites.value?.filter(
-      (link) => link !== id
-    );
-    showSuccess({ message: "Invite link revoked" });
   }
 }
 </script>
