@@ -116,8 +116,8 @@ import { TrashIcon } from "@heroicons/vue/24/outline";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/vue/20/solid";
 import ToggleRadio from "@/components/Forms/ToggleRadio.vue";
 import Heading from "@/components/Heading.vue";
-import FormLabel from "@/components/forms/FormLabel.vue";
-import FormInput from "@/components/forms/FormInput.vue";
+import FormLabel from "@/components/Forms/FormLabel.vue";
+import FormInput from "@/components/Forms/FormInput.vue";
 import IntegrationTriggers from "./IntegrationTriggers.vue";
 import SlackForm from "./SlackForm.vue";
 
