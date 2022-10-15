@@ -9,6 +9,8 @@ export interface IntegrationTrigger {
 
 export interface Integration {
   id: number;
+  created_at: string;
+  updated_at: string | null;
   type: "slack" | "discord" | "http";
   is_active: boolean;
   endpoint: string;

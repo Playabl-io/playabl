@@ -124,7 +124,9 @@ const integrationsMachine = createMachine(
     schema: {
       context: {} as {
         integrations: Integration[];
-        editingIntegration?: Integration | Omit<Integration, "id">;
+        editingIntegration?:
+          | Integration
+          | Omit<Integration, "id" | "created_at" | "updated_at">;
         drawerVisible: boolean;
       },
       events: {} as

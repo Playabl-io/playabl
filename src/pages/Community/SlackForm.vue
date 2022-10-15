@@ -20,7 +20,9 @@ import AddToSlackButton from "./AddToSlackButton.vue";
 
 defineProps({
   integration: {
-    type: Object as PropType<Integration | Omit<Integration, "id">>,
+    type: Object as PropType<
+      Integration | Omit<Integration, "id" | "created_at" | "updated_at">
+    >,
     required: true,
   },
 });
