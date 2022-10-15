@@ -18,7 +18,7 @@ export async function loadCommunityIntegrations(communityId: string) {
 }
 
 export async function createCommunityIntegration(
-  integration: Omit<Integration, "id">
+  integration: Omit<Integration, "id" | "created_at" | "updated_at">
 ) {
   const { data, error } = await supabase
     .from("integrations")

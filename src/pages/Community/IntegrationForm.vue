@@ -123,7 +123,9 @@ import SlackForm from "./SlackForm.vue";
 
 const props = defineProps({
   integration: {
-    type: Object as PropType<Integration | Omit<Integration, "id">>,
+    type: Object as PropType<
+      Integration | Omit<Integration, "id" | "created_at" | "updated_at">
+    >,
     required: true,
   },
   saving: {
@@ -147,7 +149,9 @@ function handleEndpointChange(endpoint: string) {
 }
 
 function handleTriggersUpdate(nextTriggers: IntegrationTrigger[]) {
-  const nextIntegration: Integration | Omit<Integration, "id"> = {
+  const nextIntegration:
+    | Integration
+    | Omit<Integration, "id" | "created_at" | "updated_at"> = {
     ...props.integration,
     triggers: nextTriggers,
   };
