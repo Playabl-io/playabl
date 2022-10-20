@@ -303,7 +303,7 @@ import ChooseCommunity from "@/components/Game/ChooseCommunity.vue";
 import { loadCommunityAccessTimes } from "@/api/communityAccess";
 import { store } from "@/store";
 import useToast from "@/components/Toast/useToast";
-import { createGame } from "@/api/gamesAndSessions";
+import { createGame, publishGame } from "@/api/gamesAndSessions";
 import { rsvpTimes, getStartOfToday } from "@/util/time";
 import FormFileInput from "@/components/Forms/FormFileInput.vue";
 import {
@@ -596,6 +596,9 @@ async function submitGame() {
     cover_image: imagePath,
   };
   const game = await createGame(newGame);
+
+  // send game to SNS
+  publishGame(game);
 
   const sessionsToCreate = sessionIds.value.reduce((acc, id) => {
     const sessionPartial = sessions.value[id];

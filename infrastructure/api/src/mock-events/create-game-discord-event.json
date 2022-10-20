@@ -1,0 +1,33 @@
+{
+  "Records": [
+    {
+      "EventSource": "aws:sns",
+      "EventVersion": "1.0",
+      "EventSubscriptionArn": "arn:aws:sns:us-east-1::ExampleTopic",
+      "Sns": {
+        "Type": "Notification",
+        "MessageId": "95df01b4-ee98-5cb9-9903-4c221d41eb5e",
+        "TopicArn": "arn:aws:sns:us-east-1:123456789012:ExampleTopic",
+        "Subject": "example subject",
+        "Message": "{\"game\":{\"id\":27,\"created_at\":\"2022-02-13T01:06:26.333591+00:00\",\"title\":\"Phoenix Academy\",\"description\":\"{\\\"ops\\\":[{\\\"insert\\\":\\\"Phoenix Academy\\\"},{\\\"attributes\\\":{\\\"align\\\":\\\"justify\\\",\\\"header\\\":2},\\\"insert\\\":\\\"\\\\n\\\"},{\\\"attributes\\\":{\\\"align\\\":\\\"justify\\\"},\\\"insert\\\":\\\"\\\\n\\\"},{\\\"insert\\\":\\\"Lorem ipsum dolor sit amet consectetur adipiscing elit varius imperdiet taciti condimentum, semper tempus pharetra eros sed pulvinar integer bibendum vulputate sociosqu. Nunc eros augue vivamus pretium vitae imperdiet nam euismod felis, iaculis neque nascetur in suscipit torquent purus ultrices. Luctus non dui fames fermentum aptent mattis aenean curae, conubia tristique vehicula tempus dapibus ad sollicitudin nunc, at nam tortor eu rutrum lacinia metus.\\\"},{\\\"attributes\\\":{\\\"align\\\":\\\"justify\\\"},\\\"insert\\\":\\\"\\\\n\\\\n\\\"},{\\\"insert\\\":\\\"Varius bibendum pulvinar aliquam iaculis ac ultrices nascetur id arcu primis dignissim natoque, vestibulum mus orci scelerisque mollis malesuada eros viverra sodales duis facilisi. Lacinia diam quis laoreet a ad cum varius, consequat fames lacus aliquet fusce eleifend facilisis habitant, eros fermentum blandit metus dui dapibus. Sollicitudin dui faucibus pretium sem at mauris cubilia parturient molestie, volutpat bibendum nec maecenas dictumst mattis est primis curabitur, risus tristique ad auctor sociis pharetra class id.\\\"},{\\\"attributes\\\":{\\\"align\\\":\\\"justify\\\"},\\\"insert\\\":\\\"\\\\n\\\\n\\\"},{\\\"insert\\\":\\\"WHOA\\\"},{\\\"attributes\\\":{\\\"align\\\":\\\"justify\\\"},\\\"insert\\\":\\\"\\\\n\\\"},{\\\"insert\\\":\\\"\\\\n\\\"}]}\",\"cover_image\":\"d3c49c2f-e5cc-445f-9495-aee1e646babb/titans.jpeg\",\"draft_state\":\"published\",\"deleted_at\":null,\"system\":\"Masks\",\"virtual_tabletop\":\"RollWithMe\",\"will_be_recorded\":true,\"participant_count\":1,\"uses_safety_tools\":null,\"creator_id\":\"d3c49c2f-e5cc-445f-9495-aee1e646babb\",\"community_id\":\"269b91ed-c2d2-49c7-843b-bb8ed318ed78\"},\"integration\":{\"id\":17,\"created_at\":\"2022-10-14T03:15:23.58562+00:00\",\"updated_at\":\"2022-10-20T03:46:08.48+00:00\",\"is_active\":true,\"endpoint\":\"https://discord.com/api/webhooks/1029024262994018304/pVKx8ntD51_IOiF9-rPqukScncj2u47szjX1VCtlp4AbVLWffTuEz7oVtYm0SWTMB6bP\",\"name\":\"Discord hook\",\"triggers\":[{\"action\":\"create\",\"active\":true,\"label\":\"When a user joins the community\",\"entity\":\"user\"},{\"action\":\"create\",\"active\":true,\"label\":\"When a new game is posted\",\"entity\":\"game\"}],\"community_id\":\"269b91ed-c2d2-49c7-843b-bb8ed318ed78\",\"slack_access_token\":null,\"type\":\"discord\",\"slack_configuration\":null}}",
+        "Timestamp": "1970-01-01T00:00:00.000Z",
+        "SignatureVersion": "1",
+        "Signature": "EXAMPLE",
+        "SigningCertUrl": "EXAMPLE",
+        "UnsubscribeUrl": "EXAMPLE",
+        "MessageAttributes": {
+          "action": {
+            "Name": "action",
+            "Type": "String",
+            "Value": "create"
+          },
+          "entity": {
+            "Name": "entity",
+            "Type": "String",
+            "Value": "game"
+          }
+        }
+      }
+    }
+  ]
+}

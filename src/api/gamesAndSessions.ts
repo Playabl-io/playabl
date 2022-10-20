@@ -1,10 +1,14 @@
 import * as R from "ramda";
 import { supabase } from "@/supabase";
-import { GameDetailBlock, GameListing, NewGame } from "@/typings/Game";
+import { GameDetailBlock, GameListing, NewGame, Game } from "@/typings/Game";
 import { Session } from "@/typings/Session";
 import { log } from "@/util/logger";
 import { Community } from "@/typings/Community";
 import { startOfMonth, startOfDay, endOfMonth, endOfDay } from "date-fns";
+
+import { loadCommunityIntegrations } from "./integrations";
+import { Integration } from "@/typings/Integration";
+import axios from "axios";
 
 // helper functions
 const sortSessionByTimeAsc = (a: Session, b: Session) => {
@@ -273,5 +277,20 @@ export async function saveGameDetails({
   }
   if (data) {
     return data;
+  }
+}
+
+export async function publishGame(game: Game) {
+  const userToken = supabase.auth.session()?.access_token;
+  if (!userToken) return;
+
+  try {
+    await axios.post(import.meta.env.VITE_PLAYABL_API, game, {
+      headers: {
+        Authorization: userToken,
+      },
+    });
+  } catch (error) {
+    console.error(error);
   }
 }

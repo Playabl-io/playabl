@@ -1,0 +1,166 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Function:
+    CodeUri: ./src
+    Runtime: nodejs16.x
+    MemorySize: 128
+
+Resources:
+  # Topic for games
+  GameTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      Subscription:
+        - Protocol: lambda
+          Endpoint: !GetAtt GameIntegrationWorker.Arn
+  # Topic for games
+  IntegrationTopic:
+    Type: AWS::SNS::Topic
+
+  # Provide permission for SNS to invoke the Lambda functions
+  GameIntegrationWorkerPermission:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      Action: "lambda:InvokeFunction"
+      FunctionName: !Ref GameIntegrationWorker
+      Principal: sns.amazonaws.com
+
+  # Consumes GameTopic
+  GameIntegrationWorker:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/process-game.checkGameForIntegration
+      Environment:
+        Variables:
+          TopicArn: !Ref IntegrationTopic
+          SupabaseUrl: !Ref SupabaseUrl
+          SupabaseServiceRole: !Ref SupabaseServiceRole
+      Policies:
+        - SNSPublishMessagePolicy:
+            TopicName: !GetAtt IntegrationTopic.TopicName
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        # Sourcemap: true # Enabling source maps will create the required NODE_OPTIONS environment variables on your lambda function during sam build
+        EntryPoints:
+          - handlers/process-game.ts
+
+  # Consumes IntegrationTopic
+  IntegrationExecutorWorker:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/execute-integration.processGameIntegration
+      Environment:
+        Variables:
+          SupabaseUrl: !Ref SupabaseUrl
+          SupabaseServiceRole: !Ref SupabaseServiceRole
+      Events:
+        SNSEvent:
+          Type: SNS
+          Properties:
+            Topic: !Ref IntegrationTopic
+            FilterPolicy:
+              entity:
+                - game
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        # Sourcemap: true # Enabling source maps will create the required NODE_OPTIONS environment variables on your lambda function during sam build
+        EntryPoints:
+          - handlers/execute-integration.ts
+
+  PlayablApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Cors:
+        AllowMethods: "'*'"
+        AllowHeaders: "'*'"
+        AllowOrigin: "'*'"
+        MaxAge: "'600'"
+      GatewayResponses:
+        DEFAULT_4XX:
+          ResponseParameters:
+            Headers:
+              Access-Control-Allow-Origin: "'*'"
+              Access-Control-Allow-Headers: "'*'"
+      Auth:
+        AddDefaultAuthorizerToCorsPreflight: false
+        DefaultAuthorizer: MyLambdaTokenAuthorizer
+        Authorizers:
+          MyLambdaTokenAuthorizer:
+            FunctionArn: !GetAtt AuthFunction.Arn
+
+  PublishGame:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/publish-game.publishGameHandler
+      Environment:
+        Variables:
+          TopicArn: !Ref GameTopic
+          SupabaseUrl: !Ref SupabaseUrl
+          SupabaseServiceRole: !Ref SupabaseServiceRole
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref PlayablApi
+            Path: /publish/game
+            Method: post
+      Policies:
+        - SNSPublishMessagePolicy:
+            TopicName: !GetAtt GameTopic.TopicName
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        # Sourcemap: true # Enabling source maps will create the required NODE_OPTIONS environment variables on your lambda function during sam build
+        EntryPoints:
+          - handlers/publish-game.ts
+
+  AuthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/authorize.authorizer
+      Environment:
+        Variables:
+          SupabaseUrl: !Ref SupabaseUrl
+          SupabaseServiceRole: !Ref SupabaseServiceRole
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        # Sourcemap: true # Enabling source maps will create the required NODE_OPTIONS environment variables on your lambda function during sam build
+        EntryPoints:
+          - handlers/authorize.ts
+
+Parameters:
+  SupabaseUrl:
+    Type: String
+  SupabaseServiceRole:
+    Type: String
+
+Outputs:
+  GameIntegrationWorkerName:
+    Description: GameIntegrationWorker function name
+    Value: !Ref GameIntegrationWorker
+
+  SnsTopicName:
+    Description: SNS topic name
+    Value: !GetAtt GameTopic.TopicName
+
+  SnsTopicARN:
+    Description: SNS topic ARN
+    Value: !Ref GameTopic
+
+  WebEndpoint:
+    Description: "API Gateway endpoint URL for Prod stage"
+    Value: !Sub "https://${PlayablApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
