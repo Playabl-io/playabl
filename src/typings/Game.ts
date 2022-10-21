@@ -20,6 +20,7 @@ export interface GameBase {
   id: number;
   title: string;
   description: string;
+  description_as_flat_text: string;
   cover_image?: string;
   participant_count: number;
   draft_state: GAME_DRAFT_STATE;

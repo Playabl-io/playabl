@@ -27,13 +27,16 @@ export const processGameIntegration = async (event: SNSEvent) => {
     discord: {
       create: makeDiscordMessageForNewGame,
     },
+    http: {
+      create: makeHttpMessageForNewGame,
+    },
   };
 
   const result = messageCreator[integration.type]?.[action]?.({
     text: "New game added to Playabl",
     creator: data?.username,
     name: entity.title,
-    description: entity.description,
+    description: entity.description_as_flat_text,
     url: `https://app.playabl.io/games/${entity.id}`,
     imageUrl: publicUrl,
   });
@@ -46,6 +49,28 @@ export const getCoverImageUrl = async (path: string) => {
     .getPublicUrl(path);
   return publicURL.publicUrl ?? "";
 };
+
+function makeHttpMessageForNewGame({
+  creator,
+  name,
+  description,
+  url,
+  imageUrl,
+}: {
+  creator: string;
+  name: string;
+  description: string;
+  url: string;
+  imageUrl?: string;
+}) {
+  return {
+    creator,
+    name,
+    description,
+    url,
+    imageUrl,
+  };
+}
 
 function makeDiscordMessageForNewGame({
   creator,
