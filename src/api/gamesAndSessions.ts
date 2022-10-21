@@ -285,7 +285,7 @@ export async function publishGame(game: Game) {
   if (!userToken) return;
 
   try {
-    await axios.post(import.meta.env.VITE_PLAYABL_API, game, {
+    await axios.post(`${import.meta.env.VITE_PLAYABL_API}/publish/game`, game, {
       headers: {
         Authorization: userToken,
       },
