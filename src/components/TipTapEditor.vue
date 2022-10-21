@@ -96,14 +96,6 @@ const props = defineProps({
     type: String,
     default: "h-40",
   },
-  required: {
-    type: Boolean,
-    default: false,
-  },
-  asJSON: {
-    type: Boolean,
-    default: false,
-  },
 });
 
 const emit = defineEmits(["update:modelValue"]);

@@ -21,6 +21,7 @@ export const gameStore = reactive<Store>({
     created_at: "",
     creator_id: "",
     description: "",
+    description_as_flat_text: "",
   },
   sessions: [],
   attendees: {},
