@@ -71,6 +71,7 @@
   >
     <EditDescription
       :description="gameStore.game.description"
+      :flat-description="gameStore.game.description_as_flat_text"
       :game-id="gameStore.game.id"
       @close="editDescriptionDrawerOpen = false"
     />

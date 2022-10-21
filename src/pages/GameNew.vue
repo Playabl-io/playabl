@@ -55,7 +55,7 @@
       </div>
     </div>
     <form
-      v-if="['gameDetails'].includes(state.value as string)"
+      v-if="['gameDetails', 'missingDescription'].includes(state.value as string)"
       class="grid grid-cols-1 gap-12 max-w-2xl mx-auto relative"
       @submit.prevent="send('ADVANCE')"
     >
@@ -94,17 +94,18 @@
           />
         </div>
         <div class="flex flex-col">
-          <FormLabel for="description">Description</FormLabel>
-          <p class="text-xs text-slate-700 mt-1">
-            Supports rich text. Highlight words for controls.
+          <FormLabel for="description" required>Description</FormLabel>
+          <p v-if="state.value === 'missingDescription'" class="text-red-500">
+            Game description is required
           </p>
           <div
-            class="bg-white h-96 rounded-lg py-2 border border-solid border-gray-300 mt-2"
+            class="bg-white rounded-lg border border-solid border-gray-300 mt-2"
           >
-            <QuillEditor
-              v-model:content="description"
-              theme="bubble"
-              toolbar="essential"
+            <TipTapEditor
+              v-model="description"
+              placeholder="Tell others about the game"
+              editor-height="h-96"
+              @update:model-value="setFlatDescription"
             />
           </div>
         </div>
@@ -159,9 +160,17 @@
             </a>
           </p>
         </div>
-        <PrimaryButton>
-          Next <ArrowSmallRightIcon class="h-6 w-6" />
-        </PrimaryButton>
+        <div class="w-full">
+          <PrimaryButton class="w-full">
+            Next <ArrowSmallRightIcon class="h-6 w-6" />
+          </PrimaryButton>
+          <p
+            v-if="state.value === 'missingDescription'"
+            class="text-red-500 mt-1 text-center"
+          >
+            Please add a game description
+          </p>
+        </div>
       </div>
     </form>
     <form
@@ -312,7 +321,7 @@ import {
 } from "@/components/Forms/fileInputUtil";
 import AddSessions from "@/components/Game/AddSessions.vue";
 import { uploadToCoverImageStorage } from "@/api/storage";
-import { Delta } from "@vueup/vue-quill";
+import TipTapEditor from "@/components/TipTapEditor.vue";
 import ImageGalleryModal from "@/components/Modals/ImageGalleryModal.vue";
 import { EnhancedFileObject } from "@/typings/Storage";
 import gameSystemList from "@/util/gameSystemList";
@@ -394,9 +403,29 @@ const newGameMachine = createMachine<{
         ],
         on: {
           CHOOSE_NEW_COMMUNITY: "chooseCommunity",
-          ADVANCE: {
-            target: "gameSessions",
-          },
+          ADVANCE: [
+            {
+              target: "gameSessions",
+              cond: () => description.value !== "",
+            },
+            {
+              target: "missingDescription",
+            },
+          ],
+        },
+      },
+      missingDescription: {
+        on: {
+          CHOOSE_NEW_COMMUNITY: "chooseCommunity",
+          ADVANCE: [
+            {
+              target: "gameSessions",
+              cond: () => description.value !== "",
+            },
+            {
+              target: "missingDescription",
+            },
+          ],
         },
       },
       gameSessions: {
@@ -460,7 +489,8 @@ function handleImageSelect(selection: {
 const title = ref("");
 const system = ref("");
 const tabletop = ref("");
-const description = ref<Delta>();
+const description = ref("");
+const descriptionAsFlatText = ref("");
 const sessions = ref<Record<string, NewSession>>({});
 const sessionIds = ref<string[]>([]);
 const coverImage = ref<File>();
@@ -479,6 +509,10 @@ const furthestPostingDateIsInPast = computed(() => {
   if (!communityPostingLimit.value) return false;
   return getStartOfToday().getTime() > communityPostingLimit.value.getTime();
 });
+
+function setFlatDescription(_: string, text: string) {
+  descriptionAsFlatText.value = text;
+}
 
 function updateStartDate(date: Date) {
   startDate.value = date;
@@ -584,7 +618,8 @@ async function submitGame() {
 
   const newGame: NewGame = {
     title: title.value,
-    description: JSON.stringify(description.value),
+    description: description.value,
+    description_as_flat_text: descriptionAsFlatText.value,
     participant_count: participantCount.value || 0,
     draft_state: GAME_DRAFT_STATE.published,
     community_id: state.value.context.selectedCommunity.id,

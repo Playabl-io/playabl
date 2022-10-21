@@ -95,12 +95,8 @@
         </GameBadge>
       </div>
     </div>
-    <div class="bg-gray-200 bg-opacity-70 rounded-lg p-2">
-      <QuillEditor
-        theme="bubble"
-        :content="JSON.parse(game.description)"
-        read-only
-      />
+    <div class="bg-gray-200 bg-opacity-70 rounded-lg p-4">
+      <TipTapDisplay :content="game.description" />
     </div>
   </section>
 </template>
@@ -120,6 +116,7 @@ import { GameListing } from "@/typings/Game";
 import Tooltip from "./Tooltip.vue";
 import GameBadge from "./Game/GameBadge.vue";
 import { getCoverImageUrl } from "@/api/storage";
+import TipTapDisplay from "./TipTapDisplay.vue";
 
 const props = defineProps({
   game: {

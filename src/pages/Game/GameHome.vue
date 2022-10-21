@@ -6,12 +6,8 @@
       alt="image"
     />
   </div>
-  <div v-if="gameStore.game?.description" class="p-8 bg-gray-200 rounded-lg">
-    <QuillEditor
-      theme="bubble"
-      :content="JSON.parse(gameStore.game.description)"
-      read-only
-    />
+  <div v-if="gameStore.game?.description" class="p-8 bg-gray-100 rounded-lg">
+    <TipTapDisplay :content="gameStore.game.description" />
   </div>
 
   <section v-if="!gameStore.game.deleted_at" class="mt-12">
@@ -29,6 +25,7 @@
 </template>
 <script setup lang="ts">
 import { onMounted, ref, toRefs } from "vue";
+import TipTapDisplay from "@/components/TipTapDisplay.vue";
 import SessionBlock from "@/components/Game/SessionBlock.vue";
 import { loadUserCommunityAccess } from "@/api/communityAccess";
 import { store } from "@/store";
