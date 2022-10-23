@@ -3,6 +3,9 @@
     <div v-if="isLoading" class="h-full grid place-items-center">
       <LoadingSpinner color="brand-500" />
     </div>
+    <div v-else-if="gameStore.game.deleted_at">
+      This game has been cancelled
+    </div>
     <div v-else>
       <transition
         leave-active-class="transition duration-100 ease-in"
@@ -88,7 +91,7 @@
             Sessions
           </router-link>
           <router-link
-            v-if="canManage || userIsInTheGame"
+            v-if="displayGameDetails"
             :to="`/games/${id}/details`"
             exact-active-class="border-b border-brand-500 dark:border-brand-300"
           >
@@ -161,6 +164,10 @@ const userIsInTheGame = computed(() =>
     session.rsvps.includes(store.user?.id ?? "")
   )
 );
+
+const displayGameDetails = computed(() => {
+  return userIsInTheGame.value || canManage.value;
+});
 
 onMounted(async () => {
   await getGameData();

@@ -25,40 +25,14 @@
           cannot be disabled.
         </p>
       </div>
-      <div class="flex flex-col mt-8">
-        <FormLabel>Web notifications</FormLabel>
-        <p class="mb-6">
-          You can enable web notifications on each device you use to get alerts
-          when you are RSVP'd to a game.
-        </p>
-        <OutlineButton
-          v-if="webPushSubscriptionStore.isSubscribed"
-          @click="unsubscribeUser"
-        >
-          <BellIcon class="w-6 h-6 mr-2 text-slate-700" />
-          Disable notifications on this device
-        </OutlineButton>
-        <PrimaryButton v-else @click="subscribeUser">
-          <BellIcon class="w-6 h-6 mr-2" />
-          Enable notifications on this device
-        </PrimaryButton>
-      </div>
     </section>
   </ProfileTemplate>
 </template>
 
 <script setup lang="ts">
 import { onUnmounted, ref } from "vue";
-import { BellIcon } from "@heroicons/vue/24/outline";
 import ProfileTemplate from "@/components/ProfileTemplate.vue";
-import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
-import {
-  subscribeUser,
-  unsubscribeUser,
-  webPushSubscriptionStore,
-} from "@/serviceWorkerRegistration";
 import FormLabel from "@/components/Forms/FormLabel.vue";
-import OutlineButton from "@/components/Buttons/OutlineButton.vue";
 import { supabase } from "@/supabase";
 import { unreadNotifications } from "@/util/notifications";
 import { Notification } from "@/typings/Notification";
