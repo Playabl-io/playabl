@@ -46,10 +46,10 @@ export const handler: Handler = async (event, context) => {
     }
     const data = await joinSession({ sessionId, userId });
     if (beforeRsvps.length < game.participant_count) {
-      const user = await getUserProfile({ userId: userId });
+      const user = await getUserProfile({ userId });
       await sendRsvpEmail({
         gameName: game.title,
-        relatedUrl: `https://playabl.io/games/${game.id}`,
+        relatedUrl: `https://app.playabl.io/games/${game.id}`,
         email: user.email,
         name: user.username || user.email,
       });
