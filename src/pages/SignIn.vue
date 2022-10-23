@@ -32,7 +32,9 @@
               Playabl is currently in beta, so sign up requires an invite code
             </p>
             <FormInput v-model="signUpCode" class="w-full mb-3" />
-            <PrimaryButton @click="checkCode"> Check code </PrimaryButton>
+            <PrimaryButton type="button" @click="checkCode">
+              Check code
+            </PrimaryButton>
           </PopoverPanel>
         </Popover>
         <div class="flex flex-col mt-6">
@@ -55,7 +57,23 @@
         </primary-button>
         <p class="text-xs text-slate-700 text-center my-4">OR</p>
         <div class="flex justify-center">
-          <GoogleButton @click="signInWithGoogle" />
+          <Popover class="relative">
+            <PopoverButton type="button">
+              <GoogleButton />
+            </PopoverButton>
+
+            <PopoverPanel
+              class="absolute z-10 mt-2 bg-white p-4 rounded-md shadow-md border border-solid border-gray-100"
+            >
+              <p class="mb-2">
+                Playabl is currently in beta, so access requires an invite code
+              </p>
+              <FormInput v-model="signUpCode" class="w-full mb-3" />
+              <PrimaryButton type="button" @click="signInWithGoogle">
+                Check code
+              </PrimaryButton>
+            </PopoverPanel>
+          </Popover>
         </div>
       </form>
     </section>
@@ -151,6 +169,9 @@ const handleLogin = async () => {
 };
 
 async function signInWithGoogle() {
+  if (signUpCode.value !== import.meta.env.VITE_BETA_SIGNUP_CODE) {
+    return;
+  }
   const { user, error } = await supabase.auth.signIn({
     provider: "google",
   });
