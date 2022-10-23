@@ -80,6 +80,7 @@
 import { useEditor, EditorContent } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
 import PlaceholderExtension from "@tiptap/extension-placeholder";
+import LinkExtension from "@tiptap/extension-link";
 import { Icon } from "@iconify/vue";
 import { watch } from "vue";
 
@@ -106,6 +107,9 @@ const editor = useEditor({
     StarterKit,
     PlaceholderExtension.configure({
       placeholder: props.placeholder,
+    }),
+    LinkExtension.configure({
+      protocols: ["mailto"],
     }),
   ],
   editorProps: {

@@ -13,8 +13,8 @@
       :class="block.width"
     >
       <p class="text-lg font-semibold mb-8 font-paytone">{{ block.title }}</p>
-      <div class="-m-4">
-        <ResponsiveQuill :content="block.content" />
+      <div>
+        <TipTapDisplay :content="block.content" />
       </div>
     </div>
   </div>
@@ -88,8 +88,8 @@
           <p class="text-lg font-semibold mb-8 font-paytone">
             {{ block.title }}
           </p>
-          <div class="-m-4">
-            <ResponsiveQuill :content="block.content" />
+          <div>
+            <TipTapDisplay :content="block.content" />
           </div>
         </div>
         <PrimaryButton class="col-span-full" @click="send('ADD_BLOCK')">
@@ -151,15 +151,13 @@
         </div>
         <div class="flex flex-col mt-6">
           <FormLabel :no-margin="true">Block content</FormLabel>
-          <p class="text-xs mb-1">Supports rich formatting</p>
           <div
-            class="bg-white h-80 rounded-lg py-2 border border-solid border-gray-300 mt-2"
+            class="bg-white rounded-lg border border-solid border-gray-300 mt-2"
           >
-            <QuillEditor
-              ref="editor"
-              theme="bubble"
-              toolbar="essential"
-              @update:content="
+            <TipTapEditor
+              v-model:model-value="activeBlock.content"
+              editor-height="h-80"
+              @update:model-value="
                 send({
                   type: 'UPDATE_BLOCK',
                   payload: {
@@ -175,9 +173,8 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import { v4 as uuidv4 } from "uuid";
-import { Delta } from "@vueup/vue-quill";
 import { useMachine } from "@xstate/vue";
 import { createMachine, assign } from "xstate";
 import {
@@ -196,18 +193,17 @@ import FormInput from "@/components/Forms/FormInput.vue";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
 import SecondaryButton from "@/components/Buttons/SecondaryButton.vue";
-import ResponsiveQuill from "./ResponsiveQuill.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import { loadGameDetails, saveGameDetails } from "@/api/gamesAndSessions";
 import useToast from "@/components/Toast/useToast";
+import TipTapEditor from "@/components/TipTapEditor.vue";
+import TipTapDisplay from "@/components/TipTapDisplay.vue";
 
 const { showSuccess, showError } = useToast();
 
 const userIsCreator = computed(
   () => gameStore.game.creator_id === store.user?.id
 );
-
-const editor = ref();
 
 const gameDetailsMachine = createMachine(
   {
@@ -225,7 +221,7 @@ const gameDetailsMachine = createMachine(
           }
         | {
             type: "UPDATE_BLOCK";
-            payload: { title?: string; width?: string; content?: Delta };
+            payload: { title?: string; width?: string; content?: string };
           }
         | {
             type: "SET_ACTIVE_BLOCK";
@@ -273,7 +269,6 @@ const gameDetailsMachine = createMachine(
         },
       },
       editing: {
-        entry: ["setContent"],
         on: {
           ADD_BLOCK: {
             actions: ["addBlock"],
@@ -335,20 +330,13 @@ const gameDetailsMachine = createMachine(
           gameDetailsId: event.data?.id,
         };
       }),
-      setContent: (context) => {
-        const activeBlock = context.blocks[0];
-        if (activeBlock?.content) {
-          editor.value.setContents(activeBlock.content);
-        }
-      },
       addBlock: assign((context) => {
         const nextBlocks = context.blocks.concat({
           id: uuidv4(),
           title: "",
-          content: {},
+          content: "",
           width: "col-span-full",
         });
-        editor.value.setContents({});
         return {
           blocks: nextBlocks,
           activeIndex: nextBlocks.length - 1,
@@ -358,10 +346,17 @@ const gameDetailsMachine = createMachine(
         if (event.type !== "UPDATE_BLOCK") {
           throw new Error("Incorrect event sent to updateBlock");
         }
-        const block = context.blocks[context.activeIndex];
+        let block = context.blocks[context.activeIndex];
+        if (!block) {
+          block = {
+            id: uuidv4(),
+            width: "col-span-full",
+            title: "",
+            content: "",
+          };
+        }
         const blocks = [...context.blocks];
         blocks.splice(context.activeIndex, 1, {
-          width: "col-span-full",
           ...block,
           ...event.payload,
         });
@@ -373,8 +368,6 @@ const gameDetailsMachine = createMachine(
         if (event.type !== "SET_ACTIVE_BLOCK") {
           throw new Error("Incorrect event sent to setActiveBlock");
         }
-        const activeBlock = context.blocks[event.payload.index];
-        editor.value.setContents(activeBlock.content);
         return {
           activeIndex: event.payload.index,
         };
@@ -402,8 +395,6 @@ const gameDetailsMachine = createMachine(
           Math.max(nextBlocks.length - 1, 0),
           event.payload.index
         );
-        const activeBlock = nextBlocks[nextActiveIndex];
-        editor.value.setContents(activeBlock?.content ?? {});
         return {
           blocks: nextBlocks,
           activeIndex: nextActiveIndex,
@@ -424,7 +415,11 @@ const gameDetailsMachine = createMachine(
 const { state, send } = useMachine(gameDetailsMachine);
 
 const activeBlock = computed(
-  () => state.value.context.blocks[state.value.context.activeIndex]
+  () =>
+    state.value.context.blocks[state.value.context.activeIndex] || {
+      title: "",
+      content: "",
+    }
 );
 
 function updateBlockProperty(event: Event, property: string) {
