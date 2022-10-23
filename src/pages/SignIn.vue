@@ -17,13 +17,24 @@
         @submit.prevent="handleLogin"
       >
         <Heading level="h1" as="h5">Sign in</Heading>
-        <LinkButton
-          type="button"
-          class="text-sm text-brand-500 mr-auto mt-4"
-          @click="displaySignUp = true"
-        >
-          Need an account? Sign up
-        </LinkButton>
+        <Popover class="relative">
+          <PopoverButton
+            type="button"
+            class="text-sm text-brand-500 mr-auto mt-4"
+          >
+            <LinkButton type="button"> Need an account? Sign up </LinkButton>
+          </PopoverButton>
+
+          <PopoverPanel
+            class="absolute z-10 mt-2 bg-white p-4 rounded-md shadow-md border border-solid border-gray-100"
+          >
+            <p class="mb-2">
+              Playabl is currently in beta, so sign up requires an invite code
+            </p>
+            <FormInput v-model="signUpCode" class="w-full mb-3" />
+            <PrimaryButton @click="checkCode"> Check code </PrimaryButton>
+          </PopoverPanel>
+        </Popover>
         <div class="flex flex-col mt-6">
           <form-label for="email"> Email </form-label>
           <form-input id="email" v-model="email" type="email" required />
@@ -51,6 +62,7 @@
   </BaseTemplate>
 </template>
 <script setup lang="ts">
+import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue";
 import FormLabel from "@/components/Forms/FormLabel.vue";
 import FormInput from "@/components/Forms/FormInput.vue";
 import Heading from "@/components/Heading.vue";
@@ -74,9 +86,15 @@ const email = ref("");
 const password = ref("");
 const loading = ref(false);
 const submitted = ref(false);
+const signUpCode = ref("");
 
-// FOR BETA: DO NOT ALLOW SIGNING UP - ONLY SIGN IN
 const displaySignUp = ref(false);
+
+function checkCode() {
+  if (signUpCode.value === import.meta.env.VITE_BETA_SIGNUP_CODE) {
+    displaySignUp.value = true;
+  }
+}
 
 async function handleSignUp({
   email,
