@@ -5,6 +5,8 @@
 <script setup lang="ts">
 import { useEditor, EditorContent } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
+import LinkExtension from "@tiptap/extension-link";
+import { watch } from "vue";
 
 const props = defineProps({
   content: {
@@ -16,11 +18,25 @@ const props = defineProps({
 const editor = useEditor({
   editable: false,
   content: props.content,
-  extensions: [StarterKit],
+  extensions: [
+    StarterKit,
+    LinkExtension.configure({
+      protocols: ["mailto"],
+    }),
+  ],
   editorProps: {
     attributes: {
       class: "prose sm:prose-sm lg:prose-lg w-full",
     },
   },
 });
+
+watch(
+  () => props.content,
+  (newValue = "") => {
+    if (newValue !== editor.value?.getHTML()) {
+      editor.value?.commands.setContent(newValue, false);
+    }
+  }
+);
 </script>

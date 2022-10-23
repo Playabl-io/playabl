@@ -52,9 +52,9 @@
             />
           </div>
         </div>
-        <OutlineButton class="mt-8 font-semibold">
+        <PrimaryButton class="mt-8 font-semibold">
           Next <ArrowSmallRightIcon class="h-6 w-6" />
-        </OutlineButton>
+        </PrimaryButton>
       </form>
     </div>
     <div v-if="state.value === 'screen2'">
