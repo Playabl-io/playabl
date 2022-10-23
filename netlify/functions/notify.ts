@@ -1,18 +1,5 @@
 import { Handler } from "@netlify/functions";
-import { createClient } from "@supabase/supabase-js";
 import axios from "axios";
-const webpush = require("web-push");
-
-webpush.setVapidDetails(
-  "mailto:support@playabl.io",
-  process.env.VITE_WEB_PUSH_PUBLIC_KEY,
-  process.env.WEB_PUSH_PRIVATE_KEY
-);
-
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE
-);
 
 export const handler: Handler = async (event, context) => {
   const { authorization } = event.headers;
@@ -52,14 +39,7 @@ export const handler: Handler = async (event, context) => {
       console.error("failed to send cancel email", error);
     }
   }
-  try {
-    await sendWebPush({
-      userId: record.user_id,
-      message: record.message,
-    });
-  } catch (error) {
-    console.error("error sending web push", error);
-  }
+
   return {
     statusCode: 200,
   };
@@ -133,19 +113,4 @@ function sendCancelEmail({ name, email, gameName }) {
       timeout: 7000,
     }
   );
-}
-
-async function sendWebPush({ userId, message }) {
-  const { data } = await supabase
-    .from("profiles")
-    .select("subscriptions")
-    .eq("id", userId)
-    .single();
-  if (Array.isArray(data?.subscriptions)) {
-    data.subscriptions.forEach((subscription) => {
-      const decoded = decodeURIComponent(subscription);
-      const parsed = JSON.parse(decoded);
-      webpush.sendNotification(parsed, message);
-    });
-  }
 }
