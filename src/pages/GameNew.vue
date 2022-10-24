@@ -197,8 +197,6 @@
               <FormLabel for="start-time"> Start time </FormLabel>
               <FormTimeInput
                 id="start-time"
-                time="sessionStartTime"
-                aria-label="Session start time"
                 @set-time="sessionStartTime = $event"
               />
             </div>
@@ -217,8 +215,6 @@
               <FormLabel for="end-time"> End time </FormLabel>
               <FormTimeInput
                 id="end-time"
-                time="sessionEndTime"
-                aria-label="Session start time"
                 @set-time="sessionEndTime = $event"
               />
             </div>

@@ -16,9 +16,9 @@
             <FormLabel for="start-time"> Start time </FormLabel>
             <FormTimeInput
               id="start-time"
-              v-model="sessionStartTime"
+              :time="sessionStartTime"
               aria-label="Session start time"
-              required
+              @set-time="sessionStartTime = $event"
             />
           </div>
         </div>
@@ -36,11 +36,14 @@
             <FormLabel for="end-time"> End time </FormLabel>
             <FormTimeInput
               id="end-time"
-              v-model="sessionEndTime"
-              aria-label="Session start time"
-              required
+              :time="sessionEndTime"
+              aria-label="Session end time"
+              @set-time="sessionEndTime = $event"
             />
           </div>
+          <p v-if="dateError" class="text-red-500 font-semibold">
+            {{ dateError }}
+          </p>
         </div>
       </div>
       <hr class="my-8" />
@@ -55,13 +58,15 @@
     <div
       class="grow-0 flex justify-end bg-inherit px-6 py-4 border-t border-solid border-gray-200"
     >
-      <PrimaryButton :is-loading="saving">Add session</PrimaryButton>
+      <PrimaryButton :is-loading="saving" :disabled="Boolean(dateError)"
+        >Add session</PrimaryButton
+      >
     </div>
   </form>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import { set } from "date-fns";
+import { onMounted, ref, computed } from "vue";
+import { set, isBefore } from "date-fns";
 import FormLabel from "@/components/Forms/FormLabel.vue";
 import DatePicker from "@/components/Calendar/DatePicker.vue";
 import FormTimeInput from "@/components/Forms/FormTimeInput.vue";
@@ -106,6 +111,35 @@ function updateStartDate(date: Date) {
 function updateEndDate(date: Date) {
   endDate.value = date;
 }
+
+const startDateAndTime = computed(() => {
+  if (!sessionStartTime.value || !startDate.value) return 0;
+  console.log("compute start time", sessionStartTime.value);
+  const [startHours, startMinutes] = sessionStartTime.value.split(":");
+  return set(startDate.value, {
+    hours: Number(startHours),
+    minutes: Number(startMinutes),
+  }).getTime();
+});
+
+const endDateAndTime = computed(() => {
+  if (!sessionEndTime.value || !endDate.value) return 0;
+  const [endHours, endMinutes] = sessionEndTime.value.split(":");
+  return set(endDate.value, {
+    hours: Number(endHours),
+    minutes: Number(endMinutes),
+  }).getTime();
+});
+
+const dateError = computed(() => {
+  if (!startDateAndTime.value || !endDateAndTime.value) {
+    return "";
+  }
+  if (isBefore(endDateAndTime.value, startDateAndTime.value)) {
+    return "End date and time cannot be before start date and time";
+  }
+  return "";
+});
 
 async function addSession() {
   if (!store.user) return;

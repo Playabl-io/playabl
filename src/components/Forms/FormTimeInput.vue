@@ -1,11 +1,12 @@
 <template>
-  <div class="flex gap-2 items-center">
+  <div class="flex gap-2 items-stretch">
     <input
       ref="hourInput"
       :value="hour"
       aria-label="Hours"
       type="number"
-      class="rounded-md border-gray-300 text-2xl w-1/3 grow self-stretch invalid:border-red-500 invalid:border-2"
+      class="rounded-md border-gray-300 text-2xl w-1/3 grow invalid:border-red-500 invalid:border-2"
+      :required="required"
       @input="formatHour"
     />
     <p class="text-2xl font-bold">:</p>
@@ -14,43 +15,43 @@
       :value="minute"
       aria-label="Minutes"
       type="number"
-      class="rounded-md border-gray-300 text-2xl w-1/3 grow self-stretch invalid:border-red-500 invalid:border-2"
+      class="rounded-md border-gray-300 text-2xl w-1/3 grow invalid:border-red-500 invalid:border-2"
+      :required="required"
       @input="formatMinute"
     />
     <div class="flex flex-col gap-1 w-12 md:w-10">
-      <button
-        type="button"
-        class="rounded-md py-1 px-2 border border-solid border-gray-300 text-xs"
-        :class="{
-          'bg-blue-500 text-white border-transparent font-semibold':
-            meridian === 'AM',
-        }"
-        @click="meridian = 'AM'"
+      <ToggleRadio
+        id="am"
+        v-model="meridian"
+        class="text-xs"
+        :name="`meridian-${id}`"
+        value="AM"
       >
         AM
-      </button>
-      <button
-        type="button"
-        class="rounded-md py-1 px-2 border border-solid border-gray-300 text-xs"
-        :class="{
-          'bg-blue-500 text-white border-transparent font-semibold':
-            meridian === 'PM',
-        }"
-        @click="meridian = 'PM'"
+      </ToggleRadio>
+      <ToggleRadio
+        id="pm"
+        v-model="meridian"
+        class="text-xs"
+        :name="`meridian-${id}`"
+        value="PM"
       >
         PM
-      </button>
+      </ToggleRadio>
     </div>
   </div>
 </template>
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import FormInput from "./FormInput.vue";
+import { v4 as uuidv4 } from "uuid";
+import ToggleRadio from "./ToggleRadio.vue";
 
-const props = defineProps({
-  time: {
-    type: String,
-    required: true,
+const id = uuidv4();
+
+defineProps({
+  required: {
+    type: Boolean,
+    default: false,
   },
 });
 
@@ -91,18 +92,6 @@ function formatMinute(event: Event) {
   }
   minute.value = int.toString().padStart(2, "0");
 }
-
-watch(
-  () => props.time,
-  (newValue) => {
-    if (newValue !== "") {
-      const [hours, minutes] = newValue.split(":");
-      meridian.value = Number(hours) > 12 ? "PM" : "AM";
-      hour.value = `${Number(hour) % 12}`;
-      minute.value = minutes;
-    }
-  }
-);
 
 watch([hour, minute, meridian], ([newHour, newMinute, newMeridian]) => {
   if (!newHour || !newMinute || !newMeridian) return;
