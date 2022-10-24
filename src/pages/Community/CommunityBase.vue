@@ -10,9 +10,9 @@
         leave-to-class="opacity-0"
       >
         <InfoBanner
-          v-if="route.query.unauthorized"
+          v-if="currentRoute.query.unauthorized"
           class="mb-6"
-          @dismiss="router.replace(route.path)"
+          @dismiss="router.replace(currentRoute.path)"
         >
           You are not authorized to view that page
         </InfoBanner>
@@ -64,7 +64,7 @@
   </BaseTemplate>
 </template>
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onBeforeUnmount } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { log } from "@/util/logger";
 import BaseTemplate from "@/components/BaseTemplate.vue";
@@ -73,7 +73,11 @@ import Heading from "@/components/Heading.vue";
 import { ADMIN, CREATOR, PLAYER } from "@/util/roles";
 import { store } from "@/store";
 import { Community } from "@/typings/Community";
-import { communityStore, getMemberCount } from "./communityStore";
+import {
+  clearCommunityStore,
+  communityStore,
+  getMemberCount,
+} from "./communityStore";
 import { getCoverImageUrl } from "@/api/storage";
 import InfoBanner from "@/components/Banners/InfoBanner.vue";
 import { loadUpcomingCommunityGamesWithCount } from "@/api/gamesAndSessions";
@@ -83,16 +87,16 @@ import {
 } from "@/api/communityMemberships";
 import { selectFromCommunity } from "@/api/communities";
 
-const route = useRoute();
+const currentRoute = useRoute();
 const router = useRouter();
-const { community_id: id } = route.params;
+const { community_id: id } = currentRoute.params;
 
 const communityData = ref<Community>();
 const isLoading = ref(true);
 
 onMounted(async () => {
-  if (typeof route.params.community_id === "string") {
-    getMemberCount(route.params.community_id);
+  if (typeof currentRoute.params.community_id === "string") {
+    getMemberCount(currentRoute.params.community_id);
   }
   await Promise.allSettled([
     getMembershipStatus(),
@@ -100,25 +104,27 @@ onMounted(async () => {
     loadUpcomingGames(),
     loadAdmins(),
   ]);
-  if (route.path.includes("manage") && !communityStore.isAdmin) {
+  if (currentRoute.path.includes("manage") && !communityStore.isAdmin) {
     router.replace(`/communities/${id}?unauthorized=true`);
   }
   isLoading.value = false;
 });
 
+onBeforeUnmount(clearCommunityStore);
+
 async function getMembershipStatus() {
   if (!store.user) return;
   let communityId = "";
-  if (typeof route.params.community_id === "string") {
-    communityId = route.params.community_id;
+  if (typeof currentRoute.params.community_id === "string") {
+    communityId = currentRoute.params.community_id;
   }
   const data = await loadUserCommunityMembership({
     communityId,
     userId: store.user.id,
   });
-  communityStore.isAdmin = data && data.role_id === ADMIN;
-  communityStore.isCreator = data && data.role_id === CREATOR;
-  communityStore.isPlayer = data && data.role_id === PLAYER;
+  communityStore.isAdmin = data.role_id === ADMIN;
+  communityStore.isCreator = data.role_id === CREATOR;
+  communityStore.isPlayer = data.role_id === PLAYER;
 }
 
 async function getCommunity() {

@@ -5,7 +5,7 @@ import { Member, MemberWithMembership } from "@/typings/Member";
 import { log } from "@/util/logger";
 import { reactive } from "vue";
 
-interface Store {
+interface CommunityStore {
   coverImageUrl?: string;
   gamesCount: number;
   games: Game[];
@@ -18,7 +18,7 @@ interface Store {
   admins: Member[];
 }
 
-export const communityStore = reactive<Store>({
+const DEFAULT_COMMUNITY_STATE: CommunityStore = {
   gamesCount: 0,
   games: [],
   membersCount: 0,
@@ -33,7 +33,18 @@ export const communityStore = reactive<Store>({
     created_at: "",
   },
   admins: [],
+};
+
+export let communityStore = reactive<CommunityStore>({
+  ...DEFAULT_COMMUNITY_STATE,
 });
+
+export function clearCommunityStore() {
+  communityStore = reactive<CommunityStore>({
+    ...DEFAULT_COMMUNITY_STATE,
+  });
+  console.log(communityStore);
+}
 
 export async function getMemberCount(communityId: string) {
   const { error, count } = await supabase
