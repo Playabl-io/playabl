@@ -1,11 +1,11 @@
 <template>
-  <div class="flex gap-2 items-stretch">
+  <div class="flex gap-2 items-center">
     <input
       ref="hourInput"
       :value="hour"
       aria-label="Hours"
       type="number"
-      class="rounded-md border-gray-300 text-2xl w-1/3 grow invalid:border-red-500 invalid:border-2"
+      class="self-stretch rounded-md border-gray-300 text-2xl w-1/3 grow invalid:border-red-500 invalid:border-2"
       :required="required"
       @input="formatHour"
     />
@@ -15,7 +15,7 @@
       :value="minute"
       aria-label="Minutes"
       type="number"
-      class="rounded-md border-gray-300 text-2xl w-1/3 grow invalid:border-red-500 invalid:border-2"
+      class="self-stretch rounded-md border-gray-300 text-2xl w-1/3 grow invalid:border-red-500 invalid:border-2"
       :required="required"
       @input="formatMinute"
     />
