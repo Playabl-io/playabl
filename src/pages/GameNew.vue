@@ -197,8 +197,9 @@
               <FormLabel for="start-time"> Start time </FormLabel>
               <FormTimeInput
                 id="start-time"
-                v-model="sessionStartTime"
+                time="sessionStartTime"
                 aria-label="Session start time"
+                @set-time="sessionStartTime = $event"
               />
             </div>
           </div>
@@ -216,11 +217,9 @@
               <FormLabel for="end-time"> End time </FormLabel>
               <FormTimeInput
                 id="end-time"
-                v-model="sessionEndTime"
+                time="sessionEndTime"
                 aria-label="Session start time"
-                :class="{
-                  'border-red-500': dateError,
-                }"
+                @set-time="sessionEndTime = $event"
               />
             </div>
           </div>

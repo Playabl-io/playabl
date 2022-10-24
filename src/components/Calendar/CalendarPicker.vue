@@ -1,9 +1,9 @@
 <template>
   <div
-    class="border border-solid border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 rounded-lg shadow-lg flex flex-col"
+    class="h-full border border-solid border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 rounded-lg shadow-lg flex flex-col"
     :class="{
-      'max-w-md h-96': size === 'medium',
-      'w-full h-full': size === 'full',
+      'max-w-md': size === 'medium',
+      'w-full': size === 'full',
     }"
     @keydown.escape="emit('close')"
   >
