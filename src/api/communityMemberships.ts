@@ -9,19 +9,17 @@ export async function loadUserCommunityMembership({
   communityId: string;
   userId: string;
 }) {
-  const { data, error } = await supabase
+  const { data, error, status } = await supabase
     .from("community_memberships")
     .select(`user_id, role_id`)
     .eq("community_id", communityId)
     .eq("user_id", userId)
     .single();
-  if (error) {
+  if (error && status !== 406) {
     log({ error });
     throw error;
   }
-  if (data) {
-    return data;
-  }
+  return data || {};
 }
 
 export async function loadCommunityAdmins(communityId: string) {

@@ -44,16 +44,17 @@ async function togglePublicAccess() {
   try {
     isUpdating.value = true;
     const nextSetting = !communityStore.community.allow_public_signup;
-    await supabase
+    const { data, error } = await supabase
       .from("communities")
-      .update(
-        {
-          allow_public_signup: nextSetting,
-        },
-        { returning: "minimal" }
-      )
-      .eq("id", communityStore.community.id);
-    communityStore.community.allow_public_signup = nextSetting;
+      .update({
+        allow_public_signup: nextSetting,
+      })
+      .eq("id", communityStore.community.id)
+      .single();
+    if (error) {
+      throw error;
+    }
+    communityStore.community.allow_public_signup = data.allow_public_signup;
     showSuccess({ message: "Public access setting updated" });
   } catch (error) {
     log({ error });
