@@ -20,15 +20,15 @@
         </transition>
       </MenuButton>
       <transition
-        enter-active-class="transition duration-100 ease-out"
-        enter-from-class="transform scale-95 opacity-0"
-        enter-to-class="transform scale-100 opacity-100"
-        leave-active-class="transition duration-75 ease-out"
-        leave-from-class="transform scale-100 opacity-100"
-        leave-to-class="transform scale-95 opacity-0"
+        enter-active-class="transition duration-300 ease-out"
+        enter-from-class="transform translate-y-full opacity-0"
+        enter-to-class="transform opacity-100"
+        leave-active-class="transition duration-100 ease-in"
+        leave-from-class="transform opacity-100"
+        leave-to-class="transform translate-y-full opacity-0"
       >
         <MenuItems
-          class="absolute bottom-0 w-full border-t border-gray-100 flex flex-col space-y-4 bg-gray-50 rounded-lg shadow-md text-slate-900 p-4 z-20"
+          class="absolute bottom-0 w-full border-t border-slate-300 flex flex-col space-y-4 bg-gray-50 rounded-lg text-slate-900 p-4 z-20"
         >
           <menu-item>
             <router-link to="/" class="font-paytone text-lg p-2">
@@ -80,6 +80,16 @@
               </div>
             </router-link>
           </menu-item>
+          <MenuItem class="px-2 py-1 flex items-center">
+            <a
+              href="https://docs.playabl.io"
+              target="_blank"
+              class="flex items-center"
+            >
+              Docs
+              <ArrowTopRightOnSquareIcon class="h-5 w-5 ml-1" />
+            </a>
+          </MenuItem>
           <menu-item v-if="store.user?.id">
             <outline-button @click="signOut">Sign out</outline-button>
           </menu-item>
@@ -94,7 +104,7 @@ import { supabase } from "@/supabase";
 import { RouterLink, useRouter } from "vue-router";
 import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue";
 import OutlineButton from "./Buttons/OutlineButton.vue";
-import { Bars3Icon } from "@heroicons/vue/20/solid";
+import { Bars3Icon, ArrowTopRightOnSquareIcon } from "@heroicons/vue/20/solid";
 import { store } from "@/store";
 import { unreadNotifications } from "@/util/notifications";
 import { log } from "@/util/logger";
