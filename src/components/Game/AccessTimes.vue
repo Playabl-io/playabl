@@ -1,9 +1,22 @@
 <template>
   <div>
     <Heading level="h6" as="h2" class="mb-2">Access times</Heading>
-    <p class="text-sm text-slate-700 dark:text-slate-300 mb-4">
-      Select what access levels to apply. Mandatory access levels are
-      automatically selected.
+    <p class="text-sm text-slate-700 dark:text-slate-300 mb-3">
+      Select what access levels to apply. Not sure how access levels work?
+      <a
+        href="https://docs.playabl.io/communities/access-levels.html"
+        target="_blank"
+        class="text-blue-700 underline"
+      >
+        Read more in our docs.
+      </a>
+    </p>
+    <p class="text-xs text-slate-700 dark:text-slate-300 mb-1">
+      Mandatory access levels
+      <StarIcon
+        class="h-4 w-4 text-amber-300 inline-block -translate-y-1/3 -translate-x-1 -mr-1"
+      />
+      are automatically selected.
     </p>
     <div class="grid" :class="grid">
       <label
@@ -36,15 +49,31 @@
           {{ level.priority_access_time }} {{ level.time_denomination }} of
           priority time
         </p>
+        <hr class="w-full my-2" />
+        <p v-if="accessTimes[level.id]" class="text-slate-700 text-xs">
+          Can RSVP at
+          {{
+            format(
+              new Date(accessTimes[level.id].rsvpAvailableTime),
+              "EEE, MMM do, h:mm a"
+            )
+          }}
+        </p>
+        <p v-else class="text-slate-700 text-xs">
+          Not selected - no priority time granted
+        </p>
       </label>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { PropType, toRefs } from "vue";
+import { PropType, computed } from "vue";
 import { store } from "@/store";
 import { StarIcon } from "@heroicons/vue/20/solid";
 import Heading from "../Heading.vue";
+import { rsvpTimes } from "@/util/time";
+import { format } from "date-fns";
+import { AccessLevel } from "@/typings/AccessLevel";
 
 const emit = defineEmits(["update"]);
 
@@ -55,10 +84,23 @@ const props = defineProps({
   },
   grid: {
     type: String,
-    default: "grid-cols-2 md:grid-cols-4 gap-6",
+    default: "md:grid-cols-3 gap-6",
   },
 });
-toRefs(props);
+
+const selectedLevels = computed(() =>
+  props.enabledLevels.reduce((acc, id) => {
+    const level = store.communityAccessLevels.find((level) => level.id === id);
+    if (level) {
+      acc.push(level);
+    }
+    return acc;
+  }, [] as AccessLevel[])
+);
+
+const accessTimes = computed(() => {
+  return rsvpTimes(selectedLevels.value);
+});
 
 function handleChange(event: Event, id: number) {
   const element = event.target as HTMLInputElement;

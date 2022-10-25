@@ -82,6 +82,7 @@
             :options="gameSystemList"
             placeholder="Select or specify a system"
           />
+          <p class="text-xs text-slate-700 mt-1">Pick one or enter your own</p>
         </div>
         <div class="flex flex-col">
           <FormLabel for="participantCount" required> Player count </FormLabel>
