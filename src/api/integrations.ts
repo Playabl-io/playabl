@@ -1,8 +1,8 @@
 import { supabase } from "@/supabase";
+import { Game, GAME_DRAFT_STATE } from "@/typings/Game";
 import { Integration } from "@/typings/Integration";
-import { makeSlackMessage } from "@/util/integrations";
 import { log } from "@/util/logger";
-import axios from "axios";
+import { publishGame } from "./gamesAndSessions";
 
 export async function loadCommunityIntegrations(communityId: string) {
   const { data, error, status } = await supabase
@@ -57,29 +57,24 @@ export async function deleteCommunityIntegration(integration: Integration) {
   return data;
 }
 
-export function testIntegration(integration: Integration) {
-  let message = {};
-  if (integration.type === "slack") {
-    message = makeSlackMessage({
-      creator: "Playabl",
-      name: "Quest for the important thing",
-      description:
-        "Embark on a quest for a thing to do that other thing with friends along the way.\nBut be cautious, for danger lurks ahead and the path is not clear.",
-      imageUrl: "https://unsplash.com/photos/cf-ZRVtH6kE",
-      url: "https://app.playabl.io",
-    });
-  } else if (integration.type === "discord") {
-    message = {
-      embeds: [
-        {
-          title: "Test",
-          description: "Hi from Playabl",
-        },
-      ],
-    };
-  } else {
-    message = {};
-  }
+export function testGameIntegration({
+  communityId,
+  userId,
+}: {
+  communityId: string;
+  userId: string;
+}) {
+  const testGame: Game = {
+    id: 1,
+    community_id: communityId,
+    title: "Integration test from Playabl",
+    description: "This is a test game from Playabl",
+    description_as_flat_text: "This is a test game from Playabl",
+    creator_id: userId,
+    participant_count: 1,
+    draft_state: GAME_DRAFT_STATE.published,
+    created_at: new Date().getTime().toString(),
+  };
 
-  return axios.post(integration.endpoint, message);
+  publishGame(testGame);
 }
