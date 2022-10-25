@@ -25,7 +25,13 @@
             Playabl is a new way of finding and managing roleplaying communities
             and games.
           </p>
-          <p>We're currently in beta, check back soon for more info.</p>
+          <p>
+            We're currently in beta, but you can
+            <a href="https://playabl.io" class="text-blue-700 underline">
+              check out the interest page for more info and to subscribe for
+              updates!
+            </a>
+          </p>
         </div>
         <div class="mt-24 text-white font-light flex justify-center gap-3">
           <RouterLink to="/privacy">Privacy policy</RouterLink>

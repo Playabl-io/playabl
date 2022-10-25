@@ -67,6 +67,19 @@
               Sign out
             </button>
           </MenuItem>
+          <hr class="my-2 w-full" />
+          <MenuItem
+            class="w-full flex justify-end px-2 py-1 rounded-md hover:bg-gray-100"
+          >
+            <a
+              href="https://docs.playabl.io"
+              target="_blank"
+              class="flex items-center"
+            >
+              Docs
+              <ArrowTopRightOnSquareIcon class="h-5 w-5 ml-1" />
+            </a>
+          </MenuItem>
         </MenuItems>
       </transition>
     </Menu>
@@ -80,6 +93,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { supabase } from "@/supabase";
 import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue";
+import { ArrowTopRightOnSquareIcon } from "@heroicons/vue/20/solid";
 import { store } from "../store";
 import { unreadNotifications } from "@/util/notifications";
 import LoadingSpinner from "./LoadingSpinner.vue";
