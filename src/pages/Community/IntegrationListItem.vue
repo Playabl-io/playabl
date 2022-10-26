@@ -73,9 +73,21 @@
         label="Close"
         @click="testModalOpen = false"
       />
-      <div class="my-6">
+      <div class="mt-6">
         <p>Test your webhook with a sample message from Playabl</p>
-        <PrimaryButton class="mt-6" @click="sendTestMessage"
+        <div v-if="!integration.is_active" class="mt-6">
+          <p>
+            In order to test the integration, it must be set to
+            <span class="uppercase font-semibold">active</span>
+          </p>
+          <SecondaryButton class="mt-2 w-full" @click="emit('activate')"
+            >Activate</SecondaryButton
+          >
+        </div>
+        <PrimaryButton
+          v-if="integration.is_active"
+          class="mt-6"
+          @click="sendTestMessage"
           >Send test message</PrimaryButton
         >
       </div>
@@ -93,7 +105,9 @@ import BaseModal from "@/components/Modals/BaseModal.vue";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import DismissButton from "@/components/Buttons/DismissButton.vue";
 import useToast from "@/components/Toast/useToast";
-import { testIntegration } from "@/api/integrations";
+import { testGameIntegration } from "@/api/integrations";
+import { store } from "@/store";
+import { communityStore } from "./communityStore";
 
 const { showSuccess, showError } = useToast();
 
@@ -109,8 +123,16 @@ const props = defineProps({
 const emit = defineEmits(["edit", "activate", "deactivate", "test"]);
 
 async function sendTestMessage() {
+  if (!store.user?.id) return;
   try {
-    await testIntegration(props.integration);
+    if (
+      props.integration.triggers.some((trigger) => trigger.entity === "game")
+    ) {
+      await testGameIntegration({
+        communityId: communityStore.community.id,
+        userId: store.user.id,
+      });
+    }
     showSuccess({ message: "Test message sent" });
   } catch (error) {
     showError({ message: "Unable to send test message" });
