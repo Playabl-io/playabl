@@ -14,7 +14,7 @@
         Cancel game
       </OutlineButton>
     </div>
-    <section class="section-container">
+    <SectionContainer>
       <span class="flex items-center justify-between mb-8">
         <Heading level="h6" as="h3"> Sessions </Heading>
         <LinkButton @click="newSessionDrawerOpen = true">
@@ -53,7 +53,7 @@
           </div>
         </div>
       </div>
-    </section>
+    </SectionContainer>
   </div>
   <SideDrawer
     :open="newSessionDrawerOpen"
@@ -102,6 +102,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { format } from "date-fns";
+import { supabase } from "@/supabase";
 import Heading from "@/components/Heading.vue";
 import { ClockIcon, UsersIcon, TrashIcon } from "@heroicons/vue/24/outline";
 import SideDrawer from "@/components/SideDrawer.vue";
@@ -110,7 +111,7 @@ import LinkButton from "@/components/Buttons/LinkButton.vue";
 import { Session } from "@/typings/Session";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
 import DeleteModal from "@/components/Modals/DeleteModal.vue";
-import { supabase } from "@/supabase";
+import SectionContainer from "@/components/SectionContainer.vue";
 import OutlineButton from "@/components/Buttons/OutlineButton.vue";
 import EditDescription from "@/pages/Game/EditDescription.vue";
 import { gameStore } from "./gameStore";
@@ -168,8 +169,3 @@ async function cancelGame() {
   }
 }
 </script>
-<style scoped>
-.section-container {
-  @apply border border-solid border-gray-300 p-4 rounded-lg;
-}
-</style>

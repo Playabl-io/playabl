@@ -21,7 +21,7 @@
     />
     <div class="flex flex-col gap-1 w-12 md:w-10">
       <ToggleRadio
-        id="am"
+        :id="`am-${id}`"
         v-model="meridian"
         class="text-xs"
         :name="`meridian-${id}`"
@@ -30,7 +30,7 @@
         AM
       </ToggleRadio>
       <ToggleRadio
-        id="pm"
+        :id="`pm-${id}`"
         v-model="meridian"
         class="text-xs"
         :name="`meridian-${id}`"
@@ -46,12 +46,14 @@ import { ref, watch } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import ToggleRadio from "./ToggleRadio.vue";
 
-const id = uuidv4();
-
 defineProps({
   required: {
     type: Boolean,
     default: false,
+  },
+  id: {
+    type: String,
+    default: () => uuidv4(),
   },
 });
 

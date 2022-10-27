@@ -22,36 +22,7 @@
           <Heading level="h1">{{ communityData?.name }}</Heading>
         </router-link>
       </div>
-      <section class="my-12 flex justify-between items-baseline text-sm">
-        <div class="flex space-x-4 py-2">
-          <router-link
-            :to="`/communities/${id}`"
-            exact-active-class="border-b border-brand-500 dark:border-brand-300"
-          >
-            Home
-          </router-link>
-          <router-link
-            v-if="store.user"
-            :to="`/communities/${id}/feed`"
-            active-class="border-b border-brand-500 dark:border-brand-300"
-          >
-            Feed
-          </router-link>
-          <router-link
-            :to="`/communities/${id}/calendar`"
-            active-class="border-b border-brand-500 dark:border-brand-300"
-          >
-            Calendar
-          </router-link>
-          <router-link
-            v-if="communityStore.isAdmin"
-            :to="`/communities/${id}/manage`"
-            active-class="border-b border-brand-500 dark:border-brand-300"
-          >
-            Manage
-          </router-link>
-        </div>
-      </section>
+      <CommunityNav />
       <router-view v-slot="{ Component, route }">
         <keep-alive>
           <component
@@ -66,6 +37,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import CommunityNav from "./CommunityNav.vue";
 import { log } from "@/util/logger";
 import BaseTemplate from "@/components/BaseTemplate.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";

@@ -1,87 +1,89 @@
 <template>
-  <div class="flex flex-col h-full">
-    <div class="flex justify-between mb-2">
-      <Heading level="h6" as="h2">Integrations</Heading>
-      <GhostButton
-        v-if="integrationsEnabled"
-        class="font-normal text-sm"
-        @click="send('NEW_INTEGRATION')"
-      >
-        <PlusCircleIcon class="h-6 w-6 text-slate-700" />
-      </GhostButton>
-    </div>
-    <p class="text-sm text-slate-700 mb-2">
-      Power up your community with integrations and never miss when a new member
-      joins or a new game is posted
-    </p>
-    <section class="grow">
-      <div v-if="loading" class="h-full grid place-content-center">
-        <LoadingSpinner color="brand-500" />
-      </div>
-      <div v-else-if="integrationsEnabled" class="h-full grid gap-2">
-        <div v-if="noIntegrations">
-          <PrimaryButton
-            class="w-full place-self-center"
-            @click="send('NEW_INTEGRATION')"
-          >
-            Create an integration
-          </PrimaryButton>
-        </div>
-        <IntegrationListItem
-          v-for="integration in state.context.integrations"
-          :key="integration.id"
-          :integration="integration"
-          @edit="send({ type: 'EDIT_INTEGRATION', integration })"
-          @activate="
-            send({
-              type: 'SET_ACTIVE_STATUS',
-              integration: { ...integration, is_active: true },
-            })
-          "
-          @deactivate="
-            send({
-              type: 'SET_ACTIVE_STATUS',
-              integration: { ...integration, is_active: false },
-            })
-          "
-        />
-      </div>
-      <div
-        v-else-if="state.value === 'notAllowed'"
-        class="h-full grid place-content-center"
-      >
-        <p class="text-slate-700 font-semibold">
-          Unlock integrations by going Gold
-        </p>
-        <BaseButton
-          class="text-white font-bold bg-gradient-to-r from-brand-500 to-fuchsia-600 shadow-lg mt-2"
+  <SectionContainer>
+    <div class="flex flex-col h-full">
+      <div class="flex justify-between mb-2">
+        <Heading level="h6" as="h2">Integrations</Heading>
+        <GhostButton
+          v-if="integrationsEnabled"
+          class="font-normal text-sm"
+          @click="send('NEW_INTEGRATION')"
         >
-          Upgrade
-        </BaseButton>
+          <PlusCircleIcon class="h-6 w-6 text-slate-700" />
+        </GhostButton>
       </div>
-    </section>
-    <SideDrawer :open="state.context.drawerVisible" @close="send('CANCEL')">
-      <IntegrationForm
-        v-if="state.context.editingIntegration"
-        :saving="isSaving"
-        :integration="state.context.editingIntegration"
-        @close="send('CANCEL')"
-        @edit="send({ type: 'EDIT_INTEGRATION', integration: $event })"
-        @create="
-          send({
-            type: 'CREATE_INTEGRATION',
-          })
-        "
-        @update="
-          send({
-            type: 'UPDATE_INTEGRATION',
-            integration: $event,
-          })
-        "
-        @delete="send({ type: 'DELETE_INTEGRATION', integration: $event })"
-      />
-    </SideDrawer>
-  </div>
+      <p class="text-sm text-slate-700 mb-2">
+        Power up your community with integrations and never miss when a new
+        member joins or a new game is posted
+      </p>
+      <section class="grow">
+        <div v-if="loading" class="h-full grid place-content-center">
+          <LoadingSpinner color="brand-500" />
+        </div>
+        <div v-else-if="integrationsEnabled" class="h-full grid gap-2">
+          <div v-if="noIntegrations">
+            <PrimaryButton
+              class="w-full place-self-center"
+              @click="send('NEW_INTEGRATION')"
+            >
+              Create an integration
+            </PrimaryButton>
+          </div>
+          <IntegrationListItem
+            v-for="integration in state.context.integrations"
+            :key="integration.id"
+            :integration="integration"
+            @edit="send({ type: 'EDIT_INTEGRATION', integration })"
+            @activate="
+              send({
+                type: 'SET_ACTIVE_STATUS',
+                integration: { ...integration, is_active: true },
+              })
+            "
+            @deactivate="
+              send({
+                type: 'SET_ACTIVE_STATUS',
+                integration: { ...integration, is_active: false },
+              })
+            "
+          />
+        </div>
+        <div
+          v-else-if="state.value === 'notAllowed'"
+          class="h-full grid place-content-center"
+        >
+          <p class="text-slate-700 font-semibold">
+            Unlock integrations by going Gold
+          </p>
+          <BaseButton
+            class="text-white font-bold bg-gradient-to-r from-brand-500 to-fuchsia-600 shadow-lg mt-2"
+          >
+            Upgrade
+          </BaseButton>
+        </div>
+      </section>
+      <SideDrawer :open="state.context.drawerVisible" @close="send('CANCEL')">
+        <IntegrationForm
+          v-if="state.context.editingIntegration"
+          :saving="isSaving"
+          :integration="state.context.editingIntegration"
+          @close="send('CANCEL')"
+          @edit="send({ type: 'EDIT_INTEGRATION', integration: $event })"
+          @create="
+            send({
+              type: 'CREATE_INTEGRATION',
+            })
+          "
+          @update="
+            send({
+              type: 'UPDATE_INTEGRATION',
+              integration: $event,
+            })
+          "
+          @delete="send({ type: 'DELETE_INTEGRATION', integration: $event })"
+        />
+      </SideDrawer>
+    </div>
+  </SectionContainer>
 </template>
 <script setup lang="ts">
 import { computed } from "vue";
@@ -107,6 +109,7 @@ import {
   toastActions,
 } from "@/util/machineActions";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
+import SectionContainer from "@/components/SectionContainer.vue";
 import IntegrationForm from "./IntegrationForm.vue";
 import { makeNewIntegration } from "@/util/integrations";
 import IntegrationListItem from "./IntegrationListItem.vue";
