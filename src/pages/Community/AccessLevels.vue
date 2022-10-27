@@ -154,7 +154,7 @@ const accessLevelsMachine = createMachine(
           },
           DELETE_ACCESS_LEVEL: {
             target: "deleteAccessLevel",
-            actions: ["showModal"],
+            actions: ["hideDrawer", "showModal"],
           },
         },
       },
@@ -210,7 +210,7 @@ const accessLevelsMachine = createMachine(
         on: {
           CANCEL: {
             target: "editAccessLevel",
-            actions: ["hideModal"],
+            actions: ["hideModal", "showDrawer"],
           },
           DELETE: {
             target: "deleting",
@@ -220,6 +220,7 @@ const accessLevelsMachine = createMachine(
       deleting: {
         invoke: {
           src: async (context, event) => {
+            console.log(event);
             if (event.type === "DELETE") {
               return deleteAccessLevel({
                 ...event.accessLevel,

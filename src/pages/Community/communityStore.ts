@@ -43,7 +43,6 @@ export function clearCommunityStore() {
   communityStore = reactive<CommunityStore>({
     ...DEFAULT_COMMUNITY_STATE,
   });
-  console.log(communityStore);
 }
 
 export async function getMemberCount(communityId: string) {

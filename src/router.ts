@@ -10,10 +10,14 @@ import SettingsPage from "@/pages/Profile/SettingsPage.vue";
 import MessagesPage from "@/pages/Profile/MessagesPage.vue";
 import CommunitiesAll from "@/pages/CommunitiesAll.vue";
 import CommunitiesJoined from "@/pages/CommunitiesJoined.vue";
+import CommunityHome from "@/pages/Community/CommunityHome.vue";
+import CommunityAccess from "@/pages/Community/CommunityAccess.vue";
+import CommunityOverview from "@/pages/Community/CommunityOverview.vue";
+import CommunityInfo from "@/pages/Community/CommunityInfo.vue";
+import CommunityIntegrations from "@/pages/Community/CommunityIntegrations.vue";
+import CommunityMembers from "@/pages/Community/CommunityMembers.vue";
 import CommunitiesManage from "@/pages/CommunitiesManage.vue";
 import CommunityBase from "@/pages/Community/CommunityBase.vue";
-import CommunityHome from "@/pages/Community/CommunityHome.vue";
-import CommunityFeed from "@/pages/Community/CommunityFeed.vue";
 import GamesJoined from "@/pages/GamesJoined.vue";
 import GamesBrowse from "@/pages/GamesBrowse.vue";
 import GamesManage from "@/pages/GamesManage.vue";
@@ -129,25 +133,44 @@ const routes = [
     children: [
       {
         path: "",
+        name: "Home",
         component: CommunityHome,
       },
       {
-        path: "feed",
-        component: CommunityFeed,
-        meta: {
-          requiresAuth: true,
-        },
-      },
-      {
         path: "calendar",
+        name: "Calendar",
         component: () => import("@/pages/Community/CommunityCalendar.vue"),
       },
       {
         path: "manage",
         component: () => import("@/pages/Community/CommunityManage.vue"),
-        meta: {
-          requiresAuth: true,
-        },
+        children: [
+          {
+            path: "overview",
+            name: "Overview",
+            component: CommunityOverview,
+          },
+          {
+            path: "access",
+            name: "Access",
+            component: CommunityAccess,
+          },
+          {
+            path: "info",
+            name: "Info",
+            component: CommunityInfo,
+          },
+          {
+            path: "integrations",
+            name: "Integrations",
+            component: CommunityIntegrations,
+          },
+          {
+            path: "members",
+            name: "Members",
+            component: CommunityMembers,
+          },
+        ],
       },
     ],
   },
