@@ -1,5 +1,5 @@
 <template>
-  <section class="section-container">
+  <SectionContainer>
     <div class="flex flex-col h-full">
       <div class="flex justify-between mb-2">
         <Heading level="h6" as="h2">Integrations</Heading>
@@ -83,7 +83,7 @@
         />
       </SideDrawer>
     </div>
-  </section>
+  </SectionContainer>
 </template>
 <script setup lang="ts">
 import { computed } from "vue";
@@ -109,6 +109,7 @@ import {
   toastActions,
 } from "@/util/machineActions";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
+import SectionContainer from "@/components/SectionContainer.vue";
 import IntegrationForm from "./IntegrationForm.vue";
 import { makeNewIntegration } from "@/util/integrations";
 import IntegrationListItem from "./IntegrationListItem.vue";

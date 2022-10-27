@@ -220,7 +220,6 @@ const accessLevelsMachine = createMachine(
       deleting: {
         invoke: {
           src: async (context, event) => {
-            console.log(event);
             if (event.type === "DELETE") {
               return deleteAccessLevel({
                 ...event.accessLevel,

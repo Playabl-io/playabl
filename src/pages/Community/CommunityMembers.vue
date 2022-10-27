@@ -1,5 +1,5 @@
 <template>
-  <section class="section-container">
+  <SectionContainer>
     <div class="flex justify-between">
       <Heading level="h6" as="h2" class="mb-4">Members</Heading>
       <Tooltip v-if="!expandMembers">
@@ -34,7 +34,7 @@
       </Tooltip>
     </div>
     <MembersSearch :expanded="expandMembers" />
-  </section>
+  </SectionContainer>
 </template>
 <script setup lang="ts">
 import { ref } from "vue";
@@ -43,11 +43,7 @@ import Heading from "@/components/Heading.vue";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
 import MembersSearch from "./MembersSearch.vue";
 import Tooltip from "@/components/Tooltip.vue";
+import SectionContainer from "@/components/SectionContainer.vue";
 
 const expandMembers = ref(true);
 </script>
-<style scoped>
-.section-container {
-  @apply border border-solid border-gray-300 p-4 rounded-lg;
-}
-</style>

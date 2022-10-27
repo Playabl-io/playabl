@@ -1,17 +1,13 @@
 <template>
-  <section class="section-container">
+  <SectionContainer>
     <PublicAccess />
-  </section>
-  <section class="section-container">
+  </SectionContainer>
+  <SectionContainer>
     <AccessLevels />
-  </section>
+  </SectionContainer>
 </template>
 <script setup lang="ts">
 import AccessLevels from "./AccessLevels.vue";
 import PublicAccess from "./PublicAccess.vue";
+import SectionContainer from "@/components/SectionContainer.vue";
 </script>
-<style scoped>
-.section-container {
-  @apply border border-solid border-gray-300 p-4 rounded-lg;
-}
-</style>

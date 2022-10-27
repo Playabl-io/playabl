@@ -1,5 +1,5 @@
 <template>
-  <section class="section-container grid gap-2">
+  <SectionContainer class="grid gap-2">
     <div class="flex justify-between items-center mb-4 col-span-2">
       <Heading level="h6" as="h2"> Community Info </Heading>
       <GhostButton
@@ -22,16 +22,16 @@
       <MinusCircleIcon v-else class="h-6 w-6 text-slate-700" />
       <p class="prose dark:prose-invert">{{ detail.label }}</p>
     </div>
-  </section>
-  <section class="section-container">
+  </SectionContainer>
+  <SectionContainer>
     <CommunityImageLibrary />
-  </section>
-  <section class="section-container">
+  </SectionContainer>
+  <SectionContainer>
     <CalendarCutoff
       :community-id="communityStore.community.id"
       :current-cutoff="communityStore.community.furthest_posting_date"
     />
-  </section>
+  </SectionContainer>
   <SideDrawer :open="editInfoDrawerOpen" @close="editInfoDrawerOpen = false">
     <EditCommunityInfo @close="editInfoDrawerOpen = false" />
   </SideDrawer>
@@ -45,6 +45,7 @@ import {
 } from "@heroicons/vue/24/outline";
 import Heading from "@/components/Heading.vue";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
+import SectionContainer from "@/components/SectionContainer.vue";
 import CalendarCutoff from "./CalendarCutoff.vue";
 import { communityStore } from "./communityStore";
 import CommunityImageLibrary from "./CommunityImageLibrary.vue";
@@ -67,8 +68,3 @@ const details = computed(() => [
   { value: communityStore.community.patreon, label: "Patreon" },
 ]);
 </script>
-<style scoped>
-.section-container {
-  @apply border border-solid border-gray-300 p-4 rounded-lg;
-}
-</style>
