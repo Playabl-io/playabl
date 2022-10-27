@@ -17,16 +17,12 @@
       </p>
     </div>
   </div>
-  <div class="section-container">
+  <SectionContainer>
     <InviteLinks />
-  </div>
+  </SectionContainer>
 </template>
 <script setup lang="ts">
+import SectionContainer from "@/components/SectionContainer.vue";
 import { communityStore } from "./communityStore";
 import InviteLinks from "./InviteLinks.vue";
 </script>
-<style scoped>
-.section-container {
-  @apply border border-solid border-gray-300 p-4 rounded-lg;
-}
-</style>
