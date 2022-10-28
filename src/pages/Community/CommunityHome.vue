@@ -181,6 +181,7 @@
 </template>
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
+import { useHead } from "@vueuse/head";
 import { format } from "date-fns";
 import { EnvelopeIcon } from "@heroicons/vue/24/outline";
 import { communityStore } from "./communityStore";
@@ -194,6 +195,36 @@ import { log } from "@/util/logger";
 import UserAvatar from "@/components/UserAvatar.vue";
 import useMessageBox from "@/components/MessageBox/useMessageBox";
 import { sendMessageToCommunity } from "@/api/messages";
+
+useHead({
+  title: communityStore.community.name,
+  meta: [
+    {
+      property: "twitter:card",
+      content: "summary",
+    },
+    {
+      property: "twitter:site",
+      content: "@playabl_io",
+    },
+    {
+      property: "og:title",
+      content: communityStore.community.name,
+    },
+    {
+      name: "og:url",
+      content: `https://app.playabl.io/community/${communityStore.community.id}`,
+    },
+    {
+      name: "og:description",
+      content: communityStore.community.description || "A Playabl community",
+    },
+    {
+      name: "og:image",
+      content: communityStore.coverImageUrl,
+    },
+  ],
+});
 
 const { openMessageBox, closeMessageBox, setMessageIsSubmitting } =
   useMessageBox();
