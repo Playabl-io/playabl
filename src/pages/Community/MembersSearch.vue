@@ -9,7 +9,7 @@
         placeholder="Search by name or email"
       />
     </div>
-    <div v-if="expanded" class="flex flex-col">
+    <div class="flex flex-col">
       <FormSelect v-model.number="roleFilter" aria-label="Filter by role">
         <option>Filter by role</option>
         <option :value="ROLES.admin">Admin</option>
@@ -32,7 +32,6 @@
     >
       <MembersList
         :community-id="communityStore.community.id"
-        :expanded="expanded"
         :count="state.context.count"
       />
       <div class="flex justify-center mt-4">
@@ -62,13 +61,6 @@ import { useMachine } from "@xstate/vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import PaginatorControls from "@/components/PaginatorControls.vue";
 import { DEFAULT_PAGE_SIZE } from "@/util/pagination";
-
-defineProps({
-  expanded: {
-    type: Boolean,
-    required: true,
-  },
-});
 
 const searchMachine = createMachine(
   {

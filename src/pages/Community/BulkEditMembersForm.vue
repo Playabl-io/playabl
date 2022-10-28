@@ -9,6 +9,9 @@
           Bulk edit member role and access
         </Heading>
         <div class="flex flex-col relative">
+          <p class="text-sm text-slate-700 mb-4">
+            Select a new role to assign to all selected members
+          </p>
           <FormLabel for="role">Role</FormLabel>
           <FormSelect id="role" v-model.number="roleToAssign" class="mt-1">
             <option value="">Select a role</option>
@@ -16,6 +19,10 @@
             <option :value="ROLES.creator">Creator</option>
             <option :value="ROLES.player">Player</option>
           </FormSelect>
+          <p v-if="loggedInUserIsSelected" class="text-sm mt-2">
+            Note that you cannot change your own role, so your user will be
+            skipped
+          </p>
         </div>
       </section>
       <hr />
@@ -70,7 +77,7 @@
   </form>
 </template>
 <script setup lang="ts">
-import { PropType, ref } from "vue";
+import { PropType, ref, computed } from "vue";
 import { MemberWithMembership } from "@/typings/Member";
 import { AccessLevel } from "@/typings/AccessLevel";
 import Heading from "@/components/Heading.vue";
@@ -105,6 +112,14 @@ const roleToAssign = ref<number>();
 const processing = ref(false);
 const grantsToAdd = ref<AccessLevel[]>([]);
 const grantsToRemove = ref<AccessLevel[]>([]);
+
+const loggedInUserIsSelected = computed(() => {
+  const user = props.members.find((member) => member.id === store.user?.id);
+  if (user) {
+    return true;
+  }
+  return false;
+});
 
 function handleToAdd(id: number) {
   grantsToRemove.value = grantsToRemove.value.filter((val) => val.id !== id);
@@ -158,6 +173,9 @@ async function handleRoleUpdate({
   member: MemberWithMembership;
   roleId: number;
 }) {
+  if (member.id === store.user?.id) {
+    return;
+  }
   await updateMemberRole({
     communityMembershipId: member.membershipId,
     roleId,
