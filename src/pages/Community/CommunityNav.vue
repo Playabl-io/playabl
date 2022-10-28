@@ -42,7 +42,7 @@
           </button>
         </template>
       </div>
-      <div v-else class="flex items-center gap-4">
+      <div v-else class="flex flex-wrap items-center gap-4">
         <button
           class="flex items-center gap-1 rounded-md hover:cursor-pointer focus-styles"
           @click="showSubNav = !showSubNav"

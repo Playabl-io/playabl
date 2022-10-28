@@ -12,35 +12,43 @@
             id="role"
             v-model="currentRole"
             class="mt-1 rounded-md border border-solid border-gray-300 text-slate-900 dark:bg-slate-200 focus-styles"
-            :disabled="updatingRole"
+            :disabled="isLoggedInUser || updatingRole"
             @change="handleRoleUpdate($event)"
           >
             <option :value="ROLES.admin">Admin</option>
             <option :value="ROLES.creator">Creator</option>
             <option :value="ROLES.player">Player</option>
           </select>
+          <p v-if="isLoggedInUser" class="text-sm mt-1">
+            You cannot change your own role
+          </p>
         </div>
       </section>
       <hr />
       <section class="px-6">
-        <Heading level="h6" as="h3">Access</Heading>
+        <Heading level="h6" as="h4">Access</Heading>
+        <p class="text-sm text-slate-700 mt-2 mb-4">
+          Click an access level to change it from Assigned to Available, or vice
+          versa
+        </p>
         <div
-          class="rounded-md border border-solid border-gray-500 p-2 mt-4"
+          class="rounded-md border border-solid border-gray-500 p-2"
           :class="{
             'bg-gray-300 opacity-60': removingAccess,
           }"
         >
-          <p class="text-xs text-slate-700 mb-2">Current</p>
+          <p class="text-xs text-slate-700 mb-2">Assigned</p>
           <div class="grid grid-cols-2 gap-2">
-            <PrimaryButton
+            <button
               v-for="grant in store.communityMemberAccess[props.member.id]"
               :key="grant.id"
+              class="p-2 rounded-lg border border-solid border-brand-500 flex items-center transition-all hover:bg-rose-200"
               :disabed="removingAccess"
               @click="handleRemoveAccess(grant.id)"
             >
               <XCircleIcon class="h-6 w-6 mr-2" />
               {{ grant.name }}
-            </PrimaryButton>
+            </button>
           </div>
         </div>
         <div
@@ -51,21 +59,23 @@
         >
           <p class="text-xs text-slate-700 mb-2">Available</p>
           <div class="grid grid-cols-2 gap-2 py-2">
-            <PrimaryButton
+            <button
               v-for="grant in availableAccess"
               :key="grant.id"
+              class="p-2 rounded-lg border border-solid border-brand-500 flex items-center transition-all hover:bg-green-200"
               :disabled="addingAccess"
               @click="handleAddAccess(grant)"
             >
               <PlusCircleIcon class="h-6 w-6 mr-2" />
               {{ grant.name }}
-            </PrimaryButton>
+            </button>
           </div>
         </div>
       </section>
     </div>
     <DrawerFooter>
       <GhostButton
+        v-if="!isLoggedInUser"
         type="button"
         class="mr-auto"
         aria-label="Remve member from community"
@@ -117,6 +127,10 @@ const props = defineProps({
 const member = computed(() =>
   communityStore.members.find((member) => member.id === props.member.id)
 );
+
+const isLoggedInUser = computed(() => {
+  return member.value?.id === store.user?.id;
+});
 
 if (!member.value) {
   throw new Error("member not found in store");

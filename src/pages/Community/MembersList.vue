@@ -31,11 +31,11 @@
         />
         <label
           :for="member.id"
-          class="w-full grid gap-1 py-4 pl-2 rounded-md cursor-pointer"
-          :class="[expanded ? 'grid-cols-3' : 'grid-cols-2']"
+          class="w-full grid grid-cols-2 md:grid-cols-3 gap-1 py-4 pl-2 rounded-md cursor-pointer"
         >
           <div class="grid member-list gap-4">
             <UserAvatar
+              v-if="isMdAndLarger"
               :username="member.username || member.email"
               :avatar-url="member.avatar_url"
             />
@@ -46,7 +46,7 @@
               <p class="text-slate-700 text-sm">{{ member.pronouns }}</p>
             </div>
           </div>
-          <p v-if="expanded" class="self-start text-sm text-slate-700">
+          <p v-if="isMdAndLarger" class="self-start text-sm text-slate-700">
             {{ member.email }}
           </p>
           <div class="place-self-end">
@@ -98,6 +98,7 @@
 </template>
 <script setup lang="ts">
 import { PropType, ref } from "vue";
+import { useBreakpoints, breakpointsTailwind } from "@vueuse/core";
 import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/vue";
 import { PencilSquareIcon } from "@heroicons/vue/24/outline";
@@ -115,6 +116,10 @@ import { ROLES } from "@/util/roles";
 import { communityStore } from "./communityStore";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
 import BulkEditMembersForm from "./BulkEditMembersForm.vue";
+import { drawerActions } from "@/util/machineActions";
+
+const breakpoints = useBreakpoints(breakpointsTailwind);
+const isMdAndLarger = breakpoints.greater("md");
 
 const { showError } = useToast();
 
@@ -122,10 +127,6 @@ defineProps({
   communityId: {
     type: String as PropType<Community["id"]>,
     required: true,
-  },
-  expanded: {
-    type: Boolean,
-    default: false,
   },
   count: {
     type: Number,
@@ -247,6 +248,7 @@ const memberManagementMachine = createMachine<{
   },
   {
     actions: {
+      ...drawerActions,
       addToList: assign({
         members: (context, event) => context.members.concat(event.member),
       }),
@@ -265,12 +267,6 @@ const memberManagementMachine = createMachine<{
       }),
       clearMembers: assign({
         members: (_) => [],
-      }),
-      showDrawer: assign({
-        drawerVisible: (_) => true,
-      }),
-      hideDrawer: assign({
-        drawerVisible: (_) => false,
       }),
       showModal: assign({
         modalVisible: (_) => true,
