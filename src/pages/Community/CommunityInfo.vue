@@ -1,6 +1,9 @@
 <template>
-  <SectionContainer class="grid gap-2">
-    <div class="flex justify-between items-center mb-4 col-span-2">
+  <SectionContainer>
+    <CommunityEmailSettings />
+  </SectionContainer>
+  <SectionContainer class="grid sm:grid-cols-2 md:grid-cols-3 gap-2">
+    <div class="flex justify-between items-center mb-4 col-span-full">
       <Heading level="h6" as="h2"> Community Info </Heading>
       <GhostButton
         aria-label="Edit community info"
@@ -51,6 +54,7 @@ import { communityStore } from "./communityStore";
 import CommunityImageLibrary from "./CommunityImageLibrary.vue";
 import SideDrawer from "@/components/SideDrawer.vue";
 import EditCommunityInfo from "./EditCommunityInfo.vue";
+import CommunityEmailSettings from "./CommunityEmailSettings.vue";
 
 const editInfoDrawerOpen = ref(false);
 

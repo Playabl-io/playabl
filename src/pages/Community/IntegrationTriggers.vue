@@ -1,5 +1,5 @@
 <template>
-  <fieldset class="p-4 rounded-lg bg-gray-100 flex flex-col gap-2">
+  <Well class="flex flex-col gap-2">
     <p class="text-slate-700">Select what events this integration will send</p>
     <div
       v-for="trigger in triggers"
@@ -20,13 +20,14 @@
         {{ trigger.label }}
       </FormLabel>
     </div>
-  </fieldset>
+  </Well>
 </template>
 <script setup lang="ts">
 import { PropType } from "vue";
 import FormLabel from "@/components/Forms/FormLabel.vue";
 import FormCheckbox from "@/components/Forms/FormCheckbox.vue";
 import { Integration, IntegrationTrigger } from "@/typings/Integration";
+import Well from "@/components/Well.vue";
 
 const props = defineProps({
   triggers: {

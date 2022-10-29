@@ -7,7 +7,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE
 );
 
-export const handler: Handler = async (event, context) => {
+export const handler: Handler = async (event) => {
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method Not Allowed" };
   }
@@ -27,11 +27,18 @@ export const handler: Handler = async (event, context) => {
   const params = JSON.parse(event.body);
 
   const community = await loadCommunity(params.communityId);
-  let contacts;
+  const noSubscriptions =
+    !community.support_message_subscriptions ||
+    community.support_message_subscriptions?.length === 0;
+  let contacts = [];
+  if (!community.support_email && noSubscriptions) {
+    contacts = await loadCommunityAdmins(params.communityId);
+  }
   if (community.support_email) {
     contacts = [{ name: community.name, email: community.support_email }];
-  } else {
-    contacts = await loadCommunityAdmins(params.communityId);
+  }
+  if (Array.isArray(community.support_message_subscriptions)) {
+    contacts = contacts.concat(community.support_message_subscriptions);
   }
 
   const messages = contacts.map((contact) =>
