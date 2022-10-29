@@ -1,5 +1,7 @@
 export interface Community {
   id: string;
+  support_email?: string;
+  support_message_subscriptions?: { name: string; email: string }[];
   name: string;
   description?: string;
   cover_image?: string;

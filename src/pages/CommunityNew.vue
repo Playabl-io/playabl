@@ -21,8 +21,16 @@
           <div class="flex flex-col">
             <FormLabel for="name" required> Community Name </FormLabel>
             <FormInput id="name" v-model="name" required />
-            <p class="prose dark:prose-invert text-xs leading-6">
+            <p class="text-xs text-slate-700 mt-1">
               Your community name must be unique and cannot be changed
+            </p>
+          </div>
+          <div class="flex flex-col">
+            <FormLabel for="name"> Support Email </FormLabel>
+            <FormInput id="name" v-model="supportEmail" type="email" />
+            <p class="text-xs text-slate-700 mt-1">
+              You can specify a support email for the community. Later, you can
+              choose where support emails are sent.
             </p>
           </div>
           <div class="flex flex-col">
@@ -125,7 +133,7 @@
             </FormLabel>
             <FormTextArea id="howToJoin" v-model="howToJoin" class="h-40" />
             <p class="text-xs text-slate-700 mt-1">
-              Optional. Give people short direction on how they can join.
+              Optional. Give people a short description on how they can join.
             </p>
           </div>
           <div v-else>
@@ -359,6 +367,7 @@ const newCommunityMachine = createMachine({
 const { state, send } = useMachine(newCommunityMachine);
 
 const name = ref("");
+const supportEmail = ref("");
 const description = ref("");
 const howToJoin = ref("");
 const gameTypes = ref<string[]>([]);
@@ -433,6 +442,7 @@ async function createCommunity() {
       .from("communities")
       .insert({
         name: name.value,
+        support_email: supportEmail.value,
         description: description.value,
         how_to_join: howToJoin.value,
         game_types: gameTypes.value,

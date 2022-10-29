@@ -24,8 +24,8 @@
         <FormLabel for="tabletop"> Virtual tabletop </FormLabel>
         <FormInput id="tabletop" v-model="tabletop" />
       </div>
-      <div class="p-4 rounded-lg bg-gray-100">
-        <div class="mt-4 flex items-center space-x-2">
+      <Well>
+        <div class="flex items-center space-x-2">
           <FormCheckbox id="recording" v-model="isRecorded" />
           <FormLabel class="font-normal" for="recording" no-margin>
             This game may be recorded
@@ -37,7 +37,7 @@
             This game will use safety tools
           </FormLabel>
         </div>
-      </div>
+      </Well>
     </section>
     <div
       class="flex justify-end space-x-4 p-6 border-t border-solid border-gray-300"
@@ -55,6 +55,7 @@ import OutlineButton from "@/components/Buttons/OutlineButton.vue";
 import FormLabel from "@/components/Forms/FormLabel.vue";
 import FormInput from "@/components/Forms/FormInput.vue";
 import FormCheckbox from "@/components/Forms/FormCheckbox.vue";
+import Well from "@/components/Well.vue";
 import { gameStore } from "./gameStore";
 
 import useToast from "@/components/Toast/useToast";

@@ -9,10 +9,11 @@
 </template>
 <script setup lang="ts">
 import { computed, useAttrs } from "vue";
+import isEqual from "lodash.isequal";
 
 const props = defineProps({
   modelValue: {
-    type: [Boolean, Object as () => string[]],
+    type: [Boolean, Array],
     required: true,
   },
 });
@@ -25,7 +26,10 @@ const isChecked = computed(() => {
   if (typeof props.modelValue === "boolean") {
     return props.modelValue;
   }
-  return props.modelValue.includes(value);
+  if (Array.isArray(props.modelValue)) {
+    return props.modelValue.find((item) => isEqual(item, value));
+  }
+  return false;
 });
 
 function handleChange(event: Event) {

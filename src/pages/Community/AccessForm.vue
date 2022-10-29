@@ -29,7 +29,7 @@
           </select>
         </div>
       </div>
-      <div class="p-4 rounded-lg bg-gray-100">
+      <Well>
         <div class="flex items-center space-x-4">
           <FormCheckbox id="is-mandatory" v-model="isMandatory" />
           <FormLabel class="font-normal" for="is-mandatory" :no-margin="true">
@@ -46,7 +46,7 @@
             Automatically grant to members when they join the community?
           </FormLabel>
         </div>
-      </div>
+      </Well>
     </div>
     <div
       class="grow-0 px-6 py-4 flex justify-end space-x-2 border-t border-solid border-gray-200"
@@ -73,6 +73,7 @@ import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import OutlineButton from "@/components/Buttons/OutlineButton.vue";
 import FormCheckbox from "@/components/Forms/FormCheckbox.vue";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
+import Well from "@/components/Well.vue";
 const props = defineProps({
   accessLevel: {
     type: Object as () => AccessLevel,
