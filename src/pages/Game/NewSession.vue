@@ -114,7 +114,6 @@ function updateEndDate(date: Date) {
 
 const startDateAndTime = computed(() => {
   if (!sessionStartTime.value || !startDate.value) return 0;
-  console.log("compute start time", sessionStartTime.value);
   const [startHours, startMinutes] = sessionStartTime.value.split(":");
   return set(startDate.value, {
     hours: Number(startHours),

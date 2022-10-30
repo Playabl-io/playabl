@@ -1,159 +1,126 @@
 <template>
   <div>
     <div class="flex justify-end">
-      <SortMenu
-        :options="options"
-        :starting-option="{ label: 'All sessions' }"
-        class="w-40"
-      />
+      <SortMenu v-model="sortOption" :options="options" class="w-40" />
     </div>
-    <div class="flex flex-col lg:flex-row gap-4 justify-center mt-6">
-      <section
-        class="w-full lg:w-80 pt-4 bg-white rounded-md border border-solid border-gray-200"
-      >
-        <template v-if="selectedDate">
-          <Heading level="h5" as="h5" class="px-4">
-            {{ format(selectedDate, "LLLL do") }}
-          </Heading>
-          <ul class="grow flex flex-col mt-4 overflow-auto">
-            <li
-              v-for="session in sessionsForDay(selectedDate, selectedDate)"
-              :key="session.id"
-            >
-              <router-link
-                :to="`/games/${session.game_id.id}`"
-                class="py-2 px-4 grid grid-flow-col gap-6 hover:bg-gray-100"
-              >
-                <span>
-                  <p>{{ session.game_id.title }}</p>
-                  <p class="text-sm text-slate-700">
-                    {{
-                      format(new Date(session.start_time), "LLL do, h:mm a z")
-                    }}
-                  </p>
-                </span>
-                <CheckCircleIcon
-                  v-if="session.has_openings"
-                  class="h-6 w-6 text-blue-700 place-self-center"
-                />
-                <MinusCircleIcon
-                  v-else
-                  class="h-6 w-6 text-slate-700 place-self-center"
-                />
-              </router-link>
-            </li>
-          </ul>
-        </template>
-        <div v-else class="h-full flex flex-col justify-center items-center">
-          <p class="text-lg font-light">Select a date to see events</p>
-        </div>
-      </section>
-      <section class="w-full lg:max-w-xl">
-        <DisplayCalendar
-          :selected-date="selectedDate"
-          @update-date="referenceDate = $event"
-          @select-date="selectedDate = $event"
-        >
-          <template #day="day">
-            <ul class="grow flex flex-wrap justify-end items-end gap-2">
-              <li
-                v-for="session in sessionsForDay(day, referenceDate)"
-                :key="session.id"
-              >
-                <Tooltip>
-                  <template #trigger="{ toggleTooltip }">
-                    <div
-                      class="h-3 w-3"
-                      :class="[
-                        session.has_openings
-                          ? 'bg-green-500 rounded-full'
-                          : 'bg-red-700 rounded-sm',
-                      ]"
-                      @mouseenter="toggleTooltip"
-                      @mouseleave="toggleTooltip"
-                      @focus="toggleTooltip"
-                      @blur="toggleTooltip"
-                    />
-                  </template>
-                  <template #tooltip>
-                    {{ session.game_id.title }}
-                  </template>
-                </Tooltip>
-              </li>
-            </ul>
-          </template>
-        </DisplayCalendar>
-      </section>
-    </div>
+    <TabGroup>
+      <TabList class="flex gap-4">
+        <Tab v-slot="{ selected }" as="template">
+          <button
+            class="p-2 rounded-lg focus-styles"
+            :class="{
+              'bg-brand-500 text-white font-semibold': selected,
+              'bg-transparent text-black': !selected,
+            }"
+          >
+            Calendar view
+          </button>
+        </Tab>
+        <Tab v-slot="{ selected }" as="template">
+          <button
+            class="p-2 rounded-lg focus-styles"
+            :class="{
+              'bg-brand-500 text-white font-semibold': selected,
+              'bg-transparent text-black': !selected,
+            }"
+          >
+            List view
+          </button>
+        </Tab>
+      </TabList>
+      <TabPanels class="mt-6">
+        <TabPanel>
+          <CalendarView
+            :sessions="sessions"
+            :reference-date="referenceDate"
+            :selected-date="selectedDate"
+            @update-reference-date="referenceDate = $event"
+            @update-selected-date="selectedDate = $event"
+          />
+        </TabPanel>
+        <TabPanel>
+          <ListView
+            :loading="loading"
+            :sessions="sessions"
+            :reference-date="referenceDate"
+            @update-reference-date="referenceDate = $event"
+          />
+        </TabPanel>
+      </TabPanels>
+    </TabGroup>
   </div>
 </template>
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
-import { isSameDay, format, startOfMonth } from "date-fns";
-import { CheckCircleIcon, MinusCircleIcon } from "@heroicons/vue/24/outline";
-import { Session } from "@/typings/Session";
-import DisplayCalendar from "@/components/Calendar/DisplayCalendar.vue";
+import { startOfMonth, endOfMonth, addMonths } from "date-fns";
+import { TabGroup, TabList, Tab, TabPanels, TabPanel } from "@headlessui/vue";
+import { GameSession } from "@/typings/Session";
 import {
-  loadCommunitySessionsForMonth,
-  loadOpenCommunitySessionsForMonth,
+  // loadCommunitySessionsForMonth,
+  loadOpenCommunitySessions,
+  loadAllCommunitySessions,
 } from "@/api/gamesAndSessions";
 import { communityStore } from "./communityStore";
-import Tooltip from "@/components/Tooltip.vue";
-import Heading from "@/components/Heading.vue";
 import SortMenu from "@/components/Menus/SortMenu.vue";
-
-type GameSession = Omit<Session, "game_id"> & {
-  game_id: {
-    title: string;
-    id: number;
-  };
-};
-
-const sessionsByMonth = ref<Record<number, GameSession[]>>({});
-const referenceDate = ref<Date>(startOfMonth(new Date()));
-const selectedDate = ref<Date>();
-
-onMounted(() => loadSessionBasedOnDate(referenceDate.value));
-
-watch(() => referenceDate.value, loadSessionBasedOnDate);
-
-async function loadSessionBasedOnDate(date: Date) {
-  const data = await loadCommunitySessionsForMonth({
-    communityId: communityStore.community.id,
-    referenceDate: date,
-  });
-  if (data) {
-    sessionsByMonth.value[date.getTime()] = data;
-  }
-}
-
-async function loadOpenSessionBasedOnDate(date: Date) {
-  const data = await loadOpenCommunitySessionsForMonth({
-    communityId: communityStore.community.id,
-    referenceDate: date,
-  });
-  if (data) {
-    sessionsByMonth.value[date.getTime()] = data;
-  }
-}
-
-function sessionsForDay(day: Date, referenceDate: Date) {
-  const firstDay = startOfMonth(referenceDate);
-  const monthSessions = sessionsByMonth.value[firstDay.getTime()];
-  const dateSessions = monthSessions?.filter((session) =>
-    isSameDay(day, new Date(session.start_time))
-  );
-  return dateSessions;
-}
+import CalendarView from "./CalendarView.vue";
+import ListView from "./ListView.vue";
 
 const options = [
   {
     label: "All sessions",
-    onSelect: () => loadSessionBasedOnDate(referenceDate.value),
+    value: loadCommunitySessions,
   },
   {
     label: "Has openings",
-    onSelect: () => loadOpenSessionBasedOnDate(referenceDate.value),
+    value: loadOpenSessionBasedOnDate,
   },
 ];
+
+const loading = ref(false);
+
+const sessions = ref<GameSession[]>([]);
+const referenceDate = ref<Date>(startOfMonth(new Date()));
+const selectedDate = ref<Date>();
+const sortOption = ref(options[0]);
+
+onMounted(async () => {
+  loading.value = true;
+  await loadCommunitySessions(referenceDate.value);
+  loading.value = false;
+});
+
+watch(
+  () => referenceDate.value,
+  (newVal) => {
+    sortOption.value.value(newVal);
+  }
+);
+watch(
+  () => sortOption.value,
+  (newVal) => {
+    newVal.value(referenceDate.value);
+  }
+);
+
+async function loadCommunitySessions(date: Date) {
+  loading.value = true;
+  const data = await loadAllCommunitySessions({
+    communityId: communityStore.community.id,
+    startDate: startOfMonth(addMonths(date, -1)),
+    endDate: endOfMonth(addMonths(date, 1)),
+  });
+  sessions.value = data ?? [];
+  loading.value = false;
+}
+
+async function loadOpenSessionBasedOnDate(date: Date) {
+  loading.value = true;
+  const data = await loadOpenCommunitySessions({
+    communityId: communityStore.community.id,
+    startDate: startOfMonth(addMonths(date, -1)),
+    endDate: endOfMonth(addMonths(date, 1)),
+  });
+  sessions.value = data ?? [];
+  loading.value = false;
+}
 </script>

@@ -3,17 +3,14 @@
     <GamesNav class="mb-12" />
     <div class="flex justify-end">
       <div class="w-40">
-        <SortMenu
-          :options="options"
-          :starting-option="{ label: 'Starting soon' }"
-        />
+        <SortMenu v-model="sortOption" :options="options" />
       </div>
     </div>
     <GamesListing :is-loading="isLoading" :games="games" />
   </base-template>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import BaseTemplate from "@/components/BaseTemplate.vue";
 import GamesListing from "@/components/GamesListing.vue";
 import { GameListing } from "@/typings/Game";
@@ -25,9 +22,23 @@ import {
 import GamesNav from "@/components/GamesNav.vue";
 import SortMenu from "@/components/Menus/SortMenu.vue";
 
+const options = [
+  { label: "Starting soon", value: loadAllGames },
+  {
+    label: "Has openings",
+    value: loadOpenGames,
+  },
+];
+
 const isLoading = ref(true);
 const games = ref<GameListing[]>([]);
 const communityIds = ref<string[]>([]);
+const sortOption = ref(options[0]);
+
+watch(
+  () => sortOption.value,
+  (newVal) => newVal.value()
+);
 
 onMounted(async () => {
   await loadCommunityIds();
@@ -58,12 +69,4 @@ async function loadOpenGames() {
   }
   isLoading.value = false;
 }
-
-const options = [
-  { label: "Starting soon", onSelect: loadAllGames },
-  {
-    label: "Has openings",
-    onSelect: loadOpenGames,
-  },
-];
 </script>
