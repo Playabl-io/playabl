@@ -12,3 +12,14 @@ export interface Session {
 }
 
 export type NewSession = Omit<Session, "id">;
+
+/**
+ * Used for Calendar and List displays
+ */
+export type GameSession = Omit<Session, "game_id"> & {
+  game_id: {
+    title: string;
+    id: number;
+    system: string;
+  };
+};

@@ -1,10 +1,10 @@
 <template>
-  <Listbox v-model="localValue">
+  <Listbox :model-value="modelValue" @update:model-value="emitValueUpdate">
     <div class="relative w-full">
       <ListboxButton
         class="relative h-10 w-full py-2 pl-3 pr-10 text-left bg-gray-200 bg-opacity-50 hover:bg-opacity-70 text-slate-900 rounded-xl cursor-default focus-styles"
       >
-        {{ localValue.label }}
+        {{ modelValue.label }}
         <span
           class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
         >
@@ -55,25 +55,27 @@ import {
   ListboxOption,
 } from "@headlessui/vue";
 import { ChevronUpDownIcon } from "@heroicons/vue/20/solid";
-import { PropType, ref, toRefs, watch } from "vue";
+import { PropType } from "vue";
 
-const props = defineProps({
-  startingOption: {
-    type: Object as PropType<{
-      label: string;
-      onSelect?: () => void;
-    }>,
+type Option = {
+  label: string;
+  value: unknown;
+};
+
+defineProps({
+  modelValue: {
+    type: Object as PropType<Option>,
     required: true,
   },
   options: {
-    type: Array as PropType<{ label: string; onSelect: () => void }[]>,
+    type: Array as PropType<Option[]>,
     required: true,
   },
 });
-toRefs(props);
 
-const localValue = ref(props.startingOption);
-watch(localValue, (newVal) => {
-  newVal.onSelect?.();
-});
+const emit = defineEmits(["update:modelValue"]);
+
+function emitValueUpdate(value: Option) {
+  emit("update:modelValue", value);
+}
 </script>

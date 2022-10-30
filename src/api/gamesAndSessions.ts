@@ -6,8 +6,6 @@ import { log } from "@/util/logger";
 import { Community } from "@/typings/Community";
 import { startOfMonth, startOfDay, endOfMonth, endOfDay } from "date-fns";
 
-import { loadCommunityIntegrations } from "./integrations";
-import { Integration } from "@/typings/Integration";
 import axios from "axios";
 
 // helper functions
@@ -132,22 +130,23 @@ export async function loadPastManagedGames(userId: string) {
   }
 }
 
-export async function loadOpenCommunitySessionsForMonth({
+export async function loadOpenCommunitySessions({
   communityId,
-  referenceDate,
+  startDate,
+  endDate,
 }: {
   communityId: Community["id"];
-  referenceDate: Date;
+  startDate: Date;
+  endDate: Date;
 }) {
-  const getStartOfMonth = R.compose(startOfDay, startOfMonth);
-  const getEndOfMonth = R.compose(endOfDay, endOfMonth);
   const { data, error } = await supabase
     .from("sessions")
-    .select("*, game_id (title, id)")
+    .select("*, game_id (title, id, system)")
+    .is("deleted_at", null)
     .eq("community_id", communityId)
     .eq("has_openings", true)
-    .gte("start_time", getStartOfMonth(referenceDate).getTime())
-    .lte("start_time", getEndOfMonth(referenceDate).getTime())
+    .gte("start_time", startOfDay(startDate).getTime())
+    .lte("start_time", endOfDay(endDate).getTime())
     .order("start_time", { ascending: true });
   if (error) {
     log({ error });
@@ -157,21 +156,22 @@ export async function loadOpenCommunitySessionsForMonth({
   }
 }
 
-export async function loadCommunitySessionsForMonth({
+export async function loadAllCommunitySessions({
   communityId,
-  referenceDate,
+  startDate,
+  endDate,
 }: {
   communityId: Community["id"];
-  referenceDate: Date;
+  startDate: Date;
+  endDate: Date;
 }) {
-  const getStartOfMonth = R.compose(startOfDay, startOfMonth);
-  const getEndOfMonth = R.compose(endOfDay, endOfMonth);
   const { data, error } = await supabase
     .from("sessions")
-    .select("*, game_id (title, id)")
+    .select("*, game_id (title, id, system)")
+    .is("deleted_at", null)
     .eq("community_id", communityId)
-    .gte("start_time", getStartOfMonth(referenceDate).getTime())
-    .lte("start_time", getEndOfMonth(referenceDate).getTime())
+    .gte("start_time", startOfDay(startDate).getTime())
+    .lte("start_time", endOfDay(endDate).getTime())
     .order("start_time", { ascending: true });
   if (error) {
     log({ error });

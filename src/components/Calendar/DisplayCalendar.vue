@@ -36,12 +36,12 @@
       <button
         v-for="day in daysOfMonth"
         :key="day.getTime()"
-        class="w-full h-20 p-2 flex flex-col bg-white text-sm hover:bg-gray-100 focus:ring-blue-700"
-        :class="[
-          isSameMonth(day, firstOfActiveMonth)
-            ? 'text-slate-900 font-semibold'
-            : 'text-slate-600',
-        ]"
+        class="text-slate-600 w-full h-20 p-2 flex flex-col bg-white text-sm hover:bg-gray-100 focus:ring-blue-700"
+        :class="{
+          'text-slate-900 font-semibold': isSameMonth(day, firstOfActiveMonth),
+          'bg-cyan-100': isSameDay(day, today),
+          'ring-2 ring-blue-700 ring-inset': isSameDay(day, selectedDate),
+        }"
         @click="emit('selectDate', day)"
       >
         {{ format(day, "dd") }}
@@ -56,6 +56,7 @@
 import { computed, toRefs, ref, PropType } from "vue";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/20/solid";
 import {
+  isSameDay,
   isSameMonth,
   eachDayOfInterval,
   format,
@@ -78,6 +79,10 @@ const props = defineProps({
     type: Array as PropType<{ start_time: number }[]>,
     default: () => [],
   },
+  referenceDate: {
+    type: Object as PropType<Date>,
+    required: true,
+  },
   selectedDate: {
     type: Object as PropType<Date>,
     default: null,
@@ -85,7 +90,9 @@ const props = defineProps({
 });
 toRefs(props);
 
-const firstOfActiveMonth = ref(startOfMonth(new Date()));
+const firstOfActiveMonth = computed(() => startOfMonth(props.referenceDate));
+
+const today = new Date();
 
 const weekdays = [
   { label: "Sun", abbr: "Sunday" },
@@ -106,17 +113,17 @@ const daysOfMonth = computed(() => {
 });
 function previousMonth() {
   const nextDate = subMonths(firstOfActiveMonth.value, 1);
-  firstOfActiveMonth.value = nextDate;
+
   emit("updateDate", nextDate);
 }
 function nextMonth() {
   const nextDate = addMonths(firstOfActiveMonth.value, 1);
-  firstOfActiveMonth.value = nextDate;
+
   emit("updateDate", nextDate);
 }
 function goToToday() {
-  const nextDate = startOfMonth(new Date());
-  firstOfActiveMonth.value = nextDate;
+  const nextDate = startOfMonth(today);
+
   emit("updateDate", nextDate);
 }
 </script>
