@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col">
-    <div class="p-4 rounded-md border border-solid border-gray-200">
+    <div class="p-4 rounded-md border border-solid border-gray-200 relative">
       <div>
         <p class="text-lg font-bold">
           {{ format(new Date(session.start_time), "EEE, MMM do") }}
@@ -30,9 +30,9 @@
         <div v-else-if="soonestRsvp" class="text-sm text-slate-700 text-center">
           RSVP available {{ formatRelative(soonestRsvp, new Date()) }}
         </div>
-        <p v-else class="text-center text-sm">
-          You cannot RSVP, likely because you need to be assigned an access
-          level.
+        <p v-else-if="!notAMember" class="text-center text-slate-700 text-sm">
+          You cannot RSVP because this game requires an access level you do not
+          have. Please contact the community managers for help.
           <br />Please contact the community organizers.
         </p>
       </div>
@@ -75,7 +75,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, PropType, ref, toRefs } from "vue";
+import { computed, PropType, ref } from "vue";
 import { format, formatRelative } from "date-fns";
 import * as R from "ramda";
 import { Session } from "@/typings/Session";
@@ -110,8 +110,11 @@ const props = defineProps({
     type: Boolean,
     required: true,
   },
+  notAMember: {
+    type: Boolean,
+    required: true,
+  },
 });
-toRefs(props);
 
 const isProcessing = ref(false);
 
