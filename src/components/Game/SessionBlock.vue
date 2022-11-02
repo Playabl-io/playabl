@@ -58,10 +58,7 @@
           </ul>
         </div>
       </div>
-      <div
-        v-if="userIsInTheGame"
-        class="mt-4 grid content-center gap-2 p-4 rounded-md bg-gray-200"
-      >
+      <Well v-if="userIsInTheGame" class="mt-4 grid content-center gap-2">
         <AddToGoogleCal
           :start-time="session.start_time"
           :end-time="session.end_time"
@@ -70,7 +67,7 @@
           :start-time="session.start_time"
           :end-time="session.end_time"
         />
-      </div>
+      </Well>
     </div>
   </div>
 </template>
@@ -81,6 +78,7 @@ import * as R from "ramda";
 import { Session } from "@/typings/Session";
 import { joinSession, leaveSession } from "@/api/gamesAndSessions";
 import PrimaryButton from "../Buttons/PrimaryButton.vue";
+import Well from "../Well.vue";
 import { CommunityAccess } from "@/typings/CommunityAccess";
 import { compareUserAccessToRsvpTimes, getSoonestRsvpTime } from "@/util/time";
 import { store } from "@/store";

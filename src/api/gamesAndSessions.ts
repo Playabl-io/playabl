@@ -1,7 +1,7 @@
 import * as R from "ramda";
 import { supabase } from "@/supabase";
 import { GameDetailBlock, GameListing, NewGame, Game } from "@/typings/Game";
-import { Session } from "@/typings/Session";
+import { GameSession, Session } from "@/typings/Session";
 import { log } from "@/util/logger";
 import { Community } from "@/typings/Community";
 import { startOfMonth, startOfDay, endOfMonth, endOfDay } from "date-fns";
@@ -141,7 +141,7 @@ export async function loadOpenCommunitySessions({
 }) {
   const { data, error } = await supabase
     .from("sessions")
-    .select("*, game_id (title, id, system)")
+    .select("*, game_id (title, id, system, cover_image)")
     .is("deleted_at", null)
     .eq("community_id", communityId)
     .eq("has_openings", true)
@@ -167,7 +167,7 @@ export async function loadAllCommunitySessions({
 }) {
   const { data, error } = await supabase
     .from("sessions")
-    .select("*, game_id (title, id, system)")
+    .select("*, game_id (title, id, system, cover_image)")
     .is("deleted_at", null)
     .eq("community_id", communityId)
     .gte("start_time", startOfDay(startDate).getTime())
@@ -181,6 +181,36 @@ export async function loadAllCommunitySessions({
   }
 }
 
+export async function rsvpToAllGameSessions({
+  gameSessions,
+  userId,
+}: {
+  gameSessions: GameSession[];
+  userId: string;
+}) {
+  const now = new Date();
+  const futureSessions = gameSessions.filter(
+    (session) => session.start_time >= now.getTime()
+  );
+  const joinPromises = await Promise.allSettled(
+    futureSessions.map((session) =>
+      joinSession({ sessionId: session.id, userId })
+    )
+  );
+  const failedPromises = joinPromises.filter(
+    (promise) => promise.status === "rejected"
+  );
+  const successPromises = joinPromises.filter(
+    (promise) => promise.status === "fulfilled"
+  );
+
+  return {
+    totalAvailable: futureSessions.length,
+    failed: failedPromises.length,
+    joined: successPromises.length,
+  };
+}
+
 export async function joinSession({
   sessionId,
   userId,
@@ -188,10 +218,15 @@ export async function joinSession({
   sessionId: string;
   userId: string;
 }) {
+  const session = supabase.auth.session();
+  if (!session?.access_token) return;
   const data = await fetch(
     `/.netlify/functions/processRsvp?sessionId=${sessionId}&userId=${userId}`,
     {
       method: "POST",
+      headers: {
+        token: session.access_token,
+      },
     }
   )
     .then((response) => response.json())
@@ -209,10 +244,15 @@ export async function leaveSession({
   sessionId: string;
   userId: string;
 }) {
+  const session = supabase.auth.session();
+  if (!session?.access_token) return;
   const data = await fetch(
     `/.netlify/functions/processRsvp?sessionId=${sessionId}&userId=${userId}`,
     {
       method: "DELETE",
+      headers: {
+        token: session.access_token,
+      },
     }
   )
     .then((response) => response.json())

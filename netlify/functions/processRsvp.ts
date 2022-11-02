@@ -1,37 +1,36 @@
 import { Handler } from "@netlify/functions";
 import { createClient } from "@supabase/supabase-js";
 import axios from "axios";
-import { compareUserAccessToRsvpTimes } from "../../src/util/time";
+import { userCanRsvp } from "../../src/util/time";
+import { GameSession } from "../../src/typings/Session";
 
 export const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE
 );
 
-export const handler: Handler = async (event, context) => {
+export const handler: Handler = async (event) => {
   const method = event.httpMethod;
   const { sessionId, userId } = event.queryStringParameters;
 
-  const { session, game } = await getGameAndCommunityInfo({ sessionId });
+  const { token } = event.headers;
 
-  const userIsCommunityMember = await verifyUserCanJoinSession({
-    userId,
-    communityId: game.community_id,
-  });
+  const user = await supabase.auth.api.getUser(token);
 
-  if (!userIsCommunityMember) {
+  if (user.user.aud !== "authenticated") {
     return {
       statusCode: 403,
-      body: JSON.stringify({
-        message: "Not eligible to rsvp",
+      boday: JSON.stringify({
+        status: "not authorized",
       }),
     };
   }
 
-  const beforeRsvps = session.rsvps;
+  const { session, game } = await getGameAndCommunityInfo({ sessionId });
+
   if (method === "POST") {
     const canRsvp = confirmRsvpAccess({
-      accessTimes: session.access_times,
+      session,
       userId,
       communityId: game.community_id,
     });
@@ -44,6 +43,7 @@ export const handler: Handler = async (event, context) => {
         }),
       };
     }
+    const beforeRsvps = session.rsvps;
     const data = await joinSession({ sessionId, userId });
     if (beforeRsvps.length < game.participant_count) {
       const user = await getUserProfile({ userId });
@@ -77,24 +77,24 @@ export const handler: Handler = async (event, context) => {
 };
 
 async function confirmRsvpAccess({
-  accessTimes,
   userId,
   communityId,
+  session,
 }: {
-  accessTimes: string;
   userId: string;
   communityId: string;
+  session: GameSession;
 }) {
   const userAccess = await loadUserCommunityAccess({
     communityId,
     userId,
   });
-  const parsedAccessTimes = JSON.parse(accessTimes);
-  const isEligibleToRsvp = compareUserAccessToRsvpTimes(
+  return userCanRsvp({
     userAccess,
-    parsedAccessTimes
-  );
-  return isEligibleToRsvp;
+    session,
+    hostId: session.creator_id,
+    userId,
+  });
 }
 
 async function loadUserCommunityAccess({
@@ -130,18 +130,6 @@ async function getUserProfile({ userId }) {
     .eq("id", userId)
     .single();
   return data;
-}
-
-async function verifyUserCanJoinSession({ userId, communityId }) {
-  const { data: membershipData } = await supabase
-    .from("community_memberships")
-    .select()
-    .match({ community_id: communityId, user_id: userId })
-    .single();
-  if (membershipData) {
-    return true;
-  }
-  return false;
 }
 
 async function joinSession({

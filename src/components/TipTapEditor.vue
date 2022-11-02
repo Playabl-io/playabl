@@ -72,7 +72,7 @@
         <Icon icon="bi:list-ul" />
       </button>
     </div>
-    <editor-content :editor="editor" class="grow" />
+    <editor-content :editor="editor" class="grow overflow-auto" />
   </div>
 </template>
 

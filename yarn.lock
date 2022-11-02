@@ -9460,6 +9460,11 @@ supports-preserve-symlinks-flag@^1.0.0:
   resolved "https://registry.npmjs.org/supports-preserve-symlinks-flag/-/supports-preserve-symlinks-flag-1.0.0.tgz"
   integrity sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==
 
+swrv@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/swrv/-/swrv-1.0.0.tgz#aea6926557286308674fdc934c206c01af0c6c38"
+  integrity sha512-RHNIZ2NWIw84ul0CdIkfPQxsw4KF9Q5DMtNYXPJatx11TKLGgdAG/kv74RHOTC0TdbC+Y1BbPCtwmSqgQ7wJWQ==
+
 symbol-observable@^1.1.0:
   version "1.2.0"
   resolved "https://registry.npmjs.org/symbol-observable/-/symbol-observable-1.2.0.tgz"
