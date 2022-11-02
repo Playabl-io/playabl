@@ -1,5 +1,7 @@
 import { AccessLevel, RsvpTimes } from "@/typings/AccessLevel";
 import { CommunityAccess } from "@/typings/CommunityAccess";
+import { Profile } from "@/typings/Profile";
+import { GameSession } from "@/typings/Session";
 import {
   addHours,
   addDays,
@@ -58,6 +60,45 @@ export function compareUserAccessToRsvpTimes(
     return isBefore(new Date(rsvpTime), new Date());
   });
   return access.some((level) => level === true);
+}
+
+export function userCanRsvp({
+  userAccess,
+  session,
+  userId,
+  hostId,
+}: {
+  userAccess: CommunityAccess[];
+  session: GameSession;
+  userId?: Profile["id"];
+  hostId: string;
+}): boolean {
+  /**
+   * Confirm user is signed in, not the host, and not rsvpd
+   */
+  if (!userId) return false;
+  if (userId === hostId) {
+    return false;
+  }
+  if (session.rsvps.includes(userId)) {
+    return false;
+  }
+  /**
+   * Confirm session is in the future
+   */
+  if (isBefore(session.start_time, new Date())) {
+    return false;
+  }
+  /**
+   * Compare user access to session access
+   */
+  let sessionAccessTimes: RsvpTimes;
+  if (typeof session.access_times === "string") {
+    sessionAccessTimes = JSON.parse(session.access_times);
+  } else {
+    return false;
+  }
+  return compareUserAccessToRsvpTimes(userAccess, sessionAccessTimes);
 }
 
 export function getSoonestRsvpTime(

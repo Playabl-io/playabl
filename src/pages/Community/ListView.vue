@@ -11,67 +11,79 @@
         <ChevronRightIcon class="h-6 w-6" />
       </GhostButton>
     </div>
-    <ul class="grow flex flex-col gap-3 w-full relative">
-      <li class="grid list-grid p-2 font-semibold text-xs">
-        <p>Game title and system</p>
-        <p>Start time</p>
-        <p>End time</p>
-        <p class="md:justify-self-center">Open seats</p>
-      </li>
-      <div v-if="loading" class="mx-auto mt-3">
+    <p class="px-2 mt-6 mb-4 text-sm text-slate-700">
+      {{ monthSessions.length }} sessions
+    </p>
+    <div class="flex gap-2">
+      <component
+        :is="view === 'tile' ? SecondaryButton : GhostButton"
+        @click="view = 'tile'"
+      >
+        <Squares2X2Icon class="h-5 w-5 text-slate-700" />
+      </component>
+      <component
+        :is="view === 'list' ? SecondaryButton : GhostButton"
+        @click="view = 'list'"
+      >
+        <ListBulletIcon class="h-5 w-5 text-slate-700" />
+      </component>
+    </div>
+    <ul
+      class="mt-4 overflow-visible"
+      :class="{
+        'grid md:grid-cols-2 lg:grid-cols-3 gap-6 items-start': view === 'tile',
+        grid: view === 'list',
+      }"
+    >
+      <div v-if="loading" class="col-span-full my-3">
         <LoadingSpinner color="brand-500" />
       </div>
-
       <li
+        v-if="view === 'list'"
+        class="grid list-grid gap-2 p-2 font-semibold text-xs"
+      >
+        <p>Created by</p>
+        <p>Game title and system</p>
+        <p>Time</p>
+        <p class="md:justify-self-center">Open seats</p>
+      </li>
+      <component
+        :is="listComponent"
         v-for="session in monthSessions"
         :key="session.id"
-        class="rounded-md odd:bg-slate-100 w-full"
-      >
-        <router-link
-          :to="`/games/${session.game_id.id}`"
-          class="grid list-grid items-center p-2"
-        >
-          <div class="flex flex-col">
-            <p class="text-lg">
-              {{ session.game_id.title }}
-            </p>
-            <p class="text-sm text-slate-700 mt-1">
-              {{ session.game_id.system }}
-            </p>
-          </div>
-          <p class="text-sm">
-            {{ format(session.start_time, "EEEE, MMM do h:mm aa") }}
-          </p>
-          <p class="text-sm">
-            {{ format(session.end_time, "EEEE, MMM do h:mm aa") }}
-          </p>
-          <div class="text-sm md:justify-self-center flex items-center gap-1">
-            <div
-              class="h-3 w-3"
-              :class="[
-                session.has_openings
-                  ? 'bg-green-500 rounded-full'
-                  : 'bg-red-700 rounded-sm',
-              ]"
-            />
-          </div>
-        </router-link>
-      </li>
+        :all-game-sessions="sessionsByGame[String(session.game_id.id)]"
+        :session="session"
+        :user-access="userAccess"
+        @refresh="emit('refresh')"
+      />
     </ul>
   </section>
 </template>
 <script setup lang="ts">
-import { computed, PropType } from "vue";
+import { computed, PropType, ref } from "vue";
 import { format, startOfMonth, endOfMonth, addMonths } from "date-fns";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/24/outline";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  Squares2X2Icon,
+  ListBulletIcon,
+} from "@heroicons/vue/24/outline";
 import { GameSession } from "@/typings/Session";
 import Heading from "@/components/Heading.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
+import SecondaryButton from "@/components/Buttons/SecondaryButton.vue";
+import MiniGameItem from "./MiniGameItem.vue";
+import ListViewItem from "./ListViewItem.vue";
+import { CommunityAccess } from "@/typings/CommunityAccess";
 
 const props = defineProps({
   sessions: {
     type: Object as PropType<GameSession[]>,
+    required: true,
+  },
+  sessionsByGame: {
+    type: Object as PropType<Record<string, GameSession[]>>,
     required: true,
   },
   referenceDate: {
@@ -82,6 +94,18 @@ const props = defineProps({
     type: Boolean,
     required: true,
   },
+  userAccess: {
+    type: Array as PropType<CommunityAccess[]>,
+    required: true,
+  },
+});
+
+const view = ref<"tile" | "list">("tile");
+const listComponent = computed(() => {
+  if (view.value === "tile") {
+    return MiniGameItem;
+  }
+  return ListViewItem;
 });
 
 const monthSessions = computed(() => {
@@ -92,7 +116,7 @@ const monthSessions = computed(() => {
   );
 });
 
-const emit = defineEmits(["updateReferenceDate"]);
+const emit = defineEmits(["updateReferenceDate", "refresh"]);
 
 function nextMonth() {
   emit("updateReferenceDate", addMonths(props.referenceDate, 1));
@@ -104,11 +128,10 @@ function priorMonth() {
 <style scoped>
 .list-grid {
   grid-template-columns: auto;
-  @apply gap-2;
 }
 @media screen(md) {
   .list-grid {
-    grid-template-columns: 31% 27% 27% 12%;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) 120px 60px;
   }
 }
 </style>

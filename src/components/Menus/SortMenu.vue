@@ -2,13 +2,16 @@
   <Listbox :model-value="modelValue" @update:model-value="emitValueUpdate">
     <div class="relative w-full">
       <ListboxButton
-        class="relative h-10 w-full py-2 pl-3 pr-10 text-left bg-gray-200 bg-opacity-50 hover:bg-opacity-70 text-slate-900 rounded-xl cursor-default focus-styles"
+        class="relative h-10 w-full py-2 pl-3 pr-10 text-left bg-gray-200 bg-opacity-70 hover:bg-opacity-100 text-slate-900 rounded-xl cursor-default focus-styles"
       >
         {{ modelValue.label }}
         <span
           class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
         >
-          <ChevronUpDownIcon class="w-5 h-5 text-gray-400" aria-hidden="true" />
+          <ChevronUpDownIcon
+            class="w-5 h-5 text-slate-700"
+            aria-hidden="true"
+          />
         </span>
       </ListboxButton>
       <transition

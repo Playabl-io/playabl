@@ -5,7 +5,9 @@
       <p
         :class="{
           'text-sm': size === 'small',
+          'text-md': size === 'regular',
         }"
+        class="font-semibold"
       >
         {{ display }}
       </p>

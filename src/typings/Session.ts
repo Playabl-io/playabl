@@ -21,5 +21,6 @@ export type GameSession = Omit<Session, "game_id"> & {
     title: string;
     id: number;
     system: string;
+    cover_image: string | null;
   };
 };

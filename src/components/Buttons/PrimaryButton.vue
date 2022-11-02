@@ -2,7 +2,7 @@
   <base-button
     :disabled="isLoading || disabled"
     v-bind="$attrs"
-    class="bg-brand-500 text-white hover:bg-opacity-90"
+    class="bg-brand-500 text-white hover:bg-opacity-90 transition-all"
   >
     <loading-spinner v-if="isLoading" />
     <p v-if="isLoading" class="sr-only">Loading</p>
