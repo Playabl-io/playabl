@@ -397,6 +397,7 @@ Resources:
           StripeSecretKey: !Ref StripeSecretKey
           StripeWebhookKey: !Ref StripeWebhookKey
           SlackStripeWebhook: !Ref SlackStripeWebhook
+          SlackLogWebhook: !Ref SlackLogWebhook
       Events:
         Api:
           Type: Api
@@ -442,6 +443,8 @@ Parameters:
   StripeWebhookKey:
     Type: String
   SlackStripeWebhook:
+    Type: String
+  SlackLogWebhook:
     Type: String
 
 Outputs:

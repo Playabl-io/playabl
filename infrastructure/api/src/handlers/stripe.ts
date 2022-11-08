@@ -242,17 +242,19 @@ export async function handleStripeWebhook(event: APIGatewayEvent) {
     };
   }
 
-  await sendToSlack(webhookEvent);
+  try {
+    await sendToSlack(webhookEvent);
+  } catch (error) {
+    console.log("failed to send slack");
+  }
   // Handle the event
   switch (webhookEvent.type) {
     case "account.updated":
       const accountObject = webhookEvent.data.object;
-      console.log({ accountObject });
       // Then define and call a function to handle the webhookEvent account.updated
       break;
     case "application_fee.created":
       const applicationFeeObject = webhookEvent.data.object;
-      console.log({ applicationFeeObject });
       // Then define and call a function to handle the webhookEvent application_fee.created
       break;
     case "checkout.session.completed":
@@ -275,52 +277,43 @@ export async function handleStripeWebhook(event: APIGatewayEvent) {
       break;
     case "charge.failed":
       const chargeFailedObject = webhookEvent.data.object;
-      console.log({ chargeFailedObject });
       // Then define and call a function to handle the webhookEvent charge.failed
       break;
     case "charge.succeeded":
       const chargeSucceededObject = webhookEvent.data.object;
-      console.log({ chargeSucceededObject });
       // Then define and call a function to handle the webhookEvent charge.succeeded
       break;
     case "customer.subscription.created":
       const subscriptionCreated = webhookEvent.data.object;
-      console.log({ subscriptionCreated });
       // Then define and call a function to handle the webhookEvent customer.subscription.created
       break;
     case "customer.subscription.deleted":
       const subscriptionDeleted = webhookEvent.data.object;
-      console.log({ subscriptionDeleted });
+      // TODO - remove access
       // Then define and call a function to handle the webhookEvent customer.subscription.deleted
       break;
     case "customer.subscription.updated":
       const subscriptionUpdated = webhookEvent.data.object;
-      console.log({ subscriptionUpdated });
       // Then define and call a function to handle the webhookEvent customer.subscription.updated
       break;
     case "invoice.paid":
       const invoicePaid = webhookEvent.data.object;
-      console.log({ invoicePaid });
       // Then define and call a function to handle the webhookEvent customer.subscription.updated
       break;
     case "payment_intent.requires_action":
       const paymentIntentRequiresAction = webhookEvent.data.object;
-      console.log({ paymentIntentRequiresAction });
       // Then define and call a function to handle the webhookEvent payment_intent.requires_action
       break;
     case "payment_intent.succeeded":
       const paymentIntentSucceeded = webhookEvent.data.object;
-      console.log({ paymentIntentSucceeded });
       // Then define and call a function to handle the webhookEvent payment_intent.succeeded
       break;
     case "payment_link.created":
       const paymentLinkCreated = webhookEvent.data.object;
-      console.log({ paymentLinkCreated });
       // Then define and call a function to handle the webhookEvent payment_link.created
       break;
     case "radar.early_fraud_warning.created":
       const earlyFraudWarningCreated = webhookEvent.data.object;
-      console.log({ earlyFraudWarningCreated });
       // Then define and call a function to handle the webhookEvent radar.early_fraud_warning.created
       break;
     // ... handle other webhookEvent types
@@ -339,12 +332,12 @@ export async function handleStripeWebhook(event: APIGatewayEvent) {
 }
 
 async function checkForUser(email: string) {
-  const { data, error } = await supabase
+  const { data, error, status } = await supabase
     .from("profiles")
     .select("*")
     .eq("email", email)
     .single();
-  if (error) {
+  if (error && status !== 406) {
     console.log(error);
     throw new Error(error.message);
   }
@@ -358,6 +351,18 @@ async function addUserToCommunity({
   userId: string;
   communityId: string;
 }) {
+  const { data } = await supabase
+    .from("community_memberships")
+    .select("*")
+    .eq("community_id", communityId)
+    .eq("user_id", userId)
+    .single();
+  if (data) {
+    await logToSlack(
+      `Attempted to add access to already existing community member\n- community: ${communityId}\n- user: ${userId}`
+    );
+    return;
+  }
   const { error } = await supabase
     .from("community_memberships")
     .insert({
@@ -410,7 +415,10 @@ async function provisionUserAccess({
   const accessLevelIds = JSON.parse(accessLevels ?? "[]");
   const user = await checkForUser(email);
   if (!user) {
-    throw new Error("Unable to find a user to provision access to!");
+    await logToSlack(
+      `Unmatched user could not have access provisioned:\n- email:${email}\n- community: ${communityId}\n- access levels: ${accessLevels}`
+    );
+    return;
   }
   await addUserToCommunity({ userId: user.id, communityId });
   await assignUserAccess({ userId: user.id, communityId, accessLevelIds });
@@ -437,8 +445,30 @@ function sendToSlack(webhookEvent) {
       {
         type: "section",
         text: {
-          type: "plain_text",
-          text: JSON.stringify(webhookEvent),
+          type: "mrkdwn",
+          text: `https://dashboard.stripe.com/acct_1LzqtePfyzlaPEVs/events/${webhookEvent.id}`,
+        },
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `https://dashboard.stripe.com/acct_1LzqtePfyzlaPEVs/test/events/${webhookEvent.id}`,
+        },
+      },
+    ],
+  });
+}
+
+function logToSlack(text) {
+  return axios.post(process.env.SlackLogWebhook, {
+    text: "App log",
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text,
         },
       },
     ],
