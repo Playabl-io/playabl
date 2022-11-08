@@ -17,6 +17,7 @@ interface ImportMetaEnv extends Readonly<Record<string, string>> {
   readonly VITE_SLACK_REDIRECT_URI: string;
   readonly VITE_PLAYABL_API: string;
   readonly VITE_BETA_SIGNUP_CODE: string;
+  readonly VITE_STRIPE_PUBLISH_KEY: string;
 }
 interface ImportMeta {
   readonly env: ImportMetaEnv;

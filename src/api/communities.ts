@@ -114,3 +114,25 @@ export async function selectFromCommunity({
     return data;
   }
 }
+
+export async function setPublicAccess({
+  enabled,
+  communityId,
+}: {
+  enabled: boolean;
+  communityId: string;
+}) {
+  const { error } = await supabase
+    .from("communities")
+    .update(
+      {
+        allow_public_signup: enabled,
+      },
+      { returning: "minimal" }
+    )
+    .eq("id", communityId)
+    .single();
+  if (error) {
+    throw error;
+  }
+}

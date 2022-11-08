@@ -125,6 +125,296 @@ Resources:
         EntryPoints:
           - handlers/publish-game.ts
 
+  CreateStripeAccount:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/stripe.createStripeAccount
+      Environment:
+        Variables:
+          SupabaseUrl: !Ref SupabaseUrl
+          SupabaseServiceRole: !Ref SupabaseServiceRole
+          StripeSecretKey: !Ref StripeSecretKey
+          StripeWebhookKey: !Ref StripeWebhookKey
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref PlayablApi
+            Path: /customer/create
+            Method: post
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        # Sourcemap: true # Enabling source maps will create the required NODE_OPTIONS environment variables on your lambda function during sam build
+        EntryPoints:
+          - handlers/stripe.ts
+
+  FinishStripeSetup:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/stripe.finishStripeSetup
+      Environment:
+        Variables:
+          SupabaseUrl: !Ref SupabaseUrl
+          SupabaseServiceRole: !Ref SupabaseServiceRole
+          StripeSecretKey: !Ref StripeSecretKey
+          StripeWebhookKey: !Ref StripeWebhookKey
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref PlayablApi
+            Path: /customer/finish
+            Method: post
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        # Sourcemap: true # Enabling source maps will create the required NODE_OPTIONS environment variables on your lambda function during sam build
+        EntryPoints:
+          - handlers/stripe.ts
+
+  CheckStripeSetup:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/stripe.checkStripeSetup
+      Environment:
+        Variables:
+          SupabaseUrl: !Ref SupabaseUrl
+          SupabaseServiceRole: !Ref SupabaseServiceRole
+          StripeSecretKey: !Ref StripeSecretKey
+          StripeWebhookKey: !Ref StripeWebhookKey
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref PlayablApi
+            Path: /customer/check
+            Method: get
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        # Sourcemap: true # Enabling source maps will create the required NODE_OPTIONS environment variables on your lambda function during sam build
+        EntryPoints:
+          - handlers/stripe.ts
+
+  GetStripePrices:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/stripe.getStripePrices
+      Environment:
+        Variables:
+          SupabaseUrl: !Ref SupabaseUrl
+          SupabaseServiceRole: !Ref SupabaseServiceRole
+          StripeSecretKey: !Ref StripeSecretKey
+          StripeWebhookKey: !Ref StripeWebhookKey
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref PlayablApi
+            Path: /customer/prices
+            Method: get
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        # Sourcemap: true # Enabling source maps will create the required NODE_OPTIONS environment variables on your lambda function during sam build
+        EntryPoints:
+          - handlers/stripe.ts
+
+  GetStripePrice:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/stripe.getStripePrice
+      Environment:
+        Variables:
+          SupabaseUrl: !Ref SupabaseUrl
+          SupabaseServiceRole: !Ref SupabaseServiceRole
+          StripeSecretKey: !Ref StripeSecretKey
+          StripeWebhookKey: !Ref StripeWebhookKey
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref PlayablApi
+            Path: /customer/price
+            Method: get
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        # Sourcemap: true # Enabling source maps will create the required NODE_OPTIONS environment variables on your lambda function during sam build
+        EntryPoints:
+          - handlers/stripe.ts
+
+  UpdateStripePrice:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/stripe.updateStripePrice
+      Environment:
+        Variables:
+          SupabaseUrl: !Ref SupabaseUrl
+          SupabaseServiceRole: !Ref SupabaseServiceRole
+          StripeSecretKey: !Ref StripeSecretKey
+          StripeWebhookKey: !Ref StripeWebhookKey
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref PlayablApi
+            Path: /customer/price
+            Method: put
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        # Sourcemap: true # Enabling source maps will create the required NODE_OPTIONS environment variables on your lambda function during sam build
+        EntryPoints:
+          - handlers/stripe.ts
+
+  GetStripeProduct:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/stripe.getStripeProduct
+      Environment:
+        Variables:
+          SupabaseUrl: !Ref SupabaseUrl
+          SupabaseServiceRole: !Ref SupabaseServiceRole
+          StripeSecretKey: !Ref StripeSecretKey
+          StripeWebhookKey: !Ref StripeWebhookKey
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref PlayablApi
+            Path: /customer/product
+            Method: get
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        # Sourcemap: true # Enabling source maps will create the required NODE_OPTIONS environment variables on your lambda function during sam build
+        EntryPoints:
+          - handlers/stripe.ts
+
+  CreateStripePaymentLink:
+    Type: AWS::Serverless::Function
+    Properties:
+      Timeout: 15
+      Handler: handlers/stripe.createPaymentLink
+      Environment:
+        Variables:
+          SupabaseUrl: !Ref SupabaseUrl
+          SupabaseServiceRole: !Ref SupabaseServiceRole
+          StripeSecretKey: !Ref StripeSecretKey
+          StripeWebhookKey: !Ref StripeWebhookKey
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref PlayablApi
+            Path: /customer/paymentLink
+            Method: post
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        # Sourcemap: true # Enabling source maps will create the required NODE_OPTIONS environment variables on your lambda function during sam build
+        EntryPoints:
+          - handlers/stripe.ts
+
+  UpdateStripePaymentLink:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/stripe.updateStripePaymentLink
+      Environment:
+        Variables:
+          SupabaseUrl: !Ref SupabaseUrl
+          SupabaseServiceRole: !Ref SupabaseServiceRole
+          StripeSecretKey: !Ref StripeSecretKey
+          StripeWebhookKey: !Ref StripeWebhookKey
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref PlayablApi
+            Path: /customer/paymentLink
+            Method: put
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        # Sourcemap: true # Enabling source maps will create the required NODE_OPTIONS environment variables on your lambda function during sam build
+        EntryPoints:
+          - handlers/stripe.ts
+
+  GetStripePaymentLink:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/stripe.getStripePaymentLink
+      Environment:
+        Variables:
+          SupabaseUrl: !Ref SupabaseUrl
+          SupabaseServiceRole: !Ref SupabaseServiceRole
+          StripeSecretKey: !Ref StripeSecretKey
+          StripeWebhookKey: !Ref StripeWebhookKey
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref PlayablApi
+            Path: /customer/paymentLink
+            Method: get
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        # Sourcemap: true # Enabling source maps will create the required NODE_OPTIONS environment variables on your lambda function during sam build
+        EntryPoints:
+          - handlers/stripe.ts
+
+  HandleStripeWebhook:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/stripe.handleStripeWebhook
+      Environment:
+        Variables:
+          SupabaseUrl: !Ref SupabaseUrl
+          SupabaseServiceRole: !Ref SupabaseServiceRole
+          StripeSecretKey: !Ref StripeSecretKey
+          StripeWebhookKey: !Ref StripeWebhookKey
+          SlackStripeWebhook: !Ref SlackStripeWebhook
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Auth:
+              Authorizer: NONE
+            RestApiId: !Ref PlayablApi
+            Path: /stripe/webhook
+            Method: post
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        # Sourcemap: true # Enabling source maps will create the required NODE_OPTIONS environment variables on your lambda function during sam build
+        EntryPoints:
+          - handlers/stripe.ts
+
   AuthFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -146,6 +436,12 @@ Parameters:
   SupabaseUrl:
     Type: String
   SupabaseServiceRole:
+    Type: String
+  StripeSecretKey:
+    Type: String
+  StripeWebhookKey:
+    Type: String
+  SlackStripeWebhook:
     Type: String
 
 Outputs:

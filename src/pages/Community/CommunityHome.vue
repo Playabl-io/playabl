@@ -234,6 +234,7 @@ const isJoining = ref(false);
 const displaySignUp = ref(false);
 
 const isCommunityMember = computed(() => {
+  console.log(communityStore);
   return (
     communityStore.isAdmin ||
     communityStore.isCreator ||
@@ -241,7 +242,7 @@ const isCommunityMember = computed(() => {
   );
 });
 
-onMounted(() => {
+onMounted(async () => {
   if (communityStore.community.twitter) {
     // @ts-expect-error TS doesn't know we loaded twitter
     window.twttr?.widgets.createTimeline(
@@ -265,6 +266,12 @@ async function handleJoinCommunity() {
     return;
   }
   isJoining.value = true;
+  if (communityStore.community.join_payment_link) {
+    window.open(communityStore.community.join_payment_link);
+    isJoining.value = false;
+    return;
+  }
+
   try {
     await joinCommunity({
       userId: store.user.id,

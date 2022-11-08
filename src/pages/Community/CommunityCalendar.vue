@@ -245,7 +245,6 @@ async function getUserAccess() {
     userId: store.user?.id,
     communityId: communityStore.community.id,
   });
-  console.log("access", data);
   if (data) {
     userAccess.value = data;
   }

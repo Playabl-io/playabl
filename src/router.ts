@@ -156,6 +156,11 @@ const routes = [
             component: CommunityAccess,
           },
           {
+            name: "Reauth",
+            path: "access/reauth",
+            component: CommunityAccess,
+          },
+          {
             path: "info",
             name: "Info",
             component: CommunityInfo,
