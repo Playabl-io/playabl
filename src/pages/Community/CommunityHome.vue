@@ -234,7 +234,6 @@ const isJoining = ref(false);
 const displaySignUp = ref(false);
 
 const isCommunityMember = computed(() => {
-  console.log(communityStore);
   return (
     communityStore.isAdmin ||
     communityStore.isCreator ||
