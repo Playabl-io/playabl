@@ -17,4 +17,8 @@ export interface Community {
   allow_public_signup: boolean;
   created_at: string;
   furthest_posting_date?: number | null; // unix epoch number
+  stripe_account_id?: string;
+  join_price_id?: string; // stripe price ID
+  join_payment_link?: string; // stripe payment link
+  join_payment_link_id?: string; // id of payment link
 }

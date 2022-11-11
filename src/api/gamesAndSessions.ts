@@ -4,7 +4,7 @@ import { GameDetailBlock, GameListing, NewGame, Game } from "@/typings/Game";
 import { GameSession, Session } from "@/typings/Session";
 import { log } from "@/util/logger";
 import { Community } from "@/typings/Community";
-import { startOfMonth, startOfDay, endOfMonth, endOfDay } from "date-fns";
+import { startOfDay, endOfDay } from "date-fns";
 
 import axios from "axios";
 

@@ -1,8 +1,10 @@
 import { supabase } from "@/supabase";
+import { AccessLevel } from "@/typings/AccessLevel";
 import { Community } from "@/typings/Community";
 import { Game } from "@/typings/Game";
 import { Member, MemberWithMembership } from "@/typings/Member";
 import { log } from "@/util/logger";
+import Stripe from "stripe";
 import { reactive } from "vue";
 
 interface CommunityStore {
@@ -16,6 +18,9 @@ interface CommunityStore {
   isPlayer: boolean;
   community: Community;
   admins: Member[];
+  communityAccessLevels: AccessLevel[];
+  prices?: Stripe.Price[];
+  paymentLink?: Stripe.PaymentLink;
 }
 
 const DEFAULT_COMMUNITY_STATE: CommunityStore = {
@@ -33,6 +38,8 @@ const DEFAULT_COMMUNITY_STATE: CommunityStore = {
     created_at: "",
   },
   admins: [],
+  communityAccessLevels: [],
+  prices: [],
 };
 
 export let communityStore = reactive<CommunityStore>({

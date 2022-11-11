@@ -12,6 +12,7 @@ import { log } from "@/util/logger";
 import { useRoute } from "vue-router";
 
 import { store } from "@/store";
+import { communityStore } from "./communityStore";
 
 import { loadCommunityAccessTimes } from "@/api/communityAccess";
 
@@ -60,6 +61,7 @@ async function getAccessLevels() {
   );
   if (data) {
     store.communityAccessLevels = data;
+    communityStore.communityAccessLevels = data;
   }
 }
 </script>

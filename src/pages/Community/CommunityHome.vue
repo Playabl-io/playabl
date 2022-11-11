@@ -42,23 +42,31 @@
               </dd>
             </span>
           </dd>
-          <a
-            v-if="communityStore.community.how_to_join"
-            href="#how-to-join"
-            class="text-neutral-100 text-lg font-bold"
-          >
-            How to join
-          </a>
-          <PrimaryButton
-            v-else-if="
-              communityStore.community.allow_public_signup && !isCommunityMember
-            "
-            :is-loading="isJoining"
-            class="self-end"
-            @click="handleJoinCommunity"
-          >
-            Join Community
-          </PrimaryButton>
+          <template v-if="!isCommunityMember">
+            <a
+              v-if="communityStore.community.how_to_join"
+              href="#how-to-join"
+              class="text-neutral-100 text-lg font-bold"
+            >
+              How to join
+            </a>
+            <PrimaryButton
+              v-else-if="communityStore.community.allow_public_signup"
+              :is-loading="isJoining"
+              class="self-end"
+              @click="handleJoinCommunity"
+            >
+              Join Community
+            </PrimaryButton>
+            <PrimaryButton
+              v-else-if="communityStore.community.join_payment_link"
+              :is-loading="isJoining"
+              class="self-end"
+              @click="handleJoinCommunity"
+            >
+              Checkout with Stripe
+            </PrimaryButton>
+          </template>
         </div>
       </div>
     </div>
@@ -241,7 +249,7 @@ const isCommunityMember = computed(() => {
   );
 });
 
-onMounted(() => {
+onMounted(async () => {
   if (communityStore.community.twitter) {
     // @ts-expect-error TS doesn't know we loaded twitter
     window.twttr?.widgets.createTimeline(
@@ -265,6 +273,12 @@ async function handleJoinCommunity() {
     return;
   }
   isJoining.value = true;
+  if (communityStore.community.join_payment_link) {
+    window.open(communityStore.community.join_payment_link);
+    isJoining.value = false;
+    return;
+  }
+
   try {
     await joinCommunity({
       userId: store.user.id,
