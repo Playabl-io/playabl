@@ -37,7 +37,6 @@ import Heading from "@/components/Heading.vue";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import { communityStore } from "./communityStore";
 import OutlineButton from "@/components/Buttons/OutlineButton.vue";
-import { supabase } from "@/supabase";
 import useToast from "@/components/Toast/useToast";
 import { log } from "@/util/logger";
 import { disablePaidAccess, updateStripePaymentLink } from "@/api/stripe";
@@ -51,22 +50,30 @@ async function togglePublicAccess() {
   try {
     isUpdating.value = true;
     const nextSetting = !communityStore.community.allow_public_signup;
-    setPublicAccess({
+    await setPublicAccess({
       enabled: nextSetting,
       communityId: communityStore.community.id,
     });
     if (
+      nextSetting === true &&
       communityStore.community.join_payment_link_id &&
       communityStore.community.stripe_account_id
     ) {
-      await updateStripePaymentLink({
-        stripeAccountId: communityStore.community.stripe_account_id,
-        paymentLinkId: communityStore.community.join_payment_link_id,
-        update: {
-          active: false,
-        },
+      const results = await Promise.allSettled([
+        updateStripePaymentLink({
+          stripeAccountId: communityStore.community.stripe_account_id,
+          paymentLinkId: communityStore.community.join_payment_link_id,
+          update: {
+            active: false,
+          },
+        }),
+        disablePaidAccess({ communityId: communityStore.community.id }),
+      ]);
+      results.forEach((result) => {
+        if (result.status === "rejected") {
+          log({ message: result.reason });
+        }
       });
-      await disablePaidAccess({ communityId: communityStore.community.id });
       communityStore.community.join_payment_link = undefined;
       communityStore.community.join_payment_link_id = undefined;
       communityStore.community.join_price_id = undefined;
