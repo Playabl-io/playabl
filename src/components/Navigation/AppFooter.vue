@@ -1,7 +1,12 @@
 <template>
   <footer class="grid grid-cols-2 md:grid-cols-4 gap-4 p-8 bg-gray-100">
     <div class="col-span-2 flex flex-col justify-between">
-      <img src="/playabl_192.png" alt="Playabl logo" class="w-12 h-12 filter" />
+      <img
+        key="footer-playabl-logo"
+        src="/playabl_192.png"
+        alt="Playabl logo"
+        class="w-12 h-12 filter"
+      />
       <p class="text-xs text-slate-600 mt-2">© Playabl 2022</p>
     </div>
     <div class="flex flex-col">
@@ -24,4 +29,10 @@
     </div>
   </footer>
 </template>
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import { onUnmounted } from "vue";
+
+onUnmounted(() => {
+  console.log("unmounted");
+});
+</script>

@@ -4,7 +4,6 @@
   <main class="p-12 md:container md:mx-auto max-w-4xl grow">
     <slot></slot>
   </main>
-  <AppFooter />
 </template>
 <script setup lang="ts">
 import { breakpointsTailwind, useBreakpoints } from "@vueuse/core";
@@ -12,7 +11,6 @@ import { useRoute } from "vue-router";
 import { useHead } from "@vueuse/head";
 import NavHeader from "@/components/Navigation/NavHeader.vue";
 import MobileNavHeader from "@/components/Navigation/MobileNavHeader.vue";
-import AppFooter from "@/components/Navigation/AppFooter.vue";
 
 const breakpoints = useBreakpoints(breakpointsTailwind);
 const isSmAndLarger = breakpoints.greater("sm");

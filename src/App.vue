@@ -1,12 +1,14 @@
 <template>
-  <router-view></router-view>
-  <ToasterManager />
-  <NewProfileModal
-    :open="showNewProfileModal"
-    @close="showNewProfileModal = false"
-  />
-  <MessageBox />
-  <OfflineIndicator />
+  <AppShell>
+    <router-view></router-view>
+    <ToasterManager />
+    <NewProfileModal
+      :open="showNewProfileModal"
+      @close="showNewProfileModal = false"
+    />
+    <MessageBox />
+    <OfflineIndicator />
+  </AppShell>
 </template>
 <script setup lang="ts">
 import { store } from "./store";
@@ -20,6 +22,7 @@ import { onMounted, ref } from "vue";
 import { loadProfile } from "./api/profiles";
 import { log } from "./util/logger";
 import { Notification } from "./typings/Notification";
+import AppShell from "./layouts/AppShell.vue";
 
 const user = supabase.auth.user();
 if (user) {
