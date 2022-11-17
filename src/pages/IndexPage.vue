@@ -33,10 +33,6 @@
             </a>
           </p>
         </div>
-        <div class="mt-24 text-white font-light flex justify-center gap-3">
-          <RouterLink to="/privacy">Privacy policy</RouterLink>
-          <RouterLink to="/tos">Terms of service</RouterLink>
-        </div>
       </div>
     </main>
   </section>
