@@ -11,7 +11,7 @@
 </template>
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
-import BaseTemplate from "@/components/BaseTemplate.vue";
+import BaseTemplate from "@/layouts/BaseTemplate.vue";
 import GamesListing from "@/components/GamesListing.vue";
 import { GameListing } from "@/typings/Game";
 import { loadJoinedCommunityIds } from "@/api/communities";

@@ -20,7 +20,7 @@
 </template>
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import BaseTemplate from "@/components/BaseTemplate.vue";
+import BaseTemplate from "@/layouts/BaseTemplate.vue";
 import { GameListing } from "@/typings/Game";
 import { store } from "@/store";
 import { loadUpcomingJoinedGames } from "@/api/gamesAndSessions";

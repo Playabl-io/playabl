@@ -288,7 +288,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useMachine } from "@xstate/vue";
 import { createMachine } from "xstate";
-import BaseTemplate from "@/components/BaseTemplate.vue";
+import BaseTemplate from "@/layouts/BaseTemplate.vue";
 import FormLabel from "@/components/Forms/FormLabel.vue";
 import FormInput from "@/components/Forms/FormInput.vue";
 import FormCheckbox from "@/components/Forms/FormCheckbox.vue";

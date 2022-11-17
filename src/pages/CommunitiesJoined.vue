@@ -16,7 +16,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { supabase } from "@/supabase";
-import BaseTemplate from "@/components/BaseTemplate.vue";
+import BaseTemplate from "@/layouts/BaseTemplate.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import { Community } from "@/typings/Community";
 import { log } from "@/util/logger";

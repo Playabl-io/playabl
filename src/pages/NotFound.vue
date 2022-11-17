@@ -21,7 +21,7 @@
   </BaseTemplate>
 </template>
 <script setup lang="ts">
-import BaseTemplate from "@/components/BaseTemplate.vue";
+import BaseTemplate from "@/layouts/BaseTemplate.vue";
 import Heading from "@/components/Heading.vue";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 </script>

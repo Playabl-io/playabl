@@ -103,7 +103,7 @@ import { ref } from "vue";
 import { supabase } from "@/supabase";
 import { RouterLink, useRouter } from "vue-router";
 import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue";
-import OutlineButton from "./Buttons/OutlineButton.vue";
+import OutlineButton from "../Buttons/OutlineButton.vue";
 import { Bars3Icon, ArrowTopRightOnSquareIcon } from "@heroicons/vue/20/solid";
 import { store } from "@/store";
 import { unreadNotifications } from "@/util/notifications";

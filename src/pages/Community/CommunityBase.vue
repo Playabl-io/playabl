@@ -39,7 +39,7 @@ import { ref, onMounted, onBeforeUnmount } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import CommunityNav from "./CommunityNav.vue";
 import { log } from "@/util/logger";
-import BaseTemplate from "@/components/BaseTemplate.vue";
+import BaseTemplate from "@/layouts/BaseTemplate.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import Heading from "@/components/Heading.vue";
 import { ADMIN, CREATOR, PLAYER } from "@/util/roles";

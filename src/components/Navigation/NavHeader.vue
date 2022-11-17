@@ -33,8 +33,8 @@
 </template>
 <script setup lang="ts">
 import { RouterLink, useRoute } from "vue-router";
-import UserMenu from "./UserMenu.vue";
-import { store } from "../store";
+import UserMenu from "../UserMenu.vue";
+import { store } from "../../store";
 
 const route = useRoute();
 

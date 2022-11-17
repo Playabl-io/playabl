@@ -284,7 +284,7 @@ import {
   ArrowSmallRightIcon,
   ArrowSmallLeftIcon,
 } from "@heroicons/vue/24/outline";
-import BaseTemplate from "@/components/BaseTemplate.vue";
+import BaseTemplate from "@/layouts/BaseTemplate.vue";
 import FormCheckbox from "@/components/Forms/FormCheckbox.vue";
 import FormLabel from "@/components/Forms/FormLabel.vue";
 import FormInput from "@/components/Forms/FormInput.vue";
