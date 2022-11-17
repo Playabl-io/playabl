@@ -131,7 +131,7 @@ import { useRoute, useRouter } from "vue-router";
 import { supabase } from "@/supabase";
 import { RealtimeSubscription } from "@supabase/supabase-js";
 import { log } from "@/util/logger";
-import BaseTemplate from "@/components/BaseTemplate.vue";
+import BaseTemplate from "@/layouts/BaseTemplate.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import Heading from "@/components/Heading.vue";
 import InfoBanner from "@/components/Banners/InfoBanner.vue";

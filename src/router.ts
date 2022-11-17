@@ -270,6 +270,9 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+  scrollBehavior(to, from, savedPosition) {
+    document.getElementById("app")?.scrollTo({ top: 0, left: 0 });
+  },
 });
 
 router.beforeEach((to) => {

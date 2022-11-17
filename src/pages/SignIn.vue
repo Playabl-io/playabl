@@ -87,7 +87,7 @@ import Heading from "@/components/Heading.vue";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import { ref } from "vue";
 import { supabase } from "@/supabase";
-import BaseTemplate from "@/components/BaseTemplate.vue";
+import BaseTemplate from "@/layouts/BaseTemplate.vue";
 import LinkButton from "@/components/Buttons/LinkButton.vue";
 import useToast from "@/components/Toast/useToast";
 import { log } from "@/util/logger";

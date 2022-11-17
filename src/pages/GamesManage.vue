@@ -27,7 +27,7 @@
 </template>
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import BaseTemplate from "@/components/BaseTemplate.vue";
+import BaseTemplate from "@/layouts/BaseTemplate.vue";
 import { GameListing } from "@/typings/Game";
 import GameCard from "@/components/Game/GameCard.vue";
 import Heading from "@/components/Heading.vue";

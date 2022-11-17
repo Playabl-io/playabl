@@ -36,7 +36,7 @@
 </template>
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
-import BaseTemplate from "@/components/BaseTemplate.vue";
+import BaseTemplate from "@/layouts/BaseTemplate.vue";
 import { store } from "@/store";
 import { supabase } from "@/supabase";
 import { onMounted, ref } from "vue";
