@@ -29,10 +29,3 @@
     </div>
   </footer>
 </template>
-<script lang="ts" setup>
-import { onUnmounted } from "vue";
-
-onUnmounted(() => {
-  console.log("unmounted");
-});
-</script>
