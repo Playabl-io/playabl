@@ -175,7 +175,7 @@
       </div>
     </form>
     <form
-      v-if="['gameSessions', 'submitting'].includes(state.value as string)"
+      v-if="['gameSessions', 'invalidGameSessions', 'submitting'].includes(state.value as string)"
       id="secondScreen"
       class="max-w-2xl mx-auto"
       @submit.prevent="send('SUBMIT')"
@@ -248,11 +248,12 @@
             @delete-session="deleteSession"
           />
         </div>
+        <hr class="my-10" />
         <AccessTimes
           :enabled-levels="state.context.enabledAccessLevels"
           @update="send({ type: 'UPDATE_ENABLED_LEVELS', data: $event })"
         />
-        <div class="grid grid-cols-2 gap-6">
+        <div class="grid grid-cols-2 gap-6 mt-10">
           <OutlineButton
             type="button"
             class="font-semibold"
@@ -266,6 +267,13 @@
           >
             Save
           </PrimaryButton>
+          <p
+            v-if="state.value === 'invalidGameSessions'"
+            class="text-red-500 mt-2 col-span-full"
+          >
+            You must have at least one session and one selected access level.
+            Please review your game settings to continue.
+          </p>
         </div>
       </div>
     </form>
@@ -433,7 +441,43 @@ const newGameMachine = createMachine<{
         on: {
           CHOOSE_NEW_COMMUNITY: "chooseCommunity",
           BACK: "gameDetails",
-          SUBMIT: "submitting",
+          SUBMIT: [
+            {
+              target: "submitting",
+              cond: (context) => {
+                return (
+                  sessionIds.value.length > 0 &&
+                  context.enabledAccessLevels.length > 0
+                );
+              },
+            },
+            {
+              target: "invalidGameSessions",
+            },
+          ],
+          UPDATE_ENABLED_LEVELS: {
+            actions: ["updateEnabledAccessLevels"],
+          },
+        },
+      },
+      invalidGameSessions: {
+        on: {
+          CHOOSE_NEW_COMMUNITY: "chooseCommunity",
+          BACK: "gameDetails",
+          SUBMIT: [
+            {
+              target: "submitting",
+              cond: (context) => {
+                return (
+                  sessionIds.value.length > 0 &&
+                  context.enabledAccessLevels.length > 0
+                );
+              },
+            },
+            {
+              target: "invalidGameSessions",
+            },
+          ],
           UPDATE_ENABLED_LEVELS: {
             actions: ["updateEnabledAccessLevels"],
           },
