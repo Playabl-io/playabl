@@ -91,11 +91,11 @@
             Sessions
           </router-link>
           <router-link
-            v-if="displayGameDetails"
-            :to="`/games/${id}/details`"
+            v-if="displayGameInfo"
+            :to="`/games/${id}/info`"
             exact-active-class="border-b border-brand-500 dark:border-brand-300"
           >
-            Details
+            Additional Info
           </router-link>
           <router-link
             v-if="userIsInTheGame || isOwner"
@@ -119,6 +119,7 @@
             :is="Component"
             :key="route.meta.usePathKey ? route.path : undefined"
             :is-owner="isOwner"
+            :user-access="userAccess"
           />
         </KeepAlive>
       </router-view>
@@ -137,10 +138,12 @@ import Heading from "@/components/Heading.vue";
 import InfoBanner from "@/components/Banners/InfoBanner.vue";
 import { store } from "@/store";
 import { GameWithCommunityAndSessions } from "@/typings/Game";
+import { CommunityAccess } from "@/typings/CommunityAccess";
 import { gameStore } from "./gameStore";
 import * as R from "ramda";
 import { Session } from "@/typings/Session";
 import { userIsCommunityAdmin } from "@/api/communityMemberships";
+import { loadUserCommunityAccess } from "@/api/communityAccess";
 import {
   UsersIcon,
   TagIcon,
@@ -158,6 +161,7 @@ const gameData = ref<GameWithCommunityAndSessions>();
 const canManage = ref(false);
 const isOwner = ref(false);
 const isLoading = ref(true);
+const userAccess = ref<CommunityAccess[]>([]);
 
 const userIsInTheGame = computed(() =>
   gameStore.sessions.some((session) =>
@@ -165,13 +169,17 @@ const userIsInTheGame = computed(() =>
   )
 );
 
-const displayGameDetails = computed(() => {
+const displayGameInfo = computed(() => {
   return userIsInTheGame.value || canManage.value;
 });
 
 onMounted(async () => {
   await getGameData();
+  await getUserAccess();
   if (currentRoute.path.includes("manage") && !canManage.value) {
+    router.replace(`/games/${id}?unauthorized=true`);
+  }
+  if (currentRoute.path.includes("info") && !userIsInTheGame.value) {
     router.replace(`/games/${id}?unauthorized=true`);
   }
   isLoading.value = false;
@@ -231,6 +239,17 @@ function loadAndSetAttendeesInStore(rsvps: string[]) {
         gameStore.attendees[member] = data;
       });
   });
+}
+
+async function getUserAccess() {
+  if (!store.user) return;
+  const data = await loadUserCommunityAccess({
+    userId: store.user?.id,
+    communityId: gameStore.game?.community_id || "",
+  });
+  if (data) {
+    userAccess.value = data;
+  }
 }
 
 let subscription: RealtimeSubscription;
