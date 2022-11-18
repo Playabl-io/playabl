@@ -43,6 +43,7 @@ import SessionBlock from "@/components/Game/SessionBlock.vue";
 import { CommunityAccess } from "@/typings/CommunityAccess";
 import { getCoverImageUrl } from "@/api/storage";
 import { gameStore } from "./gameStore";
+import { ROLES } from "@/util/roles";
 
 const props = defineProps({
   isOwner: {
@@ -51,6 +52,13 @@ const props = defineProps({
   },
   userAccess: {
     type: Object as PropType<CommunityAccess[]>,
+    required: true,
+  },
+  userMembership: {
+    type: Object as PropType<{
+      user_id?: string;
+      role_id?: ROLES;
+    }>,
     required: true,
   },
 });
@@ -62,10 +70,8 @@ onMounted(async () => {
   }
 });
 
-const userIsNotMember = computed(() =>
-  props.userAccess.every(
-    (access) => access.community_id !== gameStore.game.community_id
-  )
+const userIsNotMember = computed(
+  () => props.userMembership.role_id === undefined
 );
 </script>
 <style scoped>

@@ -30,11 +30,18 @@
         <div v-else-if="soonestRsvp" class="text-sm text-slate-700 text-center">
           RSVP available {{ formatRelative(soonestRsvp, new Date()) }}
         </div>
-        <p v-else-if="!notAMember" class="text-center text-slate-700 text-sm">
-          You cannot RSVP because this game requires an access level you do not
-          have. Please contact the community managers for help.
-          <br />Please contact the community organizers.
-        </p>
+        <div v-else-if="!notAMember" class="text-slate-700 text-sm">
+          <p>
+            You cannot RSVP because this game requires an access level you do
+            not have. Please contact the community managers for help.
+          </p>
+          <p class="font-semibold text-sm mt-4">
+            RSVP access requires one of the following
+          </p>
+          <ul class="list-disc list-inside mt-1">
+            <li v-for="name in accessNeeded" :key="name">{{ name }}</li>
+          </ul>
+        </div>
       </div>
       <div class="mt-8 grid grid-cols-2">
         <div>
@@ -138,6 +145,20 @@ const soonestRsvp = computed(() => {
     accessTimes = props.session.access_times;
   }
   return getSoonestRsvpTime(props.userAccess, accessTimes);
+});
+
+const accessNeeded = computed(() => {
+  let accessTimes;
+  if (typeof props.session.access_times === "string") {
+    accessTimes = JSON.parse(props.session.access_times);
+  } else {
+    accessTimes = props.session.access_times;
+  }
+  const accessTimeNames: string[] = [];
+  for (const access in accessTimes) {
+    accessTimeNames.push(accessTimes[access].name);
+  }
+  return accessTimeNames;
 });
 
 const splitAtParticipantCount = R.splitAt(props.participantCount);

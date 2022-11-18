@@ -120,6 +120,7 @@
             :key="route.meta.usePathKey ? route.path : undefined"
             :is-owner="isOwner"
             :user-access="userAccess"
+            :user-membership="userMembership"
           />
         </KeepAlive>
       </router-view>
@@ -142,7 +143,7 @@ import { CommunityAccess } from "@/typings/CommunityAccess";
 import { gameStore } from "./gameStore";
 import * as R from "ramda";
 import { Session } from "@/typings/Session";
-import { userIsCommunityAdmin } from "@/api/communityMemberships";
+import { loadUserCommunityMembership } from "@/api/communityMemberships";
 import { loadUserCommunityAccess } from "@/api/communityAccess";
 import {
   UsersIcon,
@@ -152,6 +153,7 @@ import {
   LifebuoyIcon,
 } from "@heroicons/vue/24/outline";
 import GameBadge from "@/components/Game/GameBadge.vue";
+import { ROLES } from "@/util/roles";
 
 const router = useRouter();
 const currentRoute = useRoute();
@@ -162,6 +164,7 @@ const canManage = ref(false);
 const isOwner = ref(false);
 const isLoading = ref(true);
 const userAccess = ref<CommunityAccess[]>([]);
+const userMembership = ref();
 
 const userIsInTheGame = computed(() =>
   gameStore.sessions.some((session) =>
@@ -180,6 +183,9 @@ onMounted(async () => {
     router.replace(`/games/${id}?unauthorized=true`);
   }
   if (currentRoute.path.includes("info") && !userIsInTheGame.value) {
+    router.replace(`/games/${id}?unauthorized=true`);
+  }
+  if (currentRoute.path.includes("messages") && !userIsInTheGame.value) {
     router.replace(`/games/${id}?unauthorized=true`);
   }
   isLoading.value = false;
@@ -214,11 +220,12 @@ async function getGameData() {
 
     if (store.user?.id) {
       isOwner.value = data.creator_id.id === store.user?.id;
-      const isAdmin = await userIsCommunityAdmin({
+      const membership = await loadUserCommunityMembership({
         userId: store.user.id,
         communityId: data.community_id.id,
       });
-      canManage.value = isAdmin || isOwner.value;
+      userMembership.value = membership;
+      canManage.value = membership.role_id === ROLES.admin || isOwner.value;
     }
   }
 }
