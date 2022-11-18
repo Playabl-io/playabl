@@ -17,14 +17,6 @@
       >
         No new notifications
       </p>
-      <hr class="my-10" />
-      <div class="flex flex-col">
-        <FormLabel>Email notifications</FormLabel>
-        <p>
-          We'll email you each time you are RSVP'd to a game. At this time this
-          cannot be disabled.
-        </p>
-      </div>
     </section>
   </ProfileTemplate>
 </template>
@@ -32,7 +24,6 @@
 <script setup lang="ts">
 import { onUnmounted, ref } from "vue";
 import ProfileTemplate from "@/components/ProfileTemplate.vue";
-import FormLabel from "@/components/Forms/FormLabel.vue";
 import { supabase } from "@/supabase";
 import { unreadNotifications } from "@/util/notifications";
 import { Notification } from "@/typings/Notification";

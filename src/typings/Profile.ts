@@ -7,4 +7,8 @@ export interface Profile {
   twitter?: string;
   bio?: string;
   id: string;
+  email_preferences?: {
+    email_enabled: boolean;
+    unread_notifications_enabled: boolean;
+  };
 }
