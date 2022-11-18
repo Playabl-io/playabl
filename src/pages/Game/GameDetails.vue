@@ -4,8 +4,12 @@
   </div>
   <div v-else-if="state.value === 'preview'" class="grid grid-cols-2 gap-8">
     <div v-if="state.context.blocks.length === 0" class="col-span-full">
-      The game creator has not set any details yet or you do not have access
+      <p class="text-slate-700">Nothing to see yet</p>
     </div>
+    <SecondaryButton v-if="userIsCreator" class="w-min" @click="send('EDIT')">
+      <PencilSquareIcon class="w-5 h-5 mr-1" />
+      Edit
+    </SecondaryButton>
     <div
       v-for="block in state.context.blocks"
       :key="block.id"
@@ -21,21 +25,38 @@
   <div
     v-else-if="['settingUp', 'editing', 'saving'].includes(state.value as string)"
   >
-    <div class="flex justify-between">
-      <p class="text-sm">
-        Create a custom page with game details to share with your players by
-        adding blocks with info and links.
-      </p>
-      <SecondaryButton
+    <p class="text-sm leading-loose">
+      Create a custom page with additional game info to share with your players.
+      Use sections to organize and group information as you'd like. Only people
+      RSVP'd or on the Waitlist can access this page.
+    </p>
+    <hr class="my-10" />
+    <div class="flex gap-4">
+      <PrimaryButton
         :is-loading="state.value === 'saving'"
         @click="send('SAVE_BLOCKS')"
       >
         <CloudArrowUpIcon class="w-5 h-5 mr-2" />
-        Save details page
+        Save info
+      </PrimaryButton>
+      <SecondaryButton class="col-span-full" @click="send('ADD_BLOCK')">
+        <DocumentPlusIcon class="w-5 h-5 mr-2" />
+        Add section
+      </SecondaryButton>
+      <SecondaryButton @click="send('PREVIEW')">
+        <EyeIcon class="w-5 h-5 mr-2" />
+        Preview
       </SecondaryButton>
     </div>
     <div class="grid edit-grid items-start gap-6 mt-12">
       <div class="grid grid-cols-2 gap-8">
+        <p
+          v-if="state.context.blocks.length == 0"
+          class="text-sm text-slate-700 col-span-full"
+        >
+          No content added. Start by clicking 'Add section' or using the editor
+          to the right.
+        </p>
         <div
           v-for="(block, index) in state.context.blocks"
           :key="block.id"
@@ -92,14 +113,10 @@
             <TipTapDisplay :content="block.content" />
           </div>
         </div>
-        <PrimaryButton class="col-span-full" @click="send('ADD_BLOCK')">
-          <DocumentPlusIcon class="w-5 h-5 mr-2" />
-          Add block
-        </PrimaryButton>
       </div>
-      <div class="rounded-md bg-gray-200 py-8 px-6">
+      <div class="rounded-md bg-gray-100 py-8 px-6">
         <div class="flex flex-col">
-          <FormLabel>Block title</FormLabel>
+          <FormLabel>Section title</FormLabel>
           <FormInput
             :value="activeBlock?.title"
             required
@@ -107,7 +124,7 @@
           />
         </div>
         <div class="flex flex-col mt-6">
-          <FormLabel>Block width</FormLabel>
+          <FormLabel>Section width</FormLabel>
           <div class="grid grid-cols-2 gap-8">
             <label
               class="flex items-center gap-4 rounded-md p-2 border border-solid"
@@ -150,7 +167,7 @@
           </div>
         </div>
         <div class="flex flex-col mt-6">
-          <FormLabel :no-margin="true">Block content</FormLabel>
+          <FormLabel :no-margin="true">Section content</FormLabel>
           <div
             class="bg-white rounded-lg border border-solid border-gray-300 mt-2"
           >
@@ -184,6 +201,7 @@ import {
   PencilSquareIcon,
   CloudArrowUpIcon,
   DocumentPlusIcon,
+  EyeIcon,
 } from "@heroicons/vue/24/outline";
 import { store } from "@/store";
 import { gameStore } from "./gameStore";
@@ -262,7 +280,14 @@ const gameDetailsMachine = createMachine(
           },
         },
       },
-      preview: {},
+      preview: {
+        on: {
+          EDIT: {
+            target: "editing",
+            cond: () => userIsCreator.value,
+          },
+        },
+      },
       settingUp: {
         after: {
           300: "editing",
@@ -286,6 +311,7 @@ const gameDetailsMachine = createMachine(
             actions: ["removeBlock"],
           },
           SAVE_BLOCKS: "saving",
+          PREVIEW: "preview",
         },
       },
       saving: {
@@ -400,13 +426,12 @@ const gameDetailsMachine = createMachine(
           activeIndex: nextActiveIndex,
         };
       }),
-      showSaveSuccess: () => showSuccess({ message: "Game details updated" }),
-      showSaveError: () =>
-        showError({ message: "Unable to save game details" }),
+      showSaveSuccess: () => showSuccess({ message: "Game info updated" }),
+      showSaveError: () => showError({ message: "Unable to save game info" }),
       showLoadError: () =>
         showError({
           message:
-            "Unable to load game details. Please try again or contact support.",
+            "Unable to load game info. Please try again or contact support.",
         }),
     },
   }

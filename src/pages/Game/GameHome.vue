@@ -36,49 +36,43 @@
   </section>
 </template>
 <script setup lang="ts">
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref, computed, PropType } from "vue";
 import TipTapDisplay from "@/components/TipTapDisplay.vue";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import SessionBlock from "@/components/Game/SessionBlock.vue";
-import { loadUserCommunityAccess } from "@/api/communityAccess";
-import { store } from "@/store";
 import { CommunityAccess } from "@/typings/CommunityAccess";
 import { getCoverImageUrl } from "@/api/storage";
 import { gameStore } from "./gameStore";
+import { ROLES } from "@/util/roles";
 
-defineProps({
+const props = defineProps({
   isOwner: {
     type: Boolean,
     required: true,
   },
+  userAccess: {
+    type: Object as PropType<CommunityAccess[]>,
+    required: true,
+  },
+  userMembership: {
+    type: Object as PropType<{
+      user_id?: string;
+      role_id?: ROLES;
+    }>,
+    required: true,
+  },
 });
-
-const userAccess = ref<CommunityAccess[]>([]);
 const gameCoverImage = ref("");
 
 onMounted(async () => {
-  getUserAccess();
   if (gameStore.game?.cover_image) {
     gameCoverImage.value = await getCoverImageUrl(gameStore.game.cover_image);
   }
 });
 
-const userIsNotMember = computed(() =>
-  userAccess.value.every(
-    (access) => access.community_id !== gameStore.game.community_id
-  )
+const userIsNotMember = computed(
+  () => props.userMembership.role_id === undefined
 );
-
-async function getUserAccess() {
-  if (!store.user) return;
-  const data = await loadUserCommunityAccess({
-    userId: store.user?.id,
-    communityId: gameStore.game?.community_id || "",
-  });
-  if (data) {
-    userAccess.value = data;
-  }
-}
 </script>
 <style scoped>
 .game-details {

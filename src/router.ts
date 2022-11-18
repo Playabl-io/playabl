@@ -223,7 +223,7 @@ const routes = [
         component: GameHome,
       },
       {
-        path: "details",
+        path: "info",
         component: () => import("@/pages/Game/GameDetails.vue"),
         meta: {
           requiresAuth: true,

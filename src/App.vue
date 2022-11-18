@@ -2,7 +2,6 @@
   <AppShell>
     <div v-if="loadingUser" class="grow grid place-content-center">
       <LoadingSpinner color="brand-500" />
-      <div class="mt-2 text-sm font-semibold">Loading</div>
     </div>
     <router-view v-else></router-view>
     <ToasterManager />
