@@ -1,5 +1,5 @@
 <template>
-  <RouterView></RouterView>
+  <slot></slot>
   <AppFooter />
 </template>
 <script lang="ts" setup>
