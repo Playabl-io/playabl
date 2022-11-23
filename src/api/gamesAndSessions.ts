@@ -263,13 +263,11 @@ export async function leaveSession({
   return data;
 }
 
-export async function loadGameIfHasUpcomingSession(gameId: number) {
-  const today = new Date();
+export async function loadGame(gameId: number) {
   const { data, error } = await supabase
     .from("games")
-    .select("*, sessions!inner(*)")
+    .select("*")
     .eq("id", gameId)
-    .gte("sessions.start_time", today.getTime())
     .single();
   if (error) {
     log({ error });

@@ -47,7 +47,7 @@ export const handler: Handler = async (event, context) => {
     };
   }
   const allIds = playerIds.concat(creator.id);
-  await writeMessageToDb({
+  const data = await writeMessageToDb({
     from: fromUser.id,
     to: allIds,
     message: params.message,
@@ -96,6 +96,7 @@ export const handler: Handler = async (event, context) => {
     statusCode: 200,
     body: JSON.stringify({
       status: "ok",
+      message: data,
     }),
   };
 };
@@ -110,14 +111,17 @@ async function loadAllPlayersForGame(gameId) {
 }
 
 async function writeMessageToDb({ from, to, message, topicId }) {
-  const { data, error } = await supabase.from("messages").insert({
-    from,
-    to,
-    message,
-    topic_type: "game",
-    topic_id: topicId,
-    record_type: "text",
-  });
+  const { data, error } = await supabase
+    .from("messages")
+    .insert({
+      from,
+      to,
+      message,
+      topic_type: "game",
+      topic_id: topicId,
+      record_type: "text",
+    })
+    .single();
   if (error) {
     console.error({ error });
   }

@@ -84,7 +84,7 @@ const routes = [
     },
   },
   {
-    path: "/messages",
+    path: "/messages/:topic_id?",
     component: MessagesPage,
     meta: {
       title: "Playabl - Messages",
