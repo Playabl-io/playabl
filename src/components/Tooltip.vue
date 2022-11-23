@@ -1,6 +1,9 @@
 <template>
   <div class="relative flex flex-col items-center">
-    <slot name="trigger" v-bind="{ toggleTooltip }"></slot>
+    <slot
+      name="trigger"
+      v-bind="{ toggleTooltip, setTooltipHidden, setTooltipVisible }"
+    ></slot>
     <transition
       enter-active-class="transition duration-200 ease-out"
       enter-from-class="transform scale-70 opacity-0 translate-y-2"
@@ -25,5 +28,11 @@ const showTooltip = ref(false);
 
 function toggleTooltip() {
   showTooltip.value = !showTooltip.value;
+}
+function setTooltipVisible() {
+  showTooltip.value = true;
+}
+function setTooltipHidden() {
+  showTooltip.value = false;
 }
 </script>

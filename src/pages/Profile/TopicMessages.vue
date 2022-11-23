@@ -1,11 +1,11 @@
 <template>
-  <div class="h-full flex flex-col">
+  <div class="bg-gray-100 rounded-lg flex flex-col p-4">
     <MessageReply
       :play-audio="playAudio"
       @send-message="sendMessage"
       @update-play-audio="setPlayAudio"
     />
-    <div class="grid gap-6 rounded-lg mt-6 relative">
+    <div class="mt-6 grid gap-6 items-start rounded-lg relative">
       <transition-group
         enter-active-class="transform-gpu duration-300 ease-out"
         leave-active-class="absolute transform-gpu duration-200"
@@ -16,9 +16,9 @@
         move-class="transform-gpu duration-300 ease-in"
       >
         <LoadingSpinner v-if="loading" color="brand-500" class="mx-auto" />
-        <template v-else-if="messages.length > 0">
+        <template v-else-if="topic.messages.length > 0">
           <ChatMessage
-            v-for="message in messages"
+            v-for="message in topic.messages"
             :key="message.id"
             :message="message"
             :user-id="store.user?.id || ''"
@@ -33,51 +33,78 @@
 </template>
 <script setup lang="ts">
 import { v4 as uuidv4 } from "uuid";
-import { onMounted, onUnmounted, ref } from "vue";
-import { supabase } from "@/supabase";
-import { RealtimeSubscription } from "@supabase/supabase-js";
+import { onBeforeMount, onUnmounted, PropType, ref, watch } from "vue";
 import { useLocalStorage } from "@vueuse/core";
-import { store } from "@/store";
-import { gameStore } from "./gameStore";
-
+import { loadProfile } from "@/api/profiles";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import MessageReply from "@/components/Messages/MessageReply.vue";
-import ChatMessage from "@/components/Messages/ChatMessage.vue";
-import useToast from "@/components/Toast/useToast";
-import { loadProfile } from "@/api/profiles";
-import { loadMessages, sendMessageAboutGame } from "@/api/messages";
 import { GameMessage, Message } from "@/typings/Message";
+import { store } from "@/store";
+import { sendMessageAboutGame } from "@/api/messages";
+import { supabase } from "@/supabase";
+import { RealtimeSubscription } from "@supabase/supabase-js";
+import useToast from "@/components/Toast/useToast";
 import { Profile } from "@/typings/Profile";
+import { Game } from "@/typings/Game";
+import ChatMessage from "@/components/Messages/ChatMessage.vue";
 
 /**
- * Note: this and TopicMessages are VERY similar, but there are some
+ * Note: this and GameMessages are VERY similar, but there are some
  * small differences. More functionality could undoubtedly
  * be removed and shared, but it feels premature to concern
  * too much about this.
  */
+
+const props = defineProps({
+  topic: {
+    type: Object as PropType<{
+      id: string | number;
+      topicType: "game";
+      topic: Game;
+      messages: Message[];
+    }>,
+    required: true,
+  },
+});
+
+const emit = defineEmits(["addMessage", "updateMessage"]);
 
 const { showError } = useToast();
 
 const playAudio = useLocalStorage("play-new-message-audio", true);
 const alertAudo = new Audio("/notification_simple-02.wav");
 
-const gameId = gameStore.game.id;
-
 const loading = ref(true);
 
 const profilesById = ref<Record<string, Profile>>({});
-const messages = ref<Message[]>([]);
+
+watch(
+  () => props.topic,
+  (newTopic) => setup(newTopic)
+);
 
 let subscription: RealtimeSubscription;
-onMounted(async () => {
+onBeforeMount(() => setup(props.topic));
+
+onUnmounted(() => {
+  supabase.removeSubscription(subscription);
+});
+
+async function setup(topic: {
+  id: string | number;
+  topicType: "game";
+  topic: Game;
+  messages: Message[];
+}) {
   loading.value = true;
   if (store.user?.id) {
     profilesById.value[store.user.id] = { ...store.user };
   }
-  const gameMessages = await loadMessages(gameId);
-  if (gameMessages) {
-    messages.value = gameMessages;
-    const messageUsers = gameMessages.reduce((acc, cur) => {
+  if (subscription) {
+    subscription.unsubscribe();
+  }
+  if (topic.messages) {
+    const messageUsers = topic.messages.reduce((acc, cur) => {
       acc.push(cur.from);
       acc.push(...cur.to);
       return acc;
@@ -91,37 +118,32 @@ onMounted(async () => {
   }
   loading.value = false;
   subscription = supabase
-    .from(`messages:topic_id=eq.${gameId}`)
+    .from(`messages:topic_id=eq.${topic.id}`)
     .on("INSERT", async (payload) => {
       if (payload.new.from === store.user?.id) return;
       if (!profilesById.value[payload.new.from]) {
         const user = await loadProfile(payload.new.from);
         profilesById.value[user.id] = user;
       }
-      messages.value = [payload.new, ...messages.value];
+      emit("addMessage", { message: payload.new, topicId: topic.id });
       if (playAudio.value) {
         alertAudo.play();
       }
     })
     .subscribe();
-});
-
-onUnmounted(() => {
-  supabase.removeSubscription(subscription);
-});
+}
 
 async function retryMessage({ id, message }: { id: string; message: string }) {
   try {
     const response = await sendMessageAboutGame({
       message,
       group: "all",
-      gameId,
+      gameId: Number(props.topic.id),
     });
-    messages.value = messages.value.map((message) => {
-      if (message.id === id) {
-        return response?.data.message;
-      }
-      return message;
+    emit("updateMessage", {
+      id,
+      message: response?.data.message,
+      topicId: props.topic.id,
     });
   } catch (error) {
     showError({ message: "Unable to send message " });
@@ -134,9 +156,12 @@ async function sendMessage(content: string) {
     const response = await sendMessageAboutGame({
       message,
       group: "all",
-      gameId,
+      gameId: Number(props.topic.id),
     });
-    messages.value = [response?.data?.message, ...messages.value];
+    emit("addMessage", {
+      message: response?.data.message,
+      topicId: props.topic.id,
+    });
   } catch (error) {
     const tempId = uuidv4();
     const newMessage: GameMessage = {
@@ -145,12 +170,15 @@ async function sendMessage(content: string) {
       from: store.user?.id ?? "",
       to: [],
       record_type: "text",
-      topic_id: String(gameId),
+      topic_id: String(props.topic.id),
       topic_type: "game",
       created_at: new Date().toISOString(),
       failedToSend: true,
     };
-    messages.value = [newMessage, ...messages.value];
+    emit("addMessage", {
+      message: newMessage,
+      topicId: props.topic.id,
+    });
   }
 }
 

@@ -182,10 +182,12 @@ onMounted(async () => {
   if (currentRoute.path.includes("manage") && !canManage.value) {
     router.replace(`/games/${id}?unauthorized=true`);
   }
-  if (currentRoute.path.includes("info") && !userIsInTheGame.value) {
+
+  const hasAccess = canManage.value || userIsInTheGame;
+  if (currentRoute.path.includes("info") && !hasAccess) {
     router.replace(`/games/${id}?unauthorized=true`);
   }
-  if (currentRoute.path.includes("messages") && !userIsInTheGame.value) {
+  if (currentRoute.path.includes("messages") && !hasAccess) {
     router.replace(`/games/${id}?unauthorized=true`);
   }
   isLoading.value = false;

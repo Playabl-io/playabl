@@ -7,7 +7,8 @@ export async function loadMessages(topicId: number) {
   const { data, error, status } = await supabase
     .from<Message>("messages")
     .select("*")
-    .eq("topic_id", String(topicId));
+    .eq("topic_id", String(topicId))
+    .order("created_at", { ascending: false });
   if (error && status !== 406) {
     log({ error });
   }
@@ -20,7 +21,8 @@ export async function loadMessagesToUser(userId: string) {
   const { data, error, status } = await supabase
     .from("messages")
     .select("*")
-    .contains("to", [userId]);
+    .contains("to", [userId])
+    .order("created_at", { ascending: false });
   if (error && status !== 406) {
     log({ error });
   }
