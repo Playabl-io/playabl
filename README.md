@@ -6,6 +6,6 @@
 - TypeScript
 - Supabase
 - Tailwind
-- AWS Lamdba, API Gateway, and SNS
+- AWS Lambda, API Gateway, and SNS
 
 [Learn more](https://playabl.io)
