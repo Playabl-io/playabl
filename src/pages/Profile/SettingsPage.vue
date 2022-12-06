@@ -7,9 +7,14 @@
         Receive email notifications
       </FormLabel> -->
       <fieldset :disabled="emailsEnabled === false">
-        <FormLabel class="flex items-center gap-2 font-normal" no-margin>
+        <p class="mb-4">Email me when...</p>
+        <FormLabel class="flex items-center gap-2 font-normal mb-2" no-margin>
           <FormCheckbox v-model="unreadNotificationEmailsEnabled" />
-          Receive a daily summary of that day's unread notifications
+          I have unread notifications from that day
+        </FormLabel>
+        <FormLabel class="flex items-center gap-2 font-normal" no-margin>
+          <FormCheckbox v-model="rsvpToMyGameEmailsEnabled" />
+          Someone joins my game
         </FormLabel>
       </fieldset>
       <PrimaryButton
@@ -42,6 +47,9 @@ const emailsEnabled = ref(
 const unreadNotificationEmailsEnabled = ref(
   store.user?.email_preferences?.unread_notifications_enabled ?? false
 );
+const rsvpToMyGameEmailsEnabled = ref(
+  store.user?.email_preferences?.rsvp_to_my_game_enabled ?? false
+);
 const saving = ref(false);
 
 watch(
@@ -49,6 +57,7 @@ watch(
   (newVal) => {
     if (newVal === false) {
       unreadNotificationEmailsEnabled.value = false;
+      rsvpToMyGameEmailsEnabled.value = false;
     }
   }
 );
@@ -59,6 +68,7 @@ async function updateEmailSettings() {
   const updated = {
     email_enabled: emailsEnabled.value,
     unread_notifications_enabled: unreadNotificationEmailsEnabled.value,
+    rsvp_to_my_game_enabled: rsvpToMyGameEmailsEnabled.value,
   };
   try {
     await updateProfile({

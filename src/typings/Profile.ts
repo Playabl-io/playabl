@@ -10,5 +10,6 @@ export interface Profile {
   email_preferences?: {
     email_enabled: boolean;
     unread_notifications_enabled: boolean;
+    rsvp_to_my_game_enabled: boolean;
   };
 }

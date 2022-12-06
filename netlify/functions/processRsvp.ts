@@ -45,8 +45,18 @@ export const handler: Handler = async (event) => {
     }
     const beforeRsvps = session.rsvps;
     const data = await joinSession({ sessionId, userId });
+    const user = await getUserProfile({ userId });
+    try {
+      await notifyGameCreator({
+        creatorId: game.creator_id,
+        joiningUserName: user.username,
+        gameId: game.id,
+        gameName: game.title,
+      });
+    } catch (error) {
+      console.error("Failed to send notification to game creator");
+    }
     if (beforeRsvps.length < game.participant_count) {
-      const user = await getUserProfile({ userId });
       await sendRsvpEmail({
         gameName: game.title,
         relatedUrl: `https://app.playabl.io/games/${game.id}`,
@@ -202,4 +212,29 @@ function sendRsvpEmail({ name, email, relatedUrl, gameName }) {
     .catch((error) => {
       console.error(error);
     });
+}
+
+async function notifyGameCreator({
+  creatorId,
+  joiningUserName,
+  gameId,
+  gameName,
+}) {
+  const user = await getUserProfile({ userId: creatorId });
+  const { data, error } = await supabase.from("notifications").insert({
+    user_id: user.id,
+    user_name: user.username,
+    message: `${joiningUserName} joined your game, ${gameName}!`,
+    related_url: `https://app.playabl.io/games/${gameId}`,
+    type: "notify_creator_of_rsvp",
+    read: false,
+    custom_fields: {
+      send_notification_email: user.email_preferences.rsvp_to_my_game_enabled,
+    },
+  });
+  if (error) {
+    console.error(error);
+    throw new Error(error.message);
+  }
+  return data;
 }
