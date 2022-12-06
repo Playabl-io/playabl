@@ -164,7 +164,7 @@ const canManage = ref(false);
 const isOwner = ref(false);
 const isLoading = ref(true);
 const userAccess = ref<CommunityAccess[]>([]);
-const userMembership = ref();
+const userMembership = ref({});
 
 const userIsInTheGame = computed(() =>
   gameStore.sessions.some((session) =>

@@ -19,6 +19,7 @@
 </template>
 <script setup lang="ts">
 import { formatRelative } from "date-fns";
+import { ClockIcon } from "@heroicons/vue/24/outline";
 import { Notification } from "@/typings/Notification";
 import { PropType } from "vue";
 defineProps({

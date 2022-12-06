@@ -55,6 +55,7 @@ function notificationComponent(type: Notification["type"]) {
     case "cancel":
       return CancelNotification;
     case "rsvp":
+    case "notify_creator_of_rsvp":
       return RsvpNotification;
     default:
       return "div";
