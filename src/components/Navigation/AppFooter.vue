@@ -1,5 +1,5 @@
 <template>
-  <footer class="grid grid-cols-2 md:grid-cols-4 gap-4 p-8 bg-gray-100">
+  <footer class="grid grid-cols-2 md:grid-cols-4 gap-4 p-8 bg-gray-100 z-10">
     <div class="col-span-2 flex flex-col justify-between">
       <img src="/playabl_192.png" alt="Playabl logo" class="w-12 h-12 filter" />
       <p class="text-xs text-slate-600 mt-2">© Playabl 2022</p>
