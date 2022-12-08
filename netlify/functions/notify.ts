@@ -40,13 +40,14 @@ export const handler: Handler = async (event) => {
     }
   }
   if (record.type === "notify_creator_of_rsvp") {
-    if (record.custom_fields.send_notification_email) {
+    console.log("record", record);
+    if (record.custom_fields?.send_notification_email) {
+      console.log("sending record");
       try {
         await sendNewJoinEmail({
           name: record.name,
           email: record.email,
           message: record.message,
-          relatedUrl: record.related_url,
         });
         console.info("successfully sent new join email");
       } catch (error) {
@@ -95,7 +96,7 @@ function sendRsvpEmail({ name, email, relatedUrl, gameName }) {
     }
   );
 }
-function sendNewJoinEmail({ name, email, relatedUrl, message }) {
+function sendNewJoinEmail({ name, email, message }) {
   return axios.post(
     "https://api.mailjet.com/v3.1/send",
     {
@@ -116,7 +117,6 @@ function sendNewJoinEmail({ name, email, relatedUrl, message }) {
           Subject: "New RSVP to your Game - Playabl",
           Variables: {
             message,
-            related_url: relatedUrl,
           },
         },
       ],
