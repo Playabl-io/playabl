@@ -224,6 +224,7 @@ async function notifyGameCreator({
   const { data, error } = await supabase.from("notifications").insert({
     user_id: user.id,
     user_name: user.username,
+    email: user.email,
     message: `${joiningUserName} joined your game, ${gameName}!`,
     related_url: `https://app.playabl.io/games/${gameId}`,
     type: "notify_creator_of_rsvp",

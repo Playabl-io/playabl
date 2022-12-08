@@ -2,7 +2,6 @@ import { Handler } from "@netlify/functions";
 import axios from "axios";
 
 export const handler: Handler = async (event) => {
-  console.log(event);
   const { authorization } = event.headers;
 
   if (authorization !== process.env.WEB_MAIL_PASSWORD) {
@@ -15,12 +14,10 @@ export const handler: Handler = async (event) => {
   }
   const { record } = JSON.parse(event.body);
 
-  console.log("record", record);
-
   if (record.type === "rsvp") {
     try {
       await sendRsvpEmail({
-        name: record.name,
+        name: record.user_name,
         email: record.email,
         relatedUrl: record.related_url,
         gameName: record.custom_fields?.game_name,
@@ -33,7 +30,7 @@ export const handler: Handler = async (event) => {
   if (record.type === "cancel") {
     try {
       await sendCancelEmail({
-        name: record.name,
+        name: record.user_name,
         email: record.email,
         gameName: record.custom_fields?.game_name,
       });
@@ -43,12 +40,10 @@ export const handler: Handler = async (event) => {
     }
   }
   if (record.type === "notify_creator_of_rsvp") {
-    console.log("record", record);
     if (record.custom_fields?.send_notification_email) {
-      console.log("sending record");
       try {
         await sendNewJoinEmail({
-          name: record.name,
+          name: record.user_name,
           email: record.email,
           message: record.message,
         });
