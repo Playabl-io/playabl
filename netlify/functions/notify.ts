@@ -2,6 +2,7 @@ import { Handler } from "@netlify/functions";
 import axios from "axios";
 
 export const handler: Handler = async (event) => {
+  console.log(event);
   const { authorization } = event.headers;
 
   if (authorization !== process.env.WEB_MAIL_PASSWORD) {
