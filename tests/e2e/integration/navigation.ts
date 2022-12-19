@@ -1,5 +1,5 @@
 // skipped during beta
-describe.skip("Navbar", () => {
+describe("Navbar", () => {
   it("Has a link to community", () => {
     cy.visit("/");
     cy.findByRole("link", { name: /Communities/ }).click();

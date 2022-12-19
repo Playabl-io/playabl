@@ -104,7 +104,6 @@ const routes = [
     component: CommunitiesAll,
     meta: {
       title: "Playabl - Communities",
-      requiresAuth: true,
     },
   },
   {
@@ -192,7 +191,6 @@ const routes = [
     component: GamesBrowse,
     meta: {
       title: "Playabl - Games",
-      requiresAuth: true,
     },
   },
   {
