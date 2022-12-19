@@ -4,14 +4,14 @@
     @submit.prevent="handleSubmit"
   >
     <slot name="heading">
-      <Heading level="h1" as="h5" class="mb-4">Sign up</Heading>
+      <Heading level="h1" as="h5" class="mb-3">Sign up</Heading>
     </slot>
     <p class="text-sm font-medium">
       Sign up to join or start communities and play in games
     </p>
     <LinkButton
       type="button"
-      class="mr-auto mt-1 text-sm text-brand-500"
+      class="mr-auto mt-1 text-sm"
       @click="emit('signIn')"
     >
       Have an account already? Sign in

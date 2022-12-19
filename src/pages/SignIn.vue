@@ -16,27 +16,14 @@
         class="flex flex-col lg:max-w-xl mx-auto"
         @submit.prevent="handleLogin"
       >
-        <Heading level="h1" as="h5">Sign in</Heading>
-        <Popover class="relative">
-          <PopoverButton
-            type="button"
-            class="text-sm text-brand-500 mr-auto mt-4"
-          >
-            <LinkButton type="button"> Need an account? Sign up </LinkButton>
-          </PopoverButton>
-
-          <PopoverPanel
-            class="absolute z-10 mt-2 bg-white p-4 rounded-md shadow-md border border-solid border-gray-100"
-          >
-            <p class="mb-2">
-              Playabl is currently in beta, so sign up requires an invite code
-            </p>
-            <FormInput v-model="signUpCode" class="w-full mb-3" />
-            <PrimaryButton type="button" @click="checkCode">
-              Check code
-            </PrimaryButton>
-          </PopoverPanel>
-        </Popover>
+        <Heading level="h1" as="h5" class="mb-3">Sign in</Heading>
+        <LinkButton
+          class="self-start text-sm"
+          type="button"
+          @click="displaySignUp = true"
+        >
+          Need an account? Sign up
+        </LinkButton>
         <div class="flex flex-col mt-6">
           <form-label for="email"> Email </form-label>
           <form-input id="email" v-model="email" type="email" required />
@@ -57,30 +44,13 @@
         </primary-button>
         <p class="text-xs text-slate-700 text-center my-4">OR</p>
         <div class="flex justify-center">
-          <Popover class="relative">
-            <PopoverButton type="button">
-              <GoogleButton />
-            </PopoverButton>
-
-            <PopoverPanel
-              class="absolute z-10 mt-2 bg-white p-4 rounded-md shadow-md border border-solid border-gray-100"
-            >
-              <p class="mb-2">
-                Playabl is currently in beta, so access requires an invite code
-              </p>
-              <FormInput v-model="signUpCode" class="w-full mb-3" />
-              <PrimaryButton type="button" @click="signInWithGoogle">
-                Check code
-              </PrimaryButton>
-            </PopoverPanel>
-          </Popover>
+          <GoogleButton @click="signInWithGoogle" />
         </div>
       </form>
     </section>
   </BaseTemplate>
 </template>
 <script setup lang="ts">
-import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue";
 import FormLabel from "@/components/Forms/FormLabel.vue";
 import FormInput from "@/components/Forms/FormInput.vue";
 import Heading from "@/components/Heading.vue";
@@ -104,15 +74,8 @@ const email = ref("");
 const password = ref("");
 const loading = ref(false);
 const submitted = ref(false);
-const signUpCode = ref("");
 
 const displaySignUp = ref(false);
-
-function checkCode() {
-  if (signUpCode.value === import.meta.env.VITE_BETA_SIGNUP_CODE) {
-    displaySignUp.value = true;
-  }
-}
 
 async function handleSignUp({
   email,
@@ -169,9 +132,6 @@ const handleLogin = async () => {
 };
 
 async function signInWithGoogle() {
-  if (signUpCode.value !== import.meta.env.VITE_BETA_SIGNUP_CODE) {
-    return;
-  }
   const { user, error } = await supabase.auth.signIn({
     provider: "google",
   });
