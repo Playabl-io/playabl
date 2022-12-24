@@ -11,10 +11,22 @@
     </div>
     <div class="flex flex-col">
       <FormSelect v-model.number="roleFilter" aria-label="Filter by role">
-        <option>Filter by role</option>
+        <option value="">Filter by role</option>
         <option :value="ROLES.admin">Admin</option>
         <option :value="ROLES.creator">Creator</option>
         <option :value="ROLES.player">Players</option>
+      </FormSelect>
+    </div>
+    <div class="flex flex-col">
+      <FormSelect v-model.number="accessFilter" aria-label="Filter by access">
+        <option value="">Filter by access</option>
+        <option
+          v-for="accessLevel in communityStore.communityAccessLevels"
+          :key="accessLevel.id"
+          :value="accessLevel.id"
+        >
+          {{ accessLevel.name }}
+        </option>
       </FormSelect>
     </div>
   </div>
@@ -33,6 +45,7 @@
       <MembersList
         :community-id="communityStore.community.id"
         :count="state.context.count"
+        :search-observable="searchObservable"
       />
       <div class="flex justify-center mt-4">
         <PaginatorControls
@@ -47,7 +60,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { debouncedWatch } from "@vueuse/core";
 import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
 import FormInput from "@/components/Forms/FormInput.vue";
@@ -61,24 +74,37 @@ import { useMachine } from "@xstate/vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import PaginatorControls from "@/components/PaginatorControls.vue";
 import { DEFAULT_PAGE_SIZE } from "@/util/pagination";
+import createNewObservable from "@/util/observable";
+
+const allLevelIds = computed(() => {
+  return communityStore.communityAccessLevels.map((level) => level.id);
+});
+const allRoleIds = [ROLES.admin, ROLES.creator, ROLES.player];
+
+const searchObservable = createNewObservable();
 
 const searchMachine = createMachine(
   {
     schema: {
       context: {} as {
         searchTerm: string;
-        roleId?: number;
+        roleId: number[];
+        accessId: number[];
         pageSize: number;
         page: number;
         from: number;
         to: number;
         hasPriorPage: boolean;
         hasNextPage: boolean;
-        results: unknown[];
-        count?: number;
+        count: number;
       },
       events: {} as
-        | { type: "SEARCH"; searchTerm: string; roleId?: number }
+        | {
+            type: "SEARCH";
+            searchTerm: string;
+            roleId: number[];
+            accessId: number[];
+          }
         | { type: "PAGE_NEXT" }
         | { type: "PAGE_PREVIOUS" }
         | { type: "PAGE_SELECT"; page: number },
@@ -87,14 +113,15 @@ const searchMachine = createMachine(
     id: "searchMachine",
     context: {
       searchTerm: "",
-      roleId: undefined,
+      roleId: allRoleIds,
+      accessId: allLevelIds.value,
       pageSize: DEFAULT_PAGE_SIZE,
       page: 0,
       from: 0,
       to: 0,
       hasPriorPage: false,
       hasNextPage: false,
-      results: [],
+      count: 0,
     },
     initial: "idle",
     states: {
@@ -102,7 +129,7 @@ const searchMachine = createMachine(
         on: {
           SEARCH: {
             target: "searching",
-            actions: ["resetPaging", "assignSearchTerm", "assignRoleFilter"],
+            actions: ["resetPaging", "assignSearchTerms", "notify"],
           },
           PAGE_NEXT: {
             target: "searching",
@@ -119,18 +146,13 @@ const searchMachine = createMachine(
         },
       },
       searching: {
-        on: {
-          SEARCH: {
-            target: "searching",
-            actions: ["resetPaging", "assignSearchTerm"],
-          },
-        },
         invoke: {
           src: (context) =>
             searchCommunityMembers({
               communityId: communityStore.community.id,
               searchTerm: context.searchTerm,
-              roleId: context.roleId,
+              roleIds: context.roleId,
+              accessIds: context.accessId,
               from: context.from,
               to: context.to,
             }),
@@ -144,6 +166,9 @@ const searchMachine = createMachine(
   },
   {
     actions: {
+      notify() {
+        searchObservable.notify();
+      },
       assignSearchTerm: assign({
         searchTerm: (context, event) => {
           if (event.type !== "SEARCH") {
@@ -152,12 +177,24 @@ const searchMachine = createMachine(
           return event.searchTerm;
         },
       }),
-      assignRoleFilter: assign({
+      assignSearchTerms: assign({
+        searchTerm: (context, event) => {
+          if (event.type !== "SEARCH") {
+            throw new Error("incorrect event sent to assignSearchTerms");
+          }
+          return event.searchTerm;
+        },
         roleId: (context, event) => {
           if (event.type !== "SEARCH") {
-            throw new Error("incorrect event sent to assignRoleFilter");
+            throw new Error("incorrect event sent to assignSearchTerms");
           }
           return event.roleId;
+        },
+        accessId: (context, event) => {
+          if (event.type !== "SEARCH") {
+            throw new Error("incorrect event sent to assignSearchTerms");
+          }
+          return event.accessId;
         },
       }),
       resetPaging: assign({
@@ -168,16 +205,12 @@ const searchMachine = createMachine(
       }),
       assignResults: assign({
         // @ts-expect-error xstate doesn't have types for done
-        results: (context, event) => event.data.data,
-        // @ts-expect-error xstate doesn't have types for done
         hasNextPage: (context, event) => event.data.count > context.to + 1,
         hasPriorPage: (context) => context.from > 0,
         // @ts-expect-error xstate doesn't have types for done
         count: (context, event) => event.data.count,
       }),
       assignToCommunityStore: (context, event) => {
-        // @ts-expect-error xstate doesn't have types for done
-        communityStore.membersCount = event.data.count;
         // @ts-expect-error xstate doesn't have types for done
         communityStore.members = event.data.data?.map((member) => {
           const communityMembership = member.community_memberships[0];
@@ -226,15 +259,26 @@ const { state, send } = useMachine(searchMachine);
 
 const membersSearchTerm = ref("");
 const roleFilter = ref<ROLES>();
+const accessFilter = ref<number>();
 
 onMounted(() => {
-  send({ type: "SEARCH", searchTerm: "" });
+  send({
+    type: "SEARCH",
+    searchTerm: "",
+    accessId: allLevelIds.value,
+    roleId: allRoleIds,
+  });
 });
 
 debouncedWatch(
   () => membersSearchTerm.value,
   (updated) =>
-    send({ type: "SEARCH", searchTerm: updated, roleId: roleFilter.value }),
+    send({
+      type: "SEARCH",
+      searchTerm: updated,
+      roleId: roleFilter.value ? [roleFilter.value] : allRoleIds,
+      accessId: accessFilter.value ? [accessFilter.value] : allLevelIds.value,
+    }),
   { debounce: 750 }
 );
 watch(
@@ -243,7 +287,18 @@ watch(
     send({
       type: "SEARCH",
       searchTerm: membersSearchTerm.value,
-      roleId: updated,
+      roleId: updated ? [updated] : allRoleIds,
+      accessId: accessFilter.value ? [accessFilter.value] : allLevelIds.value,
+    })
+);
+watch(
+  () => accessFilter.value,
+  (updated) =>
+    send({
+      type: "SEARCH",
+      searchTerm: membersSearchTerm.value,
+      roleId: roleFilter.value ? [roleFilter.value] : allRoleIds,
+      accessId: updated ? [updated] : allLevelIds.value,
     })
 );
 </script>

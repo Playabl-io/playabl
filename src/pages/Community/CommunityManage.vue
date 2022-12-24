@@ -1,6 +1,9 @@
 <template>
   <div>
-    <div class="grid gap-4">
+    <div v-if="loading" class="grid place-content-center">
+      <LoadingSpinner color="brand-500" />
+    </div>
+    <div v-else class="grid gap-4">
       <router-view />
     </div>
   </div>
@@ -15,6 +18,7 @@ import { store } from "@/store";
 import { communityStore } from "./communityStore";
 
 import { loadCommunityAccessTimes } from "@/api/communityAccess";
+import LoadingSpinner from "@/components/LoadingSpinner.vue";
 
 const route = useRoute();
 const loading = ref(true);
