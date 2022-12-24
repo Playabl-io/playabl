@@ -107,7 +107,6 @@ import {
   addAccessToMember,
   removeAccessFromMember,
 } from "@/api/communityAccess";
-import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
 import useToast from "@/components/Toast/useToast";
 import { communityStore } from "./communityStore";

@@ -3,15 +3,21 @@
     <input
       class="text-brand-500 rounded-md shadow-sm border border-gray-300 dark:bg-slate-200 focus-styles"
       type="checkbox"
-      :checked="members.length === communityStore.members.length"
+      :checked="selectedMembers.length === communityStore.members.length"
       @change="toggleAll"
     />
-    <p v-if="count" class="text-sm font-semibold">
+    <p class="text-sm font-semibold">
       {{ count }}
       {{ pluralize({ count, singular: "result" })
-      }}<span v-if="members.length > 0">, {{ members.length }} selected</span>
+      }}<span v-if="selectedMembers.length > 0"
+        >, {{ selectedMembers.length }} selected</span
+      >
     </p>
-    <GhostButton v-if="members.length > 0" class="ml-auto" @click="handleEdit">
+    <GhostButton
+      v-if="selectedMembers.length > 0"
+      class="ml-auto"
+      @click="handleEdit"
+    >
       <PencilSquareIcon class="h-5 w-5 text-slate-700" />
     </GhostButton>
   </div>
@@ -24,7 +30,7 @@
       >
         <input
           :id="member.id"
-          v-model="members"
+          v-model="selectedMembers"
           class="text-brand-500 rounded-md shadow-sm border border-gray-300 dark:bg-slate-200 focus-styles"
           type="checkbox"
           :value="member.id"
@@ -97,7 +103,7 @@
   />
 </template>
 <script setup lang="ts">
-import { PropType, ref } from "vue";
+import { onMounted, PropType, ref } from "vue";
 import { useBreakpoints, breakpointsTailwind } from "@vueuse/core";
 import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/vue";
@@ -123,32 +129,47 @@ const isMdAndLarger = breakpoints.greater("md");
 
 const { showError } = useToast();
 
-defineProps({
+const props = defineProps({
   communityId: {
     type: String as PropType<Community["id"]>,
     required: true,
   },
   count: {
     type: Number,
-    default: undefined,
+    required: true,
+  },
+  searchObservable: {
+    required: true,
+    type: Object as PropType<{
+      subscribe(fn: () => void): void;
+      notify(): void;
+    }>,
   },
 });
 
-const members = ref<MemberWithMembership["id"][]>([]);
+onMounted(() => {
+  props.searchObservable.subscribe(clearSelected);
+});
+
+const selectedMembers = ref<MemberWithMembership["id"][]>([]);
+
+function clearSelected() {
+  selectedMembers.value = [];
+}
 
 function toggleAll(event: Event) {
   const target = event.target as HTMLInputElement;
   if (target?.checked) {
-    members.value = communityStore.members.map(({ id }) => id);
+    selectedMembers.value = communityStore.members.map(({ id }) => id);
   } else {
-    members.value = [];
+    selectedMembers.value = [];
   }
 }
 
 function handleEdit() {
   send({
     type: "EDIT",
-    members: members.value.map((id) =>
+    members: selectedMembers.value.map((id) =>
       communityStore.members.find((member) => member.id === id)
     ),
   });
