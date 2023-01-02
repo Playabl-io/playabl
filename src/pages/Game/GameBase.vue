@@ -91,7 +91,7 @@
             Sessions
           </router-link>
           <router-link
-            v-if="displayGameInfo"
+            v-if="hasAccess"
             :to="`/games/${id}/info`"
             exact-active-class="border-b border-brand-500 dark:border-brand-300"
           >
@@ -172,7 +172,7 @@ const userIsInTheGame = computed(() =>
   )
 );
 
-const displayGameInfo = computed(() => {
+const hasAccess = computed(() => {
   return userIsInTheGame.value || canManage.value;
 });
 
@@ -185,11 +185,10 @@ onMounted(async () => {
     router.replace(`/games/${id}?unauthorized=true`);
   }
 
-  const hasAccess = canManage.value || userIsInTheGame;
-  if (currentRoute.path.includes("info") && !hasAccess) {
+  if (currentRoute.path.includes("info") && !hasAccess.value) {
     router.replace(`/games/${id}?unauthorized=true`);
   }
-  if (currentRoute.path.includes("messages") && !hasAccess) {
+  if (currentRoute.path.includes("messages") && !hasAccess.value) {
     router.replace(`/games/${id}?unauthorized=true`);
   }
   isLoading.value = false;
