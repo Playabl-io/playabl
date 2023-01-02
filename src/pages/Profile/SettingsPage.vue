@@ -1,11 +1,16 @@
 <template>
   <ProfileTemplate>
+    <div
+      v-if="store.userSession?.user.app_metadata.provider?.includes('email')"
+      class="flex flex-col mb-12"
+    >
+      <Heading level="h6" as="h3" class="mb-6">Account settings</Heading>
+      <LinkButton class="mr-auto" to="/reset-password">
+        Update your password
+      </LinkButton>
+    </div>
     <div class="flex flex-col">
       <Heading level="h6" as="h3" class="mb-6">Email settings</Heading>
-      <!-- <FormLabel class="flex items-center gap-2 font-normal mb-3" no-margin>
-        <FormCheckbox v-model="emailsEnabled" />
-        Receive email notifications
-      </FormLabel> -->
       <fieldset :disabled="emailsEnabled === false">
         <p class="mb-4">Email me when...</p>
         <FormLabel class="flex items-center gap-2 font-normal mb-2" no-margin>
@@ -38,6 +43,7 @@ import ProfileTemplate from "@/components/ProfileTemplate.vue";
 import { updateProfile } from "@/api/profiles";
 import useToast from "@/components/Toast/useToast";
 import Heading from "@/components/Heading.vue";
+import LinkButton from "@/components/Buttons/LinkButton.vue";
 
 const { showSuccess, showError } = useToast();
 

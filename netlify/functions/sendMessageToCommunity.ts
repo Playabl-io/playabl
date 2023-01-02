@@ -13,9 +13,9 @@ export const handler: Handler = async (event) => {
   }
   const { token } = event.headers;
 
-  const user = await supabase.auth.api.getUser(token);
+  const user = await supabase.auth.getUser(token);
 
-  if (user.user.aud !== "authenticated") {
+  if (user.data.user.aud !== "authenticated") {
     return {
       statusCode: 403,
       boday: JSON.stringify({

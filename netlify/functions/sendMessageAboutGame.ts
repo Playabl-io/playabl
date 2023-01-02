@@ -20,9 +20,9 @@ export const handler: Handler = async (event, context) => {
   }
   const { token } = event.headers;
 
-  const user = await supabase.auth.api.getUser(token);
+  const user = await supabase.auth.getUser(token);
 
-  if (user.user.aud !== "authenticated") {
+  if (user.data.user.aud !== "authenticated") {
     return {
       statusCode: 403,
       boday: JSON.stringify({
@@ -34,11 +34,14 @@ export const handler: Handler = async (event, context) => {
   const params: Params = JSON.parse(event.body);
 
   const game = await loadGame(params.gameId);
-  const fromUser = await loadProfile(user.user.id);
+  const fromUser = await loadProfile(user.data.user.id);
   const creator = await loadProfile(game.creator_id);
 
   const playerIds = await loadAllPlayersForGame(game.id);
-  if (!playerIds.includes(user.user.id) && creator.id !== user.user.id) {
+  if (
+    !playerIds.includes(user.data.user.id) &&
+    creator.id !== user.data.user.id
+  ) {
     return {
       statusCode: 403,
       boday: JSON.stringify({
@@ -121,6 +124,7 @@ async function writeMessageToDb({ from, to, message, topicId }) {
       topic_id: topicId,
       record_type: "text",
     })
+    .select()
     .single();
   if (error) {
     console.error({ error });

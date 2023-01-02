@@ -47,6 +47,7 @@ async function joinCommunity({
       user_id: userId,
       role_id: ROLES.player,
     })
+    .select()
     .single();
   if (data) {
     return data;

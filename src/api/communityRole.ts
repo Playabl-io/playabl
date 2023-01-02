@@ -14,7 +14,9 @@ export async function updateMemberRole({
     .update({
       role_id: roleId,
     })
-    .eq("id", communityMembershipId);
+    .eq("id", communityMembershipId)
+    .select()
+    .single();
   if (error) {
     log({ error });
   }

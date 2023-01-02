@@ -169,6 +169,7 @@ async function addSession() {
   const { data, error } = await supabase
     .from("sessions")
     .insert(newSession)
+    .select()
     .single();
   if (data) {
     emit("addSession", data);
@@ -203,7 +204,7 @@ async function getCommunityPostingDate(communityId: string) {
     communityId,
     select: "furthest_posting_date",
   });
-  if (data) {
+  if (data?.furthest_posting_date) {
     communityPostingLimit.value = new Date(data.furthest_posting_date);
   }
 }

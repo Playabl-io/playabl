@@ -3,9 +3,11 @@ import { Message } from "@/typings/Message";
 import { log } from "@/util/logger";
 import axios from "axios";
 
-export async function loadMessages(topicId: number) {
+export async function loadMessages(
+  topicId: number
+): Promise<Message[] | undefined> {
   const { data, error, status } = await supabase
-    .from<Message>("messages")
+    .from("messages")
     .select("*")
     .eq("topic_id", String(topicId))
     .order("created_at", { ascending: false });
@@ -40,7 +42,9 @@ export async function sendMessageToCommunity({
   communityId: string;
   responseEmail?: string;
 }) {
-  const session = supabase.auth.session();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
   if (!session?.access_token) return;
   try {
     const data = await axios({
@@ -73,7 +77,9 @@ export async function sendMessageAboutGame({
   group: "all";
   gameId: number;
 }) {
-  const session = supabase.auth.session();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
   if (!session?.access_token) return;
   try {
     const data = await axios({

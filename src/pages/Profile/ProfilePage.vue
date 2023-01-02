@@ -84,9 +84,7 @@ async function updateProfile() {
     };
     const { error } = await supabase
       .from("profiles")
-      .update(updates, {
-        returning: "minimal",
-      })
+      .update(updates)
       .eq("id", store.user.id);
     if (error) throw error;
     showSuccess({ message: "Info updated" });

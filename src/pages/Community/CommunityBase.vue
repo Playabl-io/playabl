@@ -94,6 +94,7 @@ async function getMembershipStatus() {
     communityId,
     userId: store.user.id,
   });
+  if (!data) return;
   communityStore.isAdmin = data.role_id === ADMIN;
   communityStore.isCreator = data.role_id === CREATOR;
   communityStore.isPlayer = data.role_id === PLAYER;
@@ -101,9 +102,12 @@ async function getMembershipStatus() {
 
 async function getCommunity() {
   if (typeof id === "string") {
-    const data = await selectFromCommunity({ communityId: id, select: "*" });
+    const data = (await selectFromCommunity({
+      communityId: id,
+      select: "*",
+    })) as Community;
 
-    if (data.cover_image) {
+    if (data?.cover_image) {
       communityStore.coverImageUrl = await getCoverImageUrl(data.cover_image);
     } else {
       communityStore.coverImageUrl = undefined;

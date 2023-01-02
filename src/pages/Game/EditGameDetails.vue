@@ -89,6 +89,7 @@ async function handleSave() {
       uses_safety_tools: usesSafetyTools.value,
     })
     .eq("id", gameStore.game.id)
+    .select()
     .single();
   if (error) {
     showError({ message: "Something went wrong" });

@@ -187,7 +187,6 @@ function previousMonth() {
 }
 function nextMonth() {
   const nextDate = addMonths(props.selected, 1);
-  if (props.notAfter && isAfter(nextDate, props.notAfter)) return;
   emit("select", nextDate);
   focusActiveDay();
 }

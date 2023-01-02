@@ -262,6 +262,19 @@ const routes = [
     name: "SlackAuthorization",
     component: SlackAuthorization,
   },
+  {
+    path: "/forgot-password",
+    name: "ForgotPassword",
+    component: () => import("./pages/ForgotPassword.vue"),
+  },
+  {
+    path: "/reset-password",
+    name: "ResetPassword",
+    component: () => import("./pages/ResetPassword.vue"),
+    meta: {
+      requiresAuth: true,
+    },
+  },
   { path: "/:pathMatch(.*)*", name: "NotFound", component: NotFound },
 ];
 

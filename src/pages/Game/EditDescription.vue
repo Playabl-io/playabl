@@ -63,6 +63,7 @@ async function updateGame() {
       description_as_flat_text: localCopyOfFlatDescription.value,
     })
     .eq("id", props.gameId)
+    .select()
     .single();
   if (error) {
     showError({ message: "Something went wrong" });

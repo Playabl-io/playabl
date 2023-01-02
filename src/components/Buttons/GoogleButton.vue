@@ -6,8 +6,8 @@
     type="button"
   >
     <svg
-      width="2rem"
-      height="2rem"
+      width="32px"
+      height="32px"
       viewBox="0 0 256 262"
       version="1.1"
       xmlns="http://www.w3.org/2000/svg"

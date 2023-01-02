@@ -35,7 +35,10 @@
 import { v4 as uuidv4 } from "uuid";
 import { onMounted, onUnmounted, ref } from "vue";
 import { supabase } from "@/supabase";
-import { RealtimeSubscription } from "@supabase/supabase-js";
+import {
+  RealtimeChannel,
+  RealtimePostgresInsertPayload,
+} from "@supabase/supabase-js";
 import { useLocalStorage } from "@vueuse/core";
 import { store } from "@/store";
 import { gameStore } from "./gameStore";
@@ -68,13 +71,13 @@ const loading = ref(true);
 const profilesById = ref<Record<string, Profile>>({});
 const messages = ref<Message[]>([]);
 
-let subscription: RealtimeSubscription;
+let subscription: RealtimeChannel;
 onMounted(async () => {
   loading.value = true;
   if (store.user?.id) {
     profilesById.value[store.user.id] = { ...store.user };
   }
-  const gameMessages = await loadMessages(gameId);
+  const gameMessages = (await loadMessages(gameId)) as Message[];
   if (gameMessages) {
     messages.value = gameMessages;
     const messageUsers = gameMessages.reduce((acc, cur) => {
@@ -91,23 +94,32 @@ onMounted(async () => {
   }
   loading.value = false;
   subscription = supabase
-    .from(`messages:topic_id=eq.${gameId}`)
-    .on("INSERT", async (payload) => {
-      if (payload.new.from === store.user?.id) return;
-      if (!profilesById.value[payload.new.from]) {
-        const user = await loadProfile(payload.new.from);
-        profilesById.value[user.id] = user;
+    .channel(`public:messages:topic_id=eq.${gameId}`)
+    .on(
+      "postgres_changes",
+      {
+        event: "INSERT",
+        schema: "public",
+        table: "messages",
+        filter: `topic_id=eq.${gameId}`,
+      },
+      async (payload: RealtimePostgresInsertPayload<Message>) => {
+        if (payload.new.from === store.user?.id) return;
+        if (!profilesById.value[payload.new.from]) {
+          const user = await loadProfile(payload.new.from);
+          profilesById.value[user.id] = user;
+        }
+        messages.value = [payload.new, ...messages.value];
+        if (playAudio.value) {
+          alertAudo.play();
+        }
       }
-      messages.value = [payload.new, ...messages.value];
-      if (playAudio.value) {
-        alertAudo.play();
-      }
-    })
+    )
     .subscribe();
 });
 
 onUnmounted(() => {
-  supabase.removeSubscription(subscription);
+  supabase.removeChannel(subscription);
 });
 
 async function retryMessage({ id, message }: { id: string; message: string }) {

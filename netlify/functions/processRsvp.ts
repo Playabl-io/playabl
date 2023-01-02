@@ -15,9 +15,9 @@ export const handler: Handler = async (event) => {
 
   const { token } = event.headers;
 
-  const user = await supabase.auth.api.getUser(token);
+  const user = await supabase.auth.getUser(token);
 
-  if (user.user.aud !== "authenticated") {
+  if (user.data.user.aud !== "authenticated") {
     return {
       statusCode: 403,
       boday: JSON.stringify({
@@ -221,18 +221,22 @@ async function notifyGameCreator({
   gameName,
 }) {
   const user = await getUserProfile({ userId: creatorId });
-  const { data, error } = await supabase.from("notifications").insert({
-    user_id: user.id,
-    user_name: user.username,
-    email: user.email,
-    message: `${joiningUserName} joined your game, ${gameName}!`,
-    related_url: `https://app.playabl.io/games/${gameId}`,
-    type: "notify_creator_of_rsvp",
-    read: false,
-    custom_fields: {
-      send_notification_email: user.email_preferences.rsvp_to_my_game_enabled,
-    },
-  });
+  const { data, error } = await supabase
+    .from("notifications")
+    .insert({
+      user_id: user.id,
+      user_name: user.username,
+      email: user.email,
+      message: `${joiningUserName} joined your game, ${gameName}!`,
+      related_url: `https://app.playabl.io/games/${gameId}`,
+      type: "notify_creator_of_rsvp",
+      read: false,
+      custom_fields: {
+        send_notification_email: user.email_preferences.rsvp_to_my_game_enabled,
+      },
+    })
+    .select()
+    .single();
   if (error) {
     console.error(error);
     throw new Error(error.message);

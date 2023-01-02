@@ -173,7 +173,6 @@ async function handleSubmit() {
     await updateCommunity({
       communityId: communityStore.community.id,
       update,
-      returning: "minimal",
     });
     showSuccess({ message: "Community info updated" });
     communityStore.community = { ...communityStore.community, ...update };

@@ -23,6 +23,7 @@ export async function updateAccessLevel(accessLevel: AccessLevel) {
     .from("access_levels")
     .update(accessLevel)
     .match({ id: accessLevel.id })
+    .select()
     .single();
   if (error) throw error;
   return data;
@@ -33,6 +34,7 @@ export async function deleteAccessLevel(accessLevel: AccessLevel) {
     .from("access_levels")
     .delete()
     .match({ id: accessLevel.id })
+    .select()
     .single();
   if (error) throw error;
   return data;

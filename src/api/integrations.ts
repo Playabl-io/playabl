@@ -23,6 +23,7 @@ export async function createCommunityIntegration(
   const { data, error } = await supabase
     .from("integrations")
     .insert(integration)
+    .select()
     .single();
   if (error) {
     log({ error });
@@ -36,6 +37,7 @@ export async function updateCommunityIntegration(integration: Integration) {
     .from("integrations")
     .update({ ...integration, updated_at: new Date() })
     .eq("id", integration.id)
+    .select()
     .single();
   if (error) {
     log({ error });
@@ -49,6 +51,7 @@ export async function deleteCommunityIntegration(integration: Integration) {
     .from("integrations")
     .delete()
     .eq("id", integration.id)
+    .select()
     .single();
   if (error) {
     log({ error });

@@ -42,7 +42,7 @@ import { GameMessage, Message } from "@/typings/Message";
 import { store } from "@/store";
 import { sendMessageAboutGame } from "@/api/messages";
 import { supabase } from "@/supabase";
-import { RealtimeSubscription } from "@supabase/supabase-js";
+import { RealtimeChannel } from "@supabase/supabase-js";
 import useToast from "@/components/Toast/useToast";
 import { Profile } from "@/typings/Profile";
 import { Game } from "@/typings/Game";
@@ -83,11 +83,11 @@ watch(
   (newTopic) => setup(newTopic)
 );
 
-let subscription: RealtimeSubscription;
+let subscription: RealtimeChannel;
 onBeforeMount(() => setup(props.topic));
 
 onUnmounted(() => {
-  supabase.removeSubscription(subscription);
+  supabase.removeChannel(subscription);
 });
 
 async function setup(topic: {
@@ -118,18 +118,27 @@ async function setup(topic: {
   }
   loading.value = false;
   subscription = supabase
-    .from(`messages:topic_id=eq.${topic.id}`)
-    .on("INSERT", async (payload) => {
-      if (payload.new.from === store.user?.id) return;
-      if (!profilesById.value[payload.new.from]) {
-        const user = await loadProfile(payload.new.from);
-        profilesById.value[user.id] = user;
+    .channel(`public:messages:topic_id=eq.${topic.id}`)
+    .on(
+      "postgres_changes",
+      {
+        event: "INSERT",
+        schema: "public",
+        table: "messages",
+        filter: `topic_id=eq.${topic.id}`,
+      },
+      async (payload) => {
+        if (payload.new.from === store.user?.id) return;
+        if (!profilesById.value[payload.new.from]) {
+          const user = await loadProfile(payload.new.from);
+          profilesById.value[user.id] = user;
+        }
+        emit("addMessage", { message: payload.new, topicId: topic.id });
+        if (playAudio.value) {
+          alertAudo.play();
+        }
       }
-      emit("addMessage", { message: payload.new, topicId: topic.id });
-      if (playAudio.value) {
-        alertAudo.play();
-      }
-    })
+    )
     .subscribe();
 }
 

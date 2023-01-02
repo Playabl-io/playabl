@@ -23,7 +23,11 @@ const sortSessionsOnGame = (game: GameListing) => {
 const mapToAscSessions = R.map(sortSessionsOnGame);
 
 export async function createGame(newGame: NewGame) {
-  const { data, error } = await supabase.from("games").insert(newGame).single();
+  const { data, error } = await supabase
+    .from("games")
+    .insert(newGame)
+    .select()
+    .single();
   if (error) {
     log({ error });
     throw error;
@@ -218,7 +222,9 @@ export async function joinSession({
   sessionId: string;
   userId: string;
 }) {
-  const session = supabase.auth.session();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
   if (!session?.access_token) return;
   const data = await fetch(
     `/.netlify/functions/processRsvp?sessionId=${sessionId}&userId=${userId}`,
@@ -244,7 +250,9 @@ export async function leaveSession({
   sessionId: string;
   userId: string;
 }) {
-  const session = supabase.auth.session();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
   if (!session?.access_token) return;
   const data = await fetch(
     `/.netlify/functions/processRsvp?sessionId=${sessionId}&userId=${userId}`,
@@ -308,6 +316,7 @@ export async function saveGameDetails({
       detail_blocks: detailBlocks,
       game_id: gameId,
     })
+    .select()
     .single();
   if (error) {
     log({ error });
@@ -319,13 +328,15 @@ export async function saveGameDetails({
 }
 
 export async function publishGame(game: Game) {
-  const userToken = supabase.auth.session()?.access_token;
-  if (!userToken) return;
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session?.access_token) return;
 
   try {
     await axios.post(`${import.meta.env.VITE_PLAYABL_API}/publish/game`, game, {
       headers: {
-        Authorization: userToken,
+        Authorization: session.access_token,
       },
     });
   } catch (error) {

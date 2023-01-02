@@ -40,21 +40,27 @@ async function getMemberAccess() {
   }
   if (data) {
     const memberAccessMap = data.reduce((acc, access) => {
-      if (acc[access.user_id.id]) {
-        acc[access.user_id.id].push({
+      if (
+        Array.isArray(access.access_level_id) ||
+        Array.isArray(access.user_id)
+      ) {
+        throw new Error("Unable to build member access map");
+      }
+      if (acc[access.user_id?.id]) {
+        acc[access.user_id?.id].push({
           id: access.id,
-          name: access.access_level_id.name,
+          name: access.access_level_id?.name,
         });
       } else {
-        acc[access.user_id.id] = [
+        acc[access.user_id?.id] = [
           {
             id: access.id,
-            name: access.access_level_id.name,
+            name: access.access_level_id?.name,
           },
         ];
       }
       return acc;
-    }, {});
+    }, {} as Record<string, { id: number; name: string }[]>);
     store.communityMemberAccess = memberAccessMap;
   }
 }
