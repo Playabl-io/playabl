@@ -144,15 +144,13 @@ async function signInWithGoogle() {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
   });
+  log({
+    level: "info",
+    message: `Provider info from Google: ${JSON.stringify(data.provider)}`,
+  });
   if (error) {
     log({ error });
     showError({ message: "Unable to sign in with Google" });
   }
-  // if (user) {
-  //   store.user = {
-  //     id: user.id,
-  //     email: user?.email || "",
-  //   };
-  // }
 }
 </script>
