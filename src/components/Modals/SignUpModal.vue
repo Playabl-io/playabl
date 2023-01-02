@@ -94,7 +94,10 @@ const handleSignUp = async ({
 }) => {
   try {
     loading.value = true;
-    const { user, error } = await supabase.auth.signUp({
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.signUp({
       email,
       password,
     });
@@ -117,7 +120,10 @@ const handleSignUp = async ({
 const handleLogin = async () => {
   try {
     loading.value = true;
-    const { user, error } = await supabase.auth.signIn({
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.signInWithPassword({
       email: email.value,
       password: password.value,
     });
@@ -137,18 +143,18 @@ const handleLogin = async () => {
 };
 
 async function signInWithGoogle() {
-  const { user, error } = await supabase.auth.signIn({
+  const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
   });
   if (error) {
     log({ error });
     showError({ message: "Unable to sign in with Google" });
   }
-  if (user) {
-    store.user = {
-      id: user.id,
-      email: user?.email || "",
-    };
-  }
+  // if (user) {
+  //   store.user = {
+  //     id: user.id,
+  //     email: user?.email || "",
+  //   };
+  // }
 }
 </script>

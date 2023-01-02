@@ -60,13 +60,19 @@ const alreadyJoined = ref(false);
 const notSignedIn = ref(false);
 
 async function loadCommunityInvite() {
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from("community_invites")
     .select("is_revoked, community_id (name, id)")
     .eq("id", route.params.invite_id)
     .single();
   if (data) {
-    inviteInfo.value = data;
+    inviteInfo.value = {
+      is_revoked: data.is_revoked,
+      community_id: {
+        name: Array.isArray(data.community_id) ? "" : data.community_id?.name,
+        id: Array.isArray(data.community_id) ? "" : data.community_id?.id,
+      },
+    };
   }
 }
 

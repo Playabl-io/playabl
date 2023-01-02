@@ -4,7 +4,10 @@ import axios from "axios";
 import Stripe from "stripe";
 
 export async function checkStripeSetup(stripeAccountId: string) {
-  const userToken = supabase.auth.session()?.access_token;
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const userToken = session?.access_token;
   if (!userToken) return;
 
   try {
@@ -26,7 +29,10 @@ export async function checkStripeSetup(stripeAccountId: string) {
 }
 
 export async function getStripePrices(stripeAccountId: string) {
-  const userToken = supabase.auth.session()?.access_token;
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const userToken = session?.access_token;
   if (!userToken) return;
 
   try {
@@ -54,7 +60,10 @@ export async function getStripePrice({
   stripeAccountId: string;
   priceId: string;
 }) {
-  const userToken = supabase.auth.session()?.access_token;
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const userToken = session?.access_token;
   if (!userToken) return;
 
   try {
@@ -85,7 +94,10 @@ export async function updateStripePice({
   priceId: string;
   update: Stripe.PriceUpdateParams;
 }) {
-  const userToken = supabase.auth.session()?.access_token;
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const userToken = session?.access_token;
   if (!userToken) return;
 
   try {
@@ -115,7 +127,10 @@ export async function getStripeProduct({
   stripeAccountId: string;
   productId: string;
 }) {
-  const userToken = supabase.auth.session()?.access_token;
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const userToken = session?.access_token;
   if (!userToken) return;
 
   try {
@@ -138,7 +153,10 @@ export async function getStripeProduct({
 }
 
 export async function createStripeAccount(communityId: string) {
-  const userToken = supabase.auth.session()?.access_token;
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const userToken = session?.access_token;
   if (!userToken) return;
 
   try {
@@ -166,7 +184,10 @@ export async function finishStripeSetup({
   communityId: string;
   stripeAccountId: string;
 }) {
-  const userToken = supabase.auth.session()?.access_token;
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const userToken = session?.access_token;
   if (!userToken) return;
 
   try {
@@ -202,7 +223,10 @@ export async function createStripePaymentLink({
   };
   metadata: Record<string, string>;
 }) {
-  const userToken = supabase.auth.session()?.access_token;
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const userToken = session?.access_token;
   if (!userToken) return;
 
   try {
@@ -232,7 +256,10 @@ export async function getStripePaymentLink({
   stripeAccountId: string;
   paymentLinkId: string;
 }) {
-  const userToken = supabase.auth.session()?.access_token;
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const userToken = session?.access_token;
   if (!userToken) return;
 
   try {
@@ -263,7 +290,10 @@ export async function updateStripePaymentLink({
   paymentLinkId: string;
   update: Stripe.PaymentLinkUpdateParams;
 }) {
-  const userToken = supabase.auth.session()?.access_token;
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const userToken = session?.access_token;
   if (!userToken) return;
 
   try {
@@ -295,13 +325,10 @@ export async function setActiveJoinPrice({
 }) {
   const { data, error } = await supabase
     .from("communities")
-    .update(
-      {
-        join_price_id: priceId,
-        allow_public_signup: false,
-      },
-      { returning: "minimal" }
-    )
+    .update({
+      join_price_id: priceId,
+      allow_public_signup: false,
+    })
     .eq("id", communityId);
 
   if (error) {
@@ -318,14 +345,11 @@ export async function disablePaidAccess({
 }) {
   const { data, error } = await supabase
     .from("communities")
-    .update(
-      {
-        join_price_id: null,
-        join_payment_link: null,
-        join_payment_link_id: null,
-      },
-      { returning: "minimal" }
-    )
+    .update({
+      join_price_id: null,
+      join_payment_link: null,
+      join_payment_link_id: null,
+    })
     .eq("id", communityId);
 
   if (error) {
@@ -346,13 +370,10 @@ export async function setJoinPaymentLink({
 }) {
   const { data, error } = await supabase
     .from("communities")
-    .update(
-      {
-        join_payment_link: paymentLink,
-        join_payment_link_id: paymentLinkId,
-      },
-      { returning: "minimal" }
-    )
+    .update({
+      join_payment_link: paymentLink,
+      join_payment_link_id: paymentLinkId,
+    })
     .eq("id", communityId);
 
   if (error) {

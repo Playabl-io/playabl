@@ -103,14 +103,11 @@ const updateProfile = async () => {
     }
     const { error } = await supabase
       .from("profiles")
-      .update(
-        {
-          username: username.value,
-          pronouns: pronouns.value,
-          avatar_url: imagePath,
-        },
-        { returning: "minimal" }
-      )
+      .update({
+        username: username.value,
+        pronouns: pronouns.value,
+        avatar_url: imagePath,
+      })
       .eq("id", store.user?.id);
 
     if (error) throw new Error(error.message);

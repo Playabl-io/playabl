@@ -18,6 +18,7 @@ export async function addAccessToMember({
       community_id: communityId,
       access_level_id: accessId,
     })
+    .select()
     .single();
   if (error) {
     log({ error });
@@ -32,6 +33,7 @@ export async function removeAccessFromMember(
     .from("community_access")
     .delete()
     .match({ id: communityAccessId })
+    .select()
     .single();
   if (error) {
     log({ error });
@@ -58,7 +60,7 @@ export async function loadUserCommunityAccess({
   communityId: string;
 }) {
   const { data, error } = await supabase
-    .from<CommunityAccess>("community_access")
+    .from("community_access")
     .select()
     .match({ community_id: communityId, user_id: userId });
   if (error) {

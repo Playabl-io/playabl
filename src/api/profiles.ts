@@ -22,8 +22,10 @@ export async function updateProfile({
 }) {
   const { data, error } = await supabase
     .from("profiles")
-    .update(update, { returning: "minimal" })
-    .eq("id", userId);
+    .update(update)
+    .eq("id", userId)
+    .select()
+    .single();
   if (error) {
     log(error);
     throw error;

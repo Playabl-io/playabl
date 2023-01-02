@@ -99,7 +99,7 @@
           :href="`https://twitter.com/${community.twitter}`"
         >
           <svg
-            width="1rem"
+            width="16px"
             viewBox="0 0 256 209"
             version="1.1"
             xmlns="http://www.w3.org/2000/svg"
@@ -122,7 +122,7 @@
           :href="`https://facebook.com/${community.facebook}`"
         >
           <svg
-            width="1rem"
+            width="16px"
             viewBox="0 0 256 256"
             version="1.1"
             xmlns="http://www.w3.org/2000/svg"
@@ -149,7 +149,7 @@
           :href="community.discord"
         >
           <svg
-            width="1rem"
+            width="16px"
             viewBox="0 0 256 199"
             version="1.1"
             xmlns="http://www.w3.org/2000/svg"
@@ -173,7 +173,7 @@
           :href="community.slack"
         >
           <svg
-            width="1rem"
+            width="16px"
             viewBox="0 0 256 256"
             version="1.1"
             xmlns="http://www.w3.org/2000/svg"
@@ -208,7 +208,7 @@
           :href="community.patreon"
         >
           <svg
-            width="1rem"
+            width="16px"
             viewBox="0 0 256 247"
             version="1.1"
             xmlns="http://www.w3.org/2000/svg"

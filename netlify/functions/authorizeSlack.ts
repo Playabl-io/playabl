@@ -60,7 +60,9 @@ export const handler: Handler = async (event) => {
       },
       endpoint: incomingWebhook.url,
     })
-    .eq("id", integrationId);
+    .eq("id", integrationId)
+    .select()
+    .single();
   if (error) {
     return {
       statusCode: 400,

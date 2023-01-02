@@ -24,55 +24,55 @@ import OfflineIndicator from "./components/OfflineIndicator.vue";
 import { onMounted, ref } from "vue";
 import { loadProfile } from "./api/profiles";
 import { log } from "./util/logger";
-import { Notification } from "./typings/Notification";
 import AppShell from "./layouts/AppShell.vue";
 import LoadingSpinner from "./components/LoadingSpinner.vue";
-
-const user = supabase.auth.user();
-if (user) {
-  store.user = {
-    id: user.id,
-    email: user.email || "",
-  };
-}
+import { Notification } from "./typings/Notification";
 
 const route = useRoute();
 const router = useRouter();
 
 const showNewProfileModal = ref(false);
-const loadingUser = ref(false);
+const loadingUser = ref(true);
 const notificationSubscription = ref();
 
 supabase.auth.onAuthStateChange(async (event, session) => {
-  if (session !== null && session.user) {
-    const profile = await loadProfile(session.user.id);
-    store.user = profile;
+  switch (event) {
+    case "SIGNED_IN":
+    case "TOKEN_REFRESHED":
+      if (session !== null && session.user) {
+        store.userSession = session;
+        const profile = await loadProfile(session.user.id);
+        store.user = profile;
 
-    if (!notificationSubscription.value) {
-      loadNotificationsAndSubscribe();
-    }
+        if (!notificationSubscription.value) {
+          loadNotificationsAndSubscribe();
+        }
 
-    if (route.query.redirect && typeof route.query.redirect === "string") {
-      log({
-        level: "info",
-        message: `Attempting redirect to ${route.query.redirect}`,
-      });
-      router.push(route.query.redirect);
-    }
+        if (route.query.redirect && typeof route.query.redirect === "string") {
+          log({
+            level: "info",
+            message: `Attempting redirect to ${route.query.redirect}`,
+          });
+          router.push(route.query.redirect);
+        }
 
-    if (!profile.username && !profile.pronouns) {
-      showNewProfileModal.value = true;
-    }
+        if (!profile.username && !profile.pronouns) {
+          showNewProfileModal.value = true;
+        }
+      }
+      break;
+    case "SIGNED_OUT":
+      store.user = null;
+      store.userSession = null;
+      break;
   }
-  if (event === "SIGNED_OUT") {
-    store.user = null;
-  }
+  loadingUser.value = false;
 });
 
 async function loadNotificationsAndSubscribe() {
   if (!store.user?.id) return;
   const { data, error } = await supabase
-    .from<Notification>("notifications")
+    .from("notifications")
     .select("*")
     .eq("read", false)
     .eq("user_id", store.user.id);
@@ -83,29 +83,47 @@ async function loadNotificationsAndSubscribe() {
     store.notifications = data;
   }
   const subscription = supabase
-    .from(`notifications:user_id=eq.${store.user.id}`)
-    .on("INSERT", (payload) => {
-      store.notifications = store.notifications.concat(payload.new);
-    })
-    .on("UPDATE", (payload) => {
-      store.notifications = store.notifications.map((notification) => {
-        if (notification.id === payload.new.id) {
-          return payload.new;
-        }
-        return notification;
-      });
-    })
+    .channel(`public:notifications:user_id=eq.${store.user.id}`)
+    .on(
+      "postgres_changes",
+      {
+        event: "INSERT",
+        schema: "public",
+        table: "notifications",
+        filter: `user_id=eq.${store.user.id}`,
+      },
+      (payload) => {
+        store.notifications = store.notifications.concat(
+          payload.new as Notification
+        );
+      }
+    )
+    .on(
+      "postgres_changes",
+      {
+        event: "UPDATE",
+        schema: "public",
+        table: "notifications",
+        filter: `user_id=eq.${store.user.id}`,
+      },
+      (payload) => {
+        store.notifications = store.notifications.map((notification) => {
+          if (notification.id === payload.new.id) {
+            return payload.new as Notification;
+          }
+          return notification;
+        });
+      }
+    )
     .subscribe();
   notificationSubscription.value = subscription;
 }
 
 onMounted(async () => {
-  if (store.user?.id) {
-    loadingUser.value = true;
-    const profile = await loadProfile(store.user?.id);
-    store.user = profile;
+  const user = await supabase.auth.getUser();
+  if (user.error) {
+    // No logged in user
     loadingUser.value = false;
-    loadNotificationsAndSubscribe();
   }
 });
 </script>

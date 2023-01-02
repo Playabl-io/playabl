@@ -130,8 +130,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { RealtimeChannel } from "@supabase/realtime-js";
 import { supabase } from "@/supabase";
-import { RealtimeSubscription } from "@supabase/supabase-js";
 import { log } from "@/util/logger";
 import BaseTemplate from "@/layouts/BaseTemplate.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
@@ -178,7 +178,9 @@ const displayGameInfo = computed(() => {
 
 onMounted(async () => {
   await getGameData();
-  await getUserAccess();
+  if (store.user) {
+    await getUserAccess();
+  }
   if (currentRoute.path.includes("manage") && !canManage.value) {
     router.replace(`/games/${id}?unauthorized=true`);
   }
@@ -195,10 +197,9 @@ onMounted(async () => {
 
 async function getGameData() {
   const { data, error } = await supabase
-    .from<GameWithCommunityAndSessions>("games")
+    .from("games")
     .select("*, creator_id (*), sessions (*), community_id (*)")
     .eq("id", id as string)
-    // @ts-expect-error unable to detect key from foreign table
     .order("start_time", { foreignTable: "sessions" })
     .single();
 
@@ -207,11 +208,15 @@ async function getGameData() {
   }
 
   if (data) {
-    gameStore.game = {
-      ...R.omit(["creator_id", "sessions", "community_id"], data),
+    const game = {
+      ...R.omit(
+        ["creator_id", "sessions", "community_id"],
+        data as GameWithCommunityAndSessions
+      ),
       creator_id: data.creator_id.id,
       community_id: data.community_id.id,
     };
+    gameStore.game = game;
     gameStore.community = data.community_id;
     setSubscription(data.id);
     setSessionDataInStore(data.sessions);
@@ -226,6 +231,7 @@ async function getGameData() {
         userId: store.user.id,
         communityId: data.community_id.id,
       });
+      if (!membership) return;
       userMembership.value = membership;
       canManage.value = membership.role_id === ROLES.admin || isOwner.value;
     }
@@ -261,38 +267,47 @@ async function getUserAccess() {
   }
 }
 
-let subscription: RealtimeSubscription;
+let subscription: RealtimeChannel;
 onUnmounted(() => {
   removeSubscription();
 });
 
 function setSubscription(gameId: number) {
   subscription = supabase
-    .from(`sessions:game_id=eq.${gameId}`)
-    .on("UPDATE", (payload) => {
-      gameStore.sessions = gameStore.sessions.map((session) => {
-        if (session.id === payload.new.id) {
-          return payload.new;
-        }
-        return session;
-      });
-      const attendeesToLoad = payload.new.rsvps.filter(
-        (rsvp: string) => !gameStore.attendees[rsvp]
-      );
-      attendeesToLoad.forEach((member: string) =>
-        supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", member)
-          .single()
-          .then(({ data }) => {
-            gameStore.attendees[member] = data;
-          })
-      );
-    })
+    .channel(`public:sessions:game_id=eq.${gameId}`)
+    .on(
+      "postgres_changes",
+      {
+        event: "UPDATE",
+        schema: "public",
+        table: "sessions",
+        filter: `game_id=eq.${gameId}`,
+      },
+      (payload) => {
+        gameStore.sessions = gameStore.sessions.map((session) => {
+          if (session.id === payload.new.id) {
+            return payload.new as Session;
+          }
+          return session;
+        });
+        const attendeesToLoad = payload.new.rsvps.filter(
+          (rsvp: string) => !gameStore.attendees[rsvp]
+        );
+        attendeesToLoad.forEach((member: string) =>
+          supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", member)
+            .single()
+            .then(({ data }) => {
+              gameStore.attendees[member] = data;
+            })
+        );
+      }
+    )
     .subscribe();
 }
 function removeSubscription() {
-  supabase.removeSubscription(subscription);
+  supabase.removeChannel(subscription);
 }
 </script>

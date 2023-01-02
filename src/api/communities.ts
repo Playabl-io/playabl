@@ -65,6 +65,7 @@ export async function joinCommunity({
       user_id: userId,
       role_id: ROLES.player,
     })
+    .select()
     .single();
   if (data) {
     return data;
@@ -77,16 +78,16 @@ export async function joinCommunity({
 export async function updateCommunity({
   communityId,
   update,
-  returning = "representation",
 }: {
   communityId: string;
   update: Partial<Community>;
-  returning?: "representation" | "minimal";
 }) {
   const { data, error } = await supabase
     .from("communities")
-    .update(update, { returning })
-    .eq("id", communityId);
+    .update(update)
+    .eq("id", communityId)
+    .select()
+    .single();
   if (error) {
     throw error;
   }
@@ -111,7 +112,7 @@ export async function selectFromCommunity({
     throw error;
   }
   if (data) {
-    return data;
+    return data as Partial<Community>;
   }
 }
 
@@ -124,12 +125,9 @@ export async function setPublicAccess({
 }) {
   const { error } = await supabase
     .from("communities")
-    .update(
-      {
-        allow_public_signup: enabled,
-      },
-      { returning: "minimal" }
-    )
+    .update({
+      allow_public_signup: enabled,
+    })
     .eq("id", communityId)
     .single();
   if (error) {

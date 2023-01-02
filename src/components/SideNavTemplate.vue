@@ -3,7 +3,9 @@
     <nav class="flex flex-col gap-4 sm:sticky sm:top-[7.5rem]">
       <slot name="nav"></slot>
     </nav>
-    <slot name="content"></slot>
+    <section>
+      <slot name="content"></slot>
+    </section>
   </div>
 </template>
 <style scoped>

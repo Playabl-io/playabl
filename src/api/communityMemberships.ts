@@ -19,7 +19,7 @@ export async function loadUserCommunityMembership({
     log({ error });
     throw error;
   }
-  return data || {};
+  return data;
 }
 
 export async function loadCommunityAdmins(communityId: string) {

@@ -37,15 +37,15 @@ export async function uploadToCoverImageStorage({
     throw error;
   }
   if (data) {
-    return data.Key.replace("cover-images/", "");
+    return data.path.replace("cover-images/", "");
   }
 }
 
 export const getCoverImageUrl = async (path: string) => {
-  const { publicURL } = await supabase.storage
+  const { data } = await supabase.storage
     .from("cover-images")
     .getPublicUrl(path);
-  return publicURL ?? "";
+  return data.publicUrl ?? "";
 };
 
 export async function uploadToAvatarStorage(file: File) {
@@ -62,14 +62,12 @@ export async function uploadToAvatarStorage(file: File) {
     throw error;
   }
   if (data) {
-    return data.Key.replace("avatars/", "");
+    return data.path.replace("avatars/", "");
   }
 }
 
 export const getAvatarImageUrl = async (path?: string) => {
   if (!path) return "";
-  const { publicURL } = await supabase.storage
-    .from("avatars")
-    .getPublicUrl(path);
-  return publicURL ?? "";
+  const { data } = await supabase.storage.from("avatars").getPublicUrl(path);
+  return data.publicUrl ?? "";
 };

@@ -457,10 +457,11 @@ async function createCommunity() {
         cover_image: imagePath,
         code_of_conduct_url: codeOfConductUrl.value,
       })
+      .select()
       .single();
     if (error) throw error;
 
-    router.push(`/communities/${data.id}/manage`);
+    router.push(`/communities/${data.id}`);
   } catch (error) {
     log({ error });
     showError({ message: "Something went wrong" });

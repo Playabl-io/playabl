@@ -16,6 +16,7 @@ interface ImportMetaEnv extends Readonly<Record<string, string>> {
   readonly VITE_SUPABASE_ANON_KEY: string;
   readonly VITE_SLACK_REDIRECT_URI: string;
   readonly VITE_PLAYABL_API: string;
+  readonly VITE_PLAYABL_URL: string;
   readonly VITE_STRIPE_PUBLISH_KEY: string;
 }
 interface ImportMeta {

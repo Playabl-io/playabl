@@ -42,6 +42,12 @@
         <primary-button :is-loading="loading" class="mt-4">
           Sign in
         </primary-button>
+        <RouterLink
+          to="/forgot-password"
+          class="mt-6 text-sm text-slate-700 hover:underline"
+        >
+          Forgot password?
+        </RouterLink>
         <p class="text-xs text-slate-700 text-center my-4">OR</p>
         <div class="flex justify-center">
           <GoogleButton @click="signInWithGoogle" />
@@ -103,7 +109,10 @@ async function handleSignUp({
 const handleLogin = async () => {
   try {
     loading.value = true;
-    const { user, error } = await supabase.auth.signIn({
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.signInWithPassword({
       email: email.value,
       password: password.value,
     });
@@ -132,18 +141,18 @@ const handleLogin = async () => {
 };
 
 async function signInWithGoogle() {
-  const { user, error } = await supabase.auth.signIn({
+  const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
   });
   if (error) {
     log({ error });
     showError({ message: "Unable to sign in with Google" });
   }
-  if (user) {
-    store.user = {
-      id: user.id,
-      email: user?.email || "",
-    };
-  }
+  // if (user) {
+  //   store.user = {
+  //     id: user.id,
+  //     email: user?.email || "",
+  //   };
+  // }
 }
 </script>

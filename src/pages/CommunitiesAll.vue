@@ -18,9 +18,7 @@ onMounted(loadAllCommunities);
 
 async function loadAllCommunities() {
   isLoading.value = true;
-  const { data, error } = await supabase
-    .from<Community>("communities")
-    .select();
+  const { data, error } = await supabase.from("communities").select();
   if (error) {
     log({ error });
   }

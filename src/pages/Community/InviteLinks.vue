@@ -54,9 +54,10 @@ async function createInviteLink() {
     .insert({
       community_id: route.params.community_id,
     })
+    .select()
     .single();
   if (data) {
-    communityInvites.value = communityInvites.value?.concat(data.id);
+    communityInvites.value = communityInvites.value.concat(data.id);
     showSuccess({ message: "Invite link created!" });
   }
   creatingInvite.value = false;
@@ -69,6 +70,7 @@ async function revokeInviteLink(id: string) {
       is_revoked: true,
     })
     .match({ id })
+    .select()
     .single();
   if (data) {
     communityInvites.value = communityInvites.value?.filter(
