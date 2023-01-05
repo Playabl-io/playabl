@@ -44,7 +44,7 @@ onMounted(async () => {
 
   try {
     await axios.post(
-      `/.netlify/functions/authorizeSlack?code=${code}&integrationId=${integrationId}`
+      `/.netlify/functions/authorizeSlack?code=${code}&integrationId=${integrationId}&community=${community}`
     );
     finished.value = true;
     setTimeout(() => {
