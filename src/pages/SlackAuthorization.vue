@@ -10,16 +10,16 @@
         leave-from-class="transform scale-100 opacity-100"
         leave-to-class="transform scale-95 opacity-0 -translate-y-2"
       >
-        <p v-if="!finished">
-          Welcome back. We'll finish setting up your slack integration...
-        </p>
-        <p v-else-if="finished">
+        <p v-if="finished">
           All finished! We'll take you back to your community page now. Hold
           tight...
         </p>
         <p v-else-if="errored">
           Sorry, but we weren't able to finish setting up your slack
           integration. Please contact support@playabl.io or try again later.
+        </p>
+        <p v-else>
+          Welcome back. We'll finish setting up your slack integration...
         </p>
       </transition>
     </div>
@@ -44,7 +44,7 @@ onMounted(async () => {
 
   try {
     await axios.post(
-      `/.netlify/functions/authorizeSlack?code=${code}&integrationId=${integrationId}`
+      `/.netlify/functions/authorizeSlack?code=${code}&integrationId=${integrationId}&community=${community}`
     );
     finished.value = true;
     setTimeout(() => {

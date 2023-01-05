@@ -11,18 +11,20 @@ export const supabase = createClient(
 export const handler: Handler = async (event) => {
   const clientSecret = process.env.SLACK_CLIENT_SECRET;
   const clientId = process.env.VITE_SLACK_CLIENT_ID;
-  const redirectUri = process.env.VITE_SLACK_REDIRECT_URI;
 
-  const { code, integrationId } = event.queryStringParameters as {
+  const { code, integrationId, community } = event.queryStringParameters as {
     code: string;
     integrationId: string;
+    community: string;
   };
 
-  if (!clientSecret || !clientId || !integrationId) {
+  if (!clientSecret || !clientId || !integrationId || !community) {
     return {
       statusCode: 404,
     };
   }
+
+  const redirectUri = `${process.env.VITE_SLACK_REDIRECT_URI}?community=${community}`;
 
   const form = new FormData();
   form.append("code", code);
@@ -40,6 +42,7 @@ export const handler: Handler = async (event) => {
   });
 
   if (!response.data.ok) {
+    console.error(response);
     return {
       statusCode: 400,
       message: response.data.error,
