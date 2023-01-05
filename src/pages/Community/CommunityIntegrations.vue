@@ -11,7 +11,7 @@
           <PlusCircleIcon class="h-6 w-6 text-slate-700" />
         </GhostButton>
       </div>
-      <p class="text-sm text-slate-700 mb-2">
+      <p class="text-sm text-slate-700 mb-6">
         Power up your community with integrations and never miss when a new
         member joins or a new game is posted
       </p>
@@ -33,6 +33,7 @@
             :key="integration.id"
             :integration="integration"
             @edit="send({ type: 'EDIT_INTEGRATION', integration })"
+            @delete="send({ type: 'DELETE_INTEGRATION', integration })"
             @activate="
               send({
                 type: 'SET_ACTIVE_STATUS',
@@ -116,9 +117,11 @@ import IntegrationListItem from "./IntegrationListItem.vue";
 
 const communityId = computed(() => communityStore.community.id);
 const clientId = import.meta.env.VITE_SLACK_CLIENT_ID;
-const redirectUri = import.meta.env.VITE_SLACK_REDIRECT_URI;
+const baseRedirectUri = import.meta.env.VITE_SLACK_REDIRECT_URI;
+// TODO: replace with name when routes are updated
+const communityRedirectUri = `${baseRedirectUri}?community=${communityId.value}`;
 const makeSlackHref = (integrationId: string) =>
-  `https://slack.com/oauth/v2/authorize?scope=incoming-webhook&redirect_uri=${redirectUri}&client_id=${clientId}&state=${integrationId}`;
+  `https://slack.com/oauth/v2/authorize?scope=incoming-webhook&redirect_uri=${communityRedirectUri}&client_id=${clientId}&state=${integrationId}`;
 
 const integrationsMachine = createMachine(
   {
@@ -192,6 +195,9 @@ const integrationsMachine = createMachine(
           },
           SET_ACTIVE_STATUS: {
             target: "updating",
+          },
+          DELETE_INTEGRATION: {
+            target: "deleting",
           },
         },
       },
@@ -393,7 +399,7 @@ const integrationsMachine = createMachine(
       openSlackAuthorizeWindow: (context, event) => {
         // @ts-expect-error xstate doesn't type invoke done right
         const integrationId = event.data.id;
-        window.open(makeSlackHref(integrationId));
+        location.href = makeSlackHref(integrationId);
       },
     },
     services: {

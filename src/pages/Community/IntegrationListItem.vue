@@ -1,6 +1,13 @@
 <template>
-  <div class="flex gap-2 justify-between items-center">
-    <ListItemButton class="w-full h-min max-w-[11rem]" @click="emit('edit')">
+  <div v-if="brokenSlackSetup">
+    <p class="font-semibold mb-3">
+      The {{ integration.name }} integration is not correctly configured. Please
+      delete and try again.
+    </p>
+    <WarningButton @click="emit('delete')">Delete</WarningButton>
+  </div>
+  <div v-else class="flex gap-2 justify-between items-center flex-wrap">
+    <div class="w-full h-min max-w-[11rem]">
       <p class="font-semibold text-left mb-3">{{ integration.name }}</p>
       <div class="grid lg:grid-cols-2 gap-2">
         <p
@@ -54,7 +61,7 @@
           </Tooltip>
         </div>
       </div>
-    </ListItemButton>
+    </div>
     <div class="flex gap-2">
       <SecondaryButton
         @click="integration.is_active ? emit('deactivate') : emit('activate')"
@@ -62,6 +69,7 @@
         {{ integration.is_active ? "Deactivate" : "Activate" }}
       </SecondaryButton>
       <SecondaryButton @click="testModalOpen = true">Test</SecondaryButton>
+      <SecondaryButton @click="emit('edit')">Edit</SecondaryButton>
     </div>
     <BaseModal
       title="Send a test message"
@@ -95,10 +103,9 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, PropType } from "vue";
+import { ref, PropType, computed } from "vue";
 import { Integration } from "@/typings/Integration";
 import { UserIcon, TicketIcon } from "@heroicons/vue/24/outline";
-import ListItemButton from "@/components/Buttons/ListItemButton.vue";
 import Tooltip from "@/components/Tooltip.vue";
 import SecondaryButton from "@/components/Buttons/SecondaryButton.vue";
 import BaseModal from "@/components/Modals/BaseModal.vue";
@@ -108,6 +115,7 @@ import useToast from "@/components/Toast/useToast";
 import { testGameIntegration } from "@/api/integrations";
 import { store } from "@/store";
 import { communityStore } from "./communityStore";
+import WarningButton from "@/components/Buttons/WarningButton.vue";
 
 const { showSuccess, showError } = useToast();
 
@@ -120,7 +128,13 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["edit", "activate", "deactivate", "test"]);
+const emit = defineEmits(["edit", "delete", "activate", "deactivate", "test"]);
+
+const brokenSlackSetup = computed(() => {
+  return (
+    props.integration.type === "slack" && props.integration.endpoint === ""
+  );
+});
 
 async function sendTestMessage() {
   if (!store.user?.id) return;
