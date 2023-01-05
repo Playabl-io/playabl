@@ -6,12 +6,12 @@ export function makeNewIntegration(
   return {
     type: "slack",
     triggers: [
-      {
-        action: "create",
-        active: false,
-        label: "When a user joins the community",
-        entity: "user",
-      },
+      // {
+      //   action: "create",
+      //   active: false,
+      //   label: "When a user joins the community",
+      //   entity: "user",
+      // },
       {
         action: "create",
         active: false,

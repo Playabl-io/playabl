@@ -10,7 +10,7 @@
       </Heading>
       <template v-if="!isExistingIntegration">
         <p class="font-semibold mb-2">Integration type</p>
-        <div class="grid grid-cols-3 gap-2 mb-1">
+        <div class="grid grid-cols-3 gap-2 mb-2">
           <ToggleRadio
             id="slack"
             :model-value="integration.type"
