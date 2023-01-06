@@ -1,8 +1,8 @@
 <template>
-  <div v-if="gameCoverImage" class="aspect-w-16 aspect-h-9 mb-8">
+  <div v-if="gameStore.coverImage" class="aspect-w-16 aspect-h-9 mb-8">
     <img
       class="w-full h-full object-center object-cover shadow-md rounded-lg"
-      :src="gameCoverImage"
+      :src="gameStore.coverImage"
       alt="image"
     />
   </div>

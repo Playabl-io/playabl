@@ -54,6 +54,9 @@
         </div>
       </div>
     </SectionContainer>
+    <SectionContainer>
+      <GameImageLibrary />
+    </SectionContainer>
   </div>
   <SideDrawer
     :open="newSessionDrawerOpen"
@@ -118,6 +121,7 @@ import { gameStore } from "./gameStore";
 import EditGameDetails from "./EditGameDetails.vue";
 import useToast from "@/components/Toast/useToast";
 import { log } from "@/util/logger";
+import GameImageLibrary from "./GameImageLibrary.vue";
 
 const { showSuccess, showError } = useToast();
 
