@@ -154,6 +154,7 @@ import {
 } from "@heroicons/vue/24/outline";
 import GameBadge from "@/components/Game/GameBadge.vue";
 import { ROLES } from "@/util/roles";
+import { getCoverImageUrl } from "@/api/storage";
 
 const router = useRouter();
 const currentRoute = useRoute();
@@ -224,6 +225,10 @@ async function getGameData() {
     );
     gameData.value = data;
 
+    if (data.cover_image) {
+      loadCoverImageUrl(data.cover_image);
+    }
+
     if (store.user?.id) {
       isOwner.value = data.creator_id.id === store.user?.id;
       const membership = await loadUserCommunityMembership({
@@ -235,6 +240,10 @@ async function getGameData() {
       canManage.value = membership.role_id === ROLES.admin || isOwner.value;
     }
   }
+}
+
+async function loadCoverImageUrl(path: string) {
+  gameStore.coverImage = await getCoverImageUrl(path);
 }
 
 function setSessionDataInStore(sessions: Session[]) {

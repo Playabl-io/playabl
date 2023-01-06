@@ -9,6 +9,7 @@ interface Store {
   sessions: Session[];
   attendees: Record<string, Profile>;
   community: Community;
+  coverImage?: string;
 }
 
 export const gameStore = reactive<Store>({
