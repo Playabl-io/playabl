@@ -67,11 +67,16 @@ const { showSuccess, showError } = useToast();
 const state = ref<
   "initial" | "updated" | "invalid" | "searching" | "available" | "unavailable"
 >("initial");
-const shortName = ref<string>(communityStore.community.url_short_name || "");
+const initialValue = communityStore.community.url_short_name || "";
+const shortName = ref<string>(initialValue);
 const saving = ref(false);
 
 const allowedCharactersRegEx = /[^a-zA-Z0-9_-]/;
 watch(shortName, (val) => {
+  if (val === initialValue) {
+    state.value = "initial";
+    return;
+  }
   state.value = "updated";
   const containsInvalidCharacter = allowedCharactersRegEx.test(val);
   if (containsInvalidCharacter) {
@@ -82,7 +87,7 @@ watch(shortName, (val) => {
 watchDebounced(
   shortName,
   async (val) => {
-    if (state.value === "invalid") return;
+    if (state.value !== "updated") return;
     state.value = "searching";
     const isAvailable = await isShortNameAvailable({
       shortName: val,
@@ -99,11 +104,12 @@ watchDebounced(
 
 async function handleSave() {
   saving.value = true;
+  const saveValue = shortName.value ? shortName.value : null;
   try {
     await updateCommunity({
       communityId: communityStore.community.id,
       update: {
-        url_short_name: shortName.value,
+        url_short_name: saveValue,
       },
     });
     communityStore.community.url_short_name = shortName.value;

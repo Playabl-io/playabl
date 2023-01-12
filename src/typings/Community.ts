@@ -21,5 +21,5 @@ export interface Community {
   join_price_id?: string; // stripe price ID
   join_payment_link?: string; // stripe payment link
   join_payment_link_id?: string; // id of payment link
-  url_short_name?: string;
+  url_short_name?: string | null;
 }
