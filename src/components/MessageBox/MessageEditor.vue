@@ -1,6 +1,6 @@
 <template>
   <form
-    class="rounded-md border border-solid border-gray-300 bg-white"
+    class="rounded-md border border-solid border-gray-300 bg-white w-[420px]"
     @submit.prevent="sendMessage"
   >
     <p class="text-sm font-semibold p-4 border-b border-solid border-gray-200">
