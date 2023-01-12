@@ -61,7 +61,7 @@
   <SideDrawer :open="state.context.drawerVisible" @close="send('CANCEL')">
     <AccessLevelForm
       :access-level="state.context.accessLevel"
-      :community-id="(route.params.community_id as string)"
+      :community-id="communityId"
       :saving="['updating', 'creating'].includes(state.value as string)"
       @close="send('CANCEL')"
       @save="send('SAVE', $event)"
@@ -102,9 +102,12 @@ import Tooltip from "@/components/Tooltip.vue";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
 import ListItemButton from "@/components/Buttons/ListItemButton.vue";
 import { drawerActions } from "@/util/machineActions";
+import { communityStore } from "./communityStore";
 
 const route = useRoute();
 const { showSuccess, showError } = useToast();
+
+const communityId = communityStore.community.id;
 
 const accessLevelsMachine = createMachine(
   {
@@ -192,7 +195,7 @@ const accessLevelsMachine = createMachine(
             if (event.type === "SAVE") {
               return createAccessLevel({
                 ...event.accessLevel,
-                community_id: route.params.community_id as string,
+                community_id: communityId,
               });
             }
           },
@@ -223,7 +226,7 @@ const accessLevelsMachine = createMachine(
             if (event.type === "DELETE") {
               return deleteAccessLevel({
                 ...event.accessLevel,
-                community_id: route.params.community_id as string,
+                community_id: communityId,
               });
             }
           },

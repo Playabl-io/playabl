@@ -1,5 +1,8 @@
 <template>
   <SectionContainer>
+    <CommunityShortName />
+  </SectionContainer>
+  <SectionContainer>
     <CommunityEmailSettings />
   </SectionContainer>
   <SectionContainer class="grid sm:grid-cols-2 md:grid-cols-3 gap-2">
@@ -55,6 +58,7 @@ import CommunityImageLibrary from "./CommunityImageLibrary.vue";
 import SideDrawer from "@/components/SideDrawer.vue";
 import EditCommunityInfo from "./EditCommunityInfo.vue";
 import CommunityEmailSettings from "./CommunityEmailSettings.vue";
+import CommunityShortName from "./CommunityShortName.vue";
 
 const editInfoDrawerOpen = ref(false);
 

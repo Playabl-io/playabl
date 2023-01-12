@@ -96,6 +96,26 @@ export async function updateCommunity({
   }
 }
 
+export async function loadCommunityByShortName({
+  shortName,
+  select,
+}: {
+  shortName: string;
+  select: string;
+}) {
+  const { data, error, status } = await supabase
+    .from("communities")
+    .select(select)
+    .eq("url_short_name", shortName)
+    .single();
+  if (error && status !== 406) {
+    throw error;
+  }
+  if (data) {
+    return data as Partial<Community>;
+  }
+}
+
 export async function selectFromCommunity({
   communityId,
   select,
@@ -133,4 +153,32 @@ export async function setPublicAccess({
   if (error) {
     throw error;
   }
+}
+
+export async function getCommunityMemberCount(id: string) {
+  return supabase
+    .from("community_memberships")
+    .select("*", { count: "estimated" })
+    .eq("community_id", id);
+}
+
+export async function isShortNameAvailable({
+  shortName,
+  id,
+}: {
+  shortName: string;
+  id: string;
+}) {
+  const { error, status } = await supabase
+    .from("communities")
+    .select("id")
+    .eq("url_short_name", shortName)
+    .neq("id", id)
+    .single();
+  if (error && status === 406) {
+    return true;
+  } else if (error) {
+    log({ error });
+  }
+  return false;
 }

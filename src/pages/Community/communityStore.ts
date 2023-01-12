@@ -1,9 +1,7 @@
-import { supabase } from "@/supabase";
 import { AccessLevel } from "@/typings/AccessLevel";
 import { Community } from "@/typings/Community";
 import { Game } from "@/typings/Game";
 import { Member, MemberWithMembership } from "@/typings/Member";
-import { log } from "@/util/logger";
 import Stripe from "stripe";
 import { reactive } from "vue";
 
@@ -50,17 +48,4 @@ export function clearCommunityStore() {
   communityStore = reactive<CommunityStore>({
     ...DEFAULT_COMMUNITY_STATE,
   });
-}
-
-export async function getMemberCount(communityId: string) {
-  const { error, count } = await supabase
-    .from("community_memberships")
-    .select("*", { count: "estimated" })
-    .eq("community_id", communityId);
-  if (count !== null) {
-    communityStore.membersCount = count;
-  }
-  if (error) {
-    log({ error });
-  }
 }

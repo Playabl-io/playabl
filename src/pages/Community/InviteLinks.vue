@@ -27,10 +27,11 @@ import InviteLink from "./InviteLink.vue";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
 import useToast from "@/components/Toast/useToast";
 import { supabase } from "@/supabase";
-import { useRoute } from "vue-router";
+import { communityStore } from "./communityStore";
+
+const communityId = communityStore.community.id;
 
 const emit = defineEmits(["loadFinished"]);
-const route = useRoute();
 const { showSuccess } = useToast();
 
 const communityInvites = ref<string[]>([]);
@@ -40,7 +41,7 @@ async function getActiveInviteLinks() {
   const { data } = await supabase
     .from("community_invites")
     .select()
-    .eq("community_id", route.params.community_id)
+    .eq("community_id", communityId)
     .eq("is_revoked", false);
   if (data) {
     communityInvites.value = data.map((invite) => invite.id);
@@ -52,7 +53,7 @@ async function createInviteLink() {
   const { data } = await supabase
     .from("community_invites")
     .insert({
-      community_id: route.params.community_id,
+      community_id: communityId,
     })
     .select()
     .single();

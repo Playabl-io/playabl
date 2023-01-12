@@ -23,7 +23,7 @@
       >
         <div class="flex gap-4 items-center">
           <router-link
-            :to="`/communities/${community.id}`"
+            :to="`/communities/${community.url_short_name || community.id}`"
             class="hover:underline"
             :class="{
               'text-white': coverImageUrl,
