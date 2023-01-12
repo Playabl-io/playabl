@@ -1,5 +1,5 @@
 <template>
-  <div class="absolute bottom-2 px-4 flex gap-6 w-full">
+  <div class="absolute bottom-2 px-4 flex gap-6 z-20">
     <transition-group
       enter-active-class="transform-gpu duration-300 ease-out"
       leave-active-class="absolute transform-gpu duration-200"
