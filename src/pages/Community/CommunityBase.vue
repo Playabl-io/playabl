@@ -45,11 +45,7 @@ import Heading from "@/components/Heading.vue";
 import { ADMIN, CREATOR, PLAYER } from "@/util/roles";
 import { store } from "@/store";
 import { Community } from "@/typings/Community";
-import {
-  clearCommunityStore,
-  communityStore,
-  getMemberCount,
-} from "./communityStore";
+import { clearCommunityStore, communityStore } from "./communityStore";
 import { getCoverImageUrl } from "@/api/storage";
 import InfoBanner from "@/components/Banners/InfoBanner.vue";
 import { loadUpcomingCommunityGamesWithCount } from "@/api/gamesAndSessions";
@@ -57,22 +53,43 @@ import {
   loadCommunityAdmins,
   loadUserCommunityMembership,
 } from "@/api/communityMemberships";
-import { selectFromCommunity } from "@/api/communities";
+import {
+  getCommunityMemberCount,
+  loadCommunityByShortName,
+  selectFromCommunity,
+} from "@/api/communities";
+import { isUuid } from "@/util/uuid";
 
 const currentRoute = useRoute();
 const router = useRouter();
+
+/**
+ * This may be a UUID or it may be a short name that was set.
+ * We'll confirm in onMounted
+ */
 const { community_id: id } = currentRoute.params;
 
 const communityData = ref<Community>();
 const isLoading = ref(true);
 
 onMounted(async () => {
-  if (typeof currentRoute.params.community_id === "string") {
-    getMemberCount(currentRoute.params.community_id);
+  if (typeof id !== "string") throw new Error("Unusable community id param");
+  if (!isUuid(id)) {
+    const data = (await loadCommunityByShortName({
+      shortName: id,
+      select: "*",
+    })) as Community;
+    if (!data) {
+      router.replace("/not-found");
+      return;
+    }
+    setCommunityDataInStore(data);
+  } else {
+    await getCommunity(id);
   }
   await Promise.allSettled([
+    getMemberCount(),
     getMembershipStatus(),
-    getCommunity(),
     loadUpcomingGames(),
     loadAdmins(),
   ]);
@@ -86,12 +103,9 @@ onBeforeUnmount(clearCommunityStore);
 
 async function getMembershipStatus() {
   if (!store.user) return;
-  let communityId = "";
-  if (typeof currentRoute.params.community_id === "string") {
-    communityId = currentRoute.params.community_id;
-  }
+
   const data = await loadUserCommunityMembership({
-    communityId,
+    communityId: communityStore.community.id,
     userId: store.user.id,
   });
   if (!data) return;
@@ -100,49 +114,51 @@ async function getMembershipStatus() {
   communityStore.isPlayer = data.role_id === PLAYER;
 }
 
-async function getCommunity() {
-  if (typeof id === "string") {
-    const data = (await selectFromCommunity({
-      communityId: id,
-      select: "*",
-    })) as Community;
+async function getCommunity(id: string) {
+  const data = (await selectFromCommunity({
+    communityId: id,
+    select: "*",
+  })) as Community;
+  setCommunityDataInStore(data);
+}
 
-    if (data?.cover_image) {
-      communityStore.coverImageUrl = await getCoverImageUrl(data.cover_image);
-    } else {
-      communityStore.coverImageUrl = undefined;
-    }
-
-    if (data) {
-      communityData.value = data;
-      communityStore.community = data;
-    }
+async function setCommunityDataInStore(data: Community) {
+  communityData.value = data;
+  communityStore.community = data;
+  if (data?.cover_image) {
+    communityStore.coverImageUrl = await getCoverImageUrl(data.cover_image);
+  } else {
+    communityStore.coverImageUrl = undefined;
   }
 }
 
 async function loadUpcomingGames() {
-  if (typeof id === "string") {
-    const { data, count } = await loadUpcomingCommunityGamesWithCount(id);
-    if (count !== null) {
-      communityStore.gamesCount = count;
-    }
-    if (data) {
-      communityStore.games = data;
-    }
-  } else {
-    log({
-      level: "error",
-      message: "Community ID is array of strings in loadUpcomingGames",
-    });
+  const { data, count } = await loadUpcomingCommunityGamesWithCount(
+    communityStore.community.id
+  );
+  if (count !== null) {
+    communityStore.gamesCount = count;
+  }
+  if (data) {
+    communityStore.games = data;
   }
 }
 
 async function loadAdmins() {
-  if (typeof id === "string") {
-    const data = await loadCommunityAdmins(id);
-    if (data) {
-      communityStore.admins = data;
-    }
+  const data = await loadCommunityAdmins(communityStore.community.id);
+  if (data) {
+    communityStore.admins = data;
+  }
+}
+
+async function getMemberCount() {
+  const id = communityStore.community.id;
+  const { error, count } = await getCommunityMemberCount(id);
+  if (count !== null) {
+    communityStore.membersCount = count;
+  }
+  if (error) {
+    log({ error });
   }
 }
 </script>

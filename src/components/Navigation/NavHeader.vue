@@ -38,6 +38,10 @@ import { store } from "../../store";
 
 const route = useRoute();
 
-const onCommunitiesRoute = route.path.includes("communities");
-const onGamesRoute = route.path.includes("games");
+// remove first /
+const path = route.path.substring(1);
+const [directory] = path.split("/");
+
+const onCommunitiesRoute = directory === "communities";
+const onGamesRoute = directory === "games";
 </script>

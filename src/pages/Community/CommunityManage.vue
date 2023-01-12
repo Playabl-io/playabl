@@ -30,11 +30,12 @@ onMounted(async () => {
 });
 
 async function getMemberAccess() {
+  const communityId = communityStore.community.id;
   // TODO: do this in a worker since this could be really expensive
   const { data, error } = await supabase
     .from("community_access")
     .select("id, access_level_id (name), user_id (id)")
-    .eq("community_id", route.params.community_id);
+    .eq("community_id", communityId);
   if (error) {
     log({ error });
   }
@@ -66,9 +67,8 @@ async function getMemberAccess() {
 }
 
 async function getAccessLevels() {
-  const data = await loadCommunityAccessTimes(
-    route.params.community_id as string
-  );
+  const id = communityStore.community.id;
+  const data = await loadCommunityAccessTimes(id);
   if (data) {
     store.communityAccessLevels = data;
     communityStore.communityAccessLevels = data;

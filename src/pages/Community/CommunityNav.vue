@@ -13,7 +13,10 @@
     >
       <div v-if="!showSubNav" class="flex items-center gap-4">
         <router-link
-          :to="`/communities/${id}`"
+          :to="`/communities/${
+            communityStore.community.url_short_name ||
+            communityStore.community.id
+          }`"
           class="border-b"
           :class="{
             'border-brand-500': currentRoute.name === 'Home',
@@ -23,7 +26,10 @@
           Home
         </router-link>
         <router-link
-          :to="`/communities/${id}/calendar`"
+          :to="`/communities/${
+            communityStore.community.url_short_name ||
+            communityStore.community.id
+          }/calendar`"
           class="border-b"
           :class="{
             'border-brand-500': currentRoute.name === 'Calendar',
@@ -52,7 +58,10 @@
         </button>
 
         <router-link
-          :to="`/communities/${id}/manage/overview`"
+          :to="`/communities/${
+            communityStore.community.url_short_name ||
+            communityStore.community.id
+          }/manage/overview`"
           class="border-b"
           :class="{
             'border-brand-500': currentRoute.name === 'Overview',
@@ -62,7 +71,10 @@
           Overview
         </router-link>
         <router-link
-          :to="`/communities/${id}/manage/access`"
+          :to="`/communities/${
+            communityStore.community.url_short_name ||
+            communityStore.community.id
+          }/manage/access`"
           class="border-b"
           :class="{
             'border-brand-500': currentRoute.name === 'Access',
@@ -72,7 +84,10 @@
           Access
         </router-link>
         <router-link
-          :to="`/communities/${id}/manage/info`"
+          :to="`/communities/${
+            communityStore.community.url_short_name ||
+            communityStore.community.id
+          }/manage/info`"
           class="border-b"
           :class="{
             'border-brand-500': currentRoute.name === 'Info',
@@ -82,7 +97,10 @@
           Info
         </router-link>
         <router-link
-          :to="`/communities/${id}/manage/integrations`"
+          :to="`/communities/${
+            communityStore.community.url_short_name ||
+            communityStore.community.id
+          }/manage/integrations`"
           class="border-b"
           :class="{
             'border-brand-500': currentRoute.name === 'Integrations',
@@ -92,7 +110,10 @@
           Integrations
         </router-link>
         <router-link
-          :to="`/communities/${id}/manage/members`"
+          :to="`/communities/${
+            communityStore.community.url_short_name ||
+            communityStore.community.id
+          }/manage/members`"
           class="border-b"
           :class="{
             'border-brand-500': currentRoute.name === 'Members',
@@ -112,7 +133,6 @@ import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/vue/20/solid";
 import { communityStore } from "./communityStore";
 
 const currentRoute = useRoute();
-const { community_id: id } = currentRoute.params;
 
 const subRoutes = ["Overview", "Access", "Info", "Integrations", "Members"];
 

@@ -12,7 +12,9 @@
         v-for="community in communities"
         :key="community.id"
         :community="community"
-        :route="`/communities/${community.id}/manage/overview`"
+        :route="`/communities/${
+          community.url_short_name || community.id
+        }/manage/overview`"
       />
     </section>
   </base-template>

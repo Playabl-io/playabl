@@ -31,7 +31,9 @@
       </div>
       <p class="mt-6">By {{ gameData?.creator_id.username || "" }}</p>
       <router-link
-        :to="`/communities/${gameStore.community.id}`"
+        :to="`/communities/${
+          gameStore.community.url_short_name || gameStore.community.id
+        }`"
         class="mt-2 text-xs text-slate-700"
       >
         Part of {{ gameStore.community.name }}

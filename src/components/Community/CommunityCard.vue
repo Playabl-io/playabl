@@ -1,6 +1,6 @@
 <template>
   <router-link
-    :to="route || `/communities/${community.id}`"
+    :to="route || `/communities/${community.url_short_name || community.id}`"
     class="border border-solid border-gray-300 rounded-lg focus-styles"
   >
     <div
