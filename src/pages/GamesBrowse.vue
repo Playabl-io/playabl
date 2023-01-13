@@ -17,10 +17,13 @@ import { GameListing } from "@/typings/Game";
 import { loadJoinedCommunityIds } from "@/api/communities";
 import {
   loadChronologicalCommunityGames,
+  loadChronologicalGames,
   loadCommunityGamesWithOpenings,
+  loadGamesWithOpenings,
 } from "@/api/gamesAndSessions";
 import GamesNav from "@/components/GamesNav.vue";
 import SortMenu from "@/components/Menus/SortMenu.vue";
+import { store } from "@/store";
 
 const options = [
   { label: "Starting soon", value: loadAllGames },
@@ -46,7 +49,8 @@ onMounted(async () => {
 });
 
 async function loadCommunityIds() {
-  const data = await loadJoinedCommunityIds();
+  if (!store.user?.id) return;
+  const data = await loadJoinedCommunityIds(store.user.id);
   if (data) {
     communityIds.value = data.map((community) => community.community_id);
   }
@@ -54,7 +58,7 @@ async function loadCommunityIds() {
 
 async function loadAllGames() {
   isLoading.value = true;
-  const data = await loadChronologicalCommunityGames(communityIds.value);
+  const data = await loadChronologicalGames();
   if (data) {
     games.value = data;
   }
@@ -63,7 +67,7 @@ async function loadAllGames() {
 
 async function loadOpenGames() {
   isLoading.value = true;
-  const data = await loadCommunityGamesWithOpenings(communityIds.value);
+  const data = await loadGamesWithOpenings();
   if (data) {
     games.value = data;
   }
