@@ -35,14 +35,13 @@ export async function loadCreatorAndAdminCommunities() {
   }
 }
 
-export async function loadJoinedCommunityIds(): Promise<
-  { community_id: string }[] | undefined
-> {
-  if (!store.user) return;
+export async function loadJoinedCommunityIds(
+  userId: string
+): Promise<{ community_id: string }[] | undefined> {
   const { data, error } = await supabase
     .from("community_memberships")
     .select("community_id")
-    .eq("user_id", store.user.id);
+    .eq("user_id", userId);
   if (error) {
     log({ error });
   }

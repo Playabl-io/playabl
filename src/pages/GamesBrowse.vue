@@ -23,6 +23,7 @@ import {
 } from "@/api/gamesAndSessions";
 import GamesNav from "@/components/GamesNav.vue";
 import SortMenu from "@/components/Menus/SortMenu.vue";
+import { store } from "@/store";
 
 const options = [
   { label: "Starting soon", value: loadAllGames },
@@ -48,7 +49,8 @@ onMounted(async () => {
 });
 
 async function loadCommunityIds() {
-  const data = await loadJoinedCommunityIds();
+  if (!store.user?.id) return;
+  const data = await loadJoinedCommunityIds(store.user.id);
   if (data) {
     communityIds.value = data.map((community) => community.community_id);
   }
