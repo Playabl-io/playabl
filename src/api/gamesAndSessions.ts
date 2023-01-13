@@ -63,6 +63,22 @@ export async function loadUpcomingJoinedGames(userId: string) {
   }
 }
 
+export async function loadChronologicalGames() {
+  const today = new Date();
+  const { data, error } = await supabase
+    .from("games")
+    .select("*, community_id (id, name), sessions!inner(*)")
+    .is("deleted_at", null)
+    .gte("sessions.start_time", today.getTime())
+    .order("start_time", { foreignTable: "sessions", ascending: true });
+  if (error) {
+    log({ error });
+  }
+  if (data) {
+    return mapToAscSessions(data);
+  }
+}
+
 export async function loadChronologicalCommunityGames(communityIds: string[]) {
   const today = new Date();
   const { data, error } = await supabase
@@ -71,6 +87,25 @@ export async function loadChronologicalCommunityGames(communityIds: string[]) {
     .is("deleted_at", null)
     .gte("sessions.start_time", today.getTime())
     .in("community_id", communityIds)
+    .order("start_time", { foreignTable: "sessions", ascending: true });
+  if (error) {
+    log({ error });
+  }
+  if (data) {
+    return mapToAscSessions(data);
+  }
+}
+
+export async function loadGamesWithOpenings() {
+  const today = new Date();
+  const { data, error } = await supabase
+    .from("games")
+    .select(
+      "*, community_id (id, name), sessions!inner(id, start_time, has_openings)"
+    )
+    .is("deleted_at", null)
+    .eq("sessions.has_openings", true)
+    .gte("sessions.start_time", today.getTime())
     .order("start_time", { foreignTable: "sessions", ascending: true });
   if (error) {
     log({ error });

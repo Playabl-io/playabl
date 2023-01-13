@@ -127,7 +127,6 @@ const routes = [
     component: CommunityBase,
     meta: {
       title: "Playabl - Community",
-      requiresAuth: true,
     },
     children: [
       {
