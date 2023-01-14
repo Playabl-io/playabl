@@ -2,10 +2,11 @@
   <a
     :href="`http://www.google.com/calendar/render?
 action=TEMPLATE
-&text=${gameStore.game.title}
 &dates=${formattedStartTime}/${formattedEndTime}
 &details=Game details: https://app.playabl.io/games/${gameStore.game.id}
-&location=https://app.playabl.io/games/${gameStore.game.id}`"
+&location=https://app.playabl.io/games/${gameStore.game.id}
+&text=${encodedTitle}
+`"
     target="_blank"
     rel="noreferrer noopener"
     class="flex items-center gap-2 p-2 bg-white rounded-md hover:shadow-md focus-styles text-sm font-medium"
@@ -41,4 +42,6 @@ const formattedEndTime = computed(() => {
   const timeString = format(props.endTime, "kkmmssX");
   return `${dateString}T${timeString}`;
 });
+
+const encodedTitle = encodeURIComponent(gameStore.game.title);
 </script>

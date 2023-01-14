@@ -142,7 +142,7 @@ import InfoBanner from "@/components/Banners/InfoBanner.vue";
 import { store } from "@/store";
 import { GameWithCommunityAndSessions } from "@/typings/Game";
 import { CommunityAccess } from "@/typings/CommunityAccess";
-import { gameStore } from "./gameStore";
+import { clearGameStore, gameStore } from "./gameStore";
 import * as R from "ramda";
 import { Session } from "@/typings/Session";
 import { loadUserCommunityMembership } from "@/api/communityMemberships";
@@ -279,6 +279,7 @@ async function getUserAccess() {
 
 let subscription: RealtimeChannel;
 onUnmounted(() => {
+  clearGameStore();
   removeSubscription();
 });
 
