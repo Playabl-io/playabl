@@ -65,7 +65,10 @@
           </ul>
         </div>
       </div>
-      <Well v-if="userIsInTheGame" class="mt-4 grid content-center gap-2">
+      <Well
+        v-if="userIsInTheGame || isOwner"
+        class="mt-4 grid content-center gap-2"
+      >
         <AddToGoogleCal
           :start-time="session.start_time"
           :end-time="session.end_time"

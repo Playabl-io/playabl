@@ -12,7 +12,7 @@ interface Store {
   coverImage?: string;
 }
 
-export const gameStore = reactive<Store>({
+const DEFAULT_GAME_STATE = {
   game: {
     id: 0,
     title: "",
@@ -32,4 +32,10 @@ export const gameStore = reactive<Store>({
     allow_public_signup: false,
     created_at: "",
   },
-});
+};
+
+export let gameStore = reactive<Store>({ ...DEFAULT_GAME_STATE });
+
+export function clearGameStore() {
+  gameStore = reactive<Store>({ ...DEFAULT_GAME_STATE });
+}

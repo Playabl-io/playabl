@@ -181,15 +181,21 @@
       @submit.prevent="send('SUBMIT')"
     >
       <Heading level="h6" as="h2" class="mb-2">Sessions</Heading>
-      <p class="text-sm text-slate-700 mb-6">All times in your timezone</p>
-      <div class="grid gap-6">
+      <p v-if="communityPostingLimit" class="text-sm mb-2">
+        Community calendar limit -
+        {{ format(communityPostingLimit, "LLLL do") }}
+      </p>
+      <p class="text-sm text-slate-700">
+        All times in your timezone - {{ format(startOfToday, "OOOO") }}
+      </p>
+      <div class="grid gap-6 mt-6">
         <div class="grid lg:grid-cols-2 gap-10">
           <div class="grid gap-8">
             <div>
               <FormLabel>Start date</FormLabel>
               <DatePicker
                 :selected="startDate"
-                :not-before="getStartOfToday()"
+                :not-before="startOfToday"
                 :not-after="communityPostingLimit"
                 @select="updateStartDate"
               />
@@ -284,7 +290,7 @@ import { supabase } from "@/supabase";
 import { useRouter } from "vue-router";
 import { computed, ref } from "vue";
 import { v4 as uuidv4 } from "uuid";
-import { isBefore, set } from "date-fns";
+import { isBefore, set, format } from "date-fns";
 import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/vue";
 import {
@@ -333,6 +339,8 @@ import FilterDropdown from "@/components/Dropdown/FilterDropdown.vue";
 
 const { showSuccess, showError } = useToast();
 const router = useRouter();
+
+const startOfToday = getStartOfToday();
 
 const newGameMachine = createMachine<{
   communities: Community[];

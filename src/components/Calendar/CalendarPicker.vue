@@ -157,6 +157,7 @@ function goToToday() {
 }
 function nextDay() {
   const nextDay = addDays(props.selected, 1);
+  if (props.notAfter && isAfter(nextDay, props.notAfter)) return;
   emit("select", nextDay);
   focusActiveDay();
 }
@@ -182,11 +183,15 @@ function previousWeek() {
 }
 function previousMonth() {
   const nextDate = subMonths(props.selected, 1);
+  if (props.notBefore && isBefore(nextDate, props.notBefore)) return;
+  if (props.notAfter && isAfter(nextDate, props.notAfter)) return;
   emit("select", nextDate);
   focusActiveDay();
 }
 function nextMonth() {
   const nextDate = addMonths(props.selected, 1);
+  if (props.notBefore && isBefore(nextDate, props.notBefore)) return;
+  if (props.notAfter && isAfter(nextDate, props.notAfter)) return;
   emit("select", nextDate);
   focusActiveDay();
 }
