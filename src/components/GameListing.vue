@@ -34,27 +34,50 @@
           >
             <div class="flex flex-wrap gap-6 px-6 py-4">
               <div
-                v-for="session in game.sessions"
-                :key="session.id"
+                v-if="isSmall"
                 class="p-2 rounded-md flex items-center space-x-1 shadow-sm"
-                :class="[session.has_openings ? 'bg-green-200' : 'bg-gray-200']"
+                :class="[
+                  game.sessions.some((session) => session.has_openings)
+                    ? 'bg-green-200'
+                    : 'bg-gray-200',
+                ]"
               >
-                <p class="text-sm font-semibold">
-                  {{ format(new Date(session.start_time), "LLL do") }}
-                </p>
+                {{ game.sessions.length }}
+                {{
+                  pluralize({
+                    count: game.sessions.length,
+                    singular: "session",
+                  })
+                }}
+                starting
+                {{ format(new Date(game.sessions[0].start_time), "LLL do") }}
+              </div>
+              <template
+                v-for="session in game.sessions"
+                v-else
+                :key="session.id"
+              >
                 <Tooltip v-if="session.has_openings">
-                  <template #tooltip>Seats available</template>
+                  <template #tooltip> Seats available </template>
                   <template #trigger="{ toggleTooltip }">
-                    <StarIcon
-                      class="h-4 w-4 text-emerald-600"
+                    <div
+                      class="p-2 rounded-md flex items-center space-x-1 shadow-sm"
+                      :class="[
+                        session.has_openings ? 'bg-green-200' : 'bg-gray-200',
+                      ]"
                       @mouseenter="toggleTooltip"
                       @mouseleave="toggleTooltip"
                       @focus="toggleTooltip"
                       @blur="toggleTooltip"
-                    />
+                    >
+                      <p class="text-sm font-semibold">
+                        {{ format(new Date(session.start_time), "LLL do") }}
+                      </p>
+                      <StarIcon class="h-4 w-4 text-emerald-600" />
+                    </div>
                   </template>
                 </Tooltip>
-              </div>
+              </template>
             </div>
           </div>
         </div>
@@ -119,6 +142,11 @@ import Tooltip from "./Tooltip.vue";
 import GameBadge from "./Game/GameBadge.vue";
 import { getCoverImageUrl } from "@/api/storage";
 import TipTapDisplay from "./TipTapDisplay.vue";
+
+import { breakpointsTailwind, useBreakpoints } from "@vueuse/core";
+import { pluralize } from "@/util/grammar";
+const breakpoints = useBreakpoints(breakpointsTailwind);
+const isSmall = breakpoints.smaller("md");
 
 const props = defineProps({
   game: {
