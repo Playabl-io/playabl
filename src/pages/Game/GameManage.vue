@@ -44,12 +44,51 @@
             <p>{{ session.rsvps.length }} rsvp'd</p>
           </div>
           <div class="flex justify-end">
-            <GhostButton
-              class="hover:bg-neutral-100"
-              @click="confirmDelete(session)"
-            >
-              <TrashIcon class="h-5 w-5 text-slate-700" />
-            </GhostButton>
+            <Tooltip>
+              <template #trigger="{ setTooltipHidden, setTooltipVisible }">
+                <GhostButton
+                  class="mr-1"
+                  @click="editSession(session)"
+                  @mouseenter="setTooltipVisible"
+                  @mouseleave="setTooltipHidden"
+                  @focus="setTooltipVisible"
+                  @blur="setTooltipHidden"
+                >
+                  <PencilSquareIcon class="h-5 w-5 text-slate-700" />
+                </GhostButton>
+              </template>
+              <template #tooltip> Edit session </template>
+            </Tooltip>
+            <Tooltip>
+              <template #trigger="{ setTooltipHidden, setTooltipVisible }">
+                <GhostButton
+                  class="mr-1"
+                  @click="confirmDuplicate(session)"
+                  @mouseenter="setTooltipVisible"
+                  @mouseleave="setTooltipHidden"
+                  @focus="setTooltipVisible"
+                  @blur="setTooltipHidden"
+                >
+                  <DocumentDuplicateIcon class="h-5 w-5 text-slate-700" />
+                </GhostButton>
+              </template>
+              <template #tooltip> Duplicate session </template>
+            </Tooltip>
+            <Tooltip>
+              <template #trigger="{ setTooltipHidden, setTooltipVisible }">
+                <GhostButton
+                  class="hover:bg-neutral-100"
+                  @click="confirmDelete(session)"
+                  @mouseenter="setTooltipVisible"
+                  @mouseleave="setTooltipHidden"
+                  @focus="setTooltipVisible"
+                  @blur="setTooltipHidden"
+                >
+                  <TrashIcon class="h-5 w-5 text-slate-700" />
+                </GhostButton>
+              </template>
+              <template #tooltip> Delete session </template>
+            </Tooltip>
           </div>
         </div>
       </div>
@@ -85,6 +124,20 @@
   >
     <EditGameDetails @close="editDetailsDrawerOpen = false" />
   </SideDrawer>
+  <SideDrawer :open="editSessionDrawerOpen" @close="clearEditSession">
+    <EditSessionDetails
+      v-if="sessionToEdit"
+      :session="sessionToEdit"
+      :community-id="gameStore.game.community_id"
+      @close="clearEditSession"
+    />
+  </SideDrawer>
+  <DuplicateSessionModal
+    v-if="sessionToDuplicate"
+    :open="duplicateSessionModalOpen"
+    :session="sessionToDuplicate"
+    @close="hideDuplicate"
+  />
   <DeleteModal
     :is-deleting="isDeleting"
     :open="deleteSessionModalOpen"
@@ -107,7 +160,13 @@ import { ref } from "vue";
 import { format } from "date-fns";
 import { supabase } from "@/supabase";
 import Heading from "@/components/Heading.vue";
-import { ClockIcon, UsersIcon, TrashIcon } from "@heroicons/vue/24/outline";
+import {
+  ClockIcon,
+  DocumentDuplicateIcon,
+  UsersIcon,
+  TrashIcon,
+  PencilSquareIcon,
+} from "@heroicons/vue/24/outline";
 import SideDrawer from "@/components/SideDrawer.vue";
 import NewSession from "@/pages/Game/NewSession.vue";
 import LinkButton from "@/components/Buttons/LinkButton.vue";
@@ -122,16 +181,33 @@ import EditGameDetails from "./EditGameDetails.vue";
 import useToast from "@/components/Toast/useToast";
 import { log } from "@/util/logger";
 import GameImageLibrary from "./GameImageLibrary.vue";
+import EditSessionDetails from "./EditSessionDetails.vue";
+import Tooltip from "@/components/Tooltip.vue";
+import DuplicateSessionModal from "./DuplicateSessionModal.vue";
 
 const { showSuccess, showError } = useToast();
 
 const newSessionDrawerOpen = ref(false);
+const editSessionDrawerOpen = ref(false);
 const editDescriptionDrawerOpen = ref(false);
 const editDetailsDrawerOpen = ref(false);
 const deleteSessionModalOpen = ref(false);
 const cancelGameModalOpen = ref(false);
+const duplicateSessionModalOpen = ref(false);
+const sessionToDuplicate = ref<Session>();
 const sessionToDelete = ref<Session>();
+const sessionToEdit = ref<Session>();
 const isDeleting = ref(false);
+
+function editSession(session: Session) {
+  editSessionDrawerOpen.value = true;
+  sessionToEdit.value = session;
+}
+
+function clearEditSession() {
+  editSessionDrawerOpen.value = false;
+  sessionToEdit.value = undefined;
+}
 
 function addSession(session: Session) {
   const transformedSession = {
@@ -140,6 +216,14 @@ function addSession(session: Session) {
   };
   gameStore.sessions.push(transformedSession);
   newSessionDrawerOpen.value = false;
+}
+function confirmDuplicate(session: Session) {
+  sessionToDuplicate.value = session;
+  duplicateSessionModalOpen.value = true;
+}
+function hideDuplicate() {
+  sessionToDuplicate.value = undefined;
+  duplicateSessionModalOpen.value = false;
 }
 function confirmDelete(session: Session) {
   sessionToDelete.value = session;

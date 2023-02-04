@@ -46,7 +46,7 @@ import { ref, watch } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import ToggleRadio from "./ToggleRadio.vue";
 
-defineProps({
+const props = defineProps({
   required: {
     type: Boolean,
     default: false,
@@ -55,15 +55,21 @@ defineProps({
     type: String,
     default: () => uuidv4(),
   },
+  time: {
+    type: String,
+    default: undefined,
+  },
 });
 
 const emit = defineEmits(["setTime"]);
 
-const hour = ref("");
+const [maybeHour, maybeMinutes] = props.time?.split(":") ?? ["", ""];
+
+const hour = ref(maybeHour ? String(Number(maybeHour) % 12) : "");
 const hourInput = ref<HTMLInputElement>();
-const minute = ref("");
+const minute = ref(maybeMinutes);
 const minuteInput = ref<HTMLInputElement>();
-const meridian = ref();
+const meridian = ref<"PM" | "AM">(Number(maybeHour) > 11 ? "PM" : "AM");
 
 function formatHour(event: Event) {
   const target = event.target as HTMLInputElement;

@@ -112,6 +112,8 @@ export function getSoonestRsvpTime(
   return min(possibleTimes);
 }
 
+const startOfToday = startOfDay(new Date());
+
 export function getStartOfToday() {
-  return startOfDay(new Date());
+  return startOfToday;
 }
