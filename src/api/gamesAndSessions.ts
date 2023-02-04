@@ -378,3 +378,28 @@ export async function publishGame(game: Game) {
     console.error(error);
   }
 }
+
+export async function updateSession(
+  id: Session["id"],
+  update: Partial<Session>
+) {
+  const { error } = await supabase.from("sessions").update(update).eq("id", id);
+  if (error) {
+    log({ error });
+    throw new Error(error.message);
+  }
+  return true;
+}
+
+export async function addSession(session: Partial<Session>) {
+  const { data, error } = await supabase
+    .from("sessions")
+    .insert(session)
+    .select()
+    .single();
+  if (error) {
+    log({ error });
+    throw new Error(error.message);
+  }
+  return data;
+}
