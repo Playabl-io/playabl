@@ -8,6 +8,7 @@
             v-for="notification in unreadNotifications"
             :key="notification.id"
             :notification="notification"
+            @clear="handleClear(notification)"
           />
         </ul>
       </section>
@@ -22,33 +23,15 @@
 </template>
 
 <script setup lang="ts">
-import { onUnmounted, ref } from "vue";
 import ProfileTemplate from "@/components/ProfileTemplate.vue";
-import { supabase } from "@/supabase";
 import { unreadNotifications } from "@/util/notifications";
 import { Notification } from "@/typings/Notification";
 import RsvpNotification from "./RsvpNotification.vue";
 import CancelNotification from "./CancelNotification.vue";
+import { clearNotification } from "@/api/notifications";
+import useToast from "@/components/Toast/useToast";
 
-const toBeCleared = ref<Notification[]>([]);
-const readTimeout = setTimeout(() => {
-  toBeCleared.value = [...unreadNotifications.value];
-}, 5000);
-
-async function markNotificationsRead(notifications: Notification[]) {
-  if (notifications.length === 0) return;
-  const updatedNotifications = notifications.map((notification) => ({
-    id: notification.id,
-    read: true,
-    user_id: notification.user_id,
-  }));
-  await supabase.from("notifications").upsert(updatedNotifications);
-}
-
-onUnmounted(() => {
-  clearTimeout(readTimeout);
-  markNotificationsRead(toBeCleared.value);
-});
+const { showError } = useToast();
 
 function notificationComponent(type: Notification["type"]) {
   switch (type) {
@@ -59,6 +42,14 @@ function notificationComponent(type: Notification["type"]) {
       return RsvpNotification;
     default:
       return "div";
+  }
+}
+
+async function handleClear(notification: Notification) {
+  try {
+    await clearNotification(notification);
+  } catch (error) {
+    showError({ message: "Unable to clear notification" });
   }
 }
 </script>
