@@ -21,7 +21,7 @@
       >
         Manage
       </router-link>
-      <router-link to="/communities/new"> New </router-link>
+      <router-link to="/communities/new"> Create New </router-link>
     </div>
   </section>
 </template>
