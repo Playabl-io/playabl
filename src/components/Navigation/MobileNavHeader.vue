@@ -49,7 +49,7 @@
           <MenuItem>
             <router-link
               class="px-2 py-1"
-              to="/games/joined"
+              :to="`${store.user ? '/games/joined' : '/games/browse'}`"
               active-class="text-brand-500 border-l border-brand-500 dark:border-brand-300"
             >
               Games
