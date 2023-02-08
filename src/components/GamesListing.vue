@@ -4,7 +4,7 @@
       <LoadingSpinner color="brand-500" />
     </span>
     <template v-for="game in games" v-else-if="games.length" :key="game.id">
-      <GameListingVue :id="game.id" :game="game" />
+      <GameListingVue :id="game.id" :game="game" :user-access="userAccess" />
       <hr class="last:hidden border-slate-200" />
     </template>
     <template v-else>
@@ -13,12 +13,13 @@
   </section>
 </template>
 <script setup lang="ts">
-import { PropType, toRefs } from "vue";
+import { PropType } from "vue";
 import { GameListing } from "@/typings/Game";
 import LoadingSpinner from "./LoadingSpinner.vue";
 import GameListingVue from "./GameListing.vue";
+import { CommunityAccess } from "@/typings/CommunityAccess";
 
-const props = defineProps({
+defineProps({
   isLoading: {
     type: Boolean,
     required: true,
@@ -27,6 +28,9 @@ const props = defineProps({
     type: Array as PropType<GameListing[]>,
     required: true,
   },
+  userAccess: {
+    type: Array as PropType<CommunityAccess[]>,
+    default: () => [],
+  },
 });
-toRefs(props);
 </script>

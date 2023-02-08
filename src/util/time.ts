@@ -69,7 +69,11 @@ export function userCanRsvp({
   hostId,
 }: {
   userAccess: CommunityAccess[];
-  session: GameSession;
+  session: {
+    rsvps: GameSession["rsvps"];
+    start_time: GameSession["start_time"];
+    access_times?: GameSession["access_times"];
+  };
   userId?: Profile["id"];
   hostId: string;
 }): boolean {

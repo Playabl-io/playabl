@@ -68,3 +68,13 @@ export async function loadUserCommunityAccess({
   }
   return data;
 }
+export async function loadAllUserAccess({ userId }: { userId: string }) {
+  const { data, error } = await supabase
+    .from("community_access")
+    .select()
+    .match({ user_id: userId });
+  if (error) {
+    log({ error });
+  }
+  return data;
+}

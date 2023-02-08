@@ -100,9 +100,7 @@ export async function loadGamesWithOpenings() {
   const today = new Date();
   const { data, error } = await supabase
     .from("games")
-    .select(
-      "*, community_id (id, name), sessions!inner(id, start_time, has_openings)"
-    )
+    .select("*, community_id (id, name), sessions!inner(*)")
     .is("deleted_at", null)
     .eq("sessions.has_openings", true)
     .gte("sessions.start_time", today.getTime())
