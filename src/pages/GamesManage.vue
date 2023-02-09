@@ -20,7 +20,14 @@
         </template>
       </GamesHeading>
       <section class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
-        <GameCard v-for="game in pastGames" :key="game.id" :game="game" />
+        <GameCard v-for="game in pastGames" :key="game.id" :game="game">
+          <template #sessions-title>
+            {{ game.sessions.length }}
+            {{
+              pluralize({ count: game.sessions.length, singular: "session" })
+            }}
+          </template>
+        </GameCard>
       </section>
     </template>
   </base-template>
@@ -36,6 +43,7 @@ import GamesHeading from "@/components/GamesHeading.vue";
 import GamesNav from "@/components/GamesNav.vue";
 import { store } from "@/store";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
+import { pluralize } from "@/util/grammar";
 
 const isLoading = ref(true);
 const games = ref<GameListing[]>([]);

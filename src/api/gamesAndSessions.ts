@@ -178,7 +178,7 @@ export async function loadOpenCommunitySessions({
 }) {
   const { data, error } = await supabase
     .from("sessions")
-    .select("*, game_id (title, id, system, cover_image)")
+    .select("*, game_id (*)")
     .is("deleted_at", null)
     .eq("community_id", communityId)
     .eq("has_openings", true)
@@ -204,7 +204,7 @@ export async function loadAllCommunitySessions({
 }) {
   const { data, error } = await supabase
     .from("sessions")
-    .select("*, game_id (title, id, system, cover_image)")
+    .select("*, game_id (*)")
     .is("deleted_at", null)
     .eq("community_id", communityId)
     .gte("start_time", startOfDay(startDate).getTime())
