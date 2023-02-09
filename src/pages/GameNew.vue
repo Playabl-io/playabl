@@ -658,10 +658,14 @@ async function submitGame() {
   if (existingImageToUse.value) {
     imagePath = `${store.user.id}/${existingImageToUse.value.image.name}`;
   } else if (coverImage.value) {
-    imagePath = await uploadToCoverImageStorage({
-      file: coverImage.value,
-      id: store.user.id,
-    });
+    try {
+      imagePath = await uploadToCoverImageStorage({
+        file: coverImage.value,
+        id: store.user.id,
+      });
+    } catch (error) {
+      showError({ message: "Unable to upload image" });
+    }
   }
 
   const newGame: NewGame = {

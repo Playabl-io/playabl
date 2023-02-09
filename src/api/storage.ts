@@ -33,6 +33,9 @@ export async function uploadToCoverImageStorage({
       cacheControl: "360000",
     });
   if (error) {
+    if (error.message === "The resource already exists") {
+      return `${id}/${file.name}`;
+    }
     log({ error });
     throw error;
   }
