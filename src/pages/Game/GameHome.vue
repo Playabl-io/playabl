@@ -1,27 +1,16 @@
 <template>
-  <div v-if="gameStore.coverImage" class="aspect-w-16 aspect-h-9 mb-8">
-    <img
-      class="w-full h-full object-center object-cover shadow-md rounded-lg"
-      :src="gameStore.coverImage"
-      alt="image"
-    />
-  </div>
-  <div v-if="gameStore.game?.description" class="p-8 bg-gray-100 rounded-lg">
-    <TipTapDisplay :content="gameStore.game.description" />
-  </div>
-  <div v-if="userIsNotMember" class="flex flex-col items-center my-12">
-    <p class="text-sm text-slate-700 font-semibold mb-3">
-      You must be a member of the community to RSVP
-    </p>
-    <PrimaryButton
-      :to="`/communities/${gameStore.game.community_id}`"
-      class="w-auto inline-block"
-    >
-      Learn more about {{ gameStore.community.name }}
-    </PrimaryButton>
-  </div>
-
   <section v-if="!gameStore.game.deleted_at" class="mt-12">
+    <div v-if="userIsNotMember" class="flex flex-col items-center my-12">
+      <p class="text-sm text-slate-700 font-semibold mb-3">
+        You must be a member of the community to RSVP
+      </p>
+      <PrimaryButton
+        :to="`/communities/${gameStore.game.community_id}`"
+        class="w-auto inline-block"
+      >
+        Learn more about {{ gameStore.community.name }}
+      </PrimaryButton>
+    </div>
     <div class="grid md:grid-cols-2 gap-8">
       <SessionBlock
         v-for="session in gameStore.sessions"
@@ -32,6 +21,18 @@
         :is-owner="isOwner"
         :not-a-member="userIsNotMember"
       />
+    </div>
+  </section>
+  <section class="grid items-start lg:grid-cols-2 gap-4 mt-12">
+    <div v-if="gameStore.coverImage" class="aspect-w-16 aspect-h-9">
+      <img
+        class="w-full h-full object-center object-cover rounded-lg"
+        :src="gameStore.coverImage"
+        alt=""
+      />
+    </div>
+    <div v-if="gameStore.game?.description" class="p-8 bg-gray-100 rounded-lg">
+      <TipTapDisplay :content="gameStore.game.description" />
     </div>
   </section>
 </template>

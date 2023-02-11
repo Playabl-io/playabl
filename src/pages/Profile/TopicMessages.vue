@@ -1,10 +1,5 @@
 <template>
   <div class="bg-gray-100 rounded-lg flex flex-col p-4">
-    <MessageReply
-      :play-audio="playAudio"
-      @send-message="sendMessage"
-      @update-play-audio="setPlayAudio"
-    />
     <div class="mt-6 grid gap-6 items-start rounded-lg relative">
       <transition-group
         enter-active-class="transform-gpu duration-300 ease-out"

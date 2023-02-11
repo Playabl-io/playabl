@@ -1,12 +1,15 @@
 <template>
   <li class="rounded-lg border border-solid border-gray-300">
-    <div class="w-full aspect-video relative">
-      <img
-        v-if="gameCoverImage"
-        class="w-full h-full object-center object-cover rounded-t-lg"
-        :src="gameCoverImage"
-        alt="image"
-      />
+    <div class="relative">
+      <div v-if="gameCoverImage" class="aspect-w-16 aspect-h-9">
+        <router-link :to="`/games/${session.game_id.id}`">
+          <img
+            class="w-full h-full object-center object-cover rounded-t-lg"
+            :src="gameCoverImage"
+            alt=""
+          />
+        </router-link>
+      </div>
       <div
         :class="{
           'rounded-t-lg': !gameCoverImage,
@@ -23,28 +26,15 @@
           <div class="flex flex-col items-center">
             <template v-if="session.has_openings">
               <p class="font-semibold text-xs">Seats available</p>
-              <div class="h-3 w-3 pt-1 mt-1 bg-green-500 rounded-full" />
+              <CheckCircleIcon class="h-5 w-5 text-green-700" />
             </template>
-            <Tooltip v-else>
-              <template #trigger="{ toggleTooltip }">
-                <div
-                  class="p-2 relative"
-                  @mouseenter="toggleTooltip"
-                  @mouseleave="toggleTooltip"
-                >
-                  <UserIcon class="h-6 w-6 text-slate-700" />
-                  <p
-                    class="absolute top-0 right-0 p-1 rounded-full text-xs text-slate-700"
-                  >
-                    {{ session.rsvps.length - session.participant_count }}
-                  </p>
-                </div>
-              </template>
-              <template #tooltip>
-                {{ session.rsvps.length - session.participant_count }} on
-                waitlist
-              </template>
-            </Tooltip>
+
+            <div v-else class="flex flex-col items-center">
+              <p class="text-xs font-semibold">Waitlist</p>
+              <p class="text-sm">
+                {{ session.rsvps.length - session.participant_count }}
+              </p>
+            </div>
           </div>
           <div class="ml-auto relative">
             <Menu>
@@ -213,7 +203,7 @@
 import { computed, PropType } from "vue";
 import {
   EllipsisHorizontalCircleIcon,
-  UserIcon,
+  CheckCircleIcon,
 } from "@heroicons/vue/24/outline";
 import {
   ChevronRightIcon,
@@ -222,7 +212,6 @@ import {
 } from "@heroicons/vue/20/solid";
 import { format, formatDuration, intervalToDuration } from "date-fns";
 import Heading from "@/components/Heading.vue";
-import Tooltip from "@/components/Tooltip.vue";
 import { GameSession } from "@/typings/Session";
 import useSWRV from "swrv";
 import { loadProfile } from "@/api/profiles";

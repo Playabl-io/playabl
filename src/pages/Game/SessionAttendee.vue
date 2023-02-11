@@ -7,11 +7,16 @@
         size="regular"
       />
       <div class="flex flex-col">
-        <p>
-          {{ display }}
-        </p>
-        <p class="text-sm text-slate-700">
-          {{ gameStore.attendees[id].pronouns }}
+        <div class="flex items-center gap-1">
+          <p>
+            {{ display }}
+          </p>
+          <p class="text-sm text-slate-700">
+            ({{ gameStore.attendees[id].pronouns }})
+          </p>
+        </div>
+        <p v-if="showEmail" class="mt-1 text-sm">
+          {{ gameStore.attendees[id].email }}
         </p>
       </div>
     </div>
@@ -27,6 +32,10 @@ import UserAvatar from "@/components/UserAvatar.vue";
 const props = defineProps({
   id: {
     type: String,
+    required: true,
+  },
+  showEmail: {
+    type: Boolean,
     required: true,
   },
 });
