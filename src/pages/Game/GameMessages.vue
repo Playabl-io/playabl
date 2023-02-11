@@ -1,10 +1,10 @@
 <template>
   <div class="h-full flex flex-col">
-    <MessageReply
-      :play-audio="playAudio"
-      @send-message="sendMessage"
-      @update-play-audio="setPlayAudio"
-    />
+    <p class="font-bold">
+      Messages will be removed soon. Based on user feedback, in app messaging
+      will be deprecated in favor of showing player emails to game managers and
+      community admins.
+    </p>
     <div class="grid gap-6 rounded-lg mt-6 relative">
       <transition-group
         enter-active-class="transform-gpu duration-300 ease-out"

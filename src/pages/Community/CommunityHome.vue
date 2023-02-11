@@ -112,13 +112,14 @@
     <Heading level="h6" as="h2">Community links and happenings</Heading>
     <div class="grid md:grid-cols-2 gap-10 py-8">
       <div class="flex flex-col space-y-4 items-start">
-        <button
+        <a
           class="text-brand-500 font-semibold flex items-center hover:underline"
-          @click="openContactBox"
+          :href="`mailto:${contactEmailString}`"
+          target="_blank"
         >
           <EnvelopeIcon class="w-6 h-6 mr-2" />
           Contact
-        </button>
+        </a>
         <a
           v-if="communityStore.community.code_of_conduct_url"
           :href="communityStore.community.code_of_conduct_url"
@@ -189,7 +190,6 @@
 </template>
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import { useHead } from "@vueuse/head";
 import { format } from "date-fns";
 import { EnvelopeIcon } from "@heroicons/vue/24/outline";
 import { communityStore } from "./communityStore";
@@ -201,41 +201,7 @@ import { joinCommunity } from "@/api/communities";
 import useToast from "@/components/Toast/useToast";
 import { log } from "@/util/logger";
 import UserAvatar from "@/components/UserAvatar.vue";
-import useMessageBox from "@/components/MessageBox/useMessageBox";
-import { sendMessageToCommunity } from "@/api/messages";
 
-useHead({
-  title: communityStore.community.name,
-  meta: [
-    {
-      property: "twitter:card",
-      content: "summary",
-    },
-    {
-      property: "twitter:site",
-      content: "@playabl_io",
-    },
-    {
-      property: "og:title",
-      content: communityStore.community.name,
-    },
-    {
-      name: "og:url",
-      content: `https://app.playabl.io/community/${communityStore.community.id}`,
-    },
-    {
-      name: "og:description",
-      content: communityStore.community.description || "A Playabl community",
-    },
-    {
-      name: "og:image",
-      content: communityStore.coverImageUrl,
-    },
-  ],
-});
-
-const { openMessageBox, closeMessageBox, setMessageIsSubmitting } =
-  useMessageBox();
 const { showSuccess, showError } = useToast();
 
 const isJoining = ref(false);
@@ -247,6 +213,27 @@ const isCommunityMember = computed(() => {
     communityStore.isCreator ||
     communityStore.isPlayer
   );
+});
+
+const contactEmailString = computed(() => {
+  let primaryEmail = "";
+  let ccEmails: string[] = [];
+  const supportEmail = communityStore.community.support_email;
+  if (supportEmail) {
+    primaryEmail = supportEmail;
+    ccEmails =
+      communityStore.community.support_message_subscriptions?.map(
+        ({ email }) => email
+      ) ?? [];
+  } else {
+    primaryEmail = communityStore.admins.map(({ email }) => email).join(";");
+  }
+  const result =
+    ccEmails.length > 0
+      ? `${primaryEmail}?cc=${ccEmails.join(";")}`
+      : primaryEmail;
+  console.log(result);
+  return result;
 });
 
 onMounted(async () => {
@@ -292,34 +279,5 @@ async function handleJoinCommunity() {
   } finally {
     isJoining.value = false;
   }
-}
-
-function openContactBox() {
-  if (!store.user?.email) {
-    showError({ message: "You must be signed in to send messages" });
-    return;
-  }
-  openMessageBox({
-    to: communityStore.community.name,
-    onSend: async function handleSend({ message, shareEmail, messageId }) {
-      setMessageIsSubmitting({ messageId, isSubmitting: true });
-      try {
-        await sendMessageToCommunity({
-          message,
-          communityId: communityStore.community.id,
-          responseEmail: shareEmail ? store.user?.email : "",
-        });
-        showSuccess({ message: "Message sent" });
-        closeMessageBox(messageId);
-      } catch (error) {
-        showError({
-          message:
-            "Unable to send message. Please try again or contact support.",
-        });
-      } finally {
-        setMessageIsSubmitting({ messageId, isSubmitting: false });
-      }
-    },
-  });
 }
 </script>

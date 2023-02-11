@@ -43,24 +43,26 @@
           </ul>
         </div>
       </div>
-      <div class="mt-8 grid grid-cols-2">
+      <div class="mt-8 grid gap-4">
         <div>
-          <h6 class="text-xs text-slate-600 mb-2">RSVP'd</h6>
-          <ul class="mb-4">
+          <h6 class="text-sm font-semibold text-slate-600 mb-2">RSVP'd</h6>
+          <ul>
             <SessionAttendee
               v-for="rsvp in participants[0]"
               :id="rsvp"
               :key="rsvp"
+              :show-email="isOwner"
             />
           </ul>
         </div>
         <div>
-          <h6 class="text-xs text-slate-600 mb-2 text-right">Waitlist</h6>
+          <h6 class="text-sm font-semibold text-slate-600 mb-2">Waitlist</h6>
           <ul>
             <SessionAttendee
               v-for="rsvp in participants[1]"
               :id="rsvp"
               :key="rsvp"
+              :show-email="isOwner"
             />
           </ul>
         </div>

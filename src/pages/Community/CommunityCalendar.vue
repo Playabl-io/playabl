@@ -18,7 +18,7 @@
             leave-to-class="transform -translate-y-4 opacity-0"
           >
             <MenuItems
-              class="absolute -translate-x-3/4 whitespace-nowrap text-sm flex flex-col items-stetch gap-2 bg-gray-50 border border-solid border-gray-200 border-opacity-70 rounded-lg text-slate-900 p-2 z-20 shadow-xl"
+              class="mt-2 absolute -translate-x-3/4 whitespace-nowrap text-sm flex flex-col items-stetch gap-2 bg-gray-50 border border-solid border-gray-200 border-opacity-70 rounded-lg text-slate-900 p-2 z-20 shadow-xl"
             >
               <MenuItem v-slot="{ active }">
                 <FormLabel
@@ -71,7 +71,7 @@
               'bg-transparent text-black': !selected,
             }"
           >
-            Calendar view
+            List view
           </button>
         </Tab>
         <Tab v-slot="{ selected }" as="template">
@@ -82,11 +82,22 @@
               'bg-transparent text-black': !selected,
             }"
           >
-            List view
+            Calendar view
           </button>
         </Tab>
       </TabList>
       <TabPanels class="mt-6">
+        <TabPanel>
+          <ListView
+            :user-access="userAccess"
+            :loading="loading"
+            :sessions="filteredSessions"
+            :sessions-by-game="sessionsByGame"
+            :reference-date="referenceDate"
+            @update-reference-date="referenceDate = $event"
+            @refresh="refreshSessions"
+          />
+        </TabPanel>
         <TabPanel>
           <CalendarView
             :user-access="userAccess"
@@ -96,17 +107,6 @@
             :selected-date="selectedDate"
             @update-reference-date="referenceDate = $event"
             @update-selected-date="selectedDate = $event"
-            @refresh="refreshSessions"
-          />
-        </TabPanel>
-        <TabPanel>
-          <ListView
-            :user-access="userAccess"
-            :loading="loading"
-            :sessions="filteredSessions"
-            :sessions-by-game="sessionsByGame"
-            :reference-date="referenceDate"
-            @update-reference-date="referenceDate = $event"
             @refresh="refreshSessions"
           />
         </TabPanel>
