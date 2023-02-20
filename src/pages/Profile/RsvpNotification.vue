@@ -17,29 +17,28 @@
       </div>
     </div>
     <div class="flex justify-end gap-2 mt-3">
-      <LinkButton
-        v-if="notification.related_url"
-        :to="notification.related_url"
-      >
-        View game
-      </LinkButton>
+      <LinkButton v-if="relative" :to="relative"> View game </LinkButton>
       <p>|</p>
       <LinkButton @click="emit('clear')">Dismiss</LinkButton>
     </div>
   </li>
 </template>
 <script setup lang="ts">
-import { PropType } from "vue";
+import { PropType, computed } from "vue";
 import { formatRelative } from "date-fns";
 import { CheckCircleIcon } from "@heroicons/vue/24/solid";
 import { ClockIcon } from "@heroicons/vue/24/outline";
 import { Notification } from "@/typings/Notification";
 import LinkButton from "@/components/Buttons/LinkButton.vue";
-defineProps({
+const props = defineProps({
   notification: {
     type: Object as PropType<Notification>,
     required: true,
   },
 });
 const emit = defineEmits(["clear"]);
+const relative = computed(() => {
+  const url = new URL(props.notification.related_url ?? "");
+  return url?.pathname;
+});
 </script>
