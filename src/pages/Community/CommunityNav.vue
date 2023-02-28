@@ -38,6 +38,19 @@
         >
           Calendar
         </router-link>
+        <router-link
+          :to="`/communities/${
+            communityStore.community.url_short_name ||
+            communityStore.community.id
+          }/membership`"
+          class="border-b"
+          :class="{
+            'border-brand-500': currentRoute.name === 'Membership',
+            'border-transparent': currentRoute.name !== 'Membership',
+          }"
+        >
+          My Membership
+        </router-link>
         <template v-if="communityStore.isAdmin">
           <button
             class="flex items-center gap-1 rounded-md hover:cursor-pointer focus-styles"
@@ -127,7 +140,7 @@
   </section>
 </template>
 <script lang="ts" setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/vue/20/solid";
 import { communityStore } from "./communityStore";
@@ -139,4 +152,12 @@ const subRoutes = ["Overview", "Access", "Info", "Integrations", "Members"];
 const showSubNav = ref(
   communityStore.isAdmin && subRoutes.includes(currentRoute.name as string)
 );
+
+const isCommunityMember = computed(() => {
+  return (
+    communityStore.isAdmin ||
+    communityStore.isCreator ||
+    communityStore.isPlayer
+  );
+});
 </script>

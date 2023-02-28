@@ -11,7 +11,7 @@ export async function loadUserCommunityMembership({
 }) {
   const { data, error, status } = await supabase
     .from("community_memberships")
-    .select(`user_id, role_id`)
+    .select("*")
     .eq("community_id", communityId)
     .eq("user_id", userId)
     .single();
