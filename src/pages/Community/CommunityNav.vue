@@ -140,7 +140,7 @@
   </section>
 </template>
 <script lang="ts" setup>
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import { useRoute } from "vue-router";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/vue/20/solid";
 import { communityStore } from "./communityStore";
@@ -152,12 +152,4 @@ const subRoutes = ["Overview", "Access", "Info", "Integrations", "Members"];
 const showSubNav = ref(
   communityStore.isAdmin && subRoutes.includes(currentRoute.name as string)
 );
-
-const isCommunityMember = computed(() => {
-  return (
-    communityStore.isAdmin ||
-    communityStore.isCreator ||
-    communityStore.isPlayer
-  );
-});
 </script>
