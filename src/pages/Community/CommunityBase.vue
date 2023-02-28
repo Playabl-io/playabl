@@ -112,6 +112,7 @@ async function getMembershipStatus() {
   communityStore.isAdmin = data.role_id === ADMIN;
   communityStore.isCreator = data.role_id === CREATOR;
   communityStore.isPlayer = data.role_id === PLAYER;
+  communityStore.userRoleId = data.role_id;
 }
 
 async function getCommunity(id: string) {

@@ -14,6 +14,7 @@ interface CommunityStore {
   isAdmin: boolean;
   isCreator: boolean;
   isPlayer: boolean;
+  userRoleId: number;
   community: Community;
   admins: Member[];
   communityAccessLevels: AccessLevel[];
@@ -29,6 +30,7 @@ const DEFAULT_COMMUNITY_STATE: CommunityStore = {
   isAdmin: false,
   isCreator: false,
   isPlayer: false,
+  userRoleId: -1,
   community: {
     id: "",
     name: "",

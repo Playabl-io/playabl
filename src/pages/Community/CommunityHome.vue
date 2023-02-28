@@ -1,72 +1,71 @@
 <template>
   <div class="relative">
-    <div
-      class="w-full relative"
-      :class="{
-        'aspect-w-16 aspect-h-9': communityStore.coverImageUrl,
-      }"
-    >
-      <img
-        v-if="communityStore.coverImageUrl"
-        class="w-full h-full object-center object-cover shadow-md rounded-lg"
-        :src="communityStore.coverImageUrl"
-        alt="image"
-      />
+    <div class="grid md:grid-cols-2 items-start gap-6">
       <div
-        :class="[
-          communityStore.coverImageUrl
-            ? 'bg-gradient-to-b from-transparent via-transparent to-slate-900'
-            : 'bg-gradient-to-r from-purple-500 to-pink-500',
-        ]"
-        class="w-full h-full flex flex-col justify-end rounded-lg"
+        v-if="communityStore.coverImageUrl"
+        class="w-full relative"
+        :class="{
+          'aspect-w-16 aspect-h-9': communityStore.coverImageUrl,
+        }"
       >
-        <div class="flex justify-between px-6 py-4">
-          <dd class="grid lg:grid-cols-3 gap-4 grow text-neutral-100">
-            <span>
-              <dt class="text-xs text-opacity-60">Members</dt>
-              <dd class="font-semibold">{{ communityStore.membersCount }}</dd>
-            </span>
-            <span>
-              <dt class="text-xs text-opacity-60">Upcoming games</dt>
-              <dd class="font-semibold">{{ communityStore.gamesCount }}</dd>
-            </span>
-            <span>
-              <dt class="text-xs text-opacity-60">Community Since</dt>
-              <dd class="font-semibold">
-                {{
-                  format(
-                    new Date(communityStore.community.created_at),
-                    "LLL do, yyyy"
-                  )
-                }}
-              </dd>
-            </span>
-          </dd>
-          <template v-if="!isCommunityMember">
-            <a
-              v-if="communityStore.community.how_to_join"
-              href="#how-to-join"
-              class="text-neutral-100 text-lg font-bold"
-            >
-              How to join
-            </a>
-            <PrimaryButton
-              v-else-if="communityStore.community.allow_public_signup"
-              :is-loading="isJoining"
-              class="self-end"
-              @click="handleJoinCommunity"
-            >
-              Join Community
-            </PrimaryButton>
-            <PrimaryButton
-              v-else-if="communityStore.community.join_payment_link"
-              :is-loading="isJoining"
-              class="self-end"
-              @click="handleJoinCommunity"
-            >
-              Checkout with Stripe
-            </PrimaryButton>
-          </template>
+        <img
+          class="w-full h-full object-center object-cover rounded-lg"
+          :src="communityStore.coverImageUrl"
+          alt="image"
+        />
+      </div>
+      <div
+        class="flex flex-col justify-center gap-4 h-full"
+        :class="{
+          'col-span-full md:grid-cols-4': !communityStore.coverImageUrl,
+        }"
+      >
+        <dl
+          class="grid grid-cols-3 gap-4 border p-3 rounded-lg border-solid border-gray-300"
+        >
+          <span>
+            <dt class="text-xs text-opacity-60">Members</dt>
+            <dd class="font-semibold">{{ communityStore.membersCount }}</dd>
+          </span>
+          <span>
+            <dt class="text-xs text-opacity-60">Upcoming games</dt>
+            <dd class="font-semibold">{{ communityStore.gamesCount }}</dd>
+          </span>
+          <span>
+            <dt class="text-xs text-opacity-60">Community Since</dt>
+            <dd class="font-semibold">
+              {{
+                format(
+                  new Date(communityStore.community.created_at),
+                  "LLL do, yyyy"
+                )
+              }}
+            </dd>
+          </span>
+        </dl>
+        <div v-if="!isCommunityMember">
+          <a
+            v-if="communityStore.community.how_to_join"
+            href="#how-to-join"
+            class="text-lg font-bold"
+          >
+            How to join
+          </a>
+          <PrimaryButton
+            v-else-if="communityStore.community.allow_public_signup"
+            :is-loading="isJoining"
+            class="w-full"
+            @click="handleJoinCommunity"
+          >
+            Join Community
+          </PrimaryButton>
+          <PrimaryButton
+            v-else-if="communityStore.community.join_payment_link"
+            :is-loading="isJoining"
+            @click="handleJoinCommunity"
+          >
+            Checkout with Stripe
+          </PrimaryButton>
         </div>
       </div>
     </div>
@@ -201,6 +200,7 @@ import { joinCommunity } from "@/api/communities";
 import useToast from "@/components/Toast/useToast";
 import { log } from "@/util/logger";
 import UserAvatar from "@/components/UserAvatar.vue";
+import SectionContainer from "@/components/SectionContainer.vue";
 
 const { showSuccess, showError } = useToast();
 
@@ -232,7 +232,6 @@ const contactEmailString = computed(() => {
     ccEmails.length > 0
       ? `${primaryEmail}?cc=${ccEmails.join(";")}`
       : primaryEmail;
-  console.log(result);
   return result;
 });
 

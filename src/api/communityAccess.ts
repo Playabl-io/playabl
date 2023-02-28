@@ -68,6 +68,24 @@ export async function loadUserCommunityAccess({
   }
   return data;
 }
+
+export async function loadUserCommunityAccessLevels({
+  userId,
+  communityId,
+}: {
+  userId: string;
+  communityId: string;
+}) {
+  const { data, error } = await supabase
+    .from("community_access")
+    .select("access_level_id (*)")
+    .match({ community_id: communityId, user_id: userId });
+  if (error) {
+    log({ error });
+  }
+  return data;
+}
+
 export async function loadAllUserAccess({ userId }: { userId: string }) {
   const { data, error } = await supabase
     .from("community_access")

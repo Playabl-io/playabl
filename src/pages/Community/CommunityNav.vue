@@ -38,6 +38,19 @@
         >
           Calendar
         </router-link>
+        <router-link
+          :to="`/communities/${
+            communityStore.community.url_short_name ||
+            communityStore.community.id
+          }/membership`"
+          class="border-b"
+          :class="{
+            'border-brand-500': currentRoute.name === 'Membership',
+            'border-transparent': currentRoute.name !== 'Membership',
+          }"
+        >
+          My Membership
+        </router-link>
         <template v-if="communityStore.isAdmin">
           <button
             class="flex items-center gap-1 rounded-md hover:cursor-pointer focus-styles"

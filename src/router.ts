@@ -140,6 +140,11 @@ const routes = [
         component: () => import("@/pages/Community/CommunityCalendar.vue"),
       },
       {
+        path: "membership",
+        name: "Membership",
+        component: () => import("@/pages/Community/CommunityMembership.vue"),
+      },
+      {
         path: "manage",
         component: () => import("@/pages/Community/CommunityManage.vue"),
         children: [
