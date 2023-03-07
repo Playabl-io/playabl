@@ -44,21 +44,21 @@
           </span>
         </dl>
         <div v-if="!isCommunityMember">
-          <a
-            v-if="communityStore.community.how_to_join"
-            href="#how-to-join"
-            class="text-lg font-bold"
-          >
-            How to join
-          </a>
           <PrimaryButton
-            v-else-if="communityStore.community.allow_public_signup"
+            v-if="communityStore.community.allow_public_signup"
             :is-loading="isJoining"
             class="w-full"
             @click="handleJoinCommunity"
           >
             Join Community
           </PrimaryButton>
+          <a
+            v-else-if="communityStore.community.how_to_join"
+            href="#how-to-join"
+            class="text-lg font-bold"
+          >
+            How to join
+          </a>
           <PrimaryButton
             v-else-if="communityStore.community.join_payment_link"
             :is-loading="isJoining"

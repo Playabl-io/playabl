@@ -3,6 +3,7 @@ import { log } from "@/util/logger";
 import { store } from "@/store";
 import { ROLES } from "@/util/roles";
 import { Community } from "@/typings/Community";
+import axios from "axios";
 
 export async function loadJoinedCommunities() {
   if (!store.user) return;
@@ -180,4 +181,25 @@ export async function isShortNameAvailable({
     log({ error });
   }
   return false;
+}
+
+export async function leaveCommunity(communityId: string, userId = "") {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session?.access_token) return;
+  await axios
+    .post(
+      `/.netlify/functions/leaveCommunity?communityId=${communityId}&userId=${userId}`,
+      {},
+      {
+        headers: {
+          token: session.access_token,
+        },
+      }
+    )
+    .catch((error) => {
+      log({ error });
+      throw error;
+    });
 }
