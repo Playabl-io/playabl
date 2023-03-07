@@ -29,6 +29,7 @@ export const handler: Handler = async (event) => {
       .from("community_memberships")
       .select("*")
       .eq("user_id", user.data.user.id)
+      .eq("community_id", communityId)
       .single();
     if (data && data.role_id !== 1) {
       return {
