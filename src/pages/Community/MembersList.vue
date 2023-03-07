@@ -122,7 +122,8 @@ import { ROLES } from "@/util/roles";
 import { communityStore } from "./communityStore";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
 import BulkEditMembersForm from "./BulkEditMembersForm.vue";
-import { drawerActions } from "@/util/machineActions";
+import { drawerActions, makeSuccessAction } from "@/util/machineActions";
+import { leaveCommunity } from "@/api/communities";
 
 const breakpoints = useBreakpoints(breakpointsTailwind);
 const isMdAndLarger = breakpoints.greater("md");
@@ -247,17 +248,21 @@ const memberManagementMachine = createMachine<{
         invoke: {
           src: async (context) => {
             if (!context.member) throw Error("no member selected");
-            const { error } = await supabase
-              .from("community_memberships")
-              .delete()
-              .eq("id", context.member.membershipId);
-            if (error) {
-              throw error;
-            }
+            await leaveCommunity(
+              communityStore.community.id,
+              context.member.id
+            );
           },
           onDone: {
             target: "closed",
-            actions: ["hideModal", "hideDrawer", "removeMember"],
+            actions: [
+              "hideModal",
+              "hideDrawer",
+              "removeMember",
+              "clearMembers",
+              makeSuccessAction("Member removed"),
+              clearSelected,
+            ],
           },
           onError: {
             target: "editMember",

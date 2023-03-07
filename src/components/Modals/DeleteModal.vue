@@ -1,23 +1,24 @@
 <template>
   <BaseModal :title="title" :open="open">
-    <p class="prose">
-      {{ message }}
-    </p>
-    <div class="mt-2 flex justify-end space-x-4">
+    <slot name="body">
+      <p class="prose">
+        {{ message }}
+      </p>
+    </slot>
+    <div class="mt-4 flex justify-end space-x-4">
       <GhostButton @click="emit('cancel')">Cancel</GhostButton>
       <WarningButton :is-loading="isDeleting" @click="emit('delete')">
-        Delete
+        {{ deleteText }}
       </WarningButton>
     </div>
   </BaseModal>
 </template>
 <script setup lang="ts">
-import { toRefs } from "vue";
 import WarningButton from "../Buttons/WarningButton.vue";
 import BaseModal from "./BaseModal.vue";
 import GhostButton from "../Buttons/GhostButton.vue";
 
-const props = defineProps({
+defineProps({
   open: {
     type: Boolean,
     required: true,
@@ -34,8 +35,11 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  deleteText: {
+    type: String,
+    default: "Delete",
+  },
 });
-toRefs(props);
 
 const emit = defineEmits(["delete", "cancel"]);
 </script>
