@@ -7,7 +7,7 @@
         </p>
         <p class="text-sm text-slate-800">
           {{ format(new Date(session.start_time), "h:mm a") }} -
-          {{ format(new Date(session.end_time), "h:mm a z") }}
+          {{ format(new Date(session.end_time), "h:mm a O") }}
         </p>
       </div>
       <div v-if="!isOwner" class="mt-4 mb-8">

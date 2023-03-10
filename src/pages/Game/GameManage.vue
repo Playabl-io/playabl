@@ -36,7 +36,7 @@
               <p>
                 {{ format(new Date(session.end_time), "EEE, MMM d hh:mm a") }}
               </p>
-              <p>{{ format(new Date(session.end_time), "z") }}</p>
+              <p>{{ format(new Date(session.end_time), "O") }}</p>
             </span>
           </div>
           <div class="flex items-center mt-2">
