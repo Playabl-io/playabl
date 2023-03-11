@@ -51,7 +51,8 @@
               v-for="rsvp in participants[0]"
               :id="rsvp"
               :key="rsvp"
-              :show-email="isOwner"
+              :is-owner="isOwner"
+              @remove-user="removeRsvp"
             />
           </ul>
         </div>
@@ -62,7 +63,8 @@
               v-for="rsvp in participants[1]"
               :id="rsvp"
               :key="rsvp"
-              :show-email="isOwner"
+              :is-owner="isOwner"
+              @remove-user="removeRsvp"
             />
           </ul>
         </div>
@@ -88,7 +90,11 @@ import { computed, PropType, ref } from "vue";
 import { format, formatRelative } from "date-fns";
 import * as R from "ramda";
 import { Session } from "@/typings/Session";
-import { joinSession, leaveSession } from "@/api/gamesAndSessions";
+import {
+  joinSession,
+  leaveSession,
+  sendRemovalEmail,
+} from "@/api/gamesAndSessions";
 import PrimaryButton from "../Buttons/PrimaryButton.vue";
 import Well from "../Well.vue";
 import { CommunityAccess } from "@/typings/CommunityAccess";
@@ -100,6 +106,7 @@ import SessionAttendee from "@/pages/Game/SessionAttendee.vue";
 import AddToGoogleCal from "./AddToGoogleCal.vue";
 import DownloadCal from "./DownloadCal.vue";
 import SecondaryButton from "../Buttons/SecondaryButton.vue";
+import { Profile } from "@/typings/Profile";
 
 const { showSuccess, showError } = useToast();
 
@@ -201,6 +208,23 @@ async function handleLeave() {
     showError({ message: "Unable to leave session" });
   } finally {
     isProcessing.value = false;
+  }
+}
+
+async function removeRsvp(userId: Profile["id"]) {
+  const user = gameStore.attendees[userId];
+  try {
+    await leaveSession({ sessionId: props.session.id, userId });
+    await sendRemovalEmail({
+      toEmail: user.email,
+      toName: user.username || user.email,
+      gameName: gameStore.game.title,
+      gameId: gameStore.game.id,
+      sessionTime: props.session.start_time,
+    });
+    showSuccess({ message: "User removed from session" });
+  } catch (error) {
+    showError({ message: "Unable to remove user from session" });
   }
 }
 </script>
