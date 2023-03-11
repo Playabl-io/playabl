@@ -48,16 +48,16 @@ export const handler: Handler = async (event) => {
   await Promise.allSettled(games.map((game) => cancelGame(game.id)));
 
   // get games they're playing in
-  const sessions = await getUpcomingSessions(userId);
+  const sessions = await getUpcomingSessions({ userId, communityId });
   await Promise.allSettled(
     sessions.map((session) => leaveSession({ sessionId: session.id, userId }))
   );
 
   // remove community access
-  await removeCommunityAccess(userId);
+  await removeCommunityAccess({ userId, communityId });
 
   // remove community role
-  await removeCommunityMembership(userId);
+  await removeCommunityMembership({ userId, communityId });
 
   return {
     statusCode: 200,
@@ -82,23 +82,50 @@ async function getUpcomingGames({
   return data || [];
 }
 
-export async function getUpcomingSessions(userId: string) {
+export async function getUpcomingSessions({
+  userId,
+  communityId,
+}: {
+  userId: string;
+  communityId: string;
+}) {
   const today = new Date();
   const { data } = await supabase
     .from("sessions")
-    .select("*")
+    .select("*, games(*)")
+    .eq("games.community_id", communityId)
     .contains("rsvps", [userId])
     .gte("start_time", today.getTime());
 
   return data || [];
 }
 
-export async function removeCommunityMembership(userId: string) {
-  return supabase.from("community_memberships").delete().eq("user_id", userId);
+export async function removeCommunityMembership({
+  userId,
+  communityId,
+}: {
+  userId: string;
+  communityId: string;
+}) {
+  return supabase
+    .from("community_memberships")
+    .delete()
+    .eq("user_id", userId)
+    .eq("community_id", communityId);
 }
 
-export async function removeCommunityAccess(userId: string) {
-  return supabase.from("community_access").delete().eq("user_id", userId);
+export async function removeCommunityAccess({
+  userId,
+  communityId,
+}: {
+  userId: string;
+  communityId: string;
+}) {
+  return supabase
+    .from("community_access")
+    .delete()
+    .eq("user_id", userId)
+    .eq("community_id", communityId);
 }
 
 async function cancelGame(gameId: string) {
