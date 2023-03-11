@@ -304,6 +304,37 @@ export async function leaveSession({
   return data;
 }
 
+export async function sendRemovalEmail({
+  toEmail,
+  toName,
+  gameName,
+  gameId,
+  sessionTime,
+}: {
+  toEmail: string;
+  toName: string;
+  gameName: string;
+  gameId: number;
+  sessionTime: number;
+}) {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session?.access_token) return;
+  await fetch(
+    `/.netlify/functions/sendRemovedFromSessionMessage?toEmail=${toEmail}&toName=${toName}&gameName=${gameName}&gameId${gameId}&sessionTime=${sessionTime}`,
+    {
+      method: "POST",
+      headers: {
+        token: session.access_token,
+      },
+    }
+  ).catch((error) => {
+    log({ error });
+    throw error;
+  });
+}
+
 export async function loadGame(gameId: number) {
   const { data, error } = await supabase
     .from("games")
@@ -381,7 +412,12 @@ export async function updateSession(
   id: Session["id"],
   update: Partial<Session>
 ) {
-  const { error } = await supabase.from("sessions").update(update).eq("id", id);
+  const { error } = await supabase
+    .from("sessions")
+    .update(update)
+    .eq("id", id)
+    .select()
+    .single();
   if (error) {
     log({ error });
     throw new Error(error.message);
