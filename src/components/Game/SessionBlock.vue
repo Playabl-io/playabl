@@ -213,6 +213,10 @@ async function handleLeave() {
 
 async function removeRsvp(userId: Profile["id"]) {
   const user = gameStore.attendees[userId];
+  if (!user) {
+    showError({ message: "User not found! This shouldn't happen." });
+    return;
+  }
   try {
     await leaveSession({ sessionId: props.session.id, userId });
     await sendRemovalEmail({
