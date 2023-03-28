@@ -221,8 +221,8 @@ async function loadCommunitySessions(date: Date) {
   loading.value = true;
   const data = await loadAllCommunitySessions({
     communityId: communityStore.community.id,
-    startDate: startOfMonth(addMonths(date, -1)),
-    endDate: endOfMonth(addMonths(date, 1)),
+    startDate: startOfMonth(addMonths(date, -3)),
+    endDate: endOfMonth(addMonths(date, 6)),
   });
   sessions.value = data ?? [];
   loading.value = false;
@@ -232,8 +232,8 @@ async function loadOpenSessionBasedOnDate(date: Date) {
   loading.value = true;
   const data = await loadOpenCommunitySessions({
     communityId: communityStore.community.id,
-    startDate: startOfMonth(addMonths(date, -1)),
-    endDate: endOfMonth(addMonths(date, 1)),
+    startDate: startOfMonth(addMonths(date, -3)),
+    endDate: endOfMonth(addMonths(date, 6)),
   });
   sessions.value = data ?? [];
   loading.value = false;
