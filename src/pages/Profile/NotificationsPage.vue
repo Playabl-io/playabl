@@ -1,6 +1,14 @@
 <template>
   <ProfileTemplate>
     <section class="flex flex-col">
+      <SecondaryButton
+        v-if="unreadNotifications.length > 1"
+        :is-loading="dismissingAll"
+        class="ml-auto"
+        @click="dismissAll"
+      >
+        Dismiss All
+      </SecondaryButton>
       <section v-if="unreadNotifications.length">
         <ul class="grid gap-6">
           <component
@@ -23,6 +31,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
 import ProfileTemplate from "@/components/ProfileTemplate.vue";
 import { unreadNotifications } from "@/util/notifications";
 import { Notification } from "@/typings/Notification";
@@ -31,6 +40,7 @@ import CancelNotification from "./CancelNotification.vue";
 import { clearNotification } from "@/api/notifications";
 import useToast from "@/components/Toast/useToast";
 
+const dismissingAll = ref(false);
 const { showError } = useToast();
 
 function notificationComponent(type: Notification["type"]) {
@@ -51,5 +61,11 @@ async function handleClear(notification: Notification) {
   } catch (error) {
     showError({ message: "Unable to clear notification" });
   }
+}
+
+async function dismissAll() {
+  dismissingAll.value = true;
+  await Promise.allSettled(unreadNotifications.value.map(handleClear));
+  dismissingAll.value = false;
 }
 </script>
