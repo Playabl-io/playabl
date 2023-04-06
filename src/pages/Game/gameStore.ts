@@ -1,4 +1,4 @@
-import { Community } from "@/typings/Community";
+import { Community, SignupMethods } from "@/typings/Community";
 import { Game, GAME_DRAFT_STATE } from "@/typings/Game";
 import { Profile } from "@/typings/Profile";
 import { Session } from "@/typings/Session";
@@ -31,6 +31,7 @@ const DEFAULT_GAME_STATE = {
     name: "",
     allow_public_signup: false,
     created_at: "",
+    signup_method: SignupMethods.PRIVATE,
   },
 };
 

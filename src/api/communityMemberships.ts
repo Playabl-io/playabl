@@ -1,6 +1,7 @@
 import { supabase } from "@/supabase";
 import { log } from "@/util/logger";
-import { ADMIN } from "@/util/roles";
+import { ADMIN, ROLES } from "@/util/roles";
+import axios from "axios";
 
 export async function loadUserCommunityMembership({
   communityId,
@@ -66,4 +67,103 @@ export async function searchCommunityMembers(query: {
     throw error;
   }
   return { data, count };
+}
+
+export async function submitCommunityMembershipRequest(request: {
+  user_id: string;
+  message?: string;
+  community_id: string;
+}) {
+  const { data, error } = await supabase
+    .from("community_membership_requests")
+    .insert(request)
+    .select()
+    .single();
+  if (error) {
+    log({ error });
+    throw error;
+  }
+  return data;
+}
+
+export async function loadCommunityRequests({
+  communityId,
+}: {
+  communityId: string;
+}) {
+  const { data, error } = await supabase
+    .from("community_membership_requests")
+    .select("*")
+    .eq("community_id", communityId);
+  if (error) {
+    log({ error });
+    throw error;
+  }
+  return data;
+}
+
+export async function loadUserCommunityRequests({
+  userId,
+}: {
+  userId: string;
+}) {
+  const { data, error } = await supabase
+    .from("community_membership_requests")
+    .select("*")
+    .eq("user_id", userId);
+  if (error) {
+    log({ error });
+    throw error;
+  }
+  return data;
+}
+
+export async function checkForCommunityRequest({
+  userId,
+  communityId,
+}: {
+  userId: string;
+  communityId: string;
+}) {
+  const { data, error } = await supabase
+    .from("community_membership_requests")
+    .select("*")
+    .eq("user_id", userId)
+    .eq("community_id", communityId)
+    .single();
+  if (error) {
+    log({ error });
+    throw error;
+  }
+  return data;
+}
+
+export async function processMembershipRequest({
+  requestId,
+  userId,
+  communityId,
+  role,
+  action,
+}: {
+  requestId: number;
+  userId: string;
+  communityId: string;
+  role: ROLES;
+  action: "approve" | "deny";
+}) {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session?.access_token) return;
+  const data = await axios.post(
+    `/.netlify/functions/processMembershipRequest?communityId=${communityId}&userId=${userId}&role=${role}&requestId=${requestId}&action=${action}`,
+    {},
+    {
+      headers: {
+        token: session.access_token,
+      },
+    }
+  );
+
+  return data;
 }

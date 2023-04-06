@@ -43,22 +43,29 @@
             </dd>
           </span>
         </dl>
-        <div v-if="!isCommunityMember">
+        <p
+          v-if="communityStore.membershipRequest?.id"
+          class="font-semibold text-center"
+        >
+          Membership requested
+        </p>
+        <div v-else-if="!isCommunityMember">
           <PrimaryButton
-            v-if="communityStore.community.allow_public_signup"
+            v-if="communityStore.community.signup_method === 'PUBLIC'"
             :is-loading="isJoining"
             class="w-full"
             @click="handleJoinCommunity"
           >
             Join Community
           </PrimaryButton>
-          <a
-            v-else-if="communityStore.community.how_to_join"
-            href="#how-to-join"
-            class="text-lg font-bold"
+          <PrimaryButton
+            v-else-if="communityStore.community.signup_method === 'REQUEST'"
+            :is-loading="isJoining"
+            class="w-full"
+            @click="displayRequestToJoinModal = true"
           >
-            How to join
-          </a>
+            Request to join community
+          </PrimaryButton>
           <PrimaryButton
             v-else-if="communityStore.community.join_payment_link"
             :is-loading="isJoining"
@@ -67,6 +74,13 @@
             Checkout with Stripe
           </PrimaryButton>
         </div>
+        <a
+          v-if="communityStore.community.how_to_join"
+          href="#how-to-join"
+          class="text-brand-500 hover:underline"
+        >
+          How to join
+        </a>
       </div>
     </div>
   </div>
@@ -185,6 +199,12 @@
       @signed-in="handleSignInAndJoin"
       @cancel="displaySignUp = false"
     />
+    <RequestToJoinModal
+      :open="displayRequestToJoinModal"
+      :community-name="communityStore.community.name"
+      :community-id="communityStore.community.id"
+      @close="displayRequestToJoinModal = false"
+    />
   </div>
 </template>
 <script setup lang="ts">
@@ -200,12 +220,14 @@ import { joinCommunity } from "@/api/communities";
 import useToast from "@/components/Toast/useToast";
 import { log } from "@/util/logger";
 import UserAvatar from "@/components/UserAvatar.vue";
-import SectionContainer from "@/components/SectionContainer.vue";
+import RequestToJoinModal from "./RequestToJoinModal.vue";
+import { checkForCommunityRequest } from "@/api/communityMemberships";
 
 const { showSuccess, showError } = useToast();
 
 const isJoining = ref(false);
 const displaySignUp = ref(false);
+const displayRequestToJoinModal = ref(false);
 
 const isCommunityMember = computed(() => {
   return (

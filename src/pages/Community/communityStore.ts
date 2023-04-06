@@ -1,5 +1,5 @@
 import { AccessLevel } from "@/typings/AccessLevel";
-import { Community } from "@/typings/Community";
+import { Community, SignupMethods } from "@/typings/Community";
 import { Game } from "@/typings/Game";
 import { Member, MemberWithMembership } from "@/typings/Member";
 import Stripe from "stripe";
@@ -20,6 +20,9 @@ interface CommunityStore {
   communityAccessLevels: AccessLevel[];
   prices?: Stripe.Price[];
   paymentLink?: Stripe.PaymentLink;
+  membershipRequest?: {
+    id: number;
+  };
 }
 
 const DEFAULT_COMMUNITY_STATE: CommunityStore = {
@@ -36,6 +39,7 @@ const DEFAULT_COMMUNITY_STATE: CommunityStore = {
     name: "",
     allow_public_signup: false,
     created_at: "",
+    signup_method: SignupMethods.PUBLIC,
   },
   admins: [],
   communityAccessLevels: [],

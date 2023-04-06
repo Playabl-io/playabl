@@ -1,6 +1,6 @@
 <template>
   <TransitionRoot appear :show="open" as="template">
-    <Dialog as="div" @close="$emit('close')">
+    <Dialog as="div" @close="emit('close')">
       <div class="fixed inset-0 overflow-y-auto z-30">
         <div class="min-h-screen px-4 text-center">
           <TransitionChild
@@ -49,7 +49,6 @@
 </template>
 
 <script setup lang="ts">
-import { toRefs } from "vue";
 import {
   TransitionRoot,
   TransitionChild,
@@ -58,7 +57,7 @@ import {
   DialogTitle,
 } from "@headlessui/vue";
 
-const props = defineProps({
+defineProps({
   open: {
     type: Boolean,
     required: true,
@@ -68,7 +67,6 @@ const props = defineProps({
     required: true,
   },
 });
-toRefs(props);
 
-defineEmits(["close"]);
+const emit = defineEmits(["close"]);
 </script>

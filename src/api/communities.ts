@@ -155,6 +155,24 @@ export async function setPublicAccess({
   }
 }
 
+export async function setSignupMethod({
+  signupMethod,
+  communityId,
+}: {
+  signupMethod: Community["signup_method"];
+  communityId: Community["id"];
+}) {
+  const { error } = await supabase
+    .from("communities")
+    .update({
+      signup_method: signupMethod,
+    })
+    .eq("id", communityId);
+  if (error) {
+    throw error;
+  }
+}
+
 export async function getCommunityMemberCount(id: string) {
   return supabase
     .from("community_memberships")

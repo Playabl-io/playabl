@@ -1,3 +1,9 @@
+export enum SignupMethods {
+  PUBLIC = "PUBLIC",
+  PRIVATE = "PRIVATE",
+  REQUEST = "REQUEST",
+}
+
 export interface Community {
   id: string;
   support_email?: string;
@@ -22,4 +28,5 @@ export interface Community {
   join_payment_link?: string; // stripe payment link
   join_payment_link_id?: string; // id of payment link
   url_short_name?: string | null;
+  signup_method: SignupMethods;
 }
