@@ -54,12 +54,17 @@ export const handler: Handler = async (event) => {
     }
   }
   if (record.type === "membership_request_approval") {
-    sendMembershipApprovalEmail({
-      name: record.user_name,
-      email: record.email,
-      message: record.message,
-      relatedUrl: record.related_url,
-    });
+    try {
+      await sendMembershipApprovalEmail({
+        name: record.user_name,
+        email: record.email,
+        message: record.message,
+        relatedUrl: record.related_url,
+      });
+      console.info("successfully send membership approval email");
+    } catch (error) {
+      console.error("failed to send membership approval email", error);
+    }
   }
 
   return {
@@ -85,7 +90,7 @@ function sendMembershipApprovalEmail({ name, email, relatedUrl, message }) {
           ],
           TemplateID: 4717066,
           TemplateLanguage: true,
-          Subject: "Playabl Membership Request Approved",
+          Subject: "Playabl Community Membership Request Approved",
           Variables: {
             message,
             related_url: relatedUrl,

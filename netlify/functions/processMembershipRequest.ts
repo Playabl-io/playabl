@@ -35,13 +35,6 @@ export const handler: Handler = async (event) => {
     };
   }
 
-  if (action === "deny") {
-    await deleteRequest(Number(requestId));
-    return {
-      statusCode: 201,
-    };
-  }
-
   // confirm submitting user is Admin of community
   const { data } = await supabase
     .from("community_memberships")
@@ -55,6 +48,13 @@ export const handler: Handler = async (event) => {
       body: JSON.stringify({
         message: "not authorized",
       }),
+    };
+  }
+
+  if (action === "deny") {
+    await deleteRequest(Number(requestId));
+    return {
+      statusCode: 201,
     };
   }
 
