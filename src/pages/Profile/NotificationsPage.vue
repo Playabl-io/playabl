@@ -37,6 +37,7 @@ import { unreadNotifications } from "@/util/notifications";
 import { Notification } from "@/typings/Notification";
 import RsvpNotification from "./RsvpNotification.vue";
 import CancelNotification from "./CancelNotification.vue";
+import MembershipApprovalNotification from "./MembershipApprovalNotification.vue";
 import { clearNotification } from "@/api/notifications";
 import useToast from "@/components/Toast/useToast";
 
@@ -50,6 +51,8 @@ function notificationComponent(type: Notification["type"]) {
     case "rsvp":
     case "notify_creator_of_rsvp":
       return RsvpNotification;
+    case "membership_request_approval":
+      return MembershipApprovalNotification;
     default:
       return "div";
   }
