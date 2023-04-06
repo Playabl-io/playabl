@@ -115,7 +115,6 @@ import { pluralize } from "@/util/grammar";
 import MemberForm from "./MemberForm.vue";
 import { store } from "@/store";
 import UserAvatar from "@/components/UserAvatar.vue";
-import { supabase } from "@/supabase";
 import { Community } from "@/typings/Community";
 import useToast from "@/components/Toast/useToast";
 import { ROLES } from "@/util/roles";

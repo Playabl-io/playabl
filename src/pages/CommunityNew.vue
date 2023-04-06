@@ -457,7 +457,7 @@ async function createCommunity() {
         slack: slack.value,
         patreon: patreon.value,
         owner_id: store.user.id,
-        allow_public_signup: allowPublicSignup.value,
+        signup_method: allowPublicSignup.value ? "PUBLIC" : "PRIVATE",
         cover_image: imagePath,
         code_of_conduct_url: codeOfConductUrl.value,
       })

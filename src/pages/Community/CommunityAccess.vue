@@ -1,6 +1,6 @@
 <template>
   <SectionContainer>
-    <PublicAccess />
+    <SignupMethod />
   </SectionContainer>
   <SectionContainer>
     <AccessLevels />
@@ -8,6 +8,6 @@
 </template>
 <script setup lang="ts">
 import AccessLevels from "./AccessLevels.vue";
-import PublicAccess from "./PublicAccess.vue";
+import SignupMethod from "./SignupMethod.vue";
 import SectionContainer from "@/components/SectionContainer.vue";
 </script>

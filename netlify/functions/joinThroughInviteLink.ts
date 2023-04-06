@@ -7,7 +7,7 @@ export const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE
 );
 
-export const handler: Handler = async (event, context) => {
+export const handler: Handler = async (event) => {
   const { inviteId, userId, communityId } = event.queryStringParameters;
   const { data } = await supabase
     .from("community_invites")

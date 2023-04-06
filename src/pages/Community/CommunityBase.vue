@@ -50,6 +50,7 @@ import { getCoverImageUrl } from "@/api/storage";
 import InfoBanner from "@/components/Banners/InfoBanner.vue";
 import { loadUpcomingCommunityGamesWithCount } from "@/api/gamesAndSessions";
 import {
+  checkForCommunityRequest,
   loadCommunityAdmins,
   loadUserCommunityMembership,
 } from "@/api/communityMemberships";
@@ -92,6 +93,7 @@ onMounted(async () => {
     getMembershipStatus(),
     loadUpcomingGames(),
     loadAdmins(),
+    loadMembershipRequest(),
   ]);
   if (currentRoute.path.includes("manage") && !communityStore.isAdmin) {
     router.replace(`/communities/${id}?unauthorized=true`);
@@ -113,6 +115,17 @@ async function getMembershipStatus() {
   communityStore.isCreator = data.role_id === CREATOR;
   communityStore.isPlayer = data.role_id === PLAYER;
   communityStore.userRoleId = data.role_id;
+}
+
+async function loadMembershipRequest() {
+  if (!store.user) return;
+  const request = await checkForCommunityRequest({
+    userId: store.user.id,
+    communityId: communityStore.community.id,
+  });
+  if (request) {
+    communityStore.membershipRequest = request;
+  }
 }
 
 async function getCommunity(id: string) {

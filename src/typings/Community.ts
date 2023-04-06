@@ -22,4 +22,5 @@ export interface Community {
   join_payment_link?: string; // stripe payment link
   join_payment_link_id?: string; // id of payment link
   url_short_name?: string | null;
+  signup_method: "PUBLIC" | "PRIVATE" | "REQUEST";
 }

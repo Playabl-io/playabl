@@ -53,12 +53,55 @@ export const handler: Handler = async (event) => {
       }
     }
   }
+  if (record.type === "membership_request_approval") {
+    sendMembershipApprovalEmail({
+      name: record.user_name,
+      email: record.email,
+      message: record.message,
+      relatedUrl: record.related_url,
+    });
+  }
 
   return {
     statusCode: 200,
   };
 };
 
+function sendMembershipApprovalEmail({ name, email, relatedUrl, message }) {
+  return axios.post(
+    "https://api.mailjet.com/v3.1/send",
+    {
+      Messages: [
+        {
+          From: {
+            Email: "notifications@playabl.io",
+            Name: "Playabl",
+          },
+          To: [
+            {
+              Email: email,
+              Name: name,
+            },
+          ],
+          TemplateID: 4717066,
+          TemplateLanguage: true,
+          Subject: "Playabl Membership Request Approved",
+          Variables: {
+            message,
+            related_url: relatedUrl,
+          },
+        },
+      ],
+    },
+    {
+      auth: {
+        username: process.env.MJ_USER,
+        password: process.env.MJ_PW,
+      },
+      timeout: 7000,
+    }
+  );
+}
 function sendRsvpEmail({ name, email, relatedUrl, gameName }) {
   return axios.post(
     "https://api.mailjet.com/v3.1/send",

@@ -45,6 +45,14 @@ export const handler: Handler = async (event) => {
     }
     const beforeRsvps = session.rsvps;
     const data = await joinSession({ sessionId, userId });
+    if (data.error) {
+      return {
+        statusCode: data.status,
+        body: JSON.stringify({
+          error: data.error,
+        }),
+      };
+    }
     const user = await getUserProfile({ userId });
     try {
       await notifyGameCreator({

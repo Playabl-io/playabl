@@ -46,10 +46,9 @@
             </template>
             <template #tooltip> Has a community code of conduct </template>
           </Tooltip>
-          <Tooltip v-if="community.allow_public_signup">
+          <Tooltip v-if="community.signup_method === 'PUBLIC'">
             <template #trigger="{ toggleTooltip }">
               <BoltIcon
-                v-if="community.allow_public_signup"
                 class="text-yellow-500 h-6 w-6"
                 @mouseenter="toggleTooltip"
                 @mouseleave="toggleTooltip"

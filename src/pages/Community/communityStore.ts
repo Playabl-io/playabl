@@ -20,6 +20,9 @@ interface CommunityStore {
   communityAccessLevels: AccessLevel[];
   prices?: Stripe.Price[];
   paymentLink?: Stripe.PaymentLink;
+  membershipRequest?: {
+    id: number;
+  };
 }
 
 const DEFAULT_COMMUNITY_STATE: CommunityStore = {
@@ -36,6 +39,7 @@ const DEFAULT_COMMUNITY_STATE: CommunityStore = {
     name: "",
     allow_public_signup: false,
     created_at: "",
+    signup_method: "PUBLIC",
   },
   admins: [],
   communityAccessLevels: [],

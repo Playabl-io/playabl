@@ -273,6 +273,12 @@ export async function joinSession({
       log({ error });
       throw error;
     });
+
+  if (data.error) {
+    const error = new Error(data.error.message);
+    log({ error });
+    throw error;
+  }
   return data;
 }
 
