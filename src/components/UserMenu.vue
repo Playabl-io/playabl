@@ -58,6 +58,18 @@
               Notifications
             </router-link>
           </MenuItem>
+          <MenuItem
+            v-if="store.userEnabledFlags[flags.flags_ui]"
+            v-slot="{ active }"
+          >
+            <router-link
+              :class="{ [activeMenuItem]: active }"
+              class="px-2 py-1 rounded-md w-full text-right"
+              to="/flags"
+            >
+              Flags
+            </router-link>
+          </MenuItem>
           <MenuItem v-slot="{ active }">
             <button
               :class="{ [activeMenuItem]: active }"
@@ -99,6 +111,7 @@ import { unreadNotifications } from "@/util/notifications";
 import LoadingSpinner from "./LoadingSpinner.vue";
 import { log } from "@/util/logger";
 import UserAvatar from "./UserAvatar.vue";
+import flags from "@/util/flags";
 const activeMenuItem = "bg-gray-100 cursor-pointer";
 
 const isSigningOut = ref(false);

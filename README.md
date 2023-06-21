@@ -9,3 +9,7 @@
 - AWS Lambda, API Gateway, and SNS
 
 [Learn more](https://playabl.io)
+
+## Developing
+
+- [Read about how to use feature flags](./docs/feature-flags.md)

@@ -279,6 +279,14 @@ const routes = [
       requiresAuth: true,
     },
   },
+  {
+    path: "/flags",
+    name: "Flags",
+    meta: {
+      requiresAuth: true,
+    },
+    component: () => import("./pages/FlagsUI.vue"),
+  },
   { path: "/:pathMatch(.*)*", name: "NotFound", component: NotFound },
 ];
 

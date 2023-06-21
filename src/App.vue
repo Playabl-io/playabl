@@ -125,5 +125,16 @@ onMounted(async () => {
     // No logged in user
     loadingUser.value = false;
   }
+  if (user.data?.user?.id) {
+    const { data } = await supabase
+      .from("flags")
+      .select("*")
+      .contains("user_ids", [user.data.user.id]);
+    if (data) {
+      data.forEach(({ flag }) => {
+        store.userEnabledFlags[flag] = true;
+      });
+    }
+  }
 });
 </script>

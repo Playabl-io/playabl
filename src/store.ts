@@ -13,6 +13,7 @@ interface Store {
     string,
     { id: AccessLevel["id"]; name: AccessLevel["name"] }[]
   >;
+  userEnabledFlags: Record<string, boolean>;
 }
 
 export const store = reactive<Store>({
@@ -21,4 +22,5 @@ export const store = reactive<Store>({
   notifications: [],
   communityAccessLevels: [],
   communityMemberAccess: {},
+  userEnabledFlags: {},
 });
