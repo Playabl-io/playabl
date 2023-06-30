@@ -7,11 +7,29 @@
         Playabl
       </h1>
 
-      <p class="text-center text-slate-700">
-        Playabl is a new way of finding and managing roleplaying communities and
-        games. <br />Create an account to join roleplaying communities and
-        games.
+      <p class="text-center text-slate-700 text-lg mt-8">
+        Playabl is a free and open source platform for finding and managing
+        roleplaying communities and games.
       </p>
+      <div class="mt-8 text-slate-700 text-center">
+        <p>
+          Want to help make Playabl better?<br />
+          <a
+            className="text-brand-500 hover:underline"
+            target="_blank"
+            href="https://github.com/Playabl-io/playabl"
+          >
+            Check us out on GitHub </a
+          >, or
+          <a
+            className="text-brand-500 hover:underline"
+            target="_blank"
+            href="https://github.com/Playabl-io/playabl/discussions/128"
+          >
+            read more about ways you can get involved.
+          </a>
+        </p>
+      </div>
     </div>
   </BaseTemplate>
 </template>
