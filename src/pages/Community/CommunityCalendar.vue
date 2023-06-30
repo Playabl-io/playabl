@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="flex items-center justify-end gap-4">
-      <SortMenu v-model="sortOption" :options="options" class="w-40" />
+      <SortMenu v-model="sortOption" :options="options" />
       <div class="items-center relative">
         <Menu>
           <MenuButton
