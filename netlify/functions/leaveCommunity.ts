@@ -93,7 +93,7 @@ export async function getUpcomingSessions({
   const { data } = await supabase
     .from("sessions")
     .select("*, games(*)")
-    .eq("games.community_id", communityId)
+    .eq("community_id", communityId)
     .contains("rsvps", [userId])
     .gte("start_time", today.getTime());
 
