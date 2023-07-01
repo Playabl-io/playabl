@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="flex items-center justify-end gap-4">
-      <SortMenu v-model="sortOption" :options="options" class="w-40" />
+      <SortMenu v-model="sortOption" :options="options" />
       <div class="items-center relative">
         <Menu>
           <MenuButton
@@ -92,7 +92,7 @@
             :user-access="userAccess"
             :loading="loading"
             :sessions="filteredSessions"
-            :sessions-by-game="sessionsByGame"
+            :sessions-by-game="(sessionsByGame as Record<string, GameSession[]>)"
             :reference-date="referenceDate"
             @update-reference-date="referenceDate = $event"
             @refresh="refreshSessions"
@@ -102,7 +102,7 @@
           <CalendarView
             :user-access="userAccess"
             :sessions="filteredSessions"
-            :sessions-by-game="sessionsByGame"
+            :sessions-by-game="(sessionsByGame as Record<string, GameSession[]>)"
             :reference-date="referenceDate"
             :selected-date="selectedDate"
             @update-reference-date="referenceDate = $event"

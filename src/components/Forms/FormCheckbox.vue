@@ -2,7 +2,7 @@
   <input
     v-bind="$attrs"
     class="text-brand-500 rounded-md shadow-sm border border-gray-300 dark:bg-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-700 dark:focus-visible:ring-sky-500"
-    :checked="isChecked"
+    :checked="Boolean(isChecked)"
     type="checkbox"
     @change="handleChange"
   />

@@ -4,7 +4,7 @@ self.addEventListener("install", function (event) {
       return cache.addAll([
         "/src/assets/Open_Sans/OpenSans-VariableFont.ttf",
         "/src/assets/Paytone_One/PaytoneOne-Regular.ttf",
-        "/favicon.ico",
+        "/playabl_192.png",
       ]);
     })
   );

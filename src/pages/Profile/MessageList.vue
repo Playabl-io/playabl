@@ -94,7 +94,7 @@ onMounted(async () => {
 
     messagesGroupedByTopicId.value = R.groupBy(
       (message: Message) => message.topic_id
-    )(messages.value);
+    )(messages.value) as Record<string, Message[]>;
 
     const gameIds = messages.value.reduce((acc, message) => {
       if (message.topic_type === "game") {

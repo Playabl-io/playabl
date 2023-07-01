@@ -2,9 +2,7 @@
   <base-template>
     <GamesNav class="mb-12" />
     <div class="flex justify-end">
-      <div class="w-40">
-        <SortMenu v-model="sortOption" :options="options" />
-      </div>
+      <SortMenu v-model="sortOption" :options="options" />
     </div>
     <GamesListing
       :is-loading="isLoading"
