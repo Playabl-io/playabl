@@ -344,6 +344,7 @@ const integrationsMachine = createMachine(
       isDiscordIntegration: (context) =>
         context.editingIntegration?.type === "discord",
     },
+    // @ts-expect-error ts hates actions
     actions: {
       ...drawerActions,
       ...toastActions,
@@ -363,7 +364,6 @@ const integrationsMachine = createMachine(
           }
         },
       }),
-      // @ts-expect-error xstate why - no params is fine
       clearEditingIntegration: assign({
         editingIntegration: () => {
           return undefined;

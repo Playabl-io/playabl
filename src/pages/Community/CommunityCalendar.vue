@@ -92,7 +92,7 @@
             :user-access="userAccess"
             :loading="loading"
             :sessions="filteredSessions"
-            :sessions-by-game="sessionsByGame"
+            :sessions-by-game="(sessionsByGame as Record<string, GameSession[]>)"
             :reference-date="referenceDate"
             @update-reference-date="referenceDate = $event"
             @refresh="refreshSessions"
@@ -102,7 +102,7 @@
           <CalendarView
             :user-access="userAccess"
             :sessions="filteredSessions"
-            :sessions-by-game="sessionsByGame"
+            :sessions-by-game="(sessionsByGame as Record<string, GameSession[]>)"
             :reference-date="referenceDate"
             :selected-date="selectedDate"
             @update-reference-date="referenceDate = $event"
