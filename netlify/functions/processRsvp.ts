@@ -80,6 +80,14 @@ export const handler: Handler = async (event) => {
     };
   }
   if (method === "DELETE") {
+    if (user.data.user.id !== userId && user.data.user.id !== game.creator_id) {
+      return {
+        statusCode: 403,
+        body: JSON.stringify({
+          message: "Unnauthorized",
+        }),
+      };
+    }
     const data = await leaveSession({ sessionId, userId });
     return {
       statusCode: 200,
