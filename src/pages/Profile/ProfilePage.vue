@@ -41,7 +41,7 @@
           >
             <p>
               Email change registered. Please confirm by following the link sent
-              to the old email.
+              to the new email.
             </p>
           </InfoBanner>
         </fieldset>
@@ -88,10 +88,20 @@ watch(
 );
 
 async function updateProfile() {
+  function isDefinedAndNoMatch(a: string, b?: string) {
+    if (b) {
+      return a !== b;
+    }
+    return false;
+  }
+
   if (!store.user?.id) return;
   loading.value = true;
   try {
-    const emailsDontMatch = email.value !== store.user.email;
+    const emailsDontMatch =
+      email.value !== store.user.email ||
+      isDefinedAndNoMatch(email.value, store.userSession?.user.email) ||
+      isDefinedAndNoMatch(email.value, store.userSession?.user.new_email);
     if (emailsDontMatch) {
       showConfirmEmailBanner.value = true;
       const { error } = await supabase.auth.updateUser({ email: email.value });
