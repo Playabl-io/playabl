@@ -10,6 +10,10 @@
             <FormInput id="display-name" v-model="username" />
           </div>
           <div class="flex flex-col">
+            <FormLabel for="display-name">Email</FormLabel>
+            <FormInput id="display-name" v-model="email" />
+          </div>
+          <div class="flex flex-col">
             <FormLabel for="pronouns">Pronouns</FormLabel>
             <FormInput id="pronouns" v-model="pronouns" />
           </div>
@@ -58,6 +62,7 @@ const pronouns = ref(store.user?.pronouns);
 const website = ref(store.user?.website);
 const twitter = ref(store.user?.twitter);
 const bio = ref(store.user?.bio);
+const email = ref(store.user?.email);
 
 watch(
   () => store.user,
@@ -81,6 +86,7 @@ async function updateProfile() {
       website: website.value,
       twitter: twitter.value,
       bio: bio.value,
+      ...(email.value !== store.user.email ? { email: email.value } : {}),
     };
     const { error } = await supabase
       .from("profiles")
