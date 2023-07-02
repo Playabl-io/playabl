@@ -35,6 +35,15 @@
           <div class="flex justify-end">
             <PrimaryButton :is-loading="loading">Update</PrimaryButton>
           </div>
+          <InfoBanner
+            v-if="showConfirmEmailBanner"
+            @dismiss="showConfirmEmailBanner = false"
+          >
+            <p>
+              Email change registered. Please confirm by following the link sent
+              to the old email.
+            </p>
+          </InfoBanner>
         </fieldset>
       </form>
     </section>
@@ -53,6 +62,7 @@ import { log } from "@/util/logger";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import FormTextArea from "@/components/Forms/FormTextArea.vue";
 import useToast from "@/components/Toast/useToast";
+import InfoBanner from "@/components/Banners/InfoBanner.vue";
 
 const { showSuccess, showError } = useToast();
 
@@ -63,6 +73,8 @@ const website = ref(store.user?.website);
 const twitter = ref(store.user?.twitter);
 const bio = ref(store.user?.bio);
 const email = ref(store.user?.email);
+
+const showConfirmEmailBanner = ref(false);
 
 watch(
   () => store.user,
@@ -79,6 +91,12 @@ async function updateProfile() {
   if (!store.user?.id) return;
   loading.value = true;
   try {
+    const emailsDontMatch = email.value !== store.user.email;
+    if (emailsDontMatch) {
+      showConfirmEmailBanner.value = true;
+      const { error } = await supabase.auth.updateUser({ email: email.value });
+      if (error) throw error;
+    }
     const updates = {
       username: username.value,
       pronouns: pronouns.value,
@@ -86,7 +104,7 @@ async function updateProfile() {
       website: website.value,
       twitter: twitter.value,
       bio: bio.value,
-      ...(email.value !== store.user.email ? { email: email.value } : {}),
+      email: email.value,
     };
     const { error } = await supabase
       .from("profiles")
