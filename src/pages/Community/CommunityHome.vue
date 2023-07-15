@@ -126,8 +126,9 @@
     <div class="grid md:grid-cols-2 gap-10 py-8">
       <div class="flex flex-col space-y-4 items-start">
         <a
+          v-if="communityStore.community.support_email"
           class="text-brand-500 font-semibold flex items-center hover:underline"
-          :href="`mailto:${contactEmailString}`"
+          :href="`mailto:${communityStore.community.support_email}`"
           target="_blank"
         >
           <EnvelopeIcon class="w-6 h-6 mr-2" />
@@ -234,23 +235,6 @@ const isCommunityMember = computed(() => {
     communityStore.isCreator ||
     communityStore.isPlayer
   );
-});
-
-const contactEmailString = computed(() => {
-  let primaryEmail = "";
-  let ccEmails: string[] = [];
-  const supportEmail = communityStore.community.support_email;
-  if (supportEmail) {
-    primaryEmail = supportEmail;
-    ccEmails = communityStore.admins.map(({ email }) => email) ?? [];
-  } else {
-    primaryEmail = communityStore.admins.map(({ email }) => email).join(";");
-  }
-  const result =
-    ccEmails.length > 0
-      ? `${primaryEmail}?cc=${ccEmails.join(";")}`
-      : primaryEmail;
-  return result;
 });
 
 onMounted(async () => {
