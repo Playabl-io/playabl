@@ -7,6 +7,7 @@ export enum SignupMethods {
 export interface Community {
   id: string;
   support_email?: string;
+  /** @deprecated */
   support_message_subscriptions?: { name: string; email: string }[];
   name: string;
   description?: string;

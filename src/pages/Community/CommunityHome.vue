@@ -242,10 +242,7 @@ const contactEmailString = computed(() => {
   const supportEmail = communityStore.community.support_email;
   if (supportEmail) {
     primaryEmail = supportEmail;
-    ccEmails =
-      communityStore.community.support_message_subscriptions?.map(
-        ({ email }) => email
-      ) ?? [];
+    ccEmails = communityStore.admins.map(({ email }) => email) ?? [];
   } else {
     primaryEmail = communityStore.admins.map(({ email }) => email).join(";");
   }
