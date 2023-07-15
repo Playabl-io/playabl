@@ -64,9 +64,10 @@ async function handleRequest() {
   submitting.value = true;
   try {
     const data = await submitCommunityMembershipRequest({
-      community_id: props.communityId,
-      user_id: store.user.id,
+      communityId: props.communityId,
+      userId: store.user.id,
       message: message.value,
+      communityName: props.communityName,
     });
     communityStore.membershipRequest = data;
     showSuccess({ message: "Membership requested submitted!" });

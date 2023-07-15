@@ -1,5 +1,5 @@
 import { Handler } from "@netlify/functions";
-import axios from "axios";
+import { buildCommunityAdminMessage, sendEmail } from "../utils";
 
 export const handler: Handler = async (event) => {
   const { authorization } = event.headers;
@@ -61,9 +61,27 @@ export const handler: Handler = async (event) => {
         message: record.message,
         relatedUrl: record.related_url,
       });
-      console.info("successfully send membership approval email");
+      console.info("successfully sent membership approval email");
     } catch (error) {
       console.error("failed to send membership approval email", error);
+    }
+  }
+  if (
+    record.type === "community_admin_message" &&
+    record.custom_fields.send_email
+  ) {
+    const adminMessage = buildCommunityAdminMessage({
+      name: record.user_name,
+      email: record.email,
+      message: record.message,
+      relatedUrl: record.related_url,
+      subject: record.custom_fields?.subject,
+    });
+    try {
+      await sendEmail(adminMessage);
+      console.info("successfully sent community admin email");
+    } catch (error) {
+      console.error("failed to send community admin email", error);
     }
   }
 
@@ -73,140 +91,89 @@ export const handler: Handler = async (event) => {
 };
 
 function sendMembershipApprovalEmail({ name, email, relatedUrl, message }) {
-  return axios.post(
-    "https://api.mailjet.com/v3.1/send",
-    {
-      Messages: [
-        {
-          From: {
-            Email: "notifications@playabl.io",
-            Name: "Playabl",
-          },
-          To: [
-            {
-              Email: email,
-              Name: name,
-            },
-          ],
-          TemplateID: 4717066,
-          TemplateLanguage: true,
-          Subject: "Playabl Community Membership Request Approved",
-          Variables: {
-            message,
-            related_url: relatedUrl,
-          },
-        },
-      ],
+  const mailjetMessage = {
+    From: {
+      Email: "notifications@playabl.io",
+      Name: "Playabl",
     },
-    {
-      auth: {
-        username: process.env.MJ_USER,
-        password: process.env.MJ_PW,
+    To: [
+      {
+        Email: email,
+        Name: name,
       },
-      timeout: 7000,
-    }
-  );
+    ],
+    TemplateID: 4717066,
+    TemplateLanguage: true,
+    Subject: "Playabl Community Membership Request Approved",
+    Variables: {
+      message,
+      related_url: relatedUrl,
+    },
+  };
+  return sendEmail(mailjetMessage);
 }
 function sendRsvpEmail({ name, email, relatedUrl, gameName }) {
-  return axios.post(
-    "https://api.mailjet.com/v3.1/send",
-    {
-      Messages: [
-        {
-          From: {
-            Email: "notifications@playabl.io",
-            Name: "Playabl Notifications",
-          },
-          To: [
-            {
-              Email: email,
-              Name: name,
-            },
-          ],
-          TemplateID: 3700697,
-          TemplateLanguage: true,
-          Subject: "Playabl RSVP Success",
-          Variables: {
-            game_name: gameName,
-            related_url: relatedUrl,
-          },
-        },
-      ],
+  const mailjetMessage = {
+    From: {
+      Email: "notifications@playabl.io",
+      Name: "Playabl Notifications",
     },
-    {
-      auth: {
-        username: process.env.MJ_USER,
-        password: process.env.MJ_PW,
+    To: [
+      {
+        Email: email,
+        Name: name,
       },
-      timeout: 7000,
-    }
-  );
+    ],
+    TemplateID: 3700697,
+    TemplateLanguage: true,
+    Subject: "Playabl RSVP Success",
+    Variables: {
+      game_name: gameName,
+      related_url: relatedUrl,
+    },
+  };
+  return sendEmail(mailjetMessage);
 }
 function sendNewJoinEmail({ name, email, message }) {
-  return axios.post(
-    "https://api.mailjet.com/v3.1/send",
-    {
-      Messages: [
-        {
-          From: {
-            Email: "notifications@playabl.io",
-            Name: "Playabl Notifications",
-          },
-          To: [
-            {
-              Email: email,
-              Name: name,
-            },
-          ],
-          TemplateID: 4405929,
-          TemplateLanguage: true,
-          Subject: "New RSVP to your Game - Playabl",
-          Variables: {
-            message,
-          },
-        },
-      ],
+  const mailjetMessage = {
+    From: {
+      Email: "notifications@playabl.io",
+      Name: "Playabl Notifications",
     },
-    {
-      auth: {
-        username: process.env.MJ_USER,
-        password: process.env.MJ_PW,
+    To: [
+      {
+        Email: email,
+        Name: name,
       },
-      timeout: 7000,
-    }
-  );
+    ],
+    TemplateID: 4405929,
+    TemplateLanguage: true,
+    Subject: "New RSVP to your Game - Playabl",
+    Variables: {
+      message,
+    },
+  };
+  return sendEmail(mailjetMessage);
 }
 
 function sendCancelEmail({ name, email, gameName }) {
-  return axios.post(
-    "https://api.mailjet.com/v3.1/send",
-    {
-      Messages: [
-        {
-          From: {
-            Email: "notifications@playabl.io",
-            Name: "Playabl Notifications",
-          },
-          To: [
-            {
-              Email: email,
-              Name: name,
-            },
-          ],
-          TemplateID: 3807927,
-          TemplateLanguage: true,
-          Variables: {
-            game_name: gameName,
-          },
-        },
-      ],
+  const mailjetMessage = {
+    From: {
+      Email: "notifications@playabl.io",
+      Name: "Playabl Notifications",
     },
-    {
-      auth: {
-        username: process.env.MJ_USER,
-        password: process.env.MJ_PW,
+    To: [
+      {
+        Email: email,
+        Name: name,
       },
-      timeout: 7000,
-    }
-  );
+    ],
+    TemplateID: 3807927,
+    TemplateLanguage: true,
+    Variables: {
+      game_name: gameName,
+    },
+  };
+
+  return sendEmail(mailjetMessage);
 }

@@ -40,6 +40,7 @@ import CancelNotification from "./CancelNotification.vue";
 import MembershipApprovalNotification from "./MembershipApprovalNotification.vue";
 import { clearNotification } from "@/api/notifications";
 import useToast from "@/components/Toast/useToast";
+import GeneralNotification from "./GeneralNotification.vue";
 
 const dismissingAll = ref(false);
 const { showError } = useToast();
@@ -54,7 +55,7 @@ function notificationComponent(type: Notification["type"]) {
     case "membership_request_approval":
       return MembershipApprovalNotification;
     default:
-      return "div";
+      return GeneralNotification;
   }
 }
 

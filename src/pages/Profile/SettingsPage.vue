@@ -13,14 +13,20 @@
       <Heading level="h6" as="h3" class="mb-6">Email settings</Heading>
       <fieldset :disabled="emailsEnabled === false">
         <p class="mb-4">Email me when...</p>
-        <FormLabel class="flex items-center gap-2 font-normal mb-2" no-margin>
-          <FormCheckbox v-model="unreadNotificationEmailsEnabled" />
-          I have unread notifications from that day
-        </FormLabel>
-        <FormLabel class="flex items-center gap-2 font-normal" no-margin>
-          <FormCheckbox v-model="rsvpToMyGameEmailsEnabled" />
-          Someone joins my game
-        </FormLabel>
+        <div class="grid gap-2">
+          <FormLabel class="flex items-center gap-2 font-normal" no-margin>
+            <FormCheckbox v-model="unreadNotificationEmailsEnabled" />
+            I have unread notifications from that day
+          </FormLabel>
+          <FormLabel class="flex items-center gap-2 font-normal" no-margin>
+            <FormCheckbox v-model="rsvpToMyGameEmailsEnabled" />
+            Someone joins my game
+          </FormLabel>
+          <FormLabel class="flex items-center gap-2 font-normal" no-margin>
+            <FormCheckbox v-model="communityAdminEmailsEnabled" />
+            There are notifications for communities I manage
+          </FormLabel>
+        </div>
       </fieldset>
       <PrimaryButton
         :is-loading="saving"
@@ -56,6 +62,9 @@ const unreadNotificationEmailsEnabled = ref(
 const rsvpToMyGameEmailsEnabled = ref(
   store.user?.email_preferences?.rsvp_to_my_game_enabled ?? false
 );
+const communityAdminEmailsEnabled = ref(
+  store.user?.email_preferences?.send_community_admin_messages ?? false
+);
 const saving = ref(false);
 
 watch(
@@ -64,6 +73,7 @@ watch(
     if (newVal === false) {
       unreadNotificationEmailsEnabled.value = false;
       rsvpToMyGameEmailsEnabled.value = false;
+      communityAdminEmailsEnabled.value = false;
     }
   }
 );
@@ -75,6 +85,7 @@ async function updateEmailSettings() {
     email_enabled: emailsEnabled.value,
     unread_notifications_enabled: unreadNotificationEmailsEnabled.value,
     rsvp_to_my_game_enabled: rsvpToMyGameEmailsEnabled.value,
+    send_community_admin_messages: communityAdminEmailsEnabled.value,
   };
   try {
     await updateProfile({

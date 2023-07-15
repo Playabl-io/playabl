@@ -69,19 +69,53 @@ export async function searchCommunityMembers(query: {
   return { data, count };
 }
 
-export async function submitCommunityMembershipRequest(request: {
-  user_id: string;
+export async function submitCommunityMembershipRequest({
+  userId,
+  message,
+  communityId,
+  communityName,
+}: {
+  userId: string;
   message?: string;
-  community_id: string;
+  communityId: string;
+  communityName: string;
 }) {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session?.access_token) return;
+
   const { data, error } = await supabase
     .from("community_membership_requests")
-    .insert(request)
+    .insert({
+      user_id: userId,
+      message,
+      community_id: communityId,
+    })
     .select()
     .single();
   if (error) {
     log({ error });
     throw error;
+  }
+  try {
+    await axios({
+      url: `/.netlify/functions/sendMessageToCommunity`,
+      method: "POST",
+      headers: {
+        token: session.access_token,
+      },
+      data: {
+        message: `A user has requested to join ${communityName}. Review membership requests from the 'Manage' section of the community.`,
+        subject: `There is a new request to join ${communityName}`,
+        relatedUrl: `${
+          import.meta.env.VITE_PLAYABL_URL
+        }/communities/${communityId}/manage/members`,
+        communityId,
+      },
+    });
+  } catch (error) {
+    log({ error });
   }
   return data;
 }

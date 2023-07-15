@@ -221,7 +221,6 @@ import useToast from "@/components/Toast/useToast";
 import { log } from "@/util/logger";
 import UserAvatar from "@/components/UserAvatar.vue";
 import RequestToJoinModal from "./RequestToJoinModal.vue";
-import { checkForCommunityRequest } from "@/api/communityMemberships";
 
 const { showSuccess, showError } = useToast();
 
