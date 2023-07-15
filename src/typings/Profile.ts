@@ -11,5 +11,6 @@ export interface Profile {
     email_enabled: boolean;
     unread_notifications_enabled: boolean;
     rsvp_to_my_game_enabled: boolean;
+    send_community_admin_messages: boolean;
   };
 }
