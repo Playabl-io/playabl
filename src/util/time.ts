@@ -28,6 +28,11 @@ const timeBeforeMapper = {
 };
 
 export function rsvpTimes(accessTimes: AccessLevel[]): RsvpTimes {
+  /**
+   * All priority periods run concurrently. This means the policy with the longest priority
+   * decides the end time when all policies end together. So get that future time,
+   * then subtract the duration of the others to figure out when they go into effect.
+   */
   const now = new Date();
   const result: RsvpTimes = {};
   const times = accessTimes.map((time) => {
@@ -42,11 +47,18 @@ export function rsvpTimes(accessTimes: AccessLevel[]): RsvpTimes {
       maxTime,
       time.priority_access_time
     );
+    const rounded = roundToNearestMinutes(rsvpDate);
     result[time.id] = {
       name: time.name,
-      rsvpAvailableTime: roundToNearestMinutes(rsvpDate).getTime(),
+      rsvpAvailableTime: rounded.getTime(),
+      humanReadableRsvpTime: rounded.toLocaleString(),
     };
   });
+  result.default = {
+    name: "default",
+    rsvpAvailableTime: roundToNearestMinutes(maxTime).getTime(),
+    humanReadableRsvpTime: roundToNearestMinutes(maxTime).toLocaleString(),
+  };
   return result;
 }
 

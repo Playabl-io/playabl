@@ -19,5 +19,5 @@ export type NewAccessLevel = Omit<AccessLevel, "id">;
 // Used to compute at what time an access level can RSVP
 export type RsvpTimes = Record<
   string,
-  { rsvpAvailableTime: number; name: string }
+  { rsvpAvailableTime: number; name: string; humanReadableRsvpTime: string }
 >;
