@@ -61,6 +61,13 @@ async function handleRequest() {
     showError({ message: "You must be signed in to complete this" });
     return;
   }
+  if (
+    store.user.email &&
+    communityStore.community.banned_emails?.includes(store.user.email)
+  ) {
+    showError({ message: "You are not allowed to join this community" });
+    return;
+  }
   submitting.value = true;
   try {
     const data = await submitCommunityMembershipRequest({

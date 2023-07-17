@@ -39,7 +39,7 @@ const DEFAULT_COMMUNITY_STATE: CommunityStore = {
     name: "",
     allow_public_signup: false,
     created_at: "",
-    signup_method: SignupMethods.PUBLIC,
+    signup_method: SignupMethods.PRIVATE,
   },
   admins: [],
   communityAccessLevels: [],
