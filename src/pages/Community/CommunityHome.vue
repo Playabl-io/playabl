@@ -43,8 +43,11 @@
             </dd>
           </span>
         </dl>
+        <p v-if="isBanned" class="font-semibold text-center">
+          You are banned from this community
+        </p>
         <p
-          v-if="communityStore.membershipRequest?.id"
+          v-else-if="communityStore.membershipRequest?.id"
           class="font-semibold text-center"
         >
           Membership requested
@@ -237,6 +240,14 @@ const isCommunityMember = computed(() => {
   );
 });
 
+const isBanned = computed(() => {
+  const user = store.user;
+  if (user?.email) {
+    return communityStore.community.banned_emails?.includes(user.email);
+  }
+  return false;
+});
+
 onMounted(async () => {
   if (communityStore.community.twitter) {
     // @ts-expect-error TS doesn't know we loaded twitter
@@ -258,6 +269,13 @@ function handleSignInAndJoin() {
 async function handleJoinCommunity() {
   if (!store.user?.id) {
     displaySignUp.value = true;
+    return;
+  }
+  if (
+    store.user.email &&
+    communityStore.community.banned_emails?.includes(store.user.email)
+  ) {
+    showError({ message: "You are not allowed to join this community" });
     return;
   }
   isJoining.value = true;

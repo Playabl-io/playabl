@@ -3,8 +3,13 @@ import { buildCommunityAdminMessage, sendEmail } from "../utils";
 
 export const handler: Handler = async (event) => {
   const { authorization } = event.headers;
+  const { record } = JSON.parse(event.body);
 
   if (authorization !== process.env.WEB_MAIL_PASSWORD) {
+    console.warn(
+      "Unauthorized connection. Dropping notification ID",
+      record.id
+    );
     return {
       statusCode: 403,
       body: JSON.stringify({
@@ -12,7 +17,6 @@ export const handler: Handler = async (event) => {
       }),
     };
   }
-  const { record } = JSON.parse(event.body);
 
   if (record.type === "rsvp") {
     try {

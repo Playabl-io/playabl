@@ -30,4 +30,5 @@ export interface Community {
   join_payment_link_id?: string; // id of payment link
   url_short_name?: string | null;
   signup_method: SignupMethods;
+  banned_emails?: string[];
 }
