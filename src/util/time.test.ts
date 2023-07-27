@@ -9,7 +9,7 @@ import {
 const SESSION = {
   id: 150,
   created_at: "2023-06-30T14:28:44.044046+00:00",
-  start_time: 1689944400000,
+  start_time: 2689944400000,
   end_time: 1689951600000,
   game_id: 99,
   access_times: '{"17":{"name":"default","rsvpAvailableTime":1688135340000}}',

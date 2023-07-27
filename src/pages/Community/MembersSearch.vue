@@ -60,7 +60,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { debouncedWatch } from "@vueuse/core";
 import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
 import FormInput from "@/components/Forms/FormInput.vue";
@@ -76,9 +76,6 @@ import PaginatorControls from "@/components/PaginatorControls.vue";
 import { DEFAULT_PAGE_SIZE } from "@/util/pagination";
 import createNewObservable from "@/util/observable";
 
-const allLevelIds = computed(() => {
-  return communityStore.communityAccessLevels.map((level) => level.id);
-});
 const allRoleIds = [ROLES.admin, ROLES.creator, ROLES.player];
 
 const searchObservable = createNewObservable();
