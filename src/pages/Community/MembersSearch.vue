@@ -89,7 +89,7 @@ const searchMachine = createMachine(
       context: {} as {
         searchTerm: string;
         roleId: number[];
-        accessId: number[];
+        accessId?: number[];
         pageSize: number;
         page: number;
         from: number;
@@ -103,7 +103,7 @@ const searchMachine = createMachine(
             type: "SEARCH";
             searchTerm: string;
             roleId: number[];
-            accessId: number[];
+            accessId?: number[];
           }
         | { type: "PAGE_NEXT" }
         | { type: "PAGE_PREVIOUS" }
@@ -114,7 +114,7 @@ const searchMachine = createMachine(
     context: {
       searchTerm: "",
       roleId: allRoleIds,
-      accessId: allLevelIds.value,
+      accessId: undefined,
       pageSize: DEFAULT_PAGE_SIZE,
       page: 0,
       from: 0,
@@ -265,7 +265,7 @@ onMounted(() => {
   send({
     type: "SEARCH",
     searchTerm: "",
-    accessId: allLevelIds.value,
+    accessId: undefined,
     roleId: allRoleIds,
   });
 });
@@ -277,7 +277,7 @@ debouncedWatch(
       type: "SEARCH",
       searchTerm: updated,
       roleId: roleFilter.value ? [roleFilter.value] : allRoleIds,
-      accessId: accessFilter.value ? [accessFilter.value] : allLevelIds.value,
+      accessId: accessFilter.value ? [accessFilter.value] : undefined,
     }),
   { debounce: 750 }
 );
@@ -288,7 +288,7 @@ watch(
       type: "SEARCH",
       searchTerm: membersSearchTerm.value,
       roleId: updated ? [updated] : allRoleIds,
-      accessId: accessFilter.value ? [accessFilter.value] : allLevelIds.value,
+      accessId: accessFilter.value ? [accessFilter.value] : undefined,
     })
 );
 watch(
@@ -298,7 +298,7 @@ watch(
       type: "SEARCH",
       searchTerm: membersSearchTerm.value,
       roleId: roleFilter.value ? [roleFilter.value] : allRoleIds,
-      accessId: updated ? [updated] : allLevelIds.value,
+      accessId: updated ? [updated] : undefined,
     })
 );
 </script>
