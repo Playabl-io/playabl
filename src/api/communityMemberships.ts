@@ -38,14 +38,43 @@ export async function loadCommunityAdmins(communityId: string) {
   }
 }
 
+export async function searchInCommunityMembers(query: {
+  communityId: string;
+  searchTerm: string;
+  roleIds: number[];
+  from: number;
+  to: number;
+}) {
+  const { data, error, count } = await supabase
+    .from("profiles")
+    .select("*, community_memberships!inner(id, community_id, role_id)", {
+      count: "estimated",
+    })
+    .eq("community_memberships.community_id", query.communityId)
+    .in("community_memberships.role_id", query.roleIds)
+    .or(
+      `username.ilike.%${query.searchTerm}%,email.ilike.%${query.searchTerm}%`
+    )
+    .order("username", { ascending: true })
+    .range(query.from, query.to);
+  if (error) {
+    log({ error });
+    throw error;
+  }
+  return { data, count };
+}
+
 export async function searchCommunityMembers(query: {
   communityId: string;
   searchTerm: string;
   roleIds: number[];
-  accessIds: number[];
+  accessIds?: number[];
   from: number;
   to: number;
 }) {
+  if (!query.accessIds) {
+    return searchInCommunityMembers(query);
+  }
   const { data, error, count } = await supabase
     .from("profiles")
     .select(
