@@ -1,4 +1,5 @@
 import { supabase } from "@/supabase";
+import { Community } from "@/typings/Community";
 import { log } from "@/util/logger";
 import { ADMIN, ROLES } from "@/util/roles";
 import axios from "axios";
@@ -21,6 +22,27 @@ export async function loadUserCommunityMembership({
     throw error;
   }
   return data;
+}
+
+export async function loadUserManagedCommunities({
+  userId,
+}: {
+  userId: string;
+}) {
+  const { data, error } = await supabase
+    .from("community_memberships")
+    .select("community_id (*)")
+    .eq("user_id", userId)
+    .eq("role_id", ADMIN);
+  if (error) {
+    log({ error });
+  }
+  if (data) {
+    return data.map((membership) => ({
+      ...membership.community_id,
+    })) as Community[];
+  }
+  return [];
 }
 
 export async function loadCommunityAdmins(communityId: string) {

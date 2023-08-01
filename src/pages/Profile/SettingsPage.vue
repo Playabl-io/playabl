@@ -45,7 +45,7 @@ import FormLabel from "@/components/Forms/FormLabel.vue";
 import FormCheckbox from "@/components/Forms/FormCheckbox.vue";
 import { store } from "@/store";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
-import ProfileTemplate from "@/components/ProfileTemplate.vue";
+import ProfileTemplate from "@/layouts/ProfileTemplate.vue";
 import { updateProfile } from "@/api/profiles";
 import useToast from "@/components/Toast/useToast";
 import Heading from "@/components/Heading.vue";

@@ -8,7 +8,7 @@
       'opacity-50 cursor-not-allowed': disabled,
     }"
   >
-    <loading-spinner v-if="isLoading" />
+    <loading-spinner v-if="isLoading" color="white" />
     <p v-if="isLoading" class="sr-only">Loading</p>
     <slot v-else></slot>
   </base-button>

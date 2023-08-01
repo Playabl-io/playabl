@@ -28,6 +28,7 @@ import TosPage from "@/pages/TosPage.vue";
 import PrivacyPolicy from "@/pages/PrivacyPolicy.vue";
 import SlackAuthorization from "@/pages/SlackAuthorization.vue";
 import { store } from "./store";
+import { SORT_OPTIONS, queryHandlerFactory } from "./util/urlParams";
 
 const routes = [
   {
@@ -84,14 +85,6 @@ const routes = [
     },
   },
   {
-    path: "/messages/:topic_id?",
-    component: MessagesPage,
-    meta: {
-      title: "Playabl - Messages",
-      requiresAuth: true,
-    },
-  },
-  {
     path: "/communities/joined",
     component: CommunitiesJoined,
     meta: {
@@ -138,6 +131,16 @@ const routes = [
         path: "calendar",
         name: "Calendar",
         component: () => import("@/pages/Community/CommunityCalendar.vue"),
+      },
+      {
+        path: "events",
+        name: "Events",
+        component: () => import("@/pages/Community/CommunityEvents.vue"),
+        beforeEnter: [
+          queryHandlerFactory({
+            sort: SORT_OPTIONS.startTimeAsc,
+          }),
+        ],
       },
       {
         path: "membership",
@@ -245,6 +248,16 @@ const routes = [
           requiresAuth: true,
         },
       },
+    ],
+  },
+  {
+    path: "/events/browse",
+    name: "Events Browse",
+    component: () => import("@/pages/Events/EventsBrowse.vue"),
+    beforeEnter: [
+      queryHandlerFactory({
+        sort: SORT_OPTIONS.startTimeAsc,
+      }),
     ],
   },
   {

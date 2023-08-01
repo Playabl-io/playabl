@@ -20,7 +20,7 @@
 import { computed } from "vue";
 import { isAfter, subHours } from "date-fns";
 import Heading from "@/components/Heading.vue";
-import ProfileTemplate from "@/components/ProfileTemplate.vue";
+import ProfileTemplate from "@/layouts/ProfileTemplate.vue";
 import ResetPasswordForm from "@/components/ResetPasswordForm.vue";
 import { store } from "@/store";
 

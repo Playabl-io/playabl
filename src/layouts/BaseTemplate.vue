@@ -1,7 +1,7 @@
 <template>
   <nav-header v-if="isSmAndLarger" />
   <MobileNavHeader v-else />
-  <main class="p-12 md:container md:mx-auto max-w-4xl grow">
+  <main class="py-8 px-4 md:container md:mx-auto max-w-6xl grow">
     <slot></slot>
   </main>
 </template>

@@ -1,10 +1,16 @@
 <template>
   <label
     :for="id"
-    class="relative rounded-xl border border-solid border-gray-300 cursor-pointer focus-styles focus-styles-within select-none"
-    :class="{
-      'border-blue-500 bg-blue-500 text-white': modelValue === $attrs.value,
-    }"
+    class="relative p-4 rounded-md border border-solid transition-all duration-150 ease-out"
+    :class="[
+      {
+        'bg-white border-gray-300': modelValue !== $attrs.value,
+        'bg-blue-50 border-blue-500 shadow-md': modelValue === $attrs.value,
+        'opacity-80': modelValue === $attrs.value && $attrs.disabled,
+        'cursor-not-allowed bg-gray-100': $attrs.disabled,
+        'cursor-pointer': !$attrs.disabled,
+      },
+    ]"
   >
     <input
       :id="id"
@@ -15,9 +21,7 @@
       :name="name"
       @change="handleChange"
     />
-    <span class="py-1 px-2 grid place-content-center">
-      <slot></slot>
-    </span>
+    <slot></slot>
   </label>
 </template>
 <script setup lang="ts">

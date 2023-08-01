@@ -4,7 +4,7 @@
     v-bind="$attrs"
     class="bg-brand-500 text-white hover:bg-opacity-90 transition-all"
   >
-    <loading-spinner v-if="isLoading" />
+    <loading-spinner v-if="isLoading" color="white" />
     <p v-if="isLoading" class="sr-only">Loading</p>
     <slot v-else></slot>
   </base-button>

@@ -41,7 +41,8 @@
     "uuid": "^9.0.0",
     "vue": "~3.3.4",
     "vue-router": "~4.2.2",
-    "xstate": "^4.38.0"
+    "xstate": "^4.38.0",
+    "zod": "^3.21.4"
   },
   "devDependencies": {
     "@cypress/vite-dev-server": "~2.2.2",

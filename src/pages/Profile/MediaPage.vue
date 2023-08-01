@@ -64,7 +64,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { supabase } from "@/supabase";
-import ProfileTemplate from "@/components/ProfileTemplate.vue";
+import ProfileTemplate from "@/layouts/ProfileTemplate.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import { store } from "@/store";
 import OutlineButton from "@/components/Buttons/OutlineButton.vue";

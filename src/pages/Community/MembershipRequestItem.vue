@@ -1,6 +1,6 @@
 <template>
   <div class="p-4">
-    <LoadingSpinner v-if="isValidating" />
+    <LoadingSpinner v-if="isValidating" color="white" />
     <template v-else>
       <div v-if="data" class="flex items-start">
         <UserAvatar

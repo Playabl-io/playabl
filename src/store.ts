@@ -3,6 +3,7 @@ import { AccessLevel } from "./typings/AccessLevel";
 import { Profile } from "./typings/Profile";
 import { Notification } from "./typings/Notification";
 import { Session } from "@supabase/gotrue-js";
+import { Community } from "./typings/Community";
 
 interface Store {
   user?: Profile | null;
@@ -14,6 +15,7 @@ interface Store {
     { id: AccessLevel["id"]; name: AccessLevel["name"] }[]
   >;
   userEnabledFlags: Record<string, boolean>;
+  userManagedCommunities: Community[];
 }
 
 export const store = reactive<Store>({
@@ -23,4 +25,5 @@ export const store = reactive<Store>({
   communityAccessLevels: [],
   communityMemberAccess: {},
   userEnabledFlags: {},
+  userManagedCommunities: [],
 });

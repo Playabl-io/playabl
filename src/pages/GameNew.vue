@@ -186,7 +186,7 @@
         {{ format(communityPostingLimit, "LLLL do") }}
       </p>
       <p class="text-sm text-slate-700">
-        All times in your timezone - {{ format(startOfToday, "OOOO") }}
+        All times in your timezone - {{ getUserTimezone() }}
       </p>
       <div class="grid gap-6 mt-6">
         <div class="grid lg:grid-cols-2 gap-10">
@@ -323,7 +323,7 @@ import { loadCommunityAccessTimes } from "@/api/communityAccess";
 import { store } from "@/store";
 import useToast from "@/components/Toast/useToast";
 import { createGame, publishGame } from "@/api/gamesAndSessions";
-import { rsvpTimes, getStartOfToday } from "@/util/time";
+import { rsvpTimes, getStartOfToday, getUserTimezone } from "@/util/time";
 import FormFileInput from "@/components/Forms/FormFileInput.vue";
 import {
   handleFileChange,

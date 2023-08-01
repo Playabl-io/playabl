@@ -6,6 +6,7 @@ export interface ToastMessage {
   message: string;
   type: "success" | "error";
   title?: string;
+  link?: { href: string; label: string };
   timer: number;
 }
 
@@ -17,21 +18,25 @@ export default function useToast() {
   const showSuccess = ({
     message,
     title = "Success!",
+    link,
   }: {
-    message: string;
-    title?: string;
+    message: ToastMessage["message"];
+    title?: ToastMessage["title"];
+    link?: ToastMessage["link"];
   }) => {
-    showToast({ message, title, type: "success" });
+    showToast({ message, title, type: "success", link });
   };
 
   const showError = ({
     message,
     title = "That's not right",
+    link,
   }: {
-    message: string;
-    title?: string;
+    message: ToastMessage["message"];
+    title?: ToastMessage["title"];
+    link?: ToastMessage["link"];
   }) => {
-    showToast({ message, title, type: "error" });
+    showToast({ message, title, type: "error", link });
   };
 
   const showToast = (message: Omit<ToastMessage, "id" | "timer">) => {

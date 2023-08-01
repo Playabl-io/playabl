@@ -1,16 +1,23 @@
 <template>
   <MenuItem v-slot="{ active }">
-    <button
+    <RouterLink
       :class="{ [activeMenuItem]: active }"
-      class="px-2 py-1 rounded-md w-full text-left"
-      @click="emit('click', $event)"
+      class="flex gap-4 p-2 rounded-md w-full"
+      active-class="bg-purple-100 text-brand-500"
+      :to="to"
     >
       <slot></slot>
-    </button>
+    </RouterLink>
   </MenuItem>
 </template>
 <script setup lang="ts">
 import { MenuItem } from "@headlessui/vue";
 const activeMenuItem = "bg-gray-100 cursor-pointer";
-const emit = defineEmits(["click"]);
+
+defineProps({
+  to: {
+    type: String,
+    required: true,
+  },
+});
 </script>

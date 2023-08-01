@@ -14,6 +14,7 @@ import {
   isBefore,
   min,
   startOfDay,
+  format,
 } from "date-fns";
 
 const maxTimeMapper = {
@@ -128,8 +129,10 @@ export function getSoonestRsvpTime(
   return min(possibleTimes);
 }
 
-const startOfToday = startOfDay(new Date());
-
 export function getStartOfToday() {
-  return startOfToday;
+  return startOfDay(new Date());
+}
+
+export function getUserTimezone() {
+  return format(getStartOfToday(), "OOOO");
 }

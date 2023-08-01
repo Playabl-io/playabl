@@ -1,5 +1,5 @@
 <template>
-  <loading-spinner v-if="isSigningOut" />
+  <loading-spinner v-if="isSigningOut" color="white" />
   <section class="relative flex flex-col items-center justify-center h-14">
     <Menu v-if="store.user">
       <MenuButton class="hover:underline relative">
