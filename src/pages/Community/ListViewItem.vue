@@ -1,6 +1,6 @@
 <template>
   <li
-    class="grid session-list-item-grid gap-2 rounded-md even:bg-slate-100 p-2 items-center"
+    class="grid session-list-item-grid gap-2 rounded-md even:bg-white odd:bg-gray-200 p-2 items-center"
   >
     <UserBadge
       v-if="data"

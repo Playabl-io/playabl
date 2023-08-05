@@ -114,7 +114,7 @@
           </div>
         </div>
       </div>
-      <div class="rounded-md bg-gray-100 py-8 px-6">
+      <div class="rounded-md bg-gray-200 py-8 px-6 shadow-sm">
         <div class="flex flex-col">
           <FormLabel>Section title</FormLabel>
           <FormInput

@@ -1,5 +1,5 @@
 <template>
-  <li class="rounded-lg border border-solid border-gray-300">
+  <li class="rounded-lg bg-white shadow-sm">
     <div class="relative">
       <div v-if="gameCoverImage" class="aspect-w-16 aspect-h-9">
         <router-link :to="`/games/${session.game_id.id}`">
@@ -14,7 +14,7 @@
         :class="{
           'rounded-t-lg': !gameCoverImage,
         }"
-        class="w-full h-full p-3 bg-gray-100 flex flex-col justify-end overflow-visible"
+        class="w-full h-full p-3 text-slate-700 border-b border-gray-200 flex flex-col justify-end overflow-visible"
       >
         <div class="flex items-start gap-4">
           <div class="flex flex-col items-center">

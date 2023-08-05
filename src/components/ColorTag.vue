@@ -1,9 +1,9 @@
 <template>
   <div
-    class="p-2 rounded-md"
+    class="p-2 rounded-md text-center whitespace-nowrap"
     :class="{
       'bg-violet-200': variant === 'purple',
-      'bg-sky-200': variant === 'blue',
+      'bg-blue-200': variant === 'blue',
       'bg-emerald-200': variant === 'green',
       'bg-white': variant === 'white',
     }"
@@ -13,7 +13,7 @@
       class="text-sm font-semibold"
       :class="{
         'text-violet-900': variant === 'purple',
-        'text-sky-900': variant === 'blue',
+        'text-blue-900': variant === 'blue',
         'text-emerald-900': variant === 'green',
         'text-slate-700': variant === 'white',
       }"

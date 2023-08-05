@@ -1,10 +1,8 @@
 <template>
   <div class="flex flex-col gap-4 justify-center">
-    <section
-      class="w-full p-4 bg-white rounded-md border border-solid border-gray-200"
-    >
+    <section class="w-full rounded-md">
       <template v-if="selectedDate">
-        <Heading level="h5" as="h5" class="px-4">
+        <Heading level="h5" as="h5">
           {{ format(selectedDate, "LLLL do") }}
         </Heading>
         <ul

@@ -335,7 +335,7 @@ onMounted(getAccessLevels);
 
 async function submitForm() {
   const record: CommunityEventInsert = {
-    community_id: communityStore.community.id,
+    community_id: form.community_id,
     title: form.title,
     description: form.description,
     start_time: new Date(form.start_time).getTime(),

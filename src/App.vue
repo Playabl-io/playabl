@@ -15,6 +15,7 @@
 </template>
 <script setup lang="ts">
 import { store } from "./store";
+import { getUserAccess, getUserMemberships } from "./storeActions";
 import { supabase } from "./supabase";
 import ToasterManager from "./components/Toast/ToasterManager.vue";
 import MessageBox from "./components/MessageBox/MessageBox.vue";
@@ -28,6 +29,8 @@ import AppShell from "./layouts/AppShell.vue";
 import LoadingSpinner from "./components/LoadingSpinner.vue";
 import { Notification } from "./typings/Notification";
 import { loadUserManagedCommunities } from "./api/communityMemberships";
+import { loadAllUserAccess } from "./api/communityAccess";
+import * as R from "ramda";
 
 const route = useRoute();
 const router = useRouter();
@@ -134,6 +137,8 @@ onMounted(async () => {
   }
   if (user.data?.user?.id) {
     setUserManagedCommunitise(user.data.user.id);
+    getUserAccess(user.data.user.id);
+    getUserMemberships(user.data.user.id);
     const { data } = await supabase
       .from("flags")
       .select("*")

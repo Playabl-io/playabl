@@ -26,7 +26,6 @@ export function queryHandlerFactory(defaultOptions: Record<string, string>) {
           ...to.query,
         },
       };
-      console.log(result);
       return result;
     }
   };

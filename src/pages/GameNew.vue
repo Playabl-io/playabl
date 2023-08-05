@@ -136,7 +136,7 @@
             @select="handleImageSelect"
           />
         </div>
-        <div class="p-4 rounded-lg bg-gray-100">
+        <Well>
           <div class="flex items-center space-x-2">
             <FormCheckbox id="recording" v-model="isRecorded" />
             <FormLabel class="font-normal" for="recording" :no-margin="true">
@@ -160,7 +160,7 @@
               TTRPG Safety Toolkit
             </a>
           </p>
-        </div>
+        </Well>
         <div class="w-full">
           <PrimaryButton class="w-full">
             Next <ArrowSmallRightIcon class="h-6 w-6" />
@@ -310,6 +310,7 @@ import DatePicker from "@/components/Calendar/DatePicker.vue";
 import FormTimeInput from "@/components/Forms/FormTimeInput.vue";
 import LinkButton from "@/components/Buttons/LinkButton.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
+import Well from "@/components/Well.vue";
 import { NewSession } from "@/typings/Session";
 import {
   loadCreatorAndAdminCommunities,

@@ -1,5 +1,7 @@
 <template>
-  <section class="grid gap-6 w-full max-w-4xl mx-auto">
+  <section
+    class="grid gap-6 w-full max-w-4xl mx-auto bg-white rounded-lg shadow-sm p-4"
+  >
     <div class="grid gap-6">
       <div>
         <router-link :to="`/games/${game.id}`" class="hover:underline">

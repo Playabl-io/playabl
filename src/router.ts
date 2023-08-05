@@ -7,7 +7,6 @@ import ProfilePage from "@/pages/Profile/ProfilePage.vue";
 import NotificationsPage from "@/pages/Profile/NotificationsPage.vue";
 import MediaPage from "@/pages/Profile/MediaPage.vue";
 import SettingsPage from "@/pages/Profile/SettingsPage.vue";
-import MessagesPage from "@/pages/Profile/MessagesPage.vue";
 import CommunitiesAll from "@/pages/CommunitiesAll.vue";
 import CommunitiesJoined from "@/pages/CommunitiesJoined.vue";
 import CommunityHome from "@/pages/Community/CommunityHome.vue";
@@ -27,6 +26,8 @@ import NotFound from "@/pages/NotFound.vue";
 import TosPage from "@/pages/TosPage.vue";
 import PrivacyPolicy from "@/pages/PrivacyPolicy.vue";
 import SlackAuthorization from "@/pages/SlackAuthorization.vue";
+import EventsLayout from "@/pages/Events/EventsLayout.vue";
+import EventOverview from "./pages/Events/EventOverview.vue";
 import { store } from "./store";
 import { SORT_OPTIONS, queryHandlerFactory } from "./util/urlParams";
 
@@ -261,6 +262,38 @@ const routes = [
     ],
   },
   {
+    path: "/events/:event_id",
+    component: EventsLayout,
+    meta: {
+      title: "Playabl - Community",
+    },
+    children: [
+      {
+        path: "",
+        redirect: { name: "Overview" },
+      },
+      {
+        path: "overview",
+        name: "Overview",
+        component: EventOverview,
+      },
+      {
+        path: "calendar",
+        name: "Event Calendar",
+        component: () => import("@/pages/Events/EventCalendar.vue"),
+      },
+      {
+        path: "manage",
+        name: "Manage",
+        component: () => import("@/pages/Events/EventManage.vue"),
+        meta: {
+          requiresAuth: true,
+          requiresCommunityAdmin: true,
+        },
+      },
+    ],
+  },
+  {
     path: "/tos",
     component: TosPage,
     meta: {
@@ -322,6 +355,12 @@ router.beforeEach((to) => {
       // save the location we were at to come back later
       query: { redirect: to.fullPath },
     };
+  }
+
+  // community admin guard
+  if (to.meta.requiresCommunityAdmin) {
+    console.log("requires admin", to);
+    console.log(store.userSession);
   }
 });
 

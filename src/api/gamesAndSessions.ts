@@ -7,6 +7,7 @@ import { Community } from "@/typings/Community";
 import { startOfDay, endOfDay } from "date-fns";
 
 import axios from "axios";
+import { CommunityEvent } from "@/typings/CommunityEvent";
 
 // helper functions
 const sortSessionByTimeAsc = (a: Session, b: Session) => {
@@ -442,6 +443,20 @@ export async function addSession(session: Partial<Session>) {
     .insert(session)
     .select()
     .single();
+  if (error) {
+    log({ error });
+    throw new Error(error.message);
+  }
+  return data;
+}
+
+export async function loadGamesAndSessionsForEvent(
+  eventId: CommunityEvent["id"]
+) {
+  const { data, error } = await supabase
+    .from("games")
+    .select("*, sessions(*)")
+    .eq("event_id", eventId);
   if (error) {
     log({ error });
     throw new Error(error.message);

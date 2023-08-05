@@ -1,7 +1,7 @@
 <template>
   <div class="grid md:grid-cols-3 gap-6 h-full">
     <div>
-      <div class="flex flex-col gap-6 sticky top-32">
+      <div class="flex flex-col gap-6 sticky top-24">
         <PrimaryButton
           v-if="allowCreateNew"
           class="shadow-md"

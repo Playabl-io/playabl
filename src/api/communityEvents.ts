@@ -66,3 +66,19 @@ export async function getEvents({
 export function createCommunityEvent(event: CommunityEventInsert) {
   return client.post("/.netlify/functions/createCommunityEvent", event);
 }
+
+export async function loadEventAndCommunityByEventId(
+  eventId: CommunityEvent["id"]
+) {
+  const { data, error } = await supabase
+    .from("community_events")
+    .select("*, communities (*)")
+    .eq("id", eventId)
+    .single();
+  if (error) {
+    log({
+      error,
+    });
+  }
+  return data;
+}
