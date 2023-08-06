@@ -54,11 +54,11 @@ export function rsvpTimes(accessTimes: AccessLevel[]): RsvpTimes {
       humanReadableRsvpTime: rounded.toLocaleString(),
     };
   });
-  result.default = {
-    name: "default",
-    rsvpAvailableTime: roundToNearestMinutes(maxTime).getTime(),
-    humanReadableRsvpTime: roundToNearestMinutes(maxTime).toLocaleString(),
-  };
+  // result.default = {
+  //   name: "default",
+  //   rsvpAvailableTime: roundToNearestMinutes(maxTime).getTime(),
+  //   humanReadableRsvpTime: roundToNearestMinutes(maxTime).toLocaleString(),
+  // };
   return result;
 }
 
