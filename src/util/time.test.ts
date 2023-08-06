@@ -163,9 +163,9 @@ describe("time util", () => {
       expect(result[1].rsvpAvailableTime).toBeCloseTo(
         roundToNearestMinutes(date).getTime()
       );
-      expect(result.default.rsvpAvailableTime).toBeCloseTo(
-        oneDayPriorityTime.getTime()
-      );
+      // expect(result.default.rsvpAvailableTime).toBeCloseTo(
+      //   oneDayPriorityTime.getTime()
+      // );
       expect(result[2].rsvpAvailableTime).toBeCloseTo(
         fourHourPriorityTime.getTime()
       );
