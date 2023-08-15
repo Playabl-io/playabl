@@ -1,5 +1,6 @@
 import { AccessLevel } from "@/typings/AccessLevel";
 import { Community, SignupMethods } from "@/typings/Community";
+import { CommunityEvent } from "@/typings/CommunityEvent";
 import { Game } from "@/typings/Game";
 import { Member, MemberWithMembership } from "@/typings/Member";
 import Stripe from "stripe";
@@ -23,6 +24,7 @@ interface CommunityStore {
   membershipRequest?: {
     id: number;
   };
+  communityEvents: CommunityEvent[];
 }
 
 const DEFAULT_COMMUNITY_STATE: CommunityStore = {
@@ -44,6 +46,7 @@ const DEFAULT_COMMUNITY_STATE: CommunityStore = {
   admins: [],
   communityAccessLevels: [],
   prices: [],
+  communityEvents: [],
 };
 
 export let communityStore = reactive<CommunityStore>({

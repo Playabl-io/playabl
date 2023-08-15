@@ -89,6 +89,7 @@ import {
   startOfDay,
   isAfter,
   isWithinInterval,
+  endOfDay,
 } from "date-fns";
 import GhostButton from "../Buttons/GhostButton.vue";
 const emit = defineEmits(["select", "close"]);
@@ -141,7 +142,10 @@ const daysOfMonth = computed(() => {
 
 function dayIsWithinRange(day: Date) {
   if (!props.notBefore || !props.notAfter) return true;
-  return isWithinInterval(day, { start: props.notBefore, end: props.notAfter });
+  return isWithinInterval(day, {
+    start: startOfDay(props.notBefore),
+    end: endOfDay(props.notAfter),
+  });
 }
 
 function handleFocus(day: Date) {

@@ -60,6 +60,7 @@ import {
   selectFromCommunity,
 } from "@/api/communities";
 import { isUuid } from "@/util/uuid";
+import { getUpcomingCommunityEvents } from "@/api/communityEvents";
 
 const currentRoute = useRoute();
 const router = useRouter();
@@ -92,6 +93,7 @@ onMounted(async () => {
     getMemberCount(),
     getMembershipStatus(),
     loadUpcomingGames(),
+    loadUpcomingEvents(),
     loadAdmins(),
     loadMembershipRequest(),
   ]);
@@ -156,6 +158,13 @@ async function loadUpcomingGames() {
   if (data) {
     communityStore.games = data;
   }
+}
+
+async function loadUpcomingEvents() {
+  const data = await getUpcomingCommunityEvents({
+    id: communityStore.community.id,
+  });
+  communityStore.communityEvents = data;
 }
 
 async function loadAdmins() {

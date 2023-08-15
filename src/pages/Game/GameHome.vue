@@ -17,7 +17,6 @@
         :key="session.id"
         :session="session"
         :participant-count="session.participant_count"
-        :user-access="userAccess"
         :is-owner="isOwner"
         :not-a-member="userIsNotMember"
       />
@@ -31,7 +30,7 @@
         alt=""
       />
     </div>
-    <div v-if="gameStore.game?.description" class="p-8 bg-gray-100 rounded-lg">
+    <div v-if="gameStore.game?.description" class="p-4 bg-white rounded-lg">
       <TipTapDisplay :content="gameStore.game.description" />
     </div>
   </section>
@@ -41,7 +40,6 @@ import { onMounted, ref, computed, PropType } from "vue";
 import TipTapDisplay from "@/components/TipTapDisplay.vue";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import SessionBlock from "@/components/Game/SessionBlock.vue";
-import { CommunityAccess } from "@/typings/CommunityAccess";
 import { getCoverImageUrl } from "@/api/storage";
 import { gameStore } from "./gameStore";
 import { ROLES } from "@/util/roles";
@@ -49,10 +47,6 @@ import { ROLES } from "@/util/roles";
 const props = defineProps({
   isOwner: {
     type: Boolean,
-    required: true,
-  },
-  userAccess: {
-    type: Object as PropType<CommunityAccess[]>,
     required: true,
   },
   userMembership: {

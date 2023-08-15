@@ -20,7 +20,7 @@ export async function getUpcomingCommunityEvents({
 }: {
   id: CommunityEvent["community_id"];
   sort?: SORT_QUERY_VALUES;
-  draftState: CommunityEvent["draft_state"][];
+  draftState?: CommunityEvent["draft_state"][];
 }): Promise<CommunityEventWithCommunity[]> {
   const { data, error } = await supabase
     .from("community_events")
@@ -65,6 +65,10 @@ export async function getEvents({
 
 export function createCommunityEvent(event: CommunityEventInsert) {
   return client.post("/.netlify/functions/createCommunityEvent", event);
+}
+
+export function updateCommunityEvent(event: CommunityEventInsert) {
+  return client.post("/.netlify/functions/updateCommunityEvent", event);
 }
 
 export async function loadEventAndCommunityByEventId(

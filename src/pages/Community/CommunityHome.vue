@@ -20,6 +20,30 @@
           'col-span-full md:grid-cols-4': !communityStore.coverImageUrl,
         }"
       >
+        <Well v-if="communityStore.communityEvents.length">
+          <p class="font-semibold">
+            {{
+              isBefore(
+                new Date(communityStore.communityEvents[0].start_time),
+                new Date()
+              )
+                ? `Event happening till ${formatRelative(
+                    new Date(communityStore.communityEvents[0].end_time),
+                    new Date()
+                  )}`
+                : `Next event starts ${formatRelative(
+                    new Date(communityStore.communityEvents[0].start_time),
+                    new Date()
+                  )}`
+            }}!
+          </p>
+          <router-link
+            :to="`/events/${communityStore.communityEvents[0].id}`"
+            class="text-blue-700 border-b border-dashed border-blue-700 text-lg"
+          >
+            {{ communityStore.communityEvents[0].title }}
+          </router-link>
+        </Well>
         <dl
           class="grid grid-cols-3 gap-4 border p-3 rounded-lg border-solid border-gray-300"
         >
@@ -213,7 +237,7 @@
 </template>
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import { format } from "date-fns";
+import { format, formatRelative, isBefore } from "date-fns";
 import { EnvelopeIcon } from "@heroicons/vue/24/outline";
 import { communityStore } from "./communityStore";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
@@ -225,6 +249,7 @@ import useToast from "@/components/Toast/useToast";
 import { log } from "@/util/logger";
 import UserAvatar from "@/components/UserAvatar.vue";
 import RequestToJoinModal from "./RequestToJoinModal.vue";
+import Well from "@/components/Well.vue";
 
 const { showSuccess, showError } = useToast();
 

@@ -30,6 +30,7 @@ import EventsLayout from "@/pages/Events/EventsLayout.vue";
 import EventOverview from "./pages/Events/EventOverview.vue";
 import { store } from "./store";
 import { SORT_OPTIONS, queryHandlerFactory } from "./util/urlParams";
+import { format } from "date-fns";
 
 const routes = [
   {
@@ -154,12 +155,12 @@ const routes = [
         children: [
           {
             path: "overview",
-            name: "Overview",
+            name: "Community Overview",
             component: CommunityOverview,
           },
           {
             path: "access",
-            name: "Access",
+            name: "Community Access",
             component: CommunityAccess,
           },
           {
@@ -169,17 +170,17 @@ const routes = [
           },
           {
             path: "info",
-            name: "Info",
+            name: "Community Info",
             component: CommunityInfo,
           },
           {
             path: "integrations",
-            name: "Integrations",
+            name: "Community Integrations",
             component: CommunityIntegrations,
           },
           {
             path: "members",
-            name: "Members",
+            name: "Community Members",
             component: CommunityMembers,
           },
         ],
@@ -252,6 +253,10 @@ const routes = [
     ],
   },
   {
+    path: "/events",
+    redirect: "/events/browse",
+  },
+  {
     path: "/events/browse",
     name: "Events Browse",
     component: () => import("@/pages/Events/EventsBrowse.vue"),
@@ -262,6 +267,11 @@ const routes = [
     ],
   },
   {
+    path: "/events/new",
+    name: "New Event",
+    component: () => import("@/pages/Events/NewEvent.vue"),
+  },
+  {
     path: "/events/:event_id",
     component: EventsLayout,
     meta: {
@@ -270,21 +280,26 @@ const routes = [
     children: [
       {
         path: "",
-        redirect: { name: "Overview" },
+        redirect: { name: "Event Overview" },
       },
       {
         path: "overview",
-        name: "Overview",
+        name: "Event Overview",
         component: EventOverview,
       },
       {
         path: "calendar",
         name: "Event Calendar",
         component: () => import("@/pages/Events/EventCalendar.vue"),
+        beforeEnter: [
+          queryHandlerFactory({
+            date: format(new Date(), "yyyy-MM"),
+          }),
+        ],
       },
       {
         path: "manage",
-        name: "Manage",
+        name: "Event Manage",
         component: () => import("@/pages/Events/EventManage.vue"),
         meta: {
           requiresAuth: true,

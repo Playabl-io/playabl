@@ -12,7 +12,6 @@
 import { ref, onMounted } from "vue";
 import { supabase } from "@/supabase";
 import { log } from "@/util/logger";
-import { useRoute } from "vue-router";
 
 import { store } from "@/store";
 import { communityStore } from "./communityStore";
@@ -20,7 +19,6 @@ import { communityStore } from "./communityStore";
 import { loadCommunityAccessTimes } from "@/api/communityAccess";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 
-const route = useRoute();
 const loading = ref(true);
 
 onMounted(async () => {

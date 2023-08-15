@@ -53,7 +53,6 @@
         :key="session.id"
         :all-game-sessions="sessionsByGame[String(session.game_id.id)]"
         :session="session"
-        :user-access="userAccess"
         @refresh="emit('refresh')"
       />
     </ul>
@@ -92,10 +91,6 @@ const props = defineProps({
   },
   loading: {
     type: Boolean,
-    required: true,
-  },
-  userAccess: {
-    type: Array as PropType<CommunityAccess[]>,
     required: true,
   },
 });

@@ -128,6 +128,18 @@
           <ExclamationCircleIcon class="h-4 w-4 text-violet-600" />
         </div>
       </div>
+      <div
+        v-if="session.game_id.community_events"
+        class="flex gap-2 text-blue-700 bg-blue-100 p-4 rounded-md"
+      >
+        <CalendarIcon class="w-5 h-5 shrink-0" />
+        <a
+          :href="`/events/${session.game_id.community_events.id}`"
+          class="font-semibold text-sm line-clamp-2 underline decoration-dashed"
+        >
+          {{ session.game_id.community_events.title }}
+        </a>
+      </div>
       <div class="mt-2">
         <router-link :to="`/games/${session.game_id.id}`">
           <Heading as="h6" level="h6" class="hover:underline">
@@ -204,6 +216,7 @@ import { computed, PropType } from "vue";
 import {
   EllipsisHorizontalCircleIcon,
   CheckCircleIcon,
+  CalendarIcon,
 } from "@heroicons/vue/24/outline";
 import {
   ChevronRightIcon,
@@ -226,7 +239,6 @@ import {
   DisclosureButton,
   DisclosurePanel,
 } from "@headlessui/vue";
-import { CommunityAccess } from "@/typings/CommunityAccess";
 import { userCanRsvp } from "@/util/time";
 import { store } from "@/store";
 import useToast from "@/components/Toast/useToast";
@@ -244,10 +256,6 @@ const props = defineProps({
     type: Object as PropType<GameSession[]>,
     required: true,
   },
-  userAccess: {
-    type: Array as PropType<CommunityAccess[]>,
-    required: true,
-  },
 });
 
 const emit = defineEmits(["refresh"]);
@@ -259,7 +267,7 @@ const { data: gameCoverImage } = useSWRV(
 const { data } = useSWRV<Profile>(props.session.creator_id, loadProfile);
 
 const canRsvp = userCanRsvp({
-  userAccess: props.userAccess,
+  userAccess: store.userCommunityAccess,
   session: props.session,
   userId: store.user?.id,
   hostId: props.session.creator_id,
@@ -284,7 +292,7 @@ const relatedSessions = computed(() =>
 const otherReservableSessions = computed(() =>
   relatedSessions.value.filter((session) =>
     userCanRsvp({
-      userAccess: props.userAccess,
+      userAccess: store.userCommunityAccess,
       session,
       userId: store.user?.id,
       hostId: props.session.creator_id,

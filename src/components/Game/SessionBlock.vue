@@ -68,10 +68,7 @@
         </ul>
       </div>
     </div>
-    <div
-      v-if="userIsInTheGame || isOwner"
-      class="mt-4 grid sm:grid-cols-2 content-center gap-2"
-    >
+    <div class="mt-4 grid sm:grid-cols-2 content-center gap-2">
       <AddToGoogleCal
         :start-time="session.start_time"
         :end-time="session.end_time"
@@ -94,9 +91,7 @@ import {
   sendRemovalEmail,
 } from "@/api/gamesAndSessions";
 import PrimaryButton from "../Buttons/PrimaryButton.vue";
-import Well from "../Well.vue";
-import { CommunityAccess } from "@/typings/CommunityAccess";
-import { compareUserAccessToRsvpTimes, getSoonestRsvpTime } from "@/util/time";
+import { getSoonestRsvpTime, userCanRsvp } from "@/util/time";
 import { store } from "@/store";
 import useToast from "../Toast/useToast";
 import { gameStore } from "@/pages/Game/gameStore";
@@ -117,10 +112,6 @@ const props = defineProps({
     type: Number,
     required: true,
   },
-  userAccess: {
-    type: Array as PropType<CommunityAccess[]>,
-    default: () => [],
-  },
   isOwner: {
     type: Boolean,
     required: true,
@@ -134,17 +125,17 @@ const props = defineProps({
 const isProcessing = ref(false);
 
 const canRsvp = computed(() => {
-  let accessTimes;
-  if (typeof props.session.access_times === "string") {
-    accessTimes = JSON.parse(props.session.access_times);
-  } else {
-    accessTimes = props.session.access_times;
+  const membership =
+    store.userCommunityMembership?.[gameStore.game.community_id];
+  if (membership && membership.communityMembership.role_id > 0) {
+    return userCanRsvp({
+      userAccess: store.userCommunityAccess,
+      session: props.session,
+      hostId: gameStore.game.creator_id,
+      userId: store.user?.id,
+    });
   }
-  const isEligibleToRsvp = compareUserAccessToRsvpTimes(
-    props.userAccess,
-    accessTimes
-  );
-  return isEligibleToRsvp;
+  return false;
 });
 
 const soonestRsvp = computed(() => {
@@ -154,7 +145,7 @@ const soonestRsvp = computed(() => {
   } else {
     accessTimes = props.session.access_times;
   }
-  return getSoonestRsvpTime(props.userAccess, accessTimes);
+  return getSoonestRsvpTime(store.userCommunityAccess, accessTimes);
 });
 
 const accessNeeded = computed(() => {

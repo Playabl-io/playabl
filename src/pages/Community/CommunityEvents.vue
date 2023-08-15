@@ -2,7 +2,14 @@
   <BrowsePageTemplate
     title="Event"
     :allow-create-new="allowAdminActions"
-    @create-new="showNewEventForm = true"
+    @create-new="
+      router.push({
+        path: '/events/new',
+        query: {
+          community_id: route.params.community_id,
+        },
+      })
+    "
   >
     <template #page-controls>
       <UrlSortDropdown />
@@ -37,12 +44,12 @@
             class="w-full object-contain relative -top-4"
           />
         </div>
-        <Well
+        <RouterLink
           v-for="event in activeEvents"
           :key="event.id"
-          class="hover:shadow-md"
+          :to="`/events/${event.id}`"
         >
-          <RouterLink :to="`/events/${event.id}`">
+          <Well class="hover:shadow-md">
             <div class="flex justify-between items-start mb-4">
               <div>
                 <Heading level="h6">
@@ -63,24 +70,12 @@
                 {{ format(new Date(event.start_time), "MMM do, hh:mm a") }}
               </p>
             </div>
-            <TipTapDisplay
-              v-if="event.description"
-              :content="event.description"
-              class="mt-4 line-clamp-6 description"
-              editor-attributes="leading-loose inline"
-            />
-          </RouterLink>
-        </Well>
+            <div class="line-clamp-6 prose mt-6" v-html="event.description" />
+          </Well>
+        </RouterLink>
       </div>
     </template>
   </BrowsePageTemplate>
-
-  <SideDrawer :open="showNewEventForm">
-    <CommunityEventForm
-      @close="showNewEventForm = false"
-      @created="loadEvents"
-    />
-  </SideDrawer>
 </template>
 <script lang="ts" setup>
 import { computed, onMounted, ref, watch } from "vue";
@@ -93,26 +88,23 @@ import {
   CommunityEvent,
   CommunityEventWithCommunity,
 } from "@/typings/CommunityEvent";
-import SideDrawer from "@/components/SideDrawer.vue";
-import CommunityEventForm from "./CommunityEventForm.vue";
 import Well from "@/components/Well.vue";
 import { format } from "date-fns";
 import TipTapDisplay from "@/components/TipTapDisplay.vue";
 import ColorTag from "@/components/ColorTag.vue";
 import BrowsePageTemplate from "@/layouts/BrowsePageTemplate.vue";
 import UrlSortDropdown from "@/components/Search/UrlSortDropdown.vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { store } from "@/store";
 import FormCheckbox from "@/components/Forms/FormCheckbox.vue";
 import FormLabel from "@/components/Forms/FormLabel.vue";
 import { SORT_QUERY_VALUES } from "@/util/urlParams";
 
 const route = useRoute();
+const router = useRouter();
 
 const activeEvents = ref<CommunityEventWithCommunity[]>([]);
 const loading = ref(false);
-
-const showNewEventForm = ref(false);
 
 const draftStates = ref<CommunityEvent["draft_state"][]>(
   Array.isArray(route.query.draft_state)

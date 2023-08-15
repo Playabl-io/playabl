@@ -53,7 +53,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, toRefs, ref, PropType } from "vue";
+import { computed, toRefs, PropType } from "vue";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/20/solid";
 import {
   isSameDay,

@@ -29,8 +29,7 @@ export async function loadUserCommunities({ userId }: { userId: string }) {
   const { data, error } = await supabase
     .from("community_memberships")
     .select("*, community_id (*)")
-    .eq("user_id", userId)
-    .eq("role_id", ADMIN);
+    .eq("user_id", userId);
   if (error) {
     log({ error });
   }

@@ -1,6 +1,6 @@
 <template>
   <router-link :to="`/games/${game.id}`">
-    <div class="rounded-md bg-white w-96">
+    <div class="rounded-md bg-white">
       <div v-if="gameCoverImage" class="aspect-w-16 aspect-h-9">
         <img
           class="w-full h-full object-center object-cover rounded-t-md"
@@ -19,7 +19,7 @@
             </p>
           </div>
         </div>
-        <div class="mt-3 grid grid-cols-3 gap-3">
+        <div class="mt-3 flex flex-wrap gap-3">
           <ColorTag variant="blue">
             {{
               `${game.sessions.length} ${pluralize({

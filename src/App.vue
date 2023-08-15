@@ -29,8 +29,6 @@ import AppShell from "./layouts/AppShell.vue";
 import LoadingSpinner from "./components/LoadingSpinner.vue";
 import { Notification } from "./typings/Notification";
 import { loadUserManagedCommunities } from "./api/communityMemberships";
-import { loadAllUserAccess } from "./api/communityAccess";
-import * as R from "ramda";
 
 const route = useRoute();
 const router = useRouter();
@@ -70,7 +68,6 @@ supabase.auth.onAuthStateChange(async (event, session) => {
       store.userSession = null;
       break;
   }
-  loadingUser.value = false;
 });
 
 async function loadNotificationsAndSubscribe() {
@@ -136,9 +133,11 @@ onMounted(async () => {
     loadingUser.value = false;
   }
   if (user.data?.user?.id) {
-    setUserManagedCommunitise(user.data.user.id);
-    getUserAccess(user.data.user.id);
-    getUserMemberships(user.data.user.id);
+    await Promise.all([
+      setUserManagedCommunitise(user.data.user.id),
+      getUserAccess(user.data.user.id),
+      getUserMemberships(user.data.user.id),
+    ]);
     const { data } = await supabase
       .from("flags")
       .select("*")
@@ -149,5 +148,6 @@ onMounted(async () => {
       });
     }
   }
+  loadingUser.value = false;
 });
 </script>

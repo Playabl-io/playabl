@@ -155,19 +155,41 @@ describe("time util", () => {
 
     test("computes the expected times", () => {
       const date = new Date();
-      const result = rsvpTimes(ACCESS_POLICIES);
-      const oneDayPriorityTime = roundToNearestMinutes(add(date, { days: 1 }));
+      const result = rsvpTimes(ACCESS_POLICIES, undefined, undefined);
       const fourHourPriorityTime = roundToNearestMinutes(
         add(date, { hours: 20 })
       );
       expect(result[1].rsvpAvailableTime).toBeCloseTo(
         roundToNearestMinutes(date).getTime()
       );
-      // expect(result.default.rsvpAvailableTime).toBeCloseTo(
-      //   oneDayPriorityTime.getTime()
-      // );
+      expect(result.default?.rsvpAvailableTime).toBeUndefined();
       expect(result[2].rsvpAvailableTime).toBeCloseTo(
         fourHourPriorityTime.getTime()
+      );
+    });
+
+    test("computes the expected times with overrides", () => {
+      const date = new Date();
+      const fiveDaysFromNow = roundToNearestMinutes(add(date, { days: 5 }));
+      const result = rsvpTimes(ACCESS_POLICIES, fiveDaysFromNow.getTime());
+
+      expect(result[1].rsvpAvailableTime).toBeCloseTo(
+        fiveDaysFromNow.getTime()
+      );
+      expect(result.default?.rsvpAvailableTime).toBeUndefined();
+      expect(result[2].rsvpAvailableTime).toBeCloseTo(
+        fiveDaysFromNow.getTime()
+      );
+      const secondResult = rsvpTimes(
+        ACCESS_POLICIES,
+        fiveDaysFromNow.getTime(),
+        "global"
+      );
+      expect(secondResult[1]?.rsvpAvailableTime).toBeCloseTo(
+        fiveDaysFromNow.getTime()
+      );
+      expect(secondResult.default.rsvpAvailableTime).toBeCloseTo(
+        fiveDaysFromNow.getTime()
       );
     });
   });
