@@ -7,19 +7,6 @@
       This game has been cancelled
     </div>
     <div v-else>
-      <transition
-        leave-active-class="transition duration-100 ease-in"
-        leave-from-class="opacity-100"
-        leave-to-class="opacity-0"
-      >
-        <InfoBanner
-          v-if="currentRoute.query.unauthorized"
-          class="mb-6"
-          @dismiss="router.replace(currentRoute.path)"
-        >
-          You are not authorized to view that page
-        </InfoBanner>
-      </transition>
       <div class="flex items-center">
         <Heading level="h1" class="inline">{{ gameStore.game.title }}</Heading>
         <div
@@ -146,7 +133,6 @@ import { log } from "@/util/logger";
 import BaseTemplate from "@/layouts/BaseTemplate.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import Heading from "@/components/Heading.vue";
-import InfoBanner from "@/components/Banners/InfoBanner.vue";
 import { store } from "@/store";
 import { GameWithCommunityAndSessions } from "@/typings/Game";
 import { clearGameStore, gameStore } from "./gameStore";

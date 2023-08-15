@@ -269,7 +269,10 @@
   </BaseModal>
 </template>
 <script setup lang="ts">
+import * as R from "ramda";
 import { computed, onMounted, reactive, ref } from "vue";
+import { store } from "@/store";
+import { useRouter } from "vue-router";
 import { eventStore } from "./eventStore";
 import BaseModal from "@/components/Modals/BaseModal.vue";
 import FormInput from "@/components/Forms/FormInput.vue";
@@ -287,12 +290,13 @@ import OutlineButton from "@/components/Buttons/OutlineButton.vue";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import Heading from "@/components/Heading.vue";
 import { updateCommunityEvent } from "@/api/communityEvents";
-import * as R from "ramda";
 import useToast from "@/components/Toast/useToast";
 import WarningButton from "@/components/Buttons/WarningButton.vue";
 import FormCheckbox from "@/components/Forms/FormCheckbox.vue";
+import { ROLES } from "@/util/roles";
 
 const { showSuccess, showError } = useToast();
+const router = useRouter();
 
 const counts = computed(() => {
   if (!eventStore.eventGames) {
@@ -427,6 +431,13 @@ const eventAccessLevels = computed({
 onMounted(async () => {
   if (!eventStore.event?.community_id) {
     return;
+  }
+
+  if (
+    store.userCommunityMembership[eventStore.event.community_id]
+      .communityMembership.role_id !== ROLES.admin
+  ) {
+    router.replace(`/events/${eventStore.event.id}/overview?unauthorized=true`);
   }
   const data = await loadCommunityAccessTimes(eventStore.event?.community_id);
   if (data) {

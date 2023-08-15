@@ -303,7 +303,6 @@ const routes = [
         component: () => import("@/pages/Events/EventManage.vue"),
         meta: {
           requiresAuth: true,
-          requiresCommunityAdmin: true,
         },
       },
     ],
@@ -370,12 +369,6 @@ router.beforeEach((to) => {
       // save the location we were at to come back later
       query: { redirect: to.fullPath },
     };
-  }
-
-  // community admin guard
-  if (to.meta.requiresCommunityAdmin) {
-    console.log("requires admin", to);
-    console.log(store.userSession);
   }
 });
 

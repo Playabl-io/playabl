@@ -4,19 +4,6 @@
       <LoadingSpinner color="brand-500" />
     </div>
     <div v-else>
-      <transition
-        leave-active-class="transition duration-100 ease-in"
-        leave-from-class="opacity-100"
-        leave-to-class="opacity-0"
-      >
-        <InfoBanner
-          v-if="currentRoute.query.unauthorized"
-          class="mb-6"
-          @dismiss="router.replace(currentRoute.path)"
-        >
-          You are not authorized to view that page
-        </InfoBanner>
-      </transition>
       <div class="flex items-baseline justify-between">
         <router-link :to="`/communities/${id}`">
           <Heading level="h1">{{ communityData?.name }}</Heading>
@@ -47,7 +34,6 @@ import { store } from "@/store";
 import { Community } from "@/typings/Community";
 import { clearCommunityStore, communityStore } from "./communityStore";
 import { getCoverImageUrl } from "@/api/storage";
-import InfoBanner from "@/components/Banners/InfoBanner.vue";
 import { loadUpcomingCommunityGamesWithCount } from "@/api/gamesAndSessions";
 import {
   checkForCommunityRequest,
