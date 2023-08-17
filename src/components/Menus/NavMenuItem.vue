@@ -2,7 +2,7 @@
   <MenuItem v-slot="{ active }">
     <RouterLink
       :class="{ [activeMenuItem]: active }"
-      class="flex gap-4 p-2 rounded-md w-full"
+      class="flex gap-4 p-2 rounded-md w-full text-sm font-semibold"
       active-class="bg-purple-100 text-brand-500"
       :to="to"
     >

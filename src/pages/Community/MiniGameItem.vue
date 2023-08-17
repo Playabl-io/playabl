@@ -111,8 +111,8 @@
         </div>
       </div>
     </div>
-    <section class="px-3 pt-3">
-      <div class="flex justify-end">
+    <section class="px-3 pt-3 grid gap-2">
+      <div v-if="isPlayingInGame || isWaitlisted" class="flex justify-end">
         <div
           v-if="isPlayingInGame"
           class="p-2 rounded-md bg-green-200 flex items-center space-x-1 shadow-sm"
@@ -130,7 +130,7 @@
       </div>
       <div
         v-if="session.game_id.community_events"
-        class="flex gap-2 text-blue-700 bg-blue-100 p-4 rounded-md"
+        class="flex gap-2 text-blue-700 bg-gray-100 p-4 rounded-md"
       >
         <CalendarIcon class="w-5 h-5 shrink-0" />
         <a
@@ -140,7 +140,7 @@
           {{ session.game_id.community_events.title }}
         </a>
       </div>
-      <div class="mt-2">
+      <div>
         <router-link :to="`/games/${session.game_id.id}`">
           <Heading as="h6" level="h6" class="hover:underline">
             {{ session.game_id.title }}

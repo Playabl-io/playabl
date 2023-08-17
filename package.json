@@ -19,6 +19,7 @@
     "@netlify/functions": "^1.6.0",
     "@stripe/stripe-js": "^1.54.1",
     "@supabase/supabase-js": "^2.2.2",
+    "@tanstack/vue-table": "^8.9.3",
     "@tiptap/core": "^2.0.3",
     "@tiptap/extension-link": "^2.0.3",
     "@tiptap/extension-placeholder": "^2.0.3",

@@ -64,8 +64,8 @@
       <p>Are you sure you want to leave {{ communityStore.community.name }}?</p>
       <p class="mt-2">If you leave, the following actions will be completed:</p>
       <ul class="list-disc list-inside">
-        <li>Any games you have scheduled will be canceled</li>
-        <li>Any RSVPs you have to community games will be canceled</li>
+        <li>Any games you have scheduled will be cancelled</li>
+        <li>Any RSVPs you have to community games will be cancelled</li>
         <li>You will lose any access or roles you were assigned</li>
       </ul>
     </template>

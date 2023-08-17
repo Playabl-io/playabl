@@ -23,6 +23,19 @@ const sortSessionsOnGame = (game: GameListing) => {
 };
 const mapToAscSessions = R.map(sortSessionsOnGame);
 
+function filterDraftEventGames(record: GameListing) {
+  /**
+   * A game may be associated with a DRAFT event which does not load
+   * for all users, so you can not only rely on checking community_events alone.
+   * If the game has an event ID, but the event isn't included in community_events,
+   * exclude the game from results
+   */
+  if (record.event_id) {
+    return record.community_events?.draft_state === "PUBLISHED";
+  }
+  return true;
+}
+
 export async function createGame(newGame: NewGame) {
   const { data, error } = await supabase
     .from("games")
@@ -78,9 +91,7 @@ export async function loadChronologicalGames() {
     log({ error });
   }
   if (data) {
-    const withoutDrafts = data.filter((record) => {
-      return record.community_events?.draft_state !== "DRAFT";
-    });
+    const withoutDrafts = data.filter(filterDraftEventGames);
     return mapToAscSessions(withoutDrafts);
   }
 }
@@ -100,9 +111,7 @@ export async function loadChronologicalCommunityGames(communityIds: string[]) {
     log({ error });
   }
   if (data) {
-    const withoutDrafts = data.filter((record) => {
-      return record.community_events?.draft_state !== "DRAFT";
-    });
+    const withoutDrafts = data.filter(filterDraftEventGames);
     return mapToAscSessions(withoutDrafts);
   }
 }
@@ -122,9 +131,7 @@ export async function loadGamesWithOpenings() {
     log({ error });
   }
   if (data) {
-    const withoutDrafts = data.filter((record) => {
-      return record.community_events?.draft_state !== "DRAFT";
-    });
+    const withoutDrafts = data.filter(filterDraftEventGames);
     return mapToAscSessions(withoutDrafts);
   }
 }
@@ -145,9 +152,7 @@ export async function loadCommunityGamesWithOpenings(communityIds: string[]) {
     log({ error });
   }
   if (data) {
-    const withoutDrafts = data.filter((record) => {
-      return record.community_events?.draft_state !== "DRAFT";
-    });
+    const withoutDrafts = data.filter(filterDraftEventGames);
     return mapToAscSessions(withoutDrafts);
   }
 }
@@ -511,10 +516,12 @@ export async function addSession(session: Partial<Session>) {
 export async function loadGamesAndSessionsForEvent(
   eventId: CommunityEvent["id"]
 ) {
+  const today = new Date();
   const { data, error } = await supabase
     .from("games")
-    .select("*, sessions(*)")
-    .eq("event_id", eventId);
+    .select("*, sessions!inner(*), profiles(*)")
+    .eq("event_id", eventId)
+    .gte("sessions.start_time", today.getTime());
   if (error) {
     log({ error });
     throw new Error(error.message);

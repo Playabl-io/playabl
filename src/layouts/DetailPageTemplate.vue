@@ -24,7 +24,7 @@
             v-else-if="link.path"
             :key="link.path"
             :to="link.path"
-            class="flex gap-4 p-2 rounded-md hover:bg-gray-100 cursor-pointer focus-styles"
+            class="flex gap-4 p-2 rounded-md hover:bg-gray-100 cursor-pointer focus-styles text-sm font-semibold"
             active-class="bg-purple-100 text-brand-500"
           >
             {{ link.label }}

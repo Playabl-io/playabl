@@ -94,6 +94,7 @@
             spaceBetween: 50,
           },
         }"
+        class="px-12"
       >
         <swiper-slide v-for="game in eventStore.eventGames" :key="game.id">
           <EventGameItem :game="game" />
@@ -141,13 +142,6 @@ const isAdmin = computed(() => role.value === ROLES.admin);
 
 const isCreatorOrAdmin = computed(() => {
   return isAdmin.value || role.value === ROLES.creator;
-});
-
-const rsvpWhen = computed(() => {
-  if (eventStore.event?.fixed_access_time) {
-    return;
-  }
-  return "according to access policy. See";
 });
 
 const accessModel = computed(() => {

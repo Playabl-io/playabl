@@ -71,6 +71,18 @@ export function updateCommunityEvent(event: CommunityEventInsert) {
   return client.post("/.netlify/functions/updateCommunityEvent", event);
 }
 
+export function publishCommunityEvent(eventId: CommunityEvent["id"]) {
+  return client.delete(
+    `/.netlify/functions/publishCommunityEvent?event_id=${eventId}`
+  );
+}
+
+export function cancelCommunityEvent(eventId: CommunityEvent["id"]) {
+  return client.delete(
+    `/.netlify/functions/cancelCommunityEvent?event_id=${eventId}`
+  );
+}
+
 export async function loadEventAndCommunityByEventId(
   eventId: CommunityEvent["id"]
 ) {

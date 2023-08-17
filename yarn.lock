@@ -2159,6 +2159,18 @@
     lodash.merge "^4.6.2"
     postcss-selector-parser "6.0.10"
 
+"@tanstack/table-core@8.9.3":
+  version "8.9.3"
+  resolved "https://registry.yarnpkg.com/@tanstack/table-core/-/table-core-8.9.3.tgz#991da6b015f6200fdc841c48048bee5e197f6a46"
+  integrity sha512-NpHZBoHTfqyJk0m/s/+CSuAiwtebhYK90mDuf5eylTvgViNOujiaOaxNDxJkQQAsVvHWZftUGAx1EfO1rkKtLg==
+
+"@tanstack/vue-table@^8.9.3":
+  version "8.9.3"
+  resolved "https://registry.yarnpkg.com/@tanstack/vue-table/-/vue-table-8.9.3.tgz#6412e773fbeebebe6d23285cae8e46a4964b2516"
+  integrity sha512-Ca9+XZogYOi99rBqIoEJKKIfS0hNWcHnIh8pDUy2xbBk396AtJaO/tvP6B9qsxZF6j4szHzx8TeRveHPpZ+bBw==
+  dependencies:
+    "@tanstack/table-core" "8.9.3"
+
 "@testing-library/cypress@^8.0.2":
   version "8.0.2"
   resolved "https://registry.npmjs.org/@testing-library/cypress/-/cypress-8.0.2.tgz"

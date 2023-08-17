@@ -70,7 +70,10 @@
                 {{ format(new Date(event.start_time), "MMM do, hh:mm a") }}
               </p>
             </div>
-            <div class="line-clamp-6 prose mt-6" v-html="event.description" />
+            <div
+              class="line-clamp-6 prose mt-6 force-clamp"
+              v-html="event.description"
+            />
           </Well>
         </RouterLink>
       </div>
@@ -90,7 +93,6 @@ import {
 } from "@/typings/CommunityEvent";
 import Well from "@/components/Well.vue";
 import { format } from "date-fns";
-import TipTapDisplay from "@/components/TipTapDisplay.vue";
 import ColorTag from "@/components/ColorTag.vue";
 import BrowsePageTemplate from "@/layouts/BrowsePageTemplate.vue";
 import UrlSortDropdown from "@/components/Search/UrlSortDropdown.vue";
@@ -142,7 +144,7 @@ watch([route, draftStates], () => {
 });
 </script>
 <style>
-.description p {
+.force-clamp p {
   display: inline;
 }
 </style>

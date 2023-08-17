@@ -1,30 +1,5 @@
 <template>
-  <div class="grid sm:grid-cols-3 gap-6">
-    <div
-      class="bg-blue-700 text-white grid border border-solid border-gray-300 rounded-lg p-4"
-    >
-      <p>Games</p>
-      <p class="text-2xl place-self-end font-semibold">
-        {{ eventStore.eventGames?.length }}
-      </p>
-    </div>
-    <div
-      class="bg-blue-700 text-white grid border border-solid border-gray-300 rounded-lg p-4"
-    >
-      <p>Sessions</p>
-      <p class="text-2xl place-self-end font-semibold">
-        {{ counts.sessionCount }}
-      </p>
-    </div>
-    <div
-      class="bg-blue-700 text-white grid border border-solid border-gray-300 rounded-lg p-4"
-    >
-      <p>RSVPs</p>
-      <p class="text-2xl place-self-end font-semibold">
-        {{ counts.rsvpCount }}
-      </p>
-    </div>
-  </div>
+  <EventManageData />
   <div class="grid gap-6 mt-6 items-start">
     <div
       v-if="eventStore.event?.draft_state === 'DRAFT'"
@@ -55,7 +30,7 @@
       <PrimaryButton
         class="mt-3"
         :is-loading="saving"
-        :disabled="!confirmPublish"
+        :disabled="!confirmPublish || isCancelled"
         @click="publish"
         >Publish</PrimaryButton
       >
@@ -236,16 +211,35 @@
       <div class="grid grid-cols-2 gap-6">
         <OutlineButton @click="reset">Cancel</OutlineButton>
         <PrimaryButton
-          :disabled="errors.length > 0"
+          :disabled="errors.length > 0 || isCancelled"
           :is-loading="saving"
           @click="maybeUpdate"
           >Update</PrimaryButton
         >
       </div>
     </div>
-    <div v-if="false" class="p-4 bg-white rounded-md shadow-sm grid gap-6">
+
+    <div
+      class="bg-rose-100 border-red-500 rounded-md p-4 mt-4 flex flex-col items-start gap-3"
+    >
       <Heading level="h6">Cancel Event</Heading>
-      <WarningButton :disabled="saving"> Cancel </WarningButton>
+      <p class="text-sm text-slate-700">
+        Cancelling the event will cancel all associated games and sessions. This
+        action cannot be undone.
+      </p>
+      <div class="flex gap-2 items-center">
+        <FormCheckbox id="confirm-publish" v-model="confirmCancel" />
+        <FormLabel for="confirm-publish" no-margin
+          >I want to cancel this event and all games</FormLabel
+        >
+      </div>
+      <WarningButton
+        :disabled="!confirmCancel || isCancelled"
+        :is-loading="cancelling"
+        @click="cancelEvent"
+      >
+        Cancel
+      </WarningButton>
     </div>
   </div>
   <BaseModal
@@ -289,33 +283,22 @@ import GhostButton from "@/components/Buttons/GhostButton.vue";
 import OutlineButton from "@/components/Buttons/OutlineButton.vue";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import Heading from "@/components/Heading.vue";
-import { updateCommunityEvent } from "@/api/communityEvents";
+import {
+  cancelCommunityEvent,
+  updateCommunityEvent,
+} from "@/api/communityEvents";
 import useToast from "@/components/Toast/useToast";
 import WarningButton from "@/components/Buttons/WarningButton.vue";
 import FormCheckbox from "@/components/Forms/FormCheckbox.vue";
 import { ROLES } from "@/util/roles";
+import EventManageData from "./EventManageData.vue";
+import { log } from "@/util/logger";
 
 const { showSuccess, showError } = useToast();
 const router = useRouter();
+const isCancelled = computed(() => Boolean(eventStore.event?.deleted_at));
 
-const counts = computed(() => {
-  if (!eventStore.eventGames) {
-    return {
-      sessionCount: 0,
-      rsvpCount: 0,
-    };
-  }
-  const allRsvps: string[] = [];
-  const sessionCount = eventStore.eventGames.reduce((acc, cur) => {
-    cur.sessions.forEach((session) => {
-      allRsvps.push(...session.rsvps);
-    });
-    return acc + cur.sessions.length;
-  }, 0);
-  const uniq = new Set([...allRsvps]);
-
-  return { sessionCount, rsvpCount: uniq.size };
-});
+const cancelling = ref(false);
 const saving = ref(false);
 const showConfirmUpdate = ref(false);
 const accessOptions = ref<{ label: string; value: number }[]>([]);
@@ -327,6 +310,7 @@ const accessGroup = ref<"everyone" | "limited">(
     : "everyone"
 );
 
+const confirmCancel = ref(false);
 const confirmPublish = ref(false);
 
 const isPublished = computed(
@@ -495,5 +479,21 @@ async function update() {
     showError({ message: "Unable to update event" });
   }
   saving.value = false;
+}
+
+async function cancelEvent() {
+  if (!eventStore.event?.id) {
+    throw new Error("no event in store");
+  }
+  cancelling.value = true;
+  try {
+    const { data } = await cancelCommunityEvent(eventStore.event.id);
+    eventStore.event = data;
+    showSuccess({ message: "Event cancelled" });
+  } catch (error) {
+    log({ error });
+    showError({ message: "Unable to cancel the event" });
+  }
+  cancelling.value = false;
 }
 </script>

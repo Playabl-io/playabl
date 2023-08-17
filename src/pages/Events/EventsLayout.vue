@@ -1,24 +1,39 @@
 <template>
   <DetailPageTemplate
-    :routes="[
-      {
-        label: 'Overview',
-        path: 'overview',
-      },
-      {
-        label: 'Calendar',
-        path: 'calendar',
-      },
-      {
-        label: 'Manage',
-        path: 'manage',
-      },
-    ]"
+    :routes="
+      isCancelled
+        ? [
+            {
+              label: 'Overview',
+              path: 'overview',
+            },
+          ]
+        : [
+            {
+              label: 'Overview',
+              path: 'overview',
+            },
+            {
+              label: 'Calendar',
+              path: 'calendar',
+            },
+            {
+              label: 'Manage',
+              path: 'manage',
+            },
+          ]
+    "
   >
     <div v-if="loading" class="grid place-content-center">
       <LoadingSpinner />
     </div>
     <template v-else-if="eventStore.event">
+      <div v-if="isCancelled" class="bg-rose-100 text-rose-900 rounded-md p-4">
+        <p>
+          This event has been cancelled along with its games and sessions.
+          Please contact the community admins with any questions.
+        </p>
+      </div>
       <section class="mt-6">
         <router-view> </router-view>
       </section>
@@ -26,7 +41,7 @@
   </DetailPageTemplate>
 </template>
 <script setup lang="ts">
-import { onMounted, ref, onUnmounted } from "vue";
+import { onMounted, ref, onUnmounted, computed } from "vue";
 import { loadEventAndCommunityByEventId } from "@/api/communityEvents";
 import DetailPageTemplate from "@/layouts/DetailPageTemplate.vue";
 import { CommunityEvent } from "@/typings/CommunityEvent";
@@ -39,6 +54,8 @@ import { loadGamesAndSessionsForEvent } from "@/api/gamesAndSessions";
 const route = useRoute();
 
 const loading = ref(false);
+
+const isCancelled = computed(() => eventStore.event?.deleted_at);
 
 onMounted(async () => {
   const eventId = route.params.event_id;
