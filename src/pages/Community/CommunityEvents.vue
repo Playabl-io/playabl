@@ -67,7 +67,8 @@
             <div class="flex items-center gap-2">
               <CalendarIcon class="w-5 h-5 text-slate-700" />
               <p class="text-slate-700 font-semibold">
-                {{ format(new Date(event.start_time), "MMM do, hh:mm a") }}
+                {{ format(new Date(event.start_time), "MMM do, hh:mm a") }} —
+                {{ format(new Date(event.end_time), "MMM do, hh:mm a") }}
               </p>
             </div>
             <div
@@ -100,7 +101,7 @@ import { useRoute, useRouter } from "vue-router";
 import { store } from "@/store";
 import FormCheckbox from "@/components/Forms/FormCheckbox.vue";
 import FormLabel from "@/components/Forms/FormLabel.vue";
-import { SORT_QUERY_VALUES } from "@/util/urlParams";
+import { SORT_DIR, SORT_KEY } from "@/util/urlParams";
 
 const route = useRoute();
 const router = useRouter();
@@ -125,13 +126,15 @@ async function loadEvents() {
   if (route.params.community_id) {
     const data = await getUpcomingCommunityEvents({
       id: communityStore.community.id,
-      sort: route.query.sort as SORT_QUERY_VALUES,
+      sortKey: route.query["sort.key"] as SORT_KEY,
+      sortDir: route.query["sort.dir"] as SORT_DIR,
       draftState: draftStates.value,
     });
     activeEvents.value = data;
   } else {
     const data = await getEvents({
-      sort: route.query.sort as SORT_QUERY_VALUES,
+      sortKey: route.query["sort.key"] as SORT_KEY,
+      sortDir: route.query["sort.dir"] as SORT_DIR,
       draftState: draftStates.value,
     });
     activeEvents.value = data;

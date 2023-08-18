@@ -5,21 +5,24 @@ import {
 } from "@/typings/CommunityEvent";
 import { supabase } from "@/supabase";
 import { log } from "@/util/logger";
-import { SORT_QUERY_VALUES, translateSortToSupabase } from "@/util/urlParams";
+import {
+  translateSortToSupabase,
+  SORT_KEY,
+  SORT_DIR,
+  sortKeys,
+  sortDirs,
+} from "@/util/urlParams";
 import client from "./client";
-
-const defaultEventSearchOptions = {
-  sort: SORT_QUERY_VALUES.startTimeAsc,
-  draftState: ["PUBLISHED"],
-};
 
 export async function getUpcomingCommunityEvents({
   id,
-  sort = SORT_QUERY_VALUES.startTimeAsc,
+  sortKey = sortKeys.startTime,
+  sortDir = sortDirs.asc,
   draftState = ["PUBLISHED"],
 }: {
   id: CommunityEvent["community_id"];
-  sort?: SORT_QUERY_VALUES;
+  sortKey?: SORT_KEY;
+  sortDir?: SORT_DIR;
   draftState?: CommunityEvent["draft_state"][];
 }): Promise<CommunityEventWithCommunity[]> {
   const { data, error } = await supabase
@@ -29,7 +32,12 @@ export async function getUpcomingCommunityEvents({
     .in("draft_state", draftState)
     .is("deleted_at", null)
     .gte("end_time", new Date().getTime())
-    .order(...translateSortToSupabase(sort));
+    .order(
+      ...translateSortToSupabase({
+        sortKey,
+        sortDir,
+      })
+    );
 
   if (error) {
     log({
@@ -40,11 +48,23 @@ export async function getUpcomingCommunityEvents({
   return data ?? [];
 }
 
+const defaultEventSearchOptions: {
+  sortKey: SORT_KEY;
+  sortDir: SORT_DIR;
+  draftState: CommunityEvent["draft_state"][];
+} = {
+  sortKey: sortKeys.startTime,
+  sortDir: sortDirs.asc,
+  draftState: ["PUBLISHED"],
+};
+
 export async function getEvents({
-  sort = SORT_QUERY_VALUES.startTimeAsc,
+  sortKey = sortKeys.startTime,
+  sortDir = sortDirs.asc,
   draftState = ["PUBLISHED"],
 }: {
-  sort?: SORT_QUERY_VALUES;
+  sortKey?: SORT_KEY;
+  sortDir?: SORT_DIR;
   draftState: CommunityEvent["draft_state"][];
 } = defaultEventSearchOptions): Promise<CommunityEventWithCommunity[]> {
   const { data, error } = await supabase
@@ -53,7 +73,12 @@ export async function getEvents({
     .in("draft_state", draftState)
     .is("deleted_at", null)
     .gte("end_time", new Date().getTime())
-    .order(...translateSortToSupabase(sort));
+    .order(
+      ...translateSortToSupabase({
+        sortKey,
+        sortDir,
+      })
+    );
   if (error) {
     log({
       error,

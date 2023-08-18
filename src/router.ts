@@ -29,7 +29,13 @@ import SlackAuthorization from "@/pages/SlackAuthorization.vue";
 import EventsLayout from "@/pages/Events/EventsLayout.vue";
 import EventOverview from "./pages/Events/EventOverview.vue";
 import { store } from "./store";
-import { SORT_OPTIONS, queryHandlerFactory } from "./util/urlParams";
+import {
+  SORT_DIR_PATH,
+  SORT_KEY_PATH,
+  queryHandlerFactory,
+  sortDirs,
+  sortKeys,
+} from "./util/urlParams";
 import { format } from "date-fns";
 
 const routes = [
@@ -140,7 +146,8 @@ const routes = [
         component: () => import("@/pages/Community/CommunityEvents.vue"),
         beforeEnter: [
           queryHandlerFactory({
-            sort: SORT_OPTIONS.startTimeAsc,
+            [SORT_KEY_PATH]: sortKeys.startTime,
+            [SORT_DIR_PATH]: sortDirs.asc,
           }),
         ],
       },
@@ -262,7 +269,8 @@ const routes = [
     component: () => import("@/pages/Events/EventsBrowse.vue"),
     beforeEnter: [
       queryHandlerFactory({
-        sort: SORT_OPTIONS.startTimeAsc,
+        [SORT_KEY_PATH]: sortKeys.startTime,
+        [SORT_DIR_PATH]: sortDirs.asc,
       }),
     ],
   },
