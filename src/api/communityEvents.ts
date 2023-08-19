@@ -97,7 +97,7 @@ export function updateCommunityEvent(event: CommunityEventInsert) {
 }
 
 export function publishCommunityEvent(eventId: CommunityEvent["id"]) {
-  return client.delete(
+  return client.post(
     `/.netlify/functions/publishCommunityEvent?event_id=${eventId}`
   );
 }

@@ -51,12 +51,13 @@ export const handler: Handler = async (event) => {
     .order("start_time", { ascending: true });
 
   if (eventSessions.length > 0) {
-    console.log("need to remap sessions");
+    const accessLevelsHaveChanged =
+      R.difference(
+        current.event_access_levels || [],
+        updatedCommunityEvent.event_access_levels || []
+      ).length > 0;
     if (
-      R.difference([
-        current.event_access_levels,
-        updatedCommunityEvent.event_access_levels,
-      ]).length > 0 ||
+      accessLevelsHaveChanged ||
       current.fixed_access_time !== updatedCommunityEvent.fixed_access_time ||
       current.start_time !== updatedCommunityEvent.start_time ||
       current.end_time !== updatedCommunityEvent.end_time

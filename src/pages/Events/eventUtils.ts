@@ -66,12 +66,6 @@ export const eventFormUpdateSchema = eventFormBase
         message: "End time must come after start time",
       });
     }
-    if (val.start_time < now) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Start time must be in the future",
-      });
-    }
     if (val.end_time < now) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -95,12 +89,6 @@ export const eventFormUpdateSchema = eventFormBase
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: "RSVP time cannot be after event start time",
-          });
-        }
-        if (val.fixed_access_time < now) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "RSVP time must be in the future",
           });
         }
       }

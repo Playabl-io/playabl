@@ -29,7 +29,7 @@
       </div>
       <PrimaryButton
         class="mt-3"
-        :is-loading="saving"
+        :is-loading="publishing"
         :disabled="!confirmPublish || isCancelled"
         @click="publish"
         >Publish</PrimaryButton
@@ -285,6 +285,7 @@ import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import Heading from "@/components/Heading.vue";
 import {
   cancelCommunityEvent,
+  publishCommunityEvent,
   updateCommunityEvent,
 } from "@/api/communityEvents";
 import useToast from "@/components/Toast/useToast";
@@ -300,6 +301,7 @@ const isCancelled = computed(() => Boolean(eventStore.event?.deleted_at));
 
 const cancelling = ref(false);
 const saving = ref(false);
+const publishing = ref(false);
 const showConfirmUpdate = ref(false);
 const accessOptions = ref<{ label: string; value: number }[]>([]);
 
@@ -430,9 +432,20 @@ onMounted(async () => {
   }
 });
 
-function publish() {
-  form.draft_state = "PUBLISHED";
-  maybeUpdate();
+async function publish() {
+  if (!eventStore.event) {
+    throw new Error("No event to publish");
+  }
+  try {
+    publishing.value = true;
+    const { data } = await publishCommunityEvent(eventStore.event.id);
+    showSuccess({ message: "Event published!" });
+    eventStore.event = data;
+  } catch (e) {
+    showError({ message: "Unable to publish event" });
+    log({ error: e });
+  }
+  publishing.value = false;
 }
 
 function maybeUpdate() {
