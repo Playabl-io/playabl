@@ -105,7 +105,6 @@ export function userCanRsvp({
     rsvps: GameSession["rsvps"];
     start_time: GameSession["start_time"];
     access_times?: GameSession["access_times"];
-    community_id: Community["id"];
   };
   userId?: Profile["id"];
   hostId: string;
