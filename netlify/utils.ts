@@ -21,13 +21,15 @@ export async function userIsCommunityAdmin({ userId, communityId }) {
     .from("community_memberships")
     .select("*")
     .eq("community_id", communityId)
-    .eq("user_id", userId);
+    .eq("user_id", userId)
+    .single();
   if (error && error.code === "409") {
     return false;
   }
-  if (data) {
+  if (data && data.role_id === 1) {
     return true;
   }
+  return false;
 }
 
 export function sendEmail(message) {

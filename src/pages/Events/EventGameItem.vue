@@ -5,7 +5,8 @@
         <img
           class="w-full h-full object-center object-cover rounded-t-md"
           :src="gameCoverImage"
-          alt=""
+          :alt="`Cover image for ${game.title}`"
+          loading="lazy"
         />
       </div>
       <div class="px-4 pt-2 pb-4">

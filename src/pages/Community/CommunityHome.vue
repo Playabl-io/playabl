@@ -25,15 +25,15 @@
             {{
               isBefore(
                 new Date(communityStore.communityEvents[0].start_time),
-                new Date()
+                now
               )
                 ? `Event happening till ${formatRelative(
                     new Date(communityStore.communityEvents[0].end_time),
-                    new Date()
+                    now
                   )}`
                 : `Next event starts ${formatRelative(
                     new Date(communityStore.communityEvents[0].start_time),
-                    new Date()
+                    now
                   )}`
             }}!
           </p>
@@ -250,6 +250,8 @@ import { log } from "@/util/logger";
 import UserAvatar from "@/components/UserAvatar.vue";
 import RequestToJoinModal from "./RequestToJoinModal.vue";
 import Well from "@/components/Well.vue";
+
+const now = new Date();
 
 const { showSuccess, showError } = useToast();
 

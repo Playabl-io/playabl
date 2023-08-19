@@ -11,6 +11,7 @@
           class="w-full h-full object-center object-cover rounded-t-lg"
           :src="coverImageUrl"
           alt="image"
+          loading="lazy"
         />
       </div>
     </RouterLink>

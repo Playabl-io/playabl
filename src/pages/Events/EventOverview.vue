@@ -2,7 +2,7 @@
   <template v-if="eventStore.event">
     <div
       v-if="eventStore.event?.draft_state === 'DRAFT' && isCreatorOrAdmin"
-      class="border border-blue-500 rounded-md p-4 bg-blue-100 prose-sm"
+      class="border border-blue-500 rounded-md p-4 bg-blue-100 prose-sm mb-6"
     >
       <p class="font-semibold">This event is not published</p>
       <p>
@@ -76,31 +76,27 @@
       >
     </div>
 
-    <div>
-      <swiper
-        :modules="[Navigation]"
-        :slides-per-view="1"
-        :space-between="50"
-        :navigation="{
-          hiddenClass: 'hidden',
-        }"
-        :breakpoints="{
-          '640': {
-            slidesPerView: 2,
-            spaceBetween: 20,
-          },
-          '1280': {
-            slidesPerView: 3,
-            spaceBetween: 50,
-          },
-        }"
-        class="px-12"
-      >
-        <swiper-slide v-for="game in eventStore.eventGames" :key="game.id">
-          <EventGameItem :game="game" />
-        </swiper-slide>
-      </swiper>
-    </div>
+    <swiper-container
+      :modules="[Navigation]"
+      :slides-per-view="1"
+      :breakpoints="{
+        640: {
+          slidesPerView: 2,
+          spaceBetween: 20,
+        },
+        1280: {
+          slidesPerView: 3,
+          spaceBetween: 50,
+        },
+      }"
+      :navigation="{
+        hiddenClass: 'hidden',
+      }"
+    >
+      <swiper-slide v-for="game in eventStore.eventGames" :key="game.id">
+        <EventGameItem :game="game" />
+      </swiper-slide>
+    </swiper-container>
 
     <div>
       <div v-if="eventStore.event?.description">
@@ -125,7 +121,6 @@ import { format } from "date-fns";
 import { UserCircleIcon } from "@heroicons/vue/24/outline";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue";
 import { ROLES } from "@/util/roles";
-import { Swiper, SwiperSlide } from "swiper/vue";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";

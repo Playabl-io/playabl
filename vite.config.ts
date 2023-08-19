@@ -12,7 +12,16 @@ export default defineConfig({
   server: {
     port: 3000,
   },
-  plugins: [vue()],
+  plugins: [
+    vue({
+      template: {
+        compilerOptions: {
+          isCustomElement: (tag) =>
+            ["swiper-container", "swiper-slide"].includes(tag),
+        },
+      },
+    }),
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

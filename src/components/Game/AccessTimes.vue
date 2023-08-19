@@ -48,7 +48,7 @@
           class="hidden"
           :checked="enabledLevels.includes(level.id)"
           :value="level.id"
-          :disabled="level.is_mandatory || disable"
+          :disabled="level.is_mandatory"
           hidden
           @change="handleChange($event, level.id)"
         />
@@ -93,10 +93,6 @@ const props = defineProps({
   grid: {
     type: String,
     default: "md:grid-cols-3 gap-6",
-  },
-  disable: {
-    type: Boolean,
-    default: false,
   },
   setByEvent: {
     type: Boolean,

@@ -13,10 +13,6 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  editorAttributes: {
-    type: String,
-    default: undefined,
-  },
 });
 
 const editor = useEditor({
@@ -30,9 +26,7 @@ const editor = useEditor({
   ],
   editorProps: {
     attributes: {
-      class: props.editorAttributes
-        ? props.editorAttributes
-        : "prose sm:prose-sm lg:prose-lg w-full",
+      class: "prose sm:prose-sm lg:prose-lg w-full",
     },
   },
 });

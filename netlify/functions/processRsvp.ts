@@ -121,7 +121,7 @@ async function confirmRsvpAccess({
     .eq("community_id", session.community_id)
     .eq("user_id", userId)
     .single();
-  if (data && data.role_id < 1) {
+  if (!data || data.role_id < 1) {
     return false;
   }
   return userCanRsvp({

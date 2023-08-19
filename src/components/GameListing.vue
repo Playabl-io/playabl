@@ -155,7 +155,6 @@ import { joinSession } from "@/api/gamesAndSessions";
 import useToast from "./Toast/useToast";
 import LoadingSpinner from "./LoadingSpinner.vue";
 import { Session } from "@/typings/Session";
-import ColorTag from "./ColorTag.vue";
 
 const { showError, showSuccess } = useToast();
 

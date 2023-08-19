@@ -235,7 +235,6 @@ import { CheckBadgeIcon, BoltIcon } from "@heroicons/vue/24/outline";
 import { Community } from "@/typings/Community";
 import Tooltip from "./Tooltip.vue";
 import { getCoverImageUrl } from "@/api/storage";
-import Well from "./Well.vue";
 
 const props = defineProps({
   community: {

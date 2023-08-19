@@ -17,10 +17,10 @@ export const handler: Handler = async (event) => {
       body: "not authorized",
     };
   }
-  const communityEvent = JSON.parse(event.body);
+  const updatedCommunityEvent = JSON.parse(event.body);
   const isAdmin = userIsCommunityAdmin({
     userId: user.data.user.id,
-    communityId: communityEvent.community_id,
+    communityId: updatedCommunityEvent.community_id,
   });
   if (!isAdmin) {
     return {
@@ -32,14 +32,14 @@ export const handler: Handler = async (event) => {
   const { data: current, error: currentError } = await supabase
     .from("community_events")
     .select("*")
-    .eq("id", communityEvent.id)
+    .eq("id", updatedCommunityEvent.id)
     .single();
 
   if (currentError) {
     console.error(currentError);
     return {
       statusCode: 400,
-      body: "No event matching event ID" + communityEvent.id,
+      body: "No event matching event ID" + updatedCommunityEvent.id,
     };
   }
 
@@ -47,7 +47,7 @@ export const handler: Handler = async (event) => {
     .from("sessions")
     .select("*, game_id!inner(*)")
     .is("deleted_at", null)
-    .eq("game_id.event_id", communityEvent.id)
+    .eq("game_id.event_id", updatedCommunityEvent.id)
     .order("start_time", { ascending: true });
 
   if (eventSessions.length > 0) {
@@ -55,10 +55,11 @@ export const handler: Handler = async (event) => {
     if (
       R.difference([
         current.event_access_levels,
-        communityEvent.event_access_levels,
+        updatedCommunityEvent.event_access_levels,
       ]).length > 0 ||
-      current.fixed_access_time !== communityEvent.fixed_access_time ||
-      current.start_time !== communityEvent.start_time
+      current.fixed_access_time !== updatedCommunityEvent.fixed_access_time ||
+      current.start_time !== updatedCommunityEvent.start_time ||
+      current.end_time !== updatedCommunityEvent.end_time
     ) {
       /**
        * Access settings changed, so all RSVP times must be recalculated
@@ -66,12 +67,12 @@ export const handler: Handler = async (event) => {
       const { data: accessLevels } = await supabase
         .from("access_levels")
         .select("*")
-        .in("id", communityEvent.event_access_levels ?? []);
+        .in("id", updatedCommunityEvent.event_access_levels ?? []);
 
       const levels = accessLevels ?? [];
       const times = rsvpTimes(
         levels ?? [],
-        communityEvent.fixed_access_time ?? undefined,
+        updatedCommunityEvent.fixed_access_time ?? undefined,
         levels.length > 0 ? "policy" : "global"
       );
 
@@ -79,8 +80,8 @@ export const handler: Handler = async (event) => {
         const newTime = computeNextStartAndEndTime({
           sessionStart: session.start_time,
           sessionEnd: session.end_time,
-          eventStart: communityEvent.start_time,
-          eventEnd: communityEvent.end_time,
+          eventStart: updatedCommunityEvent.start_time,
+          eventEnd: updatedCommunityEvent.end_time,
         });
         return {
           ...session,
@@ -103,11 +104,12 @@ export const handler: Handler = async (event) => {
     }
   }
 
-  communityEvent.fixed_access_time = communityEvent.fixed_access_time || null;
+  updatedCommunityEvent.fixed_access_time =
+    updatedCommunityEvent.fixed_access_time || null;
   const { data, error } = await supabase
     .from("community_events")
-    .update(communityEvent)
-    .eq("id", communityEvent.id)
+    .update(updatedCommunityEvent)
+    .eq("id", updatedCommunityEvent.id)
     .select()
     .single();
 
@@ -143,10 +145,10 @@ function computeNextStartAndEndTime({
   if (sessionStart < eventStart) {
     // start time is after
     newTime.start_time = eventStart;
-    newTime.end_time = eventStart + length;
+    newTime.end_time = Math.min(eventStart + length, eventEnd);
   } else if (sessionEnd > eventEnd) {
-    newTime.start_time = eventEnd - length;
     newTime.end_time = eventEnd;
+    newTime.start_time = Math.max(eventEnd - length, eventStart);
   }
   return newTime;
 }

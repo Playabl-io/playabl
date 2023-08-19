@@ -45,7 +45,7 @@ defineProps({
     required: true,
   },
   table: {
-    type: Object as PropType<Table<unknown>>,
+    type: Object as PropType<Table<any>>,
     required: false,
     default: undefined,
   },

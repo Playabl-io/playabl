@@ -1,7 +1,7 @@
 <template>
   <DropdownMenu>
-    <template #title>
-      <slot name="title"></slot>
+    <template #title="{ open }">
+      <slot name="title" :open="open"></slot>
     </template>
     <template #items>
       <slot name="items"></slot>

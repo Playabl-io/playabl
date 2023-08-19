@@ -14,6 +14,7 @@
         class="w-full h-full object-center object-cover rounded-t-lg"
         :src="coverImageUrl"
         alt="image"
+        loading="lazy"
       />
     </div>
     <div class="p-4 rounded-b-lg">

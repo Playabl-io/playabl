@@ -55,8 +55,15 @@
         </router-link>
         <template v-if="communityStore.isAdmin">
           <NavMenu>
-            <template #title> Manage </template>
-            <ChevronDownIcon class="h-4 w-4" />
+            <template #title="{ open }">
+              <span class="flex gap-2 items-center">
+                Manage
+                <component
+                  :is="open ? ChevronUpIcon : ChevronDownIcon"
+                  class="h-4 w-4"
+                />
+              </span>
+            </template>
             <template #items>
               <NavMenuItem
                 :to="`/communities/${
@@ -108,12 +115,14 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 import { useRoute } from "vue-router";
-import { ChevronDownIcon } from "@heroicons/vue/20/solid";
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/vue/20/solid";
 import { communityStore } from "./communityStore";
 import NavMenu from "@/components/Menus/NavMenu.vue";
 import NavMenuItem from "@/components/Menus/NavMenuItem.vue";
 import { store } from "@/store";
 import flags from "@/util/flags";
+
+console.log(communityStore.isAdmin);
 
 const currentRoute = useRoute();
 const communityRoute = computed(

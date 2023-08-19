@@ -365,13 +365,11 @@ function getFormSubmitRecord() {
     end_time: new Date(form.end_time).getTime(),
     rsvp_model: form.rsvp_model,
     event_access_levels:
-      form.event_access_levels.length > 0
-        ? form.event_access_levels
-        : undefined,
+      form.event_access_levels.length > 0 ? form.event_access_levels : null,
     fixed_access_time:
       form.rsvp_model === "FIXED"
         ? new Date(form.fixed_access_time ?? "1900-01-01").getTime()
-        : undefined,
+        : null,
   };
 }
 

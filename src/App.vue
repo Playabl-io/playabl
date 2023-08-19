@@ -120,10 +120,9 @@ async function loadNotificationsAndSubscribe() {
   notificationSubscription.value = subscription;
 }
 
-async function setUserManagedCommunitise(userId: string) {
-  loadUserManagedCommunities({ userId }).then((response) => {
-    store.userManagedCommunities = response;
-  });
+async function setUserManagedCommunities(userId: string) {
+  const response = await loadUserManagedCommunities({ userId });
+  store.userManagedCommunities = response;
 }
 
 onMounted(async () => {
@@ -134,7 +133,7 @@ onMounted(async () => {
   }
   if (user.data?.user?.id) {
     await Promise.all([
-      setUserManagedCommunitise(user.data.user.id),
+      setUserManagedCommunities(user.data.user.id),
       getUserAccess(user.data.user.id),
       getUserMemberships(user.data.user.id),
     ]);
@@ -151,3 +150,8 @@ onMounted(async () => {
   loadingUser.value = false;
 });
 </script>
+<style>
+:root {
+  --swiper-navigation-color: #4622b8;
+}
+</style>

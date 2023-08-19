@@ -72,7 +72,9 @@
       <div v-else class="grid grid-cols-1 gap-8">
         <Heading level="h6" as="h2">Game info</Heading>
         <div v-if="store.userEnabledFlags[flags.events]" class="flex flex-col">
-          <FormLabel> Add to Event </FormLabel>
+          <FormLabel helper-text="Select an upcoming event">
+            Add to event
+          </FormLabel>
           <FormSelect
             id="event"
             v-model="eventId"
@@ -94,13 +96,18 @@
           <FormInput id="title" v-model="title" required />
         </div>
         <div class="flex flex-col">
-          <FormLabel for="system" required> Game system </FormLabel>
+          <FormLabel
+            for="system"
+            helper-text="Pick one or enter your own"
+            required
+          >
+            Game system
+          </FormLabel>
           <FilterDropdown
             v-model="system"
             :options="gameSystemList"
             placeholder="Select or specify a system"
           />
-          <p class="text-xs text-slate-700 mt-1">Pick one or enter your own</p>
         </div>
         <div class="flex flex-col">
           <FormLabel for="participantCount" required> Player count </FormLabel>
@@ -315,7 +322,7 @@
 <script setup lang="ts">
 import { supabase } from "@/supabase";
 import { useRouter } from "vue-router";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import { isBefore, set, format, isAfter } from "date-fns";
 import { createMachine, assign } from "xstate";
@@ -648,6 +655,13 @@ const sessionNotAfter = computed(() => {
     : communityPostingLimit.value;
 });
 
+watch(sessionNotBefore, () => {
+  if (isBefore(startDate.value, sessionNotBefore.value)) {
+    startDate.value = sessionNotBefore.value;
+    endDate.value = sessionNotBefore.value;
+  }
+});
+
 const furthestPostingDateIsInPast = computed(() => {
   if (!communityPostingLimit.value) return false;
   return getStartOfToday().getTime() > communityPostingLimit.value.getTime();
@@ -763,8 +777,9 @@ async function submitGame() {
   }
 
   const levels = selectedEvent.value?.event_access_levels
-    ? getLevelsFromStore(selectedEvent.value.event_access_levels ?? [])
+    ? getLevelsFromStore(selectedEvent.value.event_access_levels)
     : getLevelsFromStore(state.value.context.enabledAccessLevels);
+
   const times = rsvpTimes(
     levels,
     selectedEvent.value?.fixed_access_time ?? undefined,

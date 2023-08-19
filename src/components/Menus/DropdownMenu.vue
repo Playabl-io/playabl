@@ -1,8 +1,8 @@
 <template>
   <section class="relative flex flex-col items-center">
     <Menu>
-      <MenuButton class="hover:underline relative">
-        <slot name="title"></slot>
+      <MenuButton v-slot="{ open }" class="hover:underline relative">
+        <slot name="title" :open="open"></slot>
       </MenuButton>
       <transition
         enter-active-class="transition duration-100 ease-out"

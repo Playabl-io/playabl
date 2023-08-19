@@ -214,7 +214,7 @@ export async function loadOpenCommunitySessions({
   }
   if (data) {
     return data.filter((record) => {
-      return record.game_id?.community_events?.draft_state !== "DRAFT";
+      return filterDraftEventGames(record.game_id);
     });
   }
 }
@@ -241,7 +241,7 @@ export async function loadAllCommunitySessions({
   }
   if (data) {
     return data.filter((record) => {
-      return record.game_id?.community_events?.draft_state !== "DRAFT";
+      return filterDraftEventGames(record.game_id);
     });
   }
 }

@@ -53,8 +53,8 @@ const eventFormBase = z.object({
   start_time: z.number(),
   end_time: z.number(),
   rsvp_model: z.enum(["FIXED", "NORMAL"]),
-  event_access_levels: z.array(z.number()).optional(),
-  fixed_access_time: z.number().optional(),
+  event_access_levels: z.array(z.number()).nullable(),
+  fixed_access_time: z.number().nullable(),
 });
 export const eventFormUpdateSchema = eventFormBase
   .extend({ id: z.number() })

@@ -6,7 +6,8 @@
           <img
             class="w-full h-full object-center object-cover rounded-t-lg"
             :src="gameCoverImage"
-            alt=""
+            :alt="`Cover image for ${session.game_id.title}`"
+            loading="lazy"
           />
         </router-link>
       </div>
