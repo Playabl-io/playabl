@@ -1,6 +1,7 @@
 <template>
   <base-button
     v-bind="$attrs"
+    :disabled="$attrs.disabled || isLoading"
     class="bg-transparent border border-gray-500 hover:bg-gray-100 dark:hover:bg-slate-800 focus:bg-gray-100 text-slate-900 dark:text-slate-50 transition-all"
   >
     <loading-spinner v-if="isLoading" color="brand-500" />

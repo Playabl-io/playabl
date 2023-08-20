@@ -116,8 +116,16 @@ const props = defineProps({
 
 const sessionStartTime = ref("");
 const sessionEndTime = ref("");
-const startDate = ref<Date>(new Date());
-const endDate = ref<Date>(new Date());
+const startDate = ref<Date>(
+  gameStore.game.community_events
+    ? new Date(gameStore.game.community_events?.start_time)
+    : new Date()
+);
+const endDate = ref<Date>(
+  gameStore.game.community_events
+    ? new Date(gameStore.game.community_events?.start_time)
+    : new Date()
+);
 const accessLevels = ref<number[]>([]);
 const saving = ref(false);
 const communityPostingLimit = ref<Date>();
@@ -186,16 +194,23 @@ const dateError = computed(() => {
   return "";
 });
 
+function getLevelsFromStore(ids: number[]) {
+  return store.communityAccessLevels.filter((level) => ids.includes(level.id));
+}
+
 async function addSession() {
   if (!store.user) return;
   const [startHours, startMinutes] = sessionStartTime.value.split(":");
   const [endHours, endMinutes] = sessionEndTime.value.split(":");
-  const levels = store.communityAccessLevels.filter((level) =>
-    accessLevels.value.includes(level.id)
-  );
+  const levels = gameStore.game.community_events
+    ? getLevelsFromStore(
+        gameStore.game.community_events?.event_access_levels ?? []
+      )
+    : getLevelsFromStore(accessLevels.value);
   const times = rsvpTimes(
     levels,
-    gameStore.game.community_events?.fixed_access_time ?? undefined
+    gameStore.game.community_events?.fixed_access_time ?? undefined,
+    gameStore.game.community_events?.event_access_levels ? "policy" : "global"
   );
   const newSession: NewSession = {
     start_time: set(startDate.value, {

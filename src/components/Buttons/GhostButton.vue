@@ -2,6 +2,7 @@
   <base-button
     class="bg-inherit hover:bg-gray-100 dark:hover:bg-gray-700 text-current dark:text-slate-100 transition-all"
     v-bind="$attrs"
+    :disabled="$attrs.disabled || isLoading"
   >
     <loading-spinner v-if="isLoading" color="brand-500" />
     <p v-if="isLoading" class="sr-only">Loading</p>

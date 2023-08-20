@@ -776,8 +776,8 @@ async function submitGame() {
     );
   }
 
-  const levels = selectedEvent.value?.event_access_levels
-    ? getLevelsFromStore(selectedEvent.value.event_access_levels)
+  const levels = selectedEvent.value
+    ? getLevelsFromStore(selectedEvent.value.event_access_levels ?? [])
     : getLevelsFromStore(state.value.context.enabledAccessLevels);
 
   const times = rsvpTimes(
