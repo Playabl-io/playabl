@@ -178,7 +178,10 @@
         <DisclosureButton
           class="py-2 w-full text-xs flex justify-center items-center"
         >
-          {{ relatedSessions.length }} related sessions
+          {{ relatedSessions.length }} related
+          {{
+            pluralize({ count: relatedSessions.length, singular: "session" })
+          }}
           <ChevronRightIcon
             class="h-5 w-5 text-slate-500 transition-all"
             :class="open && 'rotate-90 transform'"
@@ -245,6 +248,7 @@ import { store } from "@/store";
 import useToast from "@/components/Toast/useToast";
 import { rsvpToAllGameSessions, joinSession } from "@/api/gamesAndSessions";
 import { getCoverImageUrl } from "@/api/storage";
+import { pluralize } from "@/util/grammar";
 
 const { showSuccess, showError } = useToast();
 
