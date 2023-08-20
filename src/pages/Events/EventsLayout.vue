@@ -1,29 +1,5 @@
 <template>
-  <DetailPageTemplate
-    :routes="
-      isCancelled
-        ? [
-            {
-              label: 'Overview',
-              path: 'overview',
-            },
-          ]
-        : [
-            {
-              label: 'Overview',
-              path: 'overview',
-            },
-            {
-              label: 'Calendar',
-              path: 'calendar',
-            },
-            {
-              label: 'Manage',
-              path: 'manage',
-            },
-          ]
-    "
-  >
+  <DetailPageTemplate :routes="routes">
     <div v-if="loading" class="grid place-content-center">
       <LoadingSpinner />
     </div>
@@ -51,11 +27,47 @@ import { communityEventSchema } from "./eventUtils";
 import { loadAccessLevels } from "@/api/accessLevels";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import { loadGamesAndSessionsForEvent } from "@/api/gamesAndSessions";
+import { store } from "@/store";
+import { ROLES } from "@/util/roles";
 const route = useRoute();
 
 const loading = ref(false);
 
 const isCancelled = computed(() => eventStore.event?.deleted_at);
+const isAdmin = computed(() => {
+  if (!eventStore.event?.community_id) {
+    return false;
+  }
+  return (
+    store.userCommunityMembership[eventStore.event.community_id]
+      ?.communityMembership.role_id === ROLES.admin
+  );
+});
+const routes = computed(() => {
+  if (!eventStore.event) {
+    return [];
+  }
+  const result = [
+    {
+      label: "Overview",
+      path: "overview",
+    },
+  ];
+  if (isCancelled.value) {
+    return result;
+  }
+  result.push({
+    label: "Calendar",
+    path: "calendar",
+  });
+  if (isAdmin.value) {
+    result.push({
+      label: "Manage",
+      path: "manage",
+    });
+  }
+  return result;
+});
 
 onMounted(async () => {
   const eventId = route.params.event_id;
