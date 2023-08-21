@@ -4,14 +4,19 @@
     :class="{ 'mb-2': !noMargin }"
     v-bind="$attrs"
   >
-    <slot></slot>
-    <span
-      v-if="required"
-      role="presentation"
-      class="text-red-700 dark:text-red-400"
-    >
-      *
+    <span class="flex items-center gap-1">
+      <slot></slot>
+      <span
+        v-if="required"
+        role="presentation"
+        class="text-red-700 dark:text-red-400 self-start"
+      >
+        *
+      </span>
     </span>
+    <p v-if="helperText" class="text-xs text-slate-700 mt-1 font-normal">
+      {{ helperText }}
+    </p>
   </label>
 </template>
 <script setup lang="ts">
@@ -25,6 +30,10 @@ const props = defineProps({
   noMargin: {
     type: Boolean,
     default: false,
+  },
+  helperText: {
+    type: String,
+    default: "",
   },
 });
 toRefs(props);

@@ -23,7 +23,7 @@
 <script setup lang="ts">
 defineProps({
   modelValue: {
-    type: String,
+    type: [String, Boolean],
     default: "",
   },
   id: {

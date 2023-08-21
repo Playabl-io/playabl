@@ -1,11 +1,12 @@
 import { Community, SignupMethods } from "@/typings/Community";
+import { CommunityEvent } from "@/typings/CommunityEvent";
 import { Game, GAME_DRAFT_STATE } from "@/typings/Game";
 import { Profile } from "@/typings/Profile";
 import { Session } from "@/typings/Session";
 import { reactive } from "vue";
 
 interface Store {
-  game: Game;
+  game: Game & { community_events?: CommunityEvent };
   sessions: Session[];
   attendees: Record<string, Profile>;
   community: Community;

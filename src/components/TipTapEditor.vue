@@ -114,7 +114,7 @@ const editor = useEditor({
   ],
   editorProps: {
     attributes: {
-      class: `prose sm:prose-sm lg:prose-lg no-max-w px-4 py-2 rounded-lg w-full h-full overflow-auto`,
+      class: `!max-w-none prose sm:prose-sm lg:prose-lg px-4 py-2 rounded-lg h-full overflow-auto`,
     },
   },
   onUpdate: () => {

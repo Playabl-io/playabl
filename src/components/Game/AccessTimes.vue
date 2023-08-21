@@ -1,24 +1,32 @@
 <template>
   <div>
     <Heading level="h6" as="h2" class="mb-2">Access times</Heading>
-    <p class="text-sm text-slate-700 dark:text-slate-300 mb-3">
-      Select what access levels to apply. Not sure how access levels work?
-      <a
-        href="https://docs.playabl.io/communities/access-levels.html"
-        target="_blank"
-        class="text-blue-700 underline"
-      >
-        Read more in our docs.
-      </a>
+    <p
+      v-if="setByEvent"
+      class="text-sm text-slate-700 dark:text-slate-300 mb-3"
+    >
+      Access policiles have been set by the event and cannot be changed.
     </p>
-    <p class="text-xs text-slate-700 dark:text-slate-300 mb-1">
-      Mandatory access levels
-      <StarIcon
-        class="h-4 w-4 text-amber-300 inline-block -translate-y-1/3 -translate-x-1 -mr-1"
-      />
-      are automatically selected.
-    </p>
-    <div class="grid" :class="grid">
+    <template v-else>
+      <p class="text-sm text-slate-700 dark:text-slate-300 mb-3">
+        Select what access levels to apply. Not sure how access levels work?
+        <a
+          href="https://docs.playabl.io/communities/access-levels.html"
+          target="_blank"
+          class="text-blue-700 underline"
+        >
+          Read more in our docs.
+        </a>
+      </p>
+      <p class="text-xs text-slate-700 dark:text-slate-300 mb-1">
+        Mandatory access levels
+        <StarIcon
+          class="h-4 w-4 text-amber-300 inline-block -translate-y-1/3 -translate-x-1 -mr-1"
+        />
+        are automatically selected.
+      </p>
+    </template>
+    <div v-if="!setByEvent" class="grid" :class="grid">
       <label
         v-for="level in store.communityAccessLevels"
         :key="level.id"
@@ -31,8 +39,8 @@
         ]"
       >
         <StarIcon
-          class="h-5 w-5 absolute top-2 right-2"
-          :class="[level.is_mandatory ? 'text-amber-300' : 'text-slate-400']"
+          v-if="level.is_mandatory"
+          class="h-5 w-5 absolute text-amber-300 top-2 right-2"
         />
         <input
           :id="String(level.id)"
@@ -60,7 +68,7 @@
           }}
         </p>
         <p v-else class="text-slate-700 text-xs">
-          Not selected - no priority time granted
+          Not selected - no access granted
         </p>
       </label>
     </div>
@@ -85,6 +93,10 @@ const props = defineProps({
   grid: {
     type: String,
     default: "md:grid-cols-3 gap-6",
+  },
+  setByEvent: {
+    type: Boolean,
+    default: false,
   },
 });
 

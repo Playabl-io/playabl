@@ -21,7 +21,6 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { supabase } from "@/supabase";
 import BaseTemplate from "@/layouts/BaseTemplate.vue";
 import CommunitiesNav from "@/components/Community/CommunitiesNav.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
@@ -30,27 +29,17 @@ import { Community } from "@/typings/Community";
 import { log } from "@/util/logger";
 import { store } from "../store";
 import { ADMIN } from "@/util/roles";
+import { loadUserManagedCommunities } from "@/api/communityMemberships";
 
 const isLoading = ref(false);
 const communities = ref<Community[]>([]);
 
-onMounted(loadManagedCommunities);
-async function loadManagedCommunities() {
+onMounted(onload);
+async function onload() {
   if (!store.user) return;
   isLoading.value = true;
-  const { data, error } = await supabase
-    .from("community_memberships")
-    .select("community_id (*)")
-    .eq("user_id", store.user.id)
-    .eq("role_id", ADMIN);
-  if (error) {
-    log({ error });
-  }
-  if (data) {
-    communities.value = data.map((membership) => ({
-      ...membership.community_id,
-    }));
-  }
+  const data = await loadUserManagedCommunities({ userId: store.user.id });
+  communities.value = data;
   isLoading.value = false;
 }
 </script>

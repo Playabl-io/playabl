@@ -1,87 +1,82 @@
 <template>
-  <div class="flex flex-col">
-    <div class="p-4 rounded-md border border-solid border-gray-200 relative">
-      <div>
-        <p class="text-lg font-bold">
-          {{ format(new Date(session.start_time), "EEE, MMM do") }}
-        </p>
-        <p class="text-sm text-slate-800">
-          {{ format(new Date(session.start_time), "h:mm a") }} -
-          {{ format(new Date(session.end_time), "h:mm a O") }}
-        </p>
-      </div>
-      <div v-if="!isOwner" class="mt-4 mb-8">
-        <SecondaryButton
-          v-if="userIsInTheGame"
-          :is-loading="isProcessing"
-          class="w-full"
-          @click="handleLeave"
-        >
-          Leave session
-        </SecondaryButton>
-        <PrimaryButton
-          v-else-if="canRsvp"
-          class="w-full"
-          :is-loading="isProcessing"
-          @click="handleJoin"
-        >
-          Join
-        </PrimaryButton>
-        <div v-else-if="soonestRsvp" class="text-sm text-slate-700 text-center">
-          RSVP available {{ formatRelative(soonestRsvp, new Date()) }}
-        </div>
-        <div v-else-if="!notAMember" class="text-slate-700 text-sm">
-          <p>
-            You cannot RSVP because this game requires an access level you do
-            not have. Please contact the community managers for help.
-          </p>
-          <p class="font-semibold text-sm mt-4">
-            RSVP access requires one of the following
-          </p>
-          <ul class="list-disc list-inside mt-1">
-            <li v-for="name in accessNeeded" :key="name">{{ name }}</li>
-          </ul>
-        </div>
-      </div>
-      <div class="mt-8 grid gap-4">
-        <div>
-          <h6 class="text-sm font-semibold text-slate-600 mb-2">RSVP'd</h6>
-          <ul>
-            <SessionAttendee
-              v-for="rsvp in participants[0]"
-              :id="rsvp"
-              :key="rsvp"
-              :is-owner="isOwner"
-              @remove-user="removeRsvp"
-            />
-          </ul>
-        </div>
-        <div>
-          <h6 class="text-sm font-semibold text-slate-600 mb-2">Waitlist</h6>
-          <ul>
-            <SessionAttendee
-              v-for="rsvp in participants[1]"
-              :id="rsvp"
-              :key="rsvp"
-              :is-owner="isOwner"
-              @remove-user="removeRsvp"
-            />
-          </ul>
-        </div>
-      </div>
-      <Well
-        v-if="userIsInTheGame || isOwner"
-        class="mt-4 grid content-center gap-2"
+  <div class="p-4 rounded-md relative bg-white shadow-sm">
+    <div>
+      <p class="text-lg font-bold">
+        {{ format(new Date(session.start_time), "EEE, MMM do") }}
+      </p>
+      <p class="text-sm text-slate-800">
+        {{ format(new Date(session.start_time), "h:mm a") }} -
+        {{ format(new Date(session.end_time), "h:mm a O") }}
+      </p>
+    </div>
+    <div v-if="!isOwner" class="mt-4 mb-8">
+      <SecondaryButton
+        v-if="userIsInTheGame"
+        :is-loading="isProcessing"
+        class="w-full"
+        @click="handleLeave"
       >
-        <AddToGoogleCal
-          :start-time="session.start_time"
-          :end-time="session.end_time"
-        />
-        <DownloadCal
-          :start-time="session.start_time"
-          :end-time="session.end_time"
-        />
-      </Well>
+        Leave session
+      </SecondaryButton>
+      <PrimaryButton
+        v-else-if="canRsvp"
+        class="w-full"
+        :is-loading="isProcessing"
+        @click="handleJoin"
+      >
+        Join
+      </PrimaryButton>
+      <div v-else-if="soonestRsvp" class="text-sm text-slate-700 text-center">
+        RSVP available {{ formatRelative(soonestRsvp, now) }}
+      </div>
+      <div v-else-if="!notAMember" class="text-slate-700 text-sm">
+        <p>
+          You cannot RSVP because this game requires an access level you do not
+          have. Please contact the community managers for help.
+        </p>
+        <p class="font-semibold text-sm mt-4">
+          RSVP access requires one of the following
+        </p>
+        <ul class="list-disc list-inside mt-1">
+          <li v-for="name in accessNeeded" :key="name">{{ name }}</li>
+        </ul>
+      </div>
+    </div>
+    <div class="mt-8 grid gap-4">
+      <div>
+        <h6 class="text-sm font-semibold text-slate-600 mb-2">RSVP'd</h6>
+        <ul>
+          <SessionAttendee
+            v-for="rsvp in participants[0]"
+            :id="rsvp"
+            :key="rsvp"
+            :is-owner="isOwner"
+            @remove-user="removeRsvp"
+          />
+        </ul>
+      </div>
+      <div>
+        <h6 class="text-sm font-semibold text-slate-600 mb-2">Waitlist</h6>
+        <ul>
+          <SessionAttendee
+            v-for="rsvp in participants[1]"
+            :id="rsvp"
+            :key="rsvp"
+            :is-owner="isOwner"
+            @remove-user="removeRsvp"
+          />
+        </ul>
+      </div>
+    </div>
+    <div class="mt-4 grid sm:grid-cols-2 content-center gap-2">
+      <AddToGoogleCal
+        :start-time="session.start_time"
+        :end-time="session.end_time"
+      />
+      <DownloadCal
+        :start-time="session.start_time"
+        :end-time="session.end_time"
+      />
     </div>
   </div>
 </template>
@@ -96,9 +91,7 @@ import {
   sendRemovalEmail,
 } from "@/api/gamesAndSessions";
 import PrimaryButton from "../Buttons/PrimaryButton.vue";
-import Well from "../Well.vue";
-import { CommunityAccess } from "@/typings/CommunityAccess";
-import { compareUserAccessToRsvpTimes, getSoonestRsvpTime } from "@/util/time";
+import { getSoonestRsvpTime, userCanRsvp } from "@/util/time";
 import { store } from "@/store";
 import useToast from "../Toast/useToast";
 import { gameStore } from "@/pages/Game/gameStore";
@@ -107,6 +100,9 @@ import AddToGoogleCal from "./AddToGoogleCal.vue";
 import DownloadCal from "./DownloadCal.vue";
 import SecondaryButton from "../Buttons/SecondaryButton.vue";
 import { Profile } from "@/typings/Profile";
+import { useNow } from "@vueuse/core";
+
+const now = useNow();
 
 const { showSuccess, showError } = useToast();
 
@@ -118,10 +114,6 @@ const props = defineProps({
   participantCount: {
     type: Number,
     required: true,
-  },
-  userAccess: {
-    type: Array as PropType<CommunityAccess[]>,
-    default: () => [],
   },
   isOwner: {
     type: Boolean,
@@ -136,17 +128,17 @@ const props = defineProps({
 const isProcessing = ref(false);
 
 const canRsvp = computed(() => {
-  let accessTimes;
-  if (typeof props.session.access_times === "string") {
-    accessTimes = JSON.parse(props.session.access_times);
-  } else {
-    accessTimes = props.session.access_times;
+  const membership =
+    store.userCommunityMembership?.[gameStore.game.community_id];
+  if (membership && membership.communityMembership.role_id > 0) {
+    return userCanRsvp({
+      userAccess: store.userCommunityAccess,
+      session: props.session,
+      hostId: gameStore.game.creator_id,
+      userId: store.user?.id,
+    });
   }
-  const isEligibleToRsvp = compareUserAccessToRsvpTimes(
-    props.userAccess,
-    accessTimes
-  );
-  return isEligibleToRsvp;
+  return false;
 });
 
 const soonestRsvp = computed(() => {
@@ -156,7 +148,7 @@ const soonestRsvp = computed(() => {
   } else {
     accessTimes = props.session.access_times;
   }
-  return getSoonestRsvpTime(props.userAccess, accessTimes);
+  return getSoonestRsvpTime(store.userCommunityAccess, accessTimes);
 });
 
 const accessNeeded = computed(() => {

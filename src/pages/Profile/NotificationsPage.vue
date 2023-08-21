@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import ProfileTemplate from "@/components/ProfileTemplate.vue";
+import ProfileTemplate from "@/layouts/ProfileTemplate.vue";
 import { unreadNotifications } from "@/util/notifications";
 import { Notification } from "@/typings/Notification";
 import RsvpNotification from "./RsvpNotification.vue";

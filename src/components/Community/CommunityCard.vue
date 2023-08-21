@@ -1,7 +1,7 @@
 <template>
   <router-link
     :to="route || `/communities/${community.url_short_name || community.id}`"
-    class="border border-solid border-gray-300 rounded-lg focus-styles"
+    class="rounded-lg focus-styles bg-white shadow-sm"
   >
     <div
       v-if="coverImageUrl"
@@ -14,6 +14,7 @@
         class="w-full h-full object-center object-cover rounded-t-lg"
         :src="coverImageUrl"
         alt="image"
+        loading="lazy"
       />
     </div>
     <div class="p-4 rounded-b-lg">

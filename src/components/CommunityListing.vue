@@ -1,5 +1,7 @@
 <template>
-  <article class="grid gap-6 w-full max-w-4xl mx-auto">
+  <article
+    class="grid gap-6 w-full max-w-4xl mx-auto bg-white rounded-lg shadow-sm"
+  >
     <div
       class="w-full relative"
       :class="{
@@ -8,18 +10,18 @@
     >
       <img
         v-if="coverImageUrl"
-        class="w-full h-full object-center object-cover shadow-md rounded-lg"
+        class="w-full h-full object-center object-cover rounded-lg rounded-b-none"
         :src="coverImageUrl"
         :alt="`${community.name} cover image`"
         loading="lazy"
       />
       <div
         :class="{
-          'bg-gray-100': !coverImageUrl,
+          'bg-gray-200': !coverImageUrl,
           'bg-gradient-to-b from-transparent via-transparent to-black':
             coverImageUrl,
         }"
-        class="w-full h-full flex flex-col justify-end rounded-lg p-4"
+        class="w-full h-full flex flex-col justify-end rounded-lg rounded-b-none p-4"
       >
         <div class="flex gap-4 items-center">
           <router-link
@@ -73,8 +75,8 @@
       </div>
     </div>
 
-    <section class="flex flex-col">
-      <div class="flex flex-wrap gap-4 mt-4">
+    <section class="flex flex-col pb-4 px-4">
+      <div class="flex flex-wrap gap-4">
         <div
           v-for="gameType in community.game_types"
           :key="gameType"
@@ -83,7 +85,7 @@
           {{ gameType }}
         </div>
       </div>
-      <p class="prose dark:prose-invert my-6 whitespace-pre-wrap">
+      <p class="prose dark:prose-invert my-6 whitespace-pre-wrap line-clamp-6">
         {{ community.description }}
       </p>
 

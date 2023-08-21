@@ -7,19 +7,6 @@
       This game has been cancelled
     </div>
     <div v-else>
-      <transition
-        leave-active-class="transition duration-100 ease-in"
-        leave-from-class="opacity-100"
-        leave-to-class="opacity-0"
-      >
-        <InfoBanner
-          v-if="currentRoute.query.unauthorized"
-          class="mb-6"
-          @dismiss="router.replace(currentRoute.path)"
-        >
-          You are not authorized to view that page
-        </InfoBanner>
-      </transition>
       <div class="flex items-center">
         <Heading level="h1" class="inline">{{ gameStore.game.title }}</Heading>
         <div
@@ -29,15 +16,31 @@
           Cancelled
         </div>
       </div>
-      <p class="mt-6">By {{ gameData?.creator_id.username || "" }}</p>
-      <router-link
-        :to="`/communities/${
-          gameStore.community.url_short_name || gameStore.community.id
-        }`"
-        class="mt-2 text-xs text-slate-700"
-      >
-        Part of {{ gameStore.community.name }}
-      </router-link>
+      <div class="flex flex-col gap-3 items-start text-blue-700 mt-6">
+        <p class="text-slate-700">
+          By {{ gameData?.creator_id.username || "" }}
+        </p>
+        <div class="flex gap-2">
+          <UserGroupIcon class="w-5 h-5" />
+          <router-link
+            :to="`/communities/${
+              gameStore.community.url_short_name || gameStore.community.id
+            }`"
+            class="text-sm underline decoration-dashed"
+          >
+            {{ gameStore.community.name }}
+          </router-link>
+        </div>
+        <div v-if="gameStore.game.community_events" class="flex gap-2">
+          <CalendarIcon class="w-5 h-5" />
+          <router-link
+            class="text-sm underline decoration-dashed"
+            :to="`/events/${gameStore.game.community_events.id}`"
+          >
+            {{ gameStore.game.community_events.title }}
+          </router-link>
+        </div>
+      </div>
 
       <div class="mt-8 flex flex-wrap gap-8">
         <GameBadge
@@ -100,13 +103,6 @@
             Additional Info
           </router-link>
           <router-link
-            v-if="userIsInTheGame || isOwner"
-            :to="`/games/${id}/messages`"
-            active-class="border-b border-brand-500 dark:border-brand-300"
-          >
-            Messages
-          </router-link>
-          <router-link
             v-if="canManage && !gameStore.game.deleted_at"
             :to="`/games/${id}/manage`"
             active-class="border-b border-brand-500 dark:border-brand-300"
@@ -121,7 +117,6 @@
             :is="Component"
             :key="route.meta.usePathKey ? route.path : undefined"
             :is-owner="isOwner"
-            :user-access="userAccess"
             :user-membership="userMembership"
           />
         </KeepAlive>
@@ -138,21 +133,20 @@ import { log } from "@/util/logger";
 import BaseTemplate from "@/layouts/BaseTemplate.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import Heading from "@/components/Heading.vue";
-import InfoBanner from "@/components/Banners/InfoBanner.vue";
 import { store } from "@/store";
 import { GameWithCommunityAndSessions } from "@/typings/Game";
-import { CommunityAccess } from "@/typings/CommunityAccess";
 import { clearGameStore, gameStore } from "./gameStore";
 import * as R from "ramda";
 import { Session } from "@/typings/Session";
 import { loadUserCommunityMembership } from "@/api/communityMemberships";
-import { loadUserCommunityAccess } from "@/api/communityAccess";
 import {
   UsersIcon,
   TagIcon,
   CogIcon,
   FilmIcon,
   LifebuoyIcon,
+  CalendarIcon,
+  UserGroupIcon,
 } from "@heroicons/vue/24/outline";
 import GameBadge from "@/components/Game/GameBadge.vue";
 import { ROLES } from "@/util/roles";
@@ -166,7 +160,6 @@ const gameData = ref<GameWithCommunityAndSessions>();
 const canManage = ref(false);
 const isOwner = ref(false);
 const isLoading = ref(true);
-const userAccess = ref<CommunityAccess[]>([]);
 const userMembership = ref({});
 
 const userIsInTheGame = computed(() =>
@@ -181,9 +174,6 @@ const hasAccess = computed(() => {
 
 onMounted(async () => {
   await getGameData();
-  if (store.user) {
-    await getUserAccess();
-  }
   if (currentRoute.path.includes("manage") && !canManage.value) {
     router.replace(`/games/${id}?unauthorized=true`);
   }
@@ -200,8 +190,11 @@ onMounted(async () => {
 async function getGameData() {
   const { data, error } = await supabase
     .from("games")
-    .select("*, creator_id (*), sessions (*), community_id (*)")
+    .select(
+      "*, creator_id (*), sessions (*), community_id (*), community_events (*)"
+    )
     .eq("id", id as string)
+    .is("community_events.deleted_at", null)
     .order("start_time", { foreignTable: "sessions" })
     .single();
 
@@ -264,17 +257,6 @@ function loadAndSetAttendeesInStore(rsvps: string[]) {
         gameStore.attendees[member] = data;
       });
   });
-}
-
-async function getUserAccess() {
-  if (!store.user) return;
-  const data = await loadUserCommunityAccess({
-    userId: store.user?.id,
-    communityId: gameStore.game?.community_id || "",
-  });
-  if (data) {
-    userAccess.value = data;
-  }
 }
 
 let subscription: RealtimeChannel;

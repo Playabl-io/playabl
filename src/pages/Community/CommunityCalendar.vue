@@ -89,7 +89,6 @@
       <TabPanels class="mt-6">
         <TabPanel>
           <ListView
-            :user-access="userAccess"
             :loading="loading"
             :sessions="filteredSessions"
             :sessions-by-game="(sessionsByGame as Record<string, GameSession[]>)"
@@ -100,7 +99,6 @@
         </TabPanel>
         <TabPanel>
           <CalendarView
-            :user-access="userAccess"
             :sessions="filteredSessions"
             :sessions-by-game="(sessionsByGame as Record<string, GameSession[]>)"
             :reference-date="referenceDate"
@@ -140,8 +138,6 @@ import SortMenu from "@/components/Menus/SortMenu.vue";
 import CalendarView from "./CalendarView.vue";
 import ListView from "./ListView.vue";
 import { store } from "@/store";
-import { loadUserCommunityAccess } from "@/api/communityAccess";
-import { CommunityAccess } from "@/typings/CommunityAccess";
 import * as R from "ramda";
 
 const options = [
@@ -161,7 +157,6 @@ const sessions = ref<GameSession[]>([]);
 const referenceDate = ref<Date>(startOfMonth(new Date()));
 const selectedDate = ref<Date>();
 const sortOption = ref(options[0]);
-const userAccess = ref<CommunityAccess[]>([]);
 
 const sessionsByGame = computed(() => {
   const groupByGame = R.groupBy((session: GameSession) =>
@@ -190,11 +185,7 @@ const filteredSessions = computed(() => {
 
 onMounted(async () => {
   loading.value = true;
-
-  await Promise.all([
-    sortOption.value.value(referenceDate.value),
-    getUserAccess(),
-  ]);
+  await sortOption.value.value(referenceDate.value);
   loading.value = false;
 });
 
@@ -237,16 +228,5 @@ async function loadOpenSessionBasedOnDate(date: Date) {
   });
   sessions.value = data ?? [];
   loading.value = false;
-}
-
-async function getUserAccess() {
-  if (!store.user) return;
-  const data = await loadUserCommunityAccess({
-    userId: store.user?.id,
-    communityId: communityStore.community.id,
-  });
-  if (data) {
-    userAccess.value = data;
-  }
 }
 </script>

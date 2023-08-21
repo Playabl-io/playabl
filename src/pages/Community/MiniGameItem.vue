@@ -1,12 +1,13 @@
 <template>
-  <li class="rounded-lg border border-solid border-gray-300">
+  <li class="rounded-lg bg-white shadow-sm">
     <div class="relative">
       <div v-if="gameCoverImage" class="aspect-w-16 aspect-h-9">
         <router-link :to="`/games/${session.game_id.id}`">
           <img
             class="w-full h-full object-center object-cover rounded-t-lg"
             :src="gameCoverImage"
-            alt=""
+            :alt="`Cover image for ${session.game_id.title}`"
+            loading="lazy"
           />
         </router-link>
       </div>
@@ -14,7 +15,7 @@
         :class="{
           'rounded-t-lg': !gameCoverImage,
         }"
-        class="w-full h-full p-3 bg-gray-100 flex flex-col justify-end overflow-visible"
+        class="w-full h-full p-3 text-slate-700 border-b border-gray-200 flex flex-col justify-end overflow-visible"
       >
         <div class="flex items-start gap-4">
           <div class="flex flex-col items-center">
@@ -111,8 +112,8 @@
         </div>
       </div>
     </div>
-    <section class="px-3 pt-3">
-      <div class="flex justify-end">
+    <section class="px-3 pt-3 grid gap-2">
+      <div v-if="isPlayingInGame || isWaitlisted" class="flex justify-end">
         <div
           v-if="isPlayingInGame"
           class="p-2 rounded-md bg-green-200 flex items-center space-x-1 shadow-sm"
@@ -128,7 +129,19 @@
           <ExclamationCircleIcon class="h-4 w-4 text-violet-600" />
         </div>
       </div>
-      <div class="mt-2">
+      <div
+        v-if="session.game_id.community_events"
+        class="flex gap-2 text-blue-700 bg-gray-100 p-4 rounded-md"
+      >
+        <CalendarIcon class="w-5 h-5 shrink-0" />
+        <a
+          :href="`/events/${session.game_id.community_events.id}`"
+          class="font-semibold text-sm line-clamp-2 underline decoration-dashed"
+        >
+          {{ session.game_id.community_events.title }}
+        </a>
+      </div>
+      <div>
         <router-link :to="`/games/${session.game_id.id}`">
           <Heading as="h6" level="h6" class="hover:underline">
             {{ session.game_id.title }}
@@ -165,7 +178,10 @@
         <DisclosureButton
           class="py-2 w-full text-xs flex justify-center items-center"
         >
-          {{ relatedSessions.length }} related sessions
+          {{ relatedSessions.length }} related
+          {{
+            pluralize({ count: relatedSessions.length, singular: "session" })
+          }}
           <ChevronRightIcon
             class="h-5 w-5 text-slate-500 transition-all"
             :class="open && 'rotate-90 transform'"
@@ -204,6 +220,7 @@ import { computed, PropType } from "vue";
 import {
   EllipsisHorizontalCircleIcon,
   CheckCircleIcon,
+  CalendarIcon,
 } from "@heroicons/vue/24/outline";
 import {
   ChevronRightIcon,
@@ -226,12 +243,12 @@ import {
   DisclosureButton,
   DisclosurePanel,
 } from "@headlessui/vue";
-import { CommunityAccess } from "@/typings/CommunityAccess";
 import { userCanRsvp } from "@/util/time";
 import { store } from "@/store";
 import useToast from "@/components/Toast/useToast";
 import { rsvpToAllGameSessions, joinSession } from "@/api/gamesAndSessions";
 import { getCoverImageUrl } from "@/api/storage";
+import { pluralize } from "@/util/grammar";
 
 const { showSuccess, showError } = useToast();
 
@@ -242,10 +259,6 @@ const props = defineProps({
   },
   allGameSessions: {
     type: Object as PropType<GameSession[]>,
-    required: true,
-  },
-  userAccess: {
-    type: Array as PropType<CommunityAccess[]>,
     required: true,
   },
 });
@@ -259,7 +272,7 @@ const { data: gameCoverImage } = useSWRV(
 const { data } = useSWRV<Profile>(props.session.creator_id, loadProfile);
 
 const canRsvp = userCanRsvp({
-  userAccess: props.userAccess,
+  userAccess: store.userCommunityAccess,
   session: props.session,
   userId: store.user?.id,
   hostId: props.session.creator_id,
@@ -284,7 +297,7 @@ const relatedSessions = computed(() =>
 const otherReservableSessions = computed(() =>
   relatedSessions.value.filter((session) =>
     userCanRsvp({
-      userAccess: props.userAccess,
+      userAccess: store.userCommunityAccess,
       session,
       userId: store.user?.id,
       hostId: props.session.creator_id,

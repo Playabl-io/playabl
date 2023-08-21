@@ -1,4 +1,5 @@
 import { AccessLevel, RsvpTimes } from "@/typings/AccessLevel";
+import { Community } from "@/typings/Community";
 import { CommunityAccess } from "@/typings/CommunityAccess";
 import { Profile } from "@/typings/Profile";
 import { GameSession } from "@/typings/Session";
@@ -14,6 +15,7 @@ import {
   isBefore,
   min,
   startOfDay,
+  format,
 } from "date-fns";
 
 const maxTimeMapper = {
@@ -27,7 +29,11 @@ const timeBeforeMapper = {
   weeks: subWeeks,
 };
 
-export function rsvpTimes(accessTimes: AccessLevel[]): RsvpTimes {
+export function rsvpTimes(
+  accessTimes: AccessLevel[],
+  defaultOverride?: number,
+  overrideBehavior: "global" | "policy" = "policy"
+): RsvpTimes {
   /**
    * All priority periods run concurrently. This means the policy with the longest priority
    * decides the end time when all policies end together. So get that future time,
@@ -47,18 +53,27 @@ export function rsvpTimes(accessTimes: AccessLevel[]): RsvpTimes {
       maxTime,
       time.priority_access_time
     );
-    const rounded = roundToNearestMinutes(rsvpDate);
+    const rounded = roundToNearestMinutes(defaultOverride || rsvpDate);
+
     result[time.id] = {
       name: time.name,
       rsvpAvailableTime: rounded.getTime(),
       humanReadableRsvpTime: rounded.toLocaleString(),
     };
   });
-  // result.default = {
-  //   name: "default",
-  //   rsvpAvailableTime: roundToNearestMinutes(maxTime).getTime(),
-  //   humanReadableRsvpTime: roundToNearestMinutes(maxTime).toLocaleString(),
-  // };
+  /**
+   * IMPORTANT: We only write default in cases where everyone should have
+   * access since the presence of this key will be checked in
+   * compareUserAccessToRsvpTimes
+   */
+  if (overrideBehavior === "global" && Number.isInteger(defaultOverride)) {
+    const time = roundToNearestMinutes(Number(defaultOverride));
+    result.default = {
+      name: "default",
+      rsvpAvailableTime: time.getTime(),
+      humanReadableRsvpTime: time.toLocaleString(),
+    };
+  }
   return result;
 }
 
@@ -67,7 +82,12 @@ export function compareUserAccessToRsvpTimes(
   rsvpTimes: RsvpTimes
 ) {
   const access = userAccess.map((access) => {
-    const rsvpTime = rsvpTimes[access.access_level_id]?.rsvpAvailableTime;
+    /**
+     * Default value overrides. It is assumed community access has been checked already
+     */
+    const rsvpTime =
+      rsvpTimes.default?.rsvpAvailableTime ||
+      rsvpTimes[access.access_level_id]?.rsvpAvailableTime;
     if (!rsvpTime) return false;
     return isBefore(new Date(rsvpTime), new Date());
   });
@@ -128,8 +148,10 @@ export function getSoonestRsvpTime(
   return min(possibleTimes);
 }
 
-const startOfToday = startOfDay(new Date());
-
 export function getStartOfToday() {
-  return startOfToday;
+  return startOfDay(new Date());
+}
+
+export function getUserTimezone() {
+  return format(getStartOfToday(), "OOOO");
 }

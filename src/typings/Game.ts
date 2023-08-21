@@ -1,4 +1,5 @@
 import { Community } from "./Community";
+import { CommunityEvent } from "./CommunityEvent";
 import { Profile } from "./Profile";
 import { Rsvp } from "./Rsvp";
 import { Session } from "./Session";
@@ -29,9 +30,11 @@ export interface GameBase {
   virtual_tabletop?: string;
   will_be_recorded?: boolean;
   uses_safety_tools?: boolean;
+  event_id?: CommunityEvent["id"];
 }
 
 export interface Game extends GameBase {
+  community_events?: CommunityEvent | null;
   community_id: string;
   creator_id: string;
 }
@@ -40,6 +43,7 @@ export type NewGame = Omit<Game, "id" | "created_at">;
 
 // loaded for listing games so that we can show and link the community
 export type GameListing = Game & {
+  community_events: CommunityEvent;
   community_id: { id: string; name: string };
   sessions: Session[];
 };
@@ -48,6 +52,7 @@ export interface GameWithCommunityAndSessions extends GameBase {
   sessions: Session[];
   creator_id: Profile;
   community_id: Community;
+  community_events?: CommunityEvent;
 }
 
 export interface RsvpWithSessionAndGame {

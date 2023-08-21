@@ -1,5 +1,6 @@
 import { supabase } from "@/supabase";
 import { AccessLevel, NewAccessLevel } from "@/typings/AccessLevel";
+import { log } from "@/util/logger";
 
 export async function getAccessLevels(communityId: string) {
   const { data } = await supabase
@@ -37,5 +38,21 @@ export async function deleteAccessLevel(accessLevel: AccessLevel) {
     .select()
     .single();
   if (error) throw error;
+  return data;
+}
+
+export async function loadAccessLevels({
+  accessLevelIds,
+}: {
+  accessLevelIds: number[];
+}) {
+  const { data, error } = await supabase
+    .from("access_levels")
+    .select("*")
+    .in("id", accessLevelIds);
+
+  if (error) {
+    log({ error });
+  }
   return data;
 }

@@ -7,6 +7,7 @@ import { Community } from "@/typings/Community";
 import { startOfDay, endOfDay } from "date-fns";
 
 import axios from "axios";
+import { CommunityEvent } from "@/typings/CommunityEvent";
 
 // helper functions
 const sortSessionByTimeAsc = (a: Session, b: Session) => {
@@ -21,6 +22,19 @@ const sortSessionsOnGame = (game: GameListing) => {
   };
 };
 const mapToAscSessions = R.map(sortSessionsOnGame);
+
+function filterDraftEventGames(record: GameListing) {
+  /**
+   * A game may be associated with a DRAFT event which does not load
+   * for all users, so you can not only rely on checking community_events alone.
+   * If the game has an event ID, but the event isn't included in community_events,
+   * exclude the game from results
+   */
+  if (record.event_id) {
+    return record.community_events?.draft_state === "PUBLISHED";
+  }
+  return true;
+}
 
 export async function createGame(newGame: NewGame) {
   const { data, error } = await supabase
@@ -67,7 +81,9 @@ export async function loadChronologicalGames() {
   const today = new Date();
   const { data, error } = await supabase
     .from("games")
-    .select("*, community_id (id, name), sessions!inner(*)")
+    .select(
+      "*, community_id (id, name), sessions!inner(*), community_events(*)"
+    )
     .is("deleted_at", null)
     .gte("sessions.start_time", today.getTime())
     .order("start_time", { foreignTable: "sessions", ascending: true });
@@ -75,7 +91,8 @@ export async function loadChronologicalGames() {
     log({ error });
   }
   if (data) {
-    return mapToAscSessions(data);
+    const withoutDrafts = data.filter(filterDraftEventGames);
+    return mapToAscSessions(withoutDrafts);
   }
 }
 
@@ -83,7 +100,9 @@ export async function loadChronologicalCommunityGames(communityIds: string[]) {
   const today = new Date();
   const { data, error } = await supabase
     .from("games")
-    .select("*, community_id (id, name), sessions!inner(*)")
+    .select(
+      "*, community_id (id, name), sessions!inner(*), community_events(*)"
+    )
     .is("deleted_at", null)
     .gte("sessions.start_time", today.getTime())
     .in("community_id", communityIds)
@@ -92,7 +111,8 @@ export async function loadChronologicalCommunityGames(communityIds: string[]) {
     log({ error });
   }
   if (data) {
-    return mapToAscSessions(data);
+    const withoutDrafts = data.filter(filterDraftEventGames);
+    return mapToAscSessions(withoutDrafts);
   }
 }
 
@@ -100,7 +120,9 @@ export async function loadGamesWithOpenings() {
   const today = new Date();
   const { data, error } = await supabase
     .from("games")
-    .select("*, community_id (id, name), sessions!inner(*)")
+    .select(
+      "*, community_id (id, name), sessions!inner(*), community_events(*)"
+    )
     .is("deleted_at", null)
     .eq("sessions.has_openings", true)
     .gte("sessions.start_time", today.getTime())
@@ -109,7 +131,8 @@ export async function loadGamesWithOpenings() {
     log({ error });
   }
   if (data) {
-    return mapToAscSessions(data);
+    const withoutDrafts = data.filter(filterDraftEventGames);
+    return mapToAscSessions(withoutDrafts);
   }
 }
 
@@ -118,7 +141,7 @@ export async function loadCommunityGamesWithOpenings(communityIds: string[]) {
   const { data, error } = await supabase
     .from("games")
     .select(
-      "*, community_id (id, name), sessions!inner(id, start_time, has_openings)"
+      "*, community_id (id, name), sessions!inner(id, start_time, has_openings), community_events(*)"
     )
     .is("deleted_at", null)
     .eq("sessions.has_openings", true)
@@ -129,7 +152,8 @@ export async function loadCommunityGamesWithOpenings(communityIds: string[]) {
     log({ error });
   }
   if (data) {
-    return mapToAscSessions(data);
+    const withoutDrafts = data.filter(filterDraftEventGames);
+    return mapToAscSessions(withoutDrafts);
   }
 }
 
@@ -178,7 +202,7 @@ export async function loadOpenCommunitySessions({
 }) {
   const { data, error } = await supabase
     .from("sessions")
-    .select("*, game_id (*)")
+    .select("*, game_id(*, community_events(*))")
     .is("deleted_at", null)
     .eq("community_id", communityId)
     .eq("has_openings", true)
@@ -189,7 +213,9 @@ export async function loadOpenCommunitySessions({
     log({ error });
   }
   if (data) {
-    return data;
+    return data.filter((record) => {
+      return filterDraftEventGames(record.game_id);
+    });
   }
 }
 
@@ -204,11 +230,44 @@ export async function loadAllCommunitySessions({
 }) {
   const { data, error } = await supabase
     .from("sessions")
-    .select("*, game_id (*)")
+    .select("*, game_id(*, community_events(*))")
     .is("deleted_at", null)
     .eq("community_id", communityId)
     .gte("start_time", startOfDay(startDate).getTime())
     .lte("start_time", endOfDay(endDate).getTime())
+    .order("start_time", { ascending: true });
+  if (error) {
+    log({ error });
+  }
+  if (data) {
+    return data.filter((record) => {
+      return filterDraftEventGames(record.game_id);
+    });
+  }
+}
+
+export async function loadOpenEventSessions({ eventId }: { eventId: number }) {
+  const { data, error } = await supabase
+    .from("sessions")
+    .select("*, game_id!inner(*)")
+    .is("deleted_at", null)
+    .eq("has_openings", true)
+    .eq("game_id.event_id", eventId)
+    .order("start_time", { ascending: true });
+  if (error) {
+    log({ error });
+  }
+  if (data) {
+    return data;
+  }
+}
+
+export async function loadEventSessions({ eventId }: { eventId: number }) {
+  const { data, error } = await supabase
+    .from("sessions")
+    .select("*, game_id!inner(*)")
+    .is("deleted_at", null)
+    .eq("game_id.event_id", eventId)
     .order("start_time", { ascending: true });
   if (error) {
     log({ error });
@@ -268,7 +327,12 @@ export async function joinSession({
       },
     }
   )
-    .then((response) => response.json())
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+    })
     .catch((error) => {
       log({ error });
       throw error;
@@ -442,6 +506,22 @@ export async function addSession(session: Partial<Session>) {
     .insert(session)
     .select()
     .single();
+  if (error) {
+    log({ error });
+    throw new Error(error.message);
+  }
+  return data;
+}
+
+export async function loadGamesAndSessionsForEvent(
+  eventId: CommunityEvent["id"]
+) {
+  const today = new Date();
+  const { data, error } = await supabase
+    .from("games")
+    .select("*, sessions!inner(*), profiles(*)")
+    .eq("event_id", eventId)
+    .gte("sessions.start_time", today.getTime());
   if (error) {
     log({ error });
     throw new Error(error.message);

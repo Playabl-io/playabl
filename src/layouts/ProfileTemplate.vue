@@ -41,6 +41,6 @@ import {
   EnvelopeIcon,
 } from "@heroicons/vue/24/outline";
 import SideNavTemplate from "./SideNavTemplate.vue";
-import BaseTemplate from "../layouts/BaseTemplate.vue";
-import SideNavLink from "./Navigation/SideNavLink.vue";
+import BaseTemplate from "./BaseTemplate.vue";
+import SideNavLink from "@/components/Navigation/SideNavLink.vue";
 </script>

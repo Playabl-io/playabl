@@ -1,6 +1,8 @@
 <template>
-  <section class="grid gap-6 w-full max-w-4xl mx-auto">
-    <div class="grid gap-6">
+  <section
+    class="grid gap-6 w-full max-w-4xl mx-auto bg-white rounded-lg shadow-sm p-4"
+  >
+    <div class="overflow-hidden">
       <div>
         <router-link :to="`/games/${game.id}`" class="hover:underline">
           <heading level="h6">{{ game.title }}</heading>
@@ -12,6 +14,15 @@
           {{ game.community_id.name }}
         </router-link>
       </div>
+      <router-link
+        v-if="game.community_events?.title"
+        :to="`/events/${game.community_events?.id}`"
+        class="mt-2 truncate text-brand-500 text-sm border-b border-dotted border-brand-500"
+      >
+        Part of the
+        {{ game.community_events.title }}
+        event
+      </router-link>
     </div>
     <div class="flex flex-col">
       <Disclosure v-slot="{ open }">
@@ -42,7 +53,6 @@
                 v-for="session in sessions"
                 :key="session.id"
                 :session="session"
-                :user-access="userAccess"
                 :creator-id="game.creator_id"
                 @rsvp="handleRsvp"
               />
@@ -137,7 +147,6 @@ import GameBadge from "./Game/GameBadge.vue";
 import { getCoverImageUrl } from "@/api/storage";
 import TipTapDisplay from "./TipTapDisplay.vue";
 import { pluralize } from "@/util/grammar";
-import { CommunityAccess } from "@/typings/CommunityAccess";
 import GameListingSession from "./Game/GameListingSession.vue";
 import PrimaryButton from "./Buttons/PrimaryButton.vue";
 import { store } from "@/store";
@@ -154,10 +163,6 @@ const props = defineProps({
     type: Object as PropType<GameListing>,
     required: true,
   },
-  userAccess: {
-    type: Array as PropType<CommunityAccess[]>,
-    default: () => [],
-  },
 });
 
 const sessions = ref(props.game.sessions);
@@ -166,7 +171,7 @@ const coverImageUrl = ref("");
 const reservableSessions = computed(() => {
   return sessions.value.filter((session) =>
     userCanRsvp({
-      userAccess: props.userAccess,
+      userAccess: store.userCommunityAccess,
       session,
       userId: store.user?.id,
       hostId: props.game.creator_id,

@@ -54,7 +54,7 @@
 import { supabase } from "../../supabase";
 import { store } from "../../store";
 import { ref, watch } from "vue";
-import ProfileTemplate from "@/components/ProfileTemplate.vue";
+import ProfileTemplate from "@/layouts/ProfileTemplate.vue";
 import Heading from "@/components/Heading.vue";
 import FormLabel from "@/components/Forms/FormLabel.vue";
 import { AtSymbolIcon } from "@heroicons/vue/24/outline";

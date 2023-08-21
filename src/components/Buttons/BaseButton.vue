@@ -4,7 +4,7 @@
     class="flex justify-center items-center font-medium cursor-pointer focus-styles"
     :class="{
       'p-3 min-h-10': size === 'default',
-      'p-2 min-h-6': size === 'small',
+      'p-2 min-h-6 text-sm': size === 'small',
       'p-0': size === 'bare',
       'cursor-not-allowed opacity-50': $attrs.disabled,
       'rounded-full': round,

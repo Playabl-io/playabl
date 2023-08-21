@@ -6,6 +6,32 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE
 );
 
+export async function authenticateUser(event) {
+  const { authorization } = event.headers;
+
+  const user = await supabase.auth.getUser(authorization);
+
+  if (user?.data?.user?.aud === "authenticated") {
+    return user;
+  }
+}
+
+export async function userIsCommunityAdmin({ userId, communityId }) {
+  const { data, error } = await supabase
+    .from("community_memberships")
+    .select("*")
+    .eq("community_id", communityId)
+    .eq("user_id", userId)
+    .single();
+  if (error && error.code === "409") {
+    return false;
+  }
+  if (data && data.role_id === 1) {
+    return true;
+  }
+  return false;
+}
+
 export function sendEmail(message) {
   return sendEmails([message]);
 }
@@ -26,9 +52,7 @@ export function sendEmails(messages) {
   );
 }
 
-export async function loadCommunitySupportEmails(
-  communityId: string
-): Promise<
+export async function loadCommunitySupportEmails(communityId: string): Promise<
   {
     name: string;
     email: string;

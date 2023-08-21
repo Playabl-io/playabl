@@ -2,7 +2,7 @@
   <a
     download
     :href="`data:text/calendar;charset=utf8,${event}`"
-    class="flex items-center gap-2 p-2 bg-white rounded-md hover:shadow-md focus-styles text-sm font-medium"
+    class="flex items-center gap-2 p-2 bg-gray-100 rounded-md hover:shadow-sm focus-styles text-sm font-medium"
   >
     <CalendarIcon class="w-6 h-6" />
     Download iCalendar

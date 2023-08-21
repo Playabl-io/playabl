@@ -1,10 +1,8 @@
 <template>
   <div class="flex flex-col gap-4 justify-center">
-    <section
-      class="w-full p-4 bg-white rounded-md border border-solid border-gray-200"
-    >
+    <section class="w-full rounded-md">
       <template v-if="selectedDate">
-        <Heading level="h5" as="h5" class="px-4">
+        <Heading level="h5" as="h5">
           {{ format(selectedDate, "LLLL do") }}
         </Heading>
         <ul
@@ -15,7 +13,6 @@
             :key="session.id"
             :all-game-sessions="sessionsByGame[String(session.game_id.id)]"
             :session="session"
-            :user-access="userAccess"
             @refresh="emit('refresh')"
           />
         </ul>
@@ -69,7 +66,6 @@ import DisplayCalendar from "@/components/Calendar/DisplayCalendar.vue";
 import Tooltip from "@/components/Tooltip.vue";
 import Heading from "@/components/Heading.vue";
 import MiniGameItem from "./MiniGameItem.vue";
-import { CommunityAccess } from "@/typings/CommunityAccess";
 
 const props = defineProps({
   sessions: {
@@ -87,10 +83,6 @@ const props = defineProps({
   selectedDate: {
     type: Object as PropType<Date>,
     default: undefined,
-  },
-  userAccess: {
-    type: Array as PropType<CommunityAccess[]>,
-    required: true,
   },
 });
 

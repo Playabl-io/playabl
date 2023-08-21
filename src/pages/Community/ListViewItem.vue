@@ -1,6 +1,6 @@
 <template>
   <li
-    class="grid session-list-item-grid gap-2 rounded-md even:bg-slate-100 p-2 items-center"
+    class="grid session-list-item-grid gap-2 rounded-md even:bg-white odd:bg-gray-200 p-2 items-center"
   >
     <UserBadge
       v-if="data"
@@ -176,7 +176,6 @@ import {
   DisclosureButton,
   DisclosurePanel,
 } from "@headlessui/vue";
-import { CommunityAccess } from "@/typings/CommunityAccess";
 import { userCanRsvp } from "@/util/time";
 import { store } from "@/store";
 import useToast from "@/components/Toast/useToast";
@@ -194,10 +193,6 @@ const props = defineProps({
     type: Object as PropType<GameSession[]>,
     required: true,
   },
-  userAccess: {
-    type: Array as PropType<CommunityAccess[]>,
-    required: true,
-  },
 });
 
 const emit = defineEmits(["refresh"]);
@@ -205,7 +200,7 @@ const emit = defineEmits(["refresh"]);
 const { data } = useSWRV<Profile>(props.session.creator_id, loadProfile);
 
 const canRsvp = userCanRsvp({
-  userAccess: props.userAccess,
+  userAccess: store.userCommunityAccess,
   session: props.session,
   userId: store.user?.id,
   hostId: props.session.creator_id,
@@ -218,7 +213,7 @@ const relatedSessions = computed(() =>
 const otherReservableSessions = computed(() =>
   relatedSessions.value.filter((session) =>
     userCanRsvp({
-      userAccess: props.userAccess,
+      userAccess: store.userCommunityAccess,
       session,
       userId: store.user?.id,
       hostId: props.session.creator_id,

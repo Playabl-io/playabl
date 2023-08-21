@@ -77,7 +77,7 @@
             <Tooltip>
               <template #trigger="{ setTooltipHidden, setTooltipVisible }">
                 <GhostButton
-                  class="hover:bg-neutral-100"
+                  class="hover:bg-neutral-200"
                   @click="confirmDelete(session)"
                   @mouseenter="setTooltipVisible"
                   @mouseleave="setTooltipHidden"

@@ -7,7 +7,6 @@ import ProfilePage from "@/pages/Profile/ProfilePage.vue";
 import NotificationsPage from "@/pages/Profile/NotificationsPage.vue";
 import MediaPage from "@/pages/Profile/MediaPage.vue";
 import SettingsPage from "@/pages/Profile/SettingsPage.vue";
-import MessagesPage from "@/pages/Profile/MessagesPage.vue";
 import CommunitiesAll from "@/pages/CommunitiesAll.vue";
 import CommunitiesJoined from "@/pages/CommunitiesJoined.vue";
 import CommunityHome from "@/pages/Community/CommunityHome.vue";
@@ -27,7 +26,17 @@ import NotFound from "@/pages/NotFound.vue";
 import TosPage from "@/pages/TosPage.vue";
 import PrivacyPolicy from "@/pages/PrivacyPolicy.vue";
 import SlackAuthorization from "@/pages/SlackAuthorization.vue";
+import EventsLayout from "@/pages/Events/EventsLayout.vue";
+import EventOverview from "./pages/Events/EventOverview.vue";
 import { store } from "./store";
+import {
+  SORT_DIR_PATH,
+  SORT_KEY_PATH,
+  queryHandlerFactory,
+  sortDirs,
+  sortKeys,
+} from "./util/urlParams";
+import { format } from "date-fns";
 
 const routes = [
   {
@@ -84,14 +93,6 @@ const routes = [
     },
   },
   {
-    path: "/messages/:topic_id?",
-    component: MessagesPage,
-    meta: {
-      title: "Playabl - Messages",
-      requiresAuth: true,
-    },
-  },
-  {
     path: "/communities/joined",
     component: CommunitiesJoined,
     meta: {
@@ -140,6 +141,17 @@ const routes = [
         component: () => import("@/pages/Community/CommunityCalendar.vue"),
       },
       {
+        path: "events",
+        name: "Events",
+        component: () => import("@/pages/Community/CommunityEvents.vue"),
+        beforeEnter: [
+          queryHandlerFactory({
+            [SORT_KEY_PATH]: sortKeys.startTime,
+            [SORT_DIR_PATH]: sortDirs.asc,
+          }),
+        ],
+      },
+      {
         path: "membership",
         name: "Membership",
         component: () => import("@/pages/Community/CommunityMembership.vue"),
@@ -150,12 +162,12 @@ const routes = [
         children: [
           {
             path: "overview",
-            name: "Overview",
+            name: "Community Overview",
             component: CommunityOverview,
           },
           {
             path: "access",
-            name: "Access",
+            name: "Community Access",
             component: CommunityAccess,
           },
           {
@@ -165,17 +177,17 @@ const routes = [
           },
           {
             path: "info",
-            name: "Info",
+            name: "Community Info",
             component: CommunityInfo,
           },
           {
             path: "integrations",
-            name: "Integrations",
+            name: "Community Integrations",
             component: CommunityIntegrations,
           },
           {
             path: "members",
-            name: "Members",
+            name: "Community Members",
             component: CommunityMembers,
           },
         ],
@@ -241,6 +253,62 @@ const routes = [
       {
         path: "manage",
         component: () => import("@/pages/Game/GameManage.vue"),
+        meta: {
+          requiresAuth: true,
+        },
+      },
+    ],
+  },
+  {
+    path: "/events",
+    redirect: "/events/browse",
+  },
+  {
+    path: "/events/browse",
+    name: "Events Browse",
+    component: () => import("@/pages/Events/EventsBrowse.vue"),
+    beforeEnter: [
+      queryHandlerFactory({
+        [SORT_KEY_PATH]: sortKeys.startTime,
+        [SORT_DIR_PATH]: sortDirs.asc,
+      }),
+    ],
+  },
+  {
+    path: "/events/new",
+    name: "New Event",
+    component: () => import("@/pages/Events/NewEvent.vue"),
+  },
+  {
+    path: "/events/:event_id",
+    component: EventsLayout,
+    meta: {
+      title: "Playabl - Community",
+    },
+    children: [
+      {
+        path: "",
+        redirect: { name: "Event Overview" },
+      },
+      {
+        path: "overview",
+        name: "Event Overview",
+        component: EventOverview,
+      },
+      {
+        path: "calendar",
+        name: "Event Calendar",
+        component: () => import("@/pages/Events/EventCalendar.vue"),
+        beforeEnter: [
+          queryHandlerFactory({
+            date: format(new Date(), "yyyy-MM"),
+          }),
+        ],
+      },
+      {
+        path: "manage",
+        name: "Event Manage",
+        component: () => import("@/pages/Events/EventManage.vue"),
         meta: {
           requiresAuth: true,
         },

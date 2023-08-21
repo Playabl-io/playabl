@@ -11,7 +11,7 @@ import { toRefs } from "vue";
 const props = defineProps({
   color: {
     type: String,
-    default: "white",
+    default: "brand-500",
   },
 });
 toRefs(props);

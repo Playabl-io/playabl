@@ -15,6 +15,7 @@
 </template>
 <script setup lang="ts">
 import { store } from "./store";
+import { getUserAccess, getUserMemberships } from "./storeActions";
 import { supabase } from "./supabase";
 import ToasterManager from "./components/Toast/ToasterManager.vue";
 import MessageBox from "./components/MessageBox/MessageBox.vue";
@@ -27,6 +28,7 @@ import { log } from "./util/logger";
 import AppShell from "./layouts/AppShell.vue";
 import LoadingSpinner from "./components/LoadingSpinner.vue";
 import { Notification } from "./typings/Notification";
+import { loadUserManagedCommunities } from "./api/communityMemberships";
 
 const route = useRoute();
 const router = useRouter();
@@ -66,7 +68,6 @@ supabase.auth.onAuthStateChange(async (event, session) => {
       store.userSession = null;
       break;
   }
-  loadingUser.value = false;
 });
 
 async function loadNotificationsAndSubscribe() {
@@ -119,6 +120,11 @@ async function loadNotificationsAndSubscribe() {
   notificationSubscription.value = subscription;
 }
 
+async function setUserManagedCommunities(userId: string) {
+  const response = await loadUserManagedCommunities({ userId });
+  store.userManagedCommunities = response;
+}
+
 onMounted(async () => {
   const user = await supabase.auth.getUser();
   if (user.error) {
@@ -126,6 +132,11 @@ onMounted(async () => {
     loadingUser.value = false;
   }
   if (user.data?.user?.id) {
+    await Promise.all([
+      setUserManagedCommunities(user.data.user.id),
+      getUserAccess(user.data.user.id),
+      getUserMemberships(user.data.user.id),
+    ]);
     const { data } = await supabase
       .from("flags")
       .select("*")
@@ -136,5 +147,11 @@ onMounted(async () => {
       });
     }
   }
+  loadingUser.value = false;
 });
 </script>
+<style>
+:root {
+  --swiper-navigation-color: #4622b8;
+}
+</style>

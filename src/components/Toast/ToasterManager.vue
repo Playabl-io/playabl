@@ -29,6 +29,15 @@
               {{ message.title }}
             </Heading>
             <p>{{ message.message }}</p>
+            <a
+              v-if="message.link"
+              :href="message.link.href"
+              target="_blank"
+              rel="no-referrer"
+              class="underline mt-2 text-sm font-semibold"
+            >
+              {{ message.link.label }}
+            </a>
           </div>
           <dismiss-button
             class="absolute right-0 top-0 rounded-full"

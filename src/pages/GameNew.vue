@@ -71,18 +71,49 @@
       </div>
       <div v-else class="grid grid-cols-1 gap-8">
         <Heading level="h6" as="h2">Game info</Heading>
+        <div
+          v-if="
+            store.userEnabledFlags[flags.events] &&
+            state.context.communityEvents.length !== 0
+          "
+          class="flex flex-col"
+        >
+          <FormLabel helper-text="Select an upcoming event">
+            Add to event
+          </FormLabel>
+          <FormSelect
+            id="event"
+            v-model="eventId"
+            :disabled="state.context.communityEvents.length === 0"
+          >
+            <option value="">Select</option>
+            <option
+              v-for="event in state.context.communityEvents"
+              :key="event.id"
+              :value="event.id"
+              :selected="String(event.id) === eventId"
+            >
+              {{ event.title }}
+            </option>
+          </FormSelect>
+        </div>
         <div class="flex flex-col">
           <FormLabel for="title" required> Game title </FormLabel>
           <FormInput id="title" v-model="title" required />
         </div>
         <div class="flex flex-col">
-          <FormLabel for="system" required> Game system </FormLabel>
+          <FormLabel
+            for="system"
+            helper-text="Pick one or enter your own"
+            required
+          >
+            Game system
+          </FormLabel>
           <FilterDropdown
             v-model="system"
             :options="gameSystemList"
             placeholder="Select or specify a system"
           />
-          <p class="text-xs text-slate-700 mt-1">Pick one or enter your own</p>
         </div>
         <div class="flex flex-col">
           <FormLabel for="participantCount" required> Player count </FormLabel>
@@ -136,7 +167,7 @@
             @select="handleImageSelect"
           />
         </div>
-        <div class="p-4 rounded-lg bg-gray-100">
+        <Well>
           <div class="flex items-center space-x-2">
             <FormCheckbox id="recording" v-model="isRecorded" />
             <FormLabel class="font-normal" for="recording" :no-margin="true">
@@ -160,7 +191,7 @@
               TTRPG Safety Toolkit
             </a>
           </p>
-        </div>
+        </Well>
         <div class="w-full">
           <PrimaryButton class="w-full">
             Next <ArrowSmallRightIcon class="h-6 w-6" />
@@ -186,8 +217,16 @@
         {{ format(communityPostingLimit, "LLLL do") }}
       </p>
       <p class="text-sm text-slate-700">
-        All times in your timezone - {{ format(startOfToday, "OOOO") }}
+        All times in your timezone - {{ getUserTimezone() }}
       </p>
+      <Well v-if="selectedEvent" class="mt-3">
+        <p class="text-sm font-semibold">
+          Event {{ selectedEvent.title }} runs from
+          {{ format(new Date(selectedEvent.start_time), "MMM do hh:mm aa") }}
+          till
+          {{ format(new Date(selectedEvent.end_time), "MMM do hh:mm aa") }}
+        </p>
+      </Well>
       <div class="grid gap-6 mt-6">
         <div class="grid lg:grid-cols-2 gap-10">
           <div class="grid gap-8">
@@ -195,8 +234,8 @@
               <FormLabel>Start date</FormLabel>
               <DatePicker
                 :selected="startDate"
-                :not-before="startOfToday"
-                :not-after="communityPostingLimit"
+                :not-before="sessionNotBefore"
+                :not-after="sessionNotAfter"
                 @select="updateStartDate"
               />
             </div>
@@ -214,7 +253,7 @@
               <DatePicker
                 :selected="endDate"
                 :not-before="startDate"
-                :not-after="communityPostingLimit"
+                :not-after="sessionNotAfter"
                 @select="updateEndDate"
               />
             </div>
@@ -256,6 +295,7 @@
         </div>
         <hr class="my-10" />
         <AccessTimes
+          :set-by-event="Boolean(selectedEvent)"
           :enabled-levels="state.context.enabledAccessLevels"
           @update="send({ type: 'UPDATE_ENABLED_LEVELS', data: $event })"
         />
@@ -288,9 +328,9 @@
 <script setup lang="ts">
 import { supabase } from "@/supabase";
 import { useRouter } from "vue-router";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { v4 as uuidv4 } from "uuid";
-import { isBefore, set, format } from "date-fns";
+import { isBefore, set, format, isAfter } from "date-fns";
 import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/vue";
 import {
@@ -310,6 +350,7 @@ import DatePicker from "@/components/Calendar/DatePicker.vue";
 import FormTimeInput from "@/components/Forms/FormTimeInput.vue";
 import LinkButton from "@/components/Buttons/LinkButton.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
+import Well from "@/components/Well.vue";
 import { NewSession } from "@/typings/Session";
 import {
   loadCreatorAndAdminCommunities,
@@ -323,7 +364,7 @@ import { loadCommunityAccessTimes } from "@/api/communityAccess";
 import { store } from "@/store";
 import useToast from "@/components/Toast/useToast";
 import { createGame, publishGame } from "@/api/gamesAndSessions";
-import { rsvpTimes, getStartOfToday } from "@/util/time";
+import { rsvpTimes, getStartOfToday, getUserTimezone } from "@/util/time";
 import FormFileInput from "@/components/Forms/FormFileInput.vue";
 import {
   handleFileChange,
@@ -336,6 +377,11 @@ import ImageGalleryModal from "@/components/Modals/ImageGalleryModal.vue";
 import { EnhancedFileObject } from "@/typings/Storage";
 import gameSystemList from "@/util/gameSystemList";
 import FilterDropdown from "@/components/Dropdown/FilterDropdown.vue";
+import { getUpcomingCommunityEvents } from "@/api/communityEvents";
+import { CommunityEvent } from "@/typings/CommunityEvent";
+import FormSelect from "@/components/Forms/FormSelect.vue";
+import { useUrlSearchParams } from "@vueuse/core";
+import flags from "@/util/flags";
 
 const { showSuccess, showError } = useToast();
 const router = useRouter();
@@ -346,6 +392,7 @@ const newGameMachine = createMachine<{
   communities: Community[];
   selectedCommunity?: Community;
   enabledAccessLevels: number[];
+  communityEvents: CommunityEvent[];
 }>(
   {
     predictableActionArguments: true,
@@ -353,6 +400,7 @@ const newGameMachine = createMachine<{
       communities: [],
       selectedCommunity: undefined,
       enabledAccessLevels: [],
+      communityEvents: [],
     },
     id: "newGame",
     initial: "loadCommunities",
@@ -373,6 +421,14 @@ const newGameMachine = createMachine<{
           {
             target: "noCommunities",
             cond: (context) => context.communities.length === 0,
+          },
+          {
+            target: "gameDetails",
+            cond: () => {
+              const params = new URLSearchParams(window.location.href);
+              return Boolean(params.get("community_id"));
+            },
+            actions: ["assignUrlCommunity"],
           },
           {
             target: "chooseCommunity",
@@ -410,6 +466,17 @@ const newGameMachine = createMachine<{
               getAccessLevels(context.selectedCommunity?.id ?? ""),
             onDone: {
               actions: ["updateEnabledAccessLevels"],
+            },
+          },
+          {
+            src: (context) =>
+              getUpcomingCommunityEvents({
+                id: context.selectedCommunity?.id ?? "",
+                // creators can see draft events to add games
+                draftState: ["DRAFT", "PUBLISHED"],
+              }),
+            onDone: {
+              actions: ["setCommunityEvents"],
             },
           },
         ],
@@ -453,6 +520,9 @@ const newGameMachine = createMachine<{
             {
               target: "submitting",
               cond: (context) => {
+                if (selectedEvent.value) {
+                  return sessionIds.value.length > 0;
+                }
                 return (
                   sessionIds.value.length > 0 &&
                   context.enabledAccessLevels.length > 0
@@ -476,6 +546,9 @@ const newGameMachine = createMachine<{
             {
               target: "submitting",
               cond: (context) => {
+                if (selectedEvent.value) {
+                  return sessionIds.value.length > 0;
+                }
                 return (
                   sessionIds.value.length > 0 &&
                   context.enabledAccessLevels.length > 0
@@ -504,6 +577,16 @@ const newGameMachine = createMachine<{
   },
   {
     actions: {
+      assignUrlCommunity: assign({
+        selectedCommunity: () => {
+          const params = new URLSearchParams(window.location.href);
+          const communityId = params.get("community_id");
+          if (!communityId) {
+            throw new Error("community not found");
+          }
+          return store.userCommunityMembership[communityId].community;
+        },
+      }),
       assignFirstCommunity: assign({
         selectedCommunity: (context) => context.communities[0],
       }),
@@ -512,6 +595,11 @@ const newGameMachine = createMachine<{
       }),
       updateEnabledAccessLevels: assign({
         enabledAccessLevels: (context, event) => {
+          return event.data;
+        },
+      }),
+      setCommunityEvents: assign({
+        communityEvents: (context, event) => {
           return event.data;
         },
       }),
@@ -534,11 +622,14 @@ function handleImageSelect(selection: {
   showGallery.value = false;
 }
 
+const params = useUrlSearchParams();
+
 const title = ref("");
 const system = ref("");
 const tabletop = ref("");
 const description = ref("");
 const descriptionAsFlatText = ref("");
+const eventId = ref(params.event_id as string);
 const sessions = ref<Record<string, NewSession>>({});
 const sessionIds = ref<string[]>([]);
 const coverImage = ref<File>();
@@ -552,6 +643,30 @@ const startDate = ref<Date>(new Date());
 const endDate = ref<Date>(new Date());
 
 const communityPostingLimit = ref<Date>();
+
+const selectedEvent = computed(() => {
+  return state.value.context.communityEvents.find((event) => {
+    return String(event.id) === eventId.value;
+  });
+});
+
+const sessionNotBefore = computed(() => {
+  return selectedEvent.value
+    ? new Date(selectedEvent.value?.start_time)
+    : startOfToday;
+});
+const sessionNotAfter = computed(() => {
+  return selectedEvent.value
+    ? new Date(selectedEvent.value?.end_time)
+    : communityPostingLimit.value;
+});
+
+watch(sessionNotBefore, () => {
+  if (isBefore(startDate.value, sessionNotBefore.value)) {
+    startDate.value = sessionNotBefore.value;
+    endDate.value = sessionNotBefore.value;
+  }
+});
 
 const furthestPostingDateIsInPast = computed(() => {
   if (!communityPostingLimit.value) return false;
@@ -596,6 +711,18 @@ const dateError = computed(() => {
   }
   if (isBefore(endDateAndTime.value, startDateAndTime.value)) {
     return "End date and time cannot be before start date and time";
+  }
+  if (
+    selectedEvent.value?.start_time &&
+    isBefore(startDateAndTime.value, selectedEvent.value?.start_time)
+  ) {
+    return "Session time cannot be before the start of the event";
+  }
+  if (
+    selectedEvent.value?.end_time &&
+    isAfter(endDateAndTime.value, selectedEvent.value?.end_time)
+  ) {
+    return "Session time cannot end after the end of the event";
   }
   return "";
 });
@@ -649,10 +776,21 @@ function deleteSession(sessionId: string) {
 async function submitGame() {
   if (!state.value.context.selectedCommunity?.id || !store.user?.id) return;
 
-  const levels = store.communityAccessLevels.filter((level) =>
-    state.value.context.enabledAccessLevels.includes(level.id)
+  function getLevelsFromStore(ids: number[]) {
+    return store.communityAccessLevels.filter((level) =>
+      ids.includes(level.id)
+    );
+  }
+
+  const levels = selectedEvent.value
+    ? getLevelsFromStore(selectedEvent.value.event_access_levels ?? [])
+    : getLevelsFromStore(state.value.context.enabledAccessLevels);
+
+  const times = rsvpTimes(
+    levels,
+    selectedEvent.value?.fixed_access_time ?? undefined,
+    levels.length > 0 ? "policy" : "global"
   );
-  const times = rsvpTimes(levels);
 
   let imagePath;
   if (existingImageToUse.value) {
@@ -681,6 +819,7 @@ async function submitGame() {
     system: system.value,
     virtual_tabletop: tabletop.value,
     cover_image: imagePath,
+    event_id: selectedEvent.value?.id,
   };
   const game = await createGame(newGame);
 

@@ -66,6 +66,7 @@
 import { ChevronUpDownIcon } from "@heroicons/vue/20/solid";
 import { PropType, ref, watch, computed } from "vue";
 import { useFocusWithin } from "@vueuse/core";
+import FormInput from "../Forms/FormInput.vue";
 
 const props = defineProps({
   modelValue: {

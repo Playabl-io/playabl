@@ -2,7 +2,7 @@
   <MenuItem v-slot="{ active }">
     <button
       :class="{ [activeMenuItem]: active }"
-      class="px-2 py-1 rounded-md w-full text-right"
+      class="px-2 py-1 rounded-md w-full text-left"
       @click="emit('click', $event)"
     >
       <slot></slot>

@@ -2,13 +2,31 @@
   <form class="h-full flex flex-col" @submit.prevent="addSession">
     <div class="grow overflow-auto">
       <div class="grid gap-10 pt-6 px-6">
+        <Well v-if="gameStore.game.community_events" class="mt-3">
+          <p class="text-sm font-semibold">
+            Event {{ gameStore.game.community_events.title }} runs from
+            {{
+              format(
+                new Date(gameStore.game.community_events.start_time),
+                "MMM do hh:mm aa"
+              )
+            }}
+            till
+            {{
+              format(
+                new Date(gameStore.game.community_events.end_time),
+                "MMM do hh:mm aa"
+              )
+            }}
+          </p>
+        </Well>
         <div class="grid gap-8">
           <div>
             <FormLabel>Start date</FormLabel>
             <DatePicker
               :selected="startDate"
-              :not-before="getStartOfToday()"
-              :not-after="communityPostingLimit"
+              :not-before="sessionNotBefore"
+              :not-after="sessionNotAfter"
               @select="updateStartDate"
             />
           </div>
@@ -28,7 +46,7 @@
             <DatePicker
               :selected="endDate"
               :not-before="startDate"
-              :not-after="communityPostingLimit"
+              :not-after="sessionNotAfter"
               @select="updateEndDate"
             />
           </div>
@@ -49,6 +67,7 @@
       <hr class="my-8" />
       <section class="px-8 mb-8">
         <AccessTimes
+          :set-by-event="Boolean(gameStore.game.community_events)"
           :enabled-levels="accessLevels"
           grid="grid gap-4"
           @update="accessLevels = $event"
@@ -66,10 +85,11 @@
 </template>
 <script setup lang="ts">
 import { onMounted, ref, computed } from "vue";
-import { set, isBefore } from "date-fns";
+import { set, isBefore, format, isAfter } from "date-fns";
 import FormLabel from "@/components/Forms/FormLabel.vue";
 import DatePicker from "@/components/Calendar/DatePicker.vue";
 import FormTimeInput from "@/components/Forms/FormTimeInput.vue";
+import Well from "@/components/Well.vue";
 import AccessTimes from "../../components/Game/AccessTimes.vue";
 import { getStartOfToday, rsvpTimes } from "@/util/time";
 import { store } from "@/store";
@@ -96,11 +116,30 @@ const props = defineProps({
 
 const sessionStartTime = ref("");
 const sessionEndTime = ref("");
-const startDate = ref<Date>(new Date());
-const endDate = ref<Date>(new Date());
+const startDate = ref<Date>(
+  gameStore.game.community_events
+    ? new Date(gameStore.game.community_events?.start_time)
+    : new Date()
+);
+const endDate = ref<Date>(
+  gameStore.game.community_events
+    ? new Date(gameStore.game.community_events?.start_time)
+    : new Date()
+);
 const accessLevels = ref<number[]>([]);
 const saving = ref(false);
 const communityPostingLimit = ref<Date>();
+
+const sessionNotBefore = computed(() => {
+  return gameStore.game.community_events
+    ? new Date(gameStore.game.community_events?.start_time)
+    : getStartOfToday();
+});
+const sessionNotAfter = computed(() => {
+  return gameStore.game.community_events
+    ? new Date(gameStore.game.community_events?.end_time)
+    : communityPostingLimit.value;
+});
 
 function updateStartDate(date: Date) {
   startDate.value = date;
@@ -137,17 +176,42 @@ const dateError = computed(() => {
   if (isBefore(endDateAndTime.value, startDateAndTime.value)) {
     return "End date and time cannot be before start date and time";
   }
+  if (
+    gameStore.game.community_events?.start_time &&
+    isBefore(
+      startDateAndTime.value,
+      gameStore.game.community_events?.start_time
+    )
+  ) {
+    return "Session time cannot be before the start of the event";
+  }
+  if (
+    gameStore.game.community_events?.end_time &&
+    isAfter(endDateAndTime.value, gameStore.game.community_events?.end_time)
+  ) {
+    return "Session time cannot end after the end of the event";
+  }
   return "";
 });
+
+function getLevelsFromStore(ids: number[]) {
+  return store.communityAccessLevels.filter((level) => ids.includes(level.id));
+}
 
 async function addSession() {
   if (!store.user) return;
   const [startHours, startMinutes] = sessionStartTime.value.split(":");
   const [endHours, endMinutes] = sessionEndTime.value.split(":");
-  const levels = store.communityAccessLevels.filter((level) =>
-    accessLevels.value.includes(level.id)
+  const levels = gameStore.game.community_events
+    ? getLevelsFromStore(
+        gameStore.game.community_events?.event_access_levels ?? []
+      )
+    : getLevelsFromStore(accessLevels.value);
+  const times = rsvpTimes(
+    levels,
+    gameStore.game.community_events?.fixed_access_time ?? undefined,
+    gameStore.game.community_events?.event_access_levels ? "policy" : "global"
   );
-  const times = rsvpTimes(levels);
   const newSession: NewSession = {
     start_time: set(startDate.value, {
       hours: Number(startHours),

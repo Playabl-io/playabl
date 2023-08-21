@@ -1,7 +1,11 @@
 <template>
   <input
     v-bind="$attrs"
-    class="p-2 rounded-md border border-gray-300 text-slate-900 dark:bg-slate-200 focus-styles"
+    :class="{
+      'border-red-500': hasError,
+      'border-gray-300': !hasError,
+    }"
+    class="h-10 p-2 rounded-md border border-gray-300 text-slate-900 dark:bg-slate-200 focus-styles"
     :value="modelValue"
     @input="handleInput"
   />
@@ -11,6 +15,10 @@ defineProps({
   modelValue: {
     type: [String, Number],
     default: "",
+  },
+  hasError: {
+    type: Boolean,
+    default: false,
   },
 });
 const emit = defineEmits(["update:modelValue"]);

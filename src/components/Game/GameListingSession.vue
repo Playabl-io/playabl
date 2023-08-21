@@ -84,17 +84,12 @@ import { format } from "date-fns";
 import { StarIcon, ExclamationCircleIcon } from "@heroicons/vue/20/solid";
 import { EllipsisHorizontalCircleIcon } from "@heroicons/vue/24/outline";
 import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue";
-import { CommunityAccess } from "@/typings/CommunityAccess";
 import { userCanRsvp } from "@/util/time";
 
 const props = defineProps({
   session: {
     type: Object as PropType<Session>,
     required: true,
-  },
-  userAccess: {
-    type: Array as PropType<CommunityAccess[]>,
-    default: () => [],
   },
   creatorId: {
     type: String,
@@ -120,7 +115,7 @@ const isWaitlisted = computed(
 
 const canRsvp = computed(() =>
   userCanRsvp({
-    userAccess: props.userAccess,
+    userAccess: store.userCommunityAccess,
     session: props.session,
     userId: store.user?.id,
     hostId: props.creatorId,

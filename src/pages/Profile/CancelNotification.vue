@@ -5,7 +5,7 @@
         <span class="flex gap-2 items-center">
           <ExclamationCircleIcon class="h-6 w-6 text-red-500" />
           <p class="font-semibold grow">
-            {{ notification.custom_fields?.game_name }} has been canceled
+            {{ notification.custom_fields?.game_name }} has been cancelled
           </p>
         </span>
         <div class="flex space-x-2 items-center mt-1">

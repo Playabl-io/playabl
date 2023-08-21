@@ -25,6 +25,17 @@
       >
         Games
       </router-link>
+      <router-link
+        v-if="store.userEnabledFlags[flags.events]"
+        class="pt-2 mx-6 border-t"
+        to="/events/browse"
+        :class="{
+          'border-brand-500 dark:border-brand-300': onEventsRoute,
+          'border-transparent': !onEventsRoute,
+        }"
+      >
+        Events
+      </router-link>
     </nav>
     <div class="flex justify-end">
       <user-menu />
@@ -35,6 +46,7 @@
 import { RouterLink, useRoute } from "vue-router";
 import UserMenu from "../UserMenu.vue";
 import { store } from "../../store";
+import flags from "@/util/flags";
 
 const route = useRoute();
 
@@ -44,4 +56,5 @@ const [directory] = path.split("/");
 
 const onCommunitiesRoute = directory === "communities";
 const onGamesRoute = directory === "games";
+const onEventsRoute = directory === "events";
 </script>

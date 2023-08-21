@@ -29,7 +29,7 @@ export const handler: Handler = async (event) => {
   const { session, game } = await getGameAndCommunityInfo({ sessionId });
 
   if (method === "POST") {
-    const canRsvp = confirmRsvpAccess({
+    const canRsvp = await confirmRsvpAccess({
       session,
       userId,
       communityId: game.community_id,
@@ -115,6 +115,15 @@ async function confirmRsvpAccess({
     communityId,
     userId,
   });
+  const { data } = await supabase
+    .from("community_memberships")
+    .select("role_id")
+    .eq("community_id", session.community_id)
+    .eq("user_id", userId)
+    .single();
+  if (!data || data.role_id < 1) {
+    return false;
+  }
   return userCanRsvp({
     userAccess,
     session,
