@@ -34,6 +34,7 @@
 </template>
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
+import * as R from "ramda";
 import BaseTemplate from "@/layouts/BaseTemplate.vue";
 import { GameListing } from "@/typings/Game";
 import GameCard from "@/components/Game/GameCard.vue";
@@ -58,7 +59,11 @@ async function loadUpcomingGames() {
   if (!store.user) return;
   const data = await loadManagedGames(store.user.id);
   if (data) {
-    games.value = data;
+    const [withSessions, withoutSessions] = R.partition(
+      (game) => game?.sessions?.length > 0,
+      data
+    );
+    games.value = withSessions.concat(withoutSessions);
   }
 }
 async function loadPastGames() {

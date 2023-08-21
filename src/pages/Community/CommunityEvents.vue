@@ -6,7 +6,9 @@
       router.push({
         path: '/events/new',
         query: {
-          community_id: route.params.community_id,
+          ...(communityStore.community.id
+            ? { community_id: communityStore.community.id }
+            : {}),
         },
       })
     "
