@@ -1,4 +1,4 @@
-import { reactive } from "vue";
+import { reactive, watch } from "vue";
 import { AccessLevel } from "./typings/AccessLevel";
 import { Profile } from "./typings/Profile";
 import { Notification } from "./typings/Notification";
@@ -6,6 +6,7 @@ import { Session } from "@supabase/gotrue-js";
 import { Community } from "./typings/Community";
 import { CommunityAccess } from "./typings/CommunityAccess";
 import { CommunityMembership } from "./typings/CommunityMembership";
+import { ROLES } from "./util/roles";
 
 interface Store {
   user?: Profile | null;
@@ -40,3 +41,16 @@ export const store = reactive<Store>({
   userCommunityAccess: [],
   userCommunityMembership: {},
 });
+
+watch(
+  () => store.userCommunityMembership,
+  (newVal) => {
+    const managedCommunities = Object.values(newVal).reduce((acc, cur) => {
+      if (cur.communityMembership.role_id === ROLES.admin) {
+        acc.push(cur.community);
+      }
+      return acc;
+    }, [] as Community[]);
+    store.userManagedCommunities = managedCommunities;
+  }
+);

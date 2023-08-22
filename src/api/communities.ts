@@ -5,49 +5,19 @@ import { ROLES } from "@/util/roles";
 import { Community } from "@/typings/Community";
 import axios from "axios";
 
-export async function loadJoinedCommunities() {
-  if (!store.user) return;
-  const { data, error } = await supabase
-    .from("community_memberships")
-    .select("community_id (*)")
-    .eq("user_id", store.user.id);
-  if (error) {
-    log({ error });
-  }
-  if (data) {
-    return data.map((membership) => ({
-      ...membership.community_id,
-    }));
-  }
-}
-
 export async function loadCreatorAndAdminCommunities() {
   if (!store.user) return;
   const { data, error } = await supabase
     .from("community_memberships")
     .select("role_id, user_id, community_id (*)")
     .lt("role_id", 3)
-    .eq("user_id", store.user.id);
+    .eq("user_id", store.user.id)
+    .is("community_id.deleted_at", null);
   if (error) {
     log({ error });
   }
   if (data) {
     return data.map((membership) => membership.community_id);
-  }
-}
-
-export async function loadJoinedCommunityIds(
-  userId: string
-): Promise<{ community_id: string }[] | undefined> {
-  const { data, error } = await supabase
-    .from("community_memberships")
-    .select("community_id")
-    .eq("user_id", userId);
-  if (error) {
-    log({ error });
-  }
-  if (data) {
-    return data;
   }
 }
 

@@ -28,7 +28,6 @@ import { log } from "./util/logger";
 import AppShell from "./layouts/AppShell.vue";
 import LoadingSpinner from "./components/LoadingSpinner.vue";
 import { Notification } from "./typings/Notification";
-import { loadUserManagedCommunities } from "./api/communityMemberships";
 
 const route = useRoute();
 const router = useRouter();
@@ -120,11 +119,6 @@ async function loadNotificationsAndSubscribe() {
   notificationSubscription.value = subscription;
 }
 
-async function setUserManagedCommunities(userId: string) {
-  const response = await loadUserManagedCommunities({ userId });
-  store.userManagedCommunities = response;
-}
-
 onMounted(async () => {
   const user = await supabase.auth.getUser();
   if (user.error) {
@@ -133,7 +127,6 @@ onMounted(async () => {
   }
   if (user.data?.user?.id) {
     await Promise.all([
-      setUserManagedCommunities(user.data.user.id),
       getUserAccess(user.data.user.id),
       getUserMemberships(user.data.user.id),
     ]);
