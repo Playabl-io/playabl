@@ -7,7 +7,7 @@
       </p>
       <p class="text-sm">
         {{
-          session.rsvps.length > session.participant_count
+          session.rsvps.length >= session.participant_count
             ? `${session.rsvps.length - session.participant_count} waitlisted`
             : "Seats available"
         }}

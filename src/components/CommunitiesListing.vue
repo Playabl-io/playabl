@@ -1,5 +1,4 @@
 <template>
-  <CommunitiesNav />
   <section class="grid grid-cols-1 gap-8 mt-12">
     <span v-if="isLoading" class="place-self-center">
       <LoadingSpinner color="brand-500" />
@@ -15,7 +14,6 @@ import { PropType } from "vue";
 import { Community } from "@/typings/Community";
 import LoadingSpinner from "./LoadingSpinner.vue";
 import CommunityListing from "./CommunityListing.vue";
-import CommunitiesNav from "./Community/CommunitiesNav.vue";
 
 defineProps({
   isLoading: {

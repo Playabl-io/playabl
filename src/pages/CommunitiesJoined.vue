@@ -1,6 +1,5 @@
 <template>
   <base-template>
-    <CommunitiesNav class="mb-12" />
     <section class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
       <CommunityCard
         v-for="entry in store.userCommunityMembership"
@@ -14,5 +13,4 @@
 import BaseTemplate from "@/layouts/BaseTemplate.vue";
 import { store } from "../store";
 import CommunityCard from "@/components/Community/CommunityCard.vue";
-import CommunitiesNav from "@/components/Community/CommunitiesNav.vue";
 </script>

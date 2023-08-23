@@ -1,6 +1,5 @@
 <template>
   <base-template>
-    <GamesNav class="mb-12" />
     <div v-if="isLoading" class="grid place-content-center">
       <LoadingSpinner color="brand-500" />
     </div>
@@ -41,7 +40,6 @@ import GameCard from "@/components/Game/GameCard.vue";
 import Heading from "@/components/Heading.vue";
 import { loadManagedGames, loadPastManagedGames } from "@/api/gamesAndSessions";
 import GamesHeading from "@/components/GamesHeading.vue";
-import GamesNav from "@/components/GamesNav.vue";
 import { store } from "@/store";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import { pluralize } from "@/util/grammar";

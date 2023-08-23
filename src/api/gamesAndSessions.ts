@@ -8,6 +8,7 @@ import { startOfDay, endOfDay } from "date-fns";
 
 import axios from "axios";
 import { CommunityEvent } from "@/typings/CommunityEvent";
+import { SORT_DIR, SORT_KEY, sortDirs, sortKeys } from "@/util/urlParams";
 
 // helper functions
 const sortSessionByTimeAsc = (a: Session, b: Session) => {
@@ -77,22 +78,67 @@ export async function loadUpcomingJoinedGames(userId: string) {
   }
 }
 
-export async function loadChronologicalGames() {
+export async function loadBrowsableGames({
+  sortKey = sortKeys.startTime,
+  sortDir = sortDirs.asc,
+  openOnly,
+  isRecorded,
+  usesSafetyTools,
+  minPlayer = "0",
+  maxPlayer,
+  system,
+}: {
+  sortKey?: SORT_KEY;
+  sortDir?: SORT_DIR;
+  openOnly: boolean;
+  isRecorded: boolean;
+  usesSafetyTools: boolean;
+  minPlayer?: string;
+  maxPlayer?: string;
+  system?: string;
+}) {
   const today = new Date();
-  const { data, error } = await supabase
+  const sort: { foreignTable: string; ascending: boolean } = {
+    foreignTable: [sortKeys.startTime, sortKeys.endTime].includes(sortKey)
+      ? "sessions"
+      : "",
+    ascending: sortDir === sortDirs.asc,
+  };
+  const query = supabase
     .from("games")
     .select(
       "*, community_id (id, name), sessions!inner(*), community_events(*)"
     )
     .is("deleted_at", null)
+    .in("sessions.has_openings", openOnly ? [true] : [true, false])
+    .in("will_be_recorded", isRecorded ? [true] : [true, false])
+    .in("uses_safety_tools", usesSafetyTools ? [true] : [true, false])
+    .gte("participant_count", Math.max(Number(minPlayer), 0))
     .gte("sessions.start_time", today.getTime())
-    .order("start_time", { foreignTable: "sessions", ascending: true });
+    .order(sortKey, sort);
+
+  if (maxPlayer) {
+    query.lte("participant_count", maxPlayer);
+  }
+
+  if (system) {
+    query.like("system", system);
+  }
+
+  const { data, error } = await query;
   if (error) {
     log({ error });
   }
   if (data) {
     const withoutDrafts = data.filter(filterDraftEventGames);
-    return mapToAscSessions(withoutDrafts);
+    const sorter = R.sortBy((listing: any) => {
+      return listing?.sessions?.[0][sortKey];
+    });
+    const result = sorter(mapToAscSessions(withoutDrafts));
+    if (sortDir === sortDirs.desc) {
+      return result.reverse();
+    }
+    return result;
   }
 }
 

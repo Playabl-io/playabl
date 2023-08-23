@@ -1,13 +1,13 @@
 <template>
-  <DropdownMenu>
-    <template #title="{ open }">
-      <slot name="title" :open="open"></slot>
+  <PopoverMenu>
+    <template #title="{ open: internalOpen }">
+      <slot name="title" :open="internalOpen"></slot>
     </template>
     <template #items>
       <slot name="items"></slot>
     </template>
-  </DropdownMenu>
+  </PopoverMenu>
 </template>
 <script setup lang="ts">
-import DropdownMenu from "./DropdownMenu.vue";
+import PopoverMenu from "./PopoverMenu.vue";
 </script>

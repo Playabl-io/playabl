@@ -208,6 +208,12 @@ const routes = [
     meta: {
       title: "Playabl - Games",
     },
+    beforeEnter: [
+      queryHandlerFactory({
+        [SORT_KEY_PATH]: sortKeys.startTime,
+        [SORT_DIR_PATH]: sortDirs.asc,
+      }),
+    ],
   },
   {
     path: "/games/manage",

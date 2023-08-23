@@ -1,6 +1,5 @@
 <template>
   <base-template>
-    <GamesNav class="mb-12" />
     <div v-if="isLoading" class="grid place-content-center">
       <LoadingSpinner color="brand-500" />
     </div>
@@ -33,7 +32,6 @@ import BaseTemplate from "@/layouts/BaseTemplate.vue";
 import { GameListing } from "@/typings/Game";
 import { store } from "@/store";
 import { loadUpcomingJoinedGames } from "@/api/gamesAndSessions";
-import GamesNav from "@/components/GamesNav.vue";
 import GameCard from "@/components/Game/GameCard.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 

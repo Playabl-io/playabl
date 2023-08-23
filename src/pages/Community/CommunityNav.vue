@@ -122,8 +122,6 @@ import NavMenuItem from "@/components/Menus/NavMenuItem.vue";
 import { store } from "@/store";
 import flags from "@/util/flags";
 
-console.log(communityStore.isAdmin);
-
 const currentRoute = useRoute();
 const communityRoute = computed(
   () => communityStore.community.url_short_name || communityStore.community.id

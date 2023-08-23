@@ -1,5 +1,5 @@
 <template>
-  <section class="grid gap-8 mt-12">
+  <section class="grid gap-8">
     <span v-if="isLoading" class="place-self-center">
       <LoadingSpinner color="brand-500" />
     </span>
@@ -8,7 +8,18 @@
       <hr class="last:hidden border-slate-200" />
     </template>
     <template v-else>
-      <p>Sorry, no results</p>
+      <div class="grid place-items-center relative">
+        <p class="md:font-lg font-semibold text-center pt-12">
+          Keep searching, explorer. The results you're looking for aren't here.
+        </p>
+        <img
+          src="/searching.png"
+          alt=""
+          width="100%"
+          height="100%"
+          class="w-full object-contain relative -top-4"
+        />
+      </div>
     </template>
   </section>
 </template>
