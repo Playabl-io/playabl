@@ -1,10 +1,10 @@
 <template>
   <div class="grid gap-4">
     <div class="flex flex-col">
-      <FormLabel>Sort by</FormLabel>
+      <FormLabel>Sort By</FormLabel>
       <FormSelect v-model="selectedSortKey">
         <option
-          v-for="option in sortKeyOptions"
+          v-for="option in keyOptions"
           :key="option.value"
           :value="option.value"
           :selected="selectedSortKey === option.value"
@@ -14,10 +14,10 @@
       </FormSelect>
     </div>
     <div class="flex flex-col">
-      <FormLabel>Sort direction</FormLabel>
+      <FormLabel>Sort Direction</FormLabel>
       <FormSelect v-model="selectedSortDir">
         <option
-          v-for="option in sortDirOptions"
+          v-for="option in dirOptions"
           :key="option.value"
           :value="option.value"
           :selected="selectedSortDir === option.value"
@@ -29,7 +29,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { PropType, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import FormLabel from "../Forms/FormLabel.vue";
 import { useUrlSearchParams } from "@vueuse/core";
@@ -49,6 +49,14 @@ defineProps({
   label: {
     type: String,
     default: undefined,
+  },
+  keyOptions: {
+    type: Array as PropType<{ label: string; value: string }[]>,
+    default: () => sortKeyOptions,
+  },
+  dirOptions: {
+    type: Array as PropType<{ label: string; value: string }[]>,
+    default: () => sortDirOptions,
   },
 });
 

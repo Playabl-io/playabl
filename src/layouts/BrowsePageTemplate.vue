@@ -4,12 +4,12 @@
       <div class="flex flex-col gap-6 sticky top-24">
         <PrimaryButton
           v-if="allowCreateNew"
-          class="shadow-md"
+          class="shadow-sm"
           @click="emit('createNew')"
         >
           New {{ title }}
         </PrimaryButton>
-        <div class="rounded-md bg-white shadow-md flex flex-col gap-6 p-4">
+        <div class="rounded-md bg-white shadow-sm flex flex-col gap-6 p-4">
           <slot name="page-controls"></slot>
         </div>
       </div>

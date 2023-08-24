@@ -234,12 +234,12 @@ const policyOptions = computed(() =>
     value: level.id,
   }))
 );
-const eventAccessPolicies = ref<{ label: string; value: number }[]>([]);
+const eventAccessPolicies = ref<number[]>([]);
 const accessGroup = ref<"everyone" | "limited">("everyone");
 
 const form = reactive({
   community_id:
-    (route.query.community_id as string) || store.userManagedCommunities[0].id,
+    (route.query.community_id as string) || store.userManagedCommunities[0]?.id,
   title: "",
   description: "",
   start_time: "",
@@ -307,13 +307,11 @@ async function submitForm() {
     end_time: new Date(form.end_time).getTime(),
     rsvp_model: form.rsvp_model,
     event_access_levels:
-      accessGroup.value === "limited"
-        ? eventAccessPolicies.value.map((policy) => policy.value)
-        : undefined,
+      accessGroup.value === "limited" ? eventAccessPolicies.value : null,
     fixed_access_time:
       form.rsvp_model === "FIXED"
         ? new Date(form.fixed_access_time ?? "1900-01-01").getTime()
-        : undefined,
+        : null,
   };
   const result = eventFormSchema.safeParse(record);
   if (!result.success) {

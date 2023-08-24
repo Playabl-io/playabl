@@ -23,55 +23,70 @@
         }"
         class="w-full h-full flex flex-col justify-end rounded-lg rounded-b-none p-4"
       >
-        <div class="flex gap-4 items-center">
-          <router-link
-            :to="`/communities/${community.url_short_name || community.id}`"
-            class="hover:underline"
+        <div class="flex flex-col gap-2">
+          <div class="flex gap-4 items-center">
+            <router-link
+              :to="`/communities/${community.url_short_name || community.id}`"
+              class="hover:underline"
+              :class="{
+                'text-white': coverImageUrl,
+              }"
+            >
+              <Heading level="h5">
+                {{ community.name }}
+              </Heading>
+            </router-link>
+            <Tooltip v-if="community.code_of_conduct_url">
+              <template #trigger="{ toggleTooltip }">
+                <CheckBadgeIcon
+                  v-if="community.code_of_conduct_url"
+                  class="text-green-500 h-6 w-6 relative"
+                  @mouseenter="toggleTooltip"
+                  @mouseleave="toggleTooltip"
+                  @focus="toggleTooltip"
+                  @blur="toggleTooltip"
+                />
+              </template>
+              <template #tooltip> Has a community code of conduct </template>
+            </Tooltip>
+            <Tooltip v-if="community.signup_method === 'PUBLIC'">
+              <template #trigger="{ toggleTooltip }">
+                <BoltIcon
+                  class="text-yellow-500 h-6 w-6"
+                  @mouseenter="toggleTooltip"
+                  @mouseleave="toggleTooltip"
+                  @focus="toggleTooltip"
+                  @blur="toggleTooltip"
+                />
+              </template>
+              <template #tooltip>
+                This community allows public joining
+              </template>
+            </Tooltip>
+          </div>
+          <a
+            class="mt-1 hover:underline active:underline text-sm"
             :class="{
-              'text-white': coverImageUrl,
+              'text-neutral-200': coverImageUrl,
+            }"
+            :href="community.website"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            {{ community.website }}
+          </a>
+          <div
+            class="flex gap-3 items-center"
+            :class="{
+              'text-neutral-200': coverImageUrl,
             }"
           >
-            <heading level="h5">
-              {{ community.name }}
-            </heading>
-          </router-link>
-          <Tooltip v-if="community.code_of_conduct_url">
-            <template #trigger="{ toggleTooltip }">
-              <CheckBadgeIcon
-                v-if="community.code_of_conduct_url"
-                class="text-green-500 h-6 w-6 relative"
-                @mouseenter="toggleTooltip"
-                @mouseleave="toggleTooltip"
-                @focus="toggleTooltip"
-                @blur="toggleTooltip"
-              />
-            </template>
-            <template #tooltip> Has a community code of conduct </template>
-          </Tooltip>
-          <Tooltip v-if="community.signup_method === 'PUBLIC'">
-            <template #trigger="{ toggleTooltip }">
-              <BoltIcon
-                class="text-yellow-500 h-6 w-6"
-                @mouseenter="toggleTooltip"
-                @mouseleave="toggleTooltip"
-                @focus="toggleTooltip"
-                @blur="toggleTooltip"
-              />
-            </template>
-            <template #tooltip> This community allows public joining </template>
-          </Tooltip>
+            <UsersIcon class="w-5 h-5" />
+            <p>
+              {{ community.community_memberships[0].count }}
+            </p>
+          </div>
         </div>
-        <a
-          class="mt-1 hover:underline active:underline text-sm"
-          :class="{
-            'text-neutral-200': coverImageUrl,
-          }"
-          :href="community.website"
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          {{ community.website }}
-        </a>
       </div>
     </div>
 
@@ -231,14 +246,14 @@
 <script setup lang="ts">
 import Heading from "./Heading.vue";
 import { toRefs, PropType, onMounted, ref } from "vue";
-import { CheckBadgeIcon, BoltIcon } from "@heroicons/vue/24/outline";
-import { Community } from "@/typings/Community";
+import { CheckBadgeIcon, BoltIcon, UsersIcon } from "@heroicons/vue/24/outline";
+import { CommunityBrowse } from "@/typings/Community";
 import Tooltip from "./Tooltip.vue";
 import { getCoverImageUrl } from "@/api/storage";
 
 const props = defineProps({
   community: {
-    type: Object as PropType<Community>,
+    type: Object as PropType<CommunityBrowse>,
     required: true,
   },
 });

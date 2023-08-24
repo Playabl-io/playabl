@@ -13,7 +13,11 @@
           <NavMenuItem v-if="store.user" to="/communities/joined">
             Joined
           </NavMenuItem>
-          <NavMenuItem to="/communities/browse"> Browse </NavMenuItem>
+          <NavMenuItem
+            to="/communities/browse?sort.key=created_at&sort.dir=desc"
+          >
+            Browse
+          </NavMenuItem>
           <NavMenuItem v-if="store.user" to="/communities/manage">
             Manage
           </NavMenuItem>
@@ -26,7 +30,9 @@
           <NavMenuItem v-if="store.user" to="/games/joined">
             Joined
           </NavMenuItem>
-          <NavMenuItem to="/games/browse"> Browse </NavMenuItem>
+          <NavMenuItem to="/games/browse?sort.key=start_time&sort.dir=asc">
+            Browse
+          </NavMenuItem>
           <NavMenuItem v-if="store.user" to="/games/manage">
             Manage
           </NavMenuItem>
@@ -47,11 +53,10 @@
   </header>
 </template>
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import { RouterLink } from "vue-router";
 import UserMenu from "../UserMenu.vue";
 import { store } from "../../store";
-import flags from "@/util/flags";
 import { PopoverGroup } from "@headlessui/vue";
 import NavMenu from "../Menus/NavMenu.vue";
 import NavMenuItem from "../Menus/NavMenuItem.vue";

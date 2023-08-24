@@ -313,27 +313,9 @@ import {
 } from "@/components/Forms/fileInputUtil";
 import ImageGalleryModal from "@/components/Modals/ImageGalleryModal.vue";
 import { EnhancedFileObject } from "@/typings/Storage";
+import { GAME_TAGS } from "@/util/gameSystemList";
 
 const { showError } = useToast();
-
-const GAME_TAGS = [
-  "Call of Cthulhu",
-  "Crunchy",
-  "D&D",
-  "Fantasy",
-  "Fate",
-  "Indie",
-  "LARP",
-  "gmless",
-  "Narrative",
-  "OSR",
-  "PBTA",
-  "Rules light",
-  "Sci-fi",
-  "Star Trek",
-  "Star Wars",
-  "Story games",
-];
 
 const SOCIALS = ["Twitter", "Facebook", "Discord", "Slack", "Patreon"];
 

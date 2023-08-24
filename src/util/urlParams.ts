@@ -25,7 +25,7 @@ export const sortDirs: {
 export const sortKeyOptions: { label: string; value: SORT_KEY }[] = [
   { label: "Start time", value: sortKeys.startTime },
   { label: "End time", value: sortKeys.endTime },
-  { label: "Created time", value: sortKeys.createdAt },
+  { label: "Created at", value: sortKeys.createdAt },
 ];
 
 export const sortDirOptions: { label: string; value: SORT_DIR }[] = [
@@ -59,3 +59,10 @@ export function translateSortToSupabase({
 }): [SORT_KEY, { ascending: boolean }] {
   return [sortKey, { ascending: sortDir === sortDirs.asc }];
 }
+
+export const ensureRouteQueryIsArray = (val: any) => {
+  if (Array.isArray(val)) {
+    return val;
+  }
+  return [val];
+};

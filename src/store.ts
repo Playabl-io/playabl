@@ -1,4 +1,4 @@
-import { reactive, watch } from "vue";
+import { computed, reactive, watch } from "vue";
 import { AccessLevel } from "./typings/AccessLevel";
 import { Profile } from "./typings/Profile";
 import { Notification } from "./typings/Notification";
@@ -53,4 +53,11 @@ watch(
     }, [] as Community[]);
     store.userManagedCommunities = managedCommunities;
   }
+);
+
+export const userCommunityMembershipIds = computed(() =>
+  Object.values(store.userCommunityMembership).reduce((acc, cur) => {
+    acc.push(cur.community.id);
+    return acc;
+  }, [] as Community["id"][])
 );

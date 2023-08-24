@@ -106,6 +106,12 @@ const routes = [
     meta: {
       title: "Playabl - Communities",
     },
+    beforeEnter: [
+      queryHandlerFactory({
+        [SORT_KEY_PATH]: sortKeys.createdAt,
+        [SORT_DIR_PATH]: sortDirs.desc,
+      }),
+    ],
   },
   {
     path: "/communities/manage",

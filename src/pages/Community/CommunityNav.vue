@@ -33,7 +33,6 @@
           Calendar
         </router-link>
         <router-link
-          v-if="store.userEnabledFlags[flags.events]"
           :to="`/communities/${communityRoute}/events`"
           class="border-b"
           :class="{

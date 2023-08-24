@@ -72,10 +72,7 @@
       <div v-else class="grid grid-cols-1 gap-8">
         <Heading level="h6" as="h2">Game info</Heading>
         <div
-          v-if="
-            store.userEnabledFlags[flags.events] &&
-            state.context.communityEvents.length !== 0
-          "
+          v-if="state.context.communityEvents.length !== 0"
           class="flex flex-col"
         >
           <FormLabel helper-text="Select an upcoming event">

@@ -9,6 +9,7 @@ import { startOfDay, endOfDay } from "date-fns";
 import axios from "axios";
 import { CommunityEvent } from "@/typings/CommunityEvent";
 import { SORT_DIR, SORT_KEY, sortDirs, sortKeys } from "@/util/urlParams";
+import { userCommunityMembershipIds } from "@/store";
 
 // helper functions
 const sortSessionByTimeAsc = (a: Session, b: Session) => {
@@ -84,6 +85,7 @@ export async function loadBrowsableGames({
   openOnly,
   isRecorded,
   usesSafetyTools,
+  joinedCommunities,
   minPlayer = "0",
   maxPlayer,
   system,
@@ -93,6 +95,7 @@ export async function loadBrowsableGames({
   openOnly: boolean;
   isRecorded: boolean;
   usesSafetyTools: boolean;
+  joinedCommunities: boolean;
   minPlayer?: string;
   maxPlayer?: string;
   system?: string;
@@ -123,6 +126,10 @@ export async function loadBrowsableGames({
 
   if (system) {
     query.like("system", system);
+  }
+
+  if (joinedCommunities) {
+    query.in("community_id", userCommunityMembershipIds.value);
   }
 
   const { data, error } = await query;

@@ -39,7 +39,7 @@
             <FormCheckbox id="recorded" v-model="filter" value="recorded" />
             <FormLabel for="recorded" no-margin>Is Recorded</FormLabel>
           </div>
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 mb-3">
             <FormCheckbox
               id="safety-tools"
               v-model="filter"
@@ -47,6 +47,16 @@
             />
             <FormLabel for="safety-tools" no-margin
               >Uses Safety Tools</FormLabel
+            >
+          </div>
+          <div class="flex items-center gap-2">
+            <FormCheckbox
+              id="joined-communities"
+              v-model="filter"
+              value="joined-communities"
+            />
+            <FormLabel for="joined-communities" no-margin
+              >Only Communities I've Joined</FormLabel
             >
           </div>
         </div>
@@ -74,6 +84,7 @@ import {
   SORT_DIR_PATH,
   SORT_KEY,
   SORT_KEY_PATH,
+  ensureRouteQueryIsArray,
 } from "@/util/urlParams";
 import FormInput from "@/components/Forms/FormInput.vue";
 import gameSystemList from "@/util/gameSystemList";
@@ -81,14 +92,9 @@ import FilterDropdown from "@/components/Dropdown/FilterDropdown.vue";
 
 const route = useRoute();
 const router = useRouter();
-const ensureArray = (val: any) => {
-  if (Array.isArray(val)) {
-    return val;
-  }
-  return [val];
-};
+
 const filter = useRouteQuery("filter", [] as string[], {
-  transform: ensureArray,
+  transform: ensureRouteQueryIsArray,
 });
 const min = useRouteQuery("min-players", undefined);
 const max = useRouteQuery("max-players", undefined);
@@ -107,12 +113,14 @@ async function loadGames() {
   const openOnly = filter.value.includes("open");
   const isRecorded = filter.value.includes("recorded");
   const usesSafetyTools = filter.value.includes("safety-tools");
+  const joinedCommunities = filter.value.includes("joined-communities");
   const data = await loadBrowsableGames({
     sortKey: route.query[SORT_KEY_PATH] as SORT_KEY,
     sortDir: route.query[SORT_DIR_PATH] as SORT_DIR,
     openOnly,
     isRecorded,
     usesSafetyTools,
+    joinedCommunities,
     minPlayer: min.value,
     maxPlayer: max.value,
     system: system.value,
