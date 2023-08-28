@@ -1,15 +1,14 @@
 <template>
-  <BaseTemplate>
+  <DetailPageTemplate :routes="routes">
     <div v-if="isLoading" class="h-full grid place-items-center">
       <LoadingSpinner color="brand-500" />
     </div>
     <div v-else>
-      <div class="flex items-baseline justify-between">
+      <div class="flex items-baseline justify-between mb-6">
         <router-link :to="`/communities/${id}`">
           <Heading level="h1">{{ communityData?.name }}</Heading>
         </router-link>
       </div>
-      <CommunityNav />
       <router-view v-slot="{ Component, route }">
         <keep-alive>
           <component
@@ -19,17 +18,16 @@
         </keep-alive>
       </router-view>
     </div>
-  </BaseTemplate>
+  </DetailPageTemplate>
 </template>
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import CommunityNav from "./CommunityNav.vue";
 import { log } from "@/util/logger";
-import BaseTemplate from "@/layouts/BaseTemplate.vue";
+import DetailPageTemplate from "@/layouts/DetailPageTemplate.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import Heading from "@/components/Heading.vue";
-import { ADMIN, CREATOR, PLAYER } from "@/util/roles";
+import { ADMIN, CREATOR, PLAYER, ROLES } from "@/util/roles";
 import { store } from "@/store";
 import { Community } from "@/typings/Community";
 import { clearCommunityStore, communityStore } from "./communityStore";
@@ -50,6 +48,62 @@ import { getUpcomingCommunityEvents } from "@/api/communityEvents";
 
 const currentRoute = useRoute();
 const router = useRouter();
+
+const communityRoute = computed(
+  () => communityStore.community.url_short_name || communityStore.community.id
+);
+
+const routes = computed(() => {
+  const result: any[] = [
+    {
+      label: "Overview",
+      path: `/communities/${communityRoute.value}/overview`,
+    },
+    {
+      label: "Calendar",
+      path: `/communities/${communityRoute.value}/calendar`,
+    },
+    {
+      label: "Events",
+      path: `/communities/${communityRoute.value}/events`,
+    },
+    {
+      label: "Membership",
+      path: `/communities/${communityRoute.value}/membership`,
+    },
+  ];
+  if (
+    store.userCommunityMembership[communityStore.community.id]
+      ?.communityMembership.role_id === ROLES.admin
+  ) {
+    result.push({
+      label: "Manage",
+      children: [
+        {
+          label: "Overview",
+          path: `/communities/${communityRoute.value}/manage/overview`,
+        },
+        {
+          label: "Access",
+          path: `/communities/${communityRoute.value}/manage/access`,
+        },
+        {
+          label: "Info",
+          path: `/communities/${communityRoute.value}/manage/info`,
+        },
+        {
+          label: "Integrations",
+          path: `/communities/${communityRoute.value}/manage/integrations`,
+        },
+        {
+          label: "Members",
+          path: `/communities/${communityRoute.value}/manage/members`,
+        },
+      ],
+    });
+  }
+  return result;
+});
 
 /**
  * This may be a UUID or it may be a short name that was set.

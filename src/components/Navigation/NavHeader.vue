@@ -5,16 +5,14 @@
   >
     <router-link to="/" class="font-paytone text-lg"> Playabl </router-link>
     <PopoverGroup as="nav" class="mx-auto col-span-4 flex items-center gap-3">
-      <NavMenu :open="isHovered">
-        <template #title>
-          <span ref="myHoverableElement"> Communities </span>
-        </template>
+      <NavMenu>
+        <template #title> Communities </template>
         <template #items>
           <NavMenuItem v-if="store.user" to="/communities/joined">
             Joined
           </NavMenuItem>
           <NavMenuItem
-            to="/communities/browse?sort.key=created_at&sort.dir=desc"
+            to="/communities/browse?sort.key=member-count&sort.dir=desc"
           >
             Browse
           </NavMenuItem>
@@ -53,16 +51,10 @@
   </header>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
 import { RouterLink } from "vue-router";
 import UserMenu from "../UserMenu.vue";
 import { store } from "../../store";
 import { PopoverGroup } from "@headlessui/vue";
 import NavMenu from "../Menus/NavMenu.vue";
 import NavMenuItem from "../Menus/NavMenuItem.vue";
-
-import { useElementHover } from "@vueuse/core";
-
-const myHoverableElement = ref();
-const isHovered = useElementHover(myHoverableElement);
 </script>

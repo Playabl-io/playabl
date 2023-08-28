@@ -1,6 +1,6 @@
 <template>
-  <section v-if="!gameStore.game.deleted_at" class="mt-12">
-    <div v-if="userIsNotMember" class="flex flex-col items-center my-12">
+  <section v-if="!gameStore.game.deleted_at">
+    <div v-if="userIsNotMember" class="flex flex-col items-center mb-12">
       <p class="text-sm text-slate-700 font-semibold mb-3">
         You must be a member of the community to RSVP
       </p>

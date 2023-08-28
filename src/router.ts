@@ -108,7 +108,7 @@ const routes = [
     },
     beforeEnter: [
       queryHandlerFactory({
-        [SORT_KEY_PATH]: sortKeys.createdAt,
+        [SORT_KEY_PATH]: "member-count",
         [SORT_DIR_PATH]: sortDirs.desc,
       }),
     ],
@@ -138,7 +138,11 @@ const routes = [
     children: [
       {
         path: "",
-        name: "Home",
+        redirect: { name: "Community Overview" },
+      },
+      {
+        path: "overview",
+        name: "Community Overview",
         component: CommunityHome,
       },
       {
@@ -168,7 +172,7 @@ const routes = [
         children: [
           {
             path: "overview",
-            name: "Community Overview",
+            name: "Community Management Overview",
             component: CommunityOverview,
           },
           {
@@ -246,7 +250,12 @@ const routes = [
     children: [
       {
         path: "",
+        redirect: { name: "Game Overview" },
+      },
+      {
+        path: "overview",
         component: GameHome,
+        name: "Game Overview",
       },
       {
         path: "info",
