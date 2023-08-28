@@ -1,5 +1,5 @@
 <template>
-  <div class="grid md:grid-cols-3 gap-6 h-full">
+  <div class="grid sm:grid-cols-3 gap-6 h-full">
     <div>
       <div class="flex flex-col gap-6 sticky top-24">
         <PrimaryButton
@@ -10,17 +10,32 @@
           New {{ title }}
         </PrimaryButton>
         <div class="rounded-md bg-white shadow-sm flex flex-col gap-6 p-4">
-          <slot name="page-controls"></slot>
+          <template v-if="!isSmAndLarger">
+            <Disclosure>
+              <DisclosureButton> Open for controls </DisclosureButton>
+              <DisclosurePanel>
+                <slot name="page-controls"></slot>
+              </DisclosurePanel>
+            </Disclosure>
+          </template>
+          <template v-else>
+            <slot name="page-controls"></slot>
+          </template>
         </div>
       </div>
     </div>
-    <div class="md:col-span-2 rounded-md w-full">
+    <div class="sm:col-span-2 rounded-md w-full">
       <slot name="content"></slot>
     </div>
   </div>
 </template>
 <script setup lang="ts">
+import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
+import { useBreakpoints, breakpointsTailwind } from "@vueuse/core";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
+
+const breakpoints = useBreakpoints(breakpointsTailwind);
+const isSmAndLarger = breakpoints.greater("sm");
 
 defineProps({
   allowCreateNew: {

@@ -10,54 +10,56 @@
       "
     >
       <template #page-controls>
-        <UrlSortDropdown />
-        <div class="flex flex-col">
-          <FormLabel>System</FormLabel>
-          <FilterDropdown
-            v-model="system"
-            :options="gameSystemList"
-            placeholder="Select or enter system"
-          />
-        </div>
-        <div class="grid grid-cols-2 gap-2">
+        <div class="grid gap-3">
+          <UrlSortDropdown />
           <div class="flex flex-col">
-            <FormLabel>Min Players</FormLabel>
-            <FormInput v-model="min" type="number" />
+            <FormLabel>System</FormLabel>
+            <FilterDropdown
+              v-model="system"
+              :options="gameSystemList"
+              placeholder="Select or enter system"
+            />
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="flex flex-col">
+              <FormLabel>Min Players</FormLabel>
+              <FormInput v-model="min" type="number" />
+            </div>
+            <div class="flex flex-col">
+              <FormLabel>Max Players</FormLabel>
+              <FormInput v-model="max" type="number" />
+            </div>
           </div>
           <div class="flex flex-col">
-            <FormLabel>Max Players</FormLabel>
-            <FormInput v-model="max" type="number" />
-          </div>
-        </div>
-        <div class="flex flex-col">
-          <FormLabel no-margin>Filter</FormLabel>
-          <div class="flex items-center gap-2 mt-2 mb-3">
-            <FormCheckbox id="open" v-model="filter" value="open" />
-            <FormLabel for="open" no-margin>Has Openings</FormLabel>
-          </div>
-          <div class="flex items-center gap-2 mb-3">
-            <FormCheckbox id="recorded" v-model="filter" value="recorded" />
-            <FormLabel for="recorded" no-margin>Is Recorded</FormLabel>
-          </div>
-          <div class="flex items-center gap-2 mb-3">
-            <FormCheckbox
-              id="safety-tools"
-              v-model="filter"
-              value="safety-tools"
-            />
-            <FormLabel for="safety-tools" no-margin
-              >Uses Safety Tools</FormLabel
-            >
-          </div>
-          <div class="flex items-center gap-2">
-            <FormCheckbox
-              id="joined-communities"
-              v-model="filter"
-              value="joined-communities"
-            />
-            <FormLabel for="joined-communities" no-margin
-              >Only Communities I've Joined</FormLabel
-            >
+            <FormLabel no-margin>Filter</FormLabel>
+            <div class="flex items-center gap-2 mt-2 mb-3">
+              <FormCheckbox id="open" v-model="filter" value="open" />
+              <FormLabel for="open" no-margin>Has Openings</FormLabel>
+            </div>
+            <div class="flex items-center gap-2 mb-3">
+              <FormCheckbox id="recorded" v-model="filter" value="recorded" />
+              <FormLabel for="recorded" no-margin>Is Recorded</FormLabel>
+            </div>
+            <div class="flex items-center gap-2 mb-3">
+              <FormCheckbox
+                id="safety-tools"
+                v-model="filter"
+                value="safety-tools"
+              />
+              <FormLabel for="safety-tools" no-margin
+                >Uses Safety Tools</FormLabel
+              >
+            </div>
+            <div class="flex items-center gap-2">
+              <FormCheckbox
+                id="joined-communities"
+                v-model="filter"
+                value="joined-communities"
+              />
+              <FormLabel for="joined-communities" no-margin
+                >Only Communities I've Joined</FormLabel
+              >
+            </div>
           </div>
         </div>
       </template>

@@ -259,14 +259,8 @@ const routes = [
       },
       {
         path: "info",
+        name: "Game Additional Info",
         component: () => import("@/pages/Game/GameDetails.vue"),
-        meta: {
-          requiresAuth: true,
-        },
-      },
-      {
-        path: "messages",
-        component: () => import("@/pages/Game/GameMessages.vue"),
         meta: {
           requiresAuth: true,
         },

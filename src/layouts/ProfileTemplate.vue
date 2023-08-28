@@ -6,10 +6,6 @@
           <UserCircleIcon class="h-6 w-6" />
           <div class="inline-block sm:hidden lg:inline-block">Profile</div>
         </SideNavLink>
-        <SideNavLink to="/messages">
-          <EnvelopeIcon class="h-6 w-6" />
-          <div class="inline-block sm:hidden lg:inline-block">Messages</div>
-        </SideNavLink>
         <SideNavLink to="/notifications">
           <BellIcon class="h-6 w-6" />
           <div class="inline-block sm:hidden lg:inline-block">

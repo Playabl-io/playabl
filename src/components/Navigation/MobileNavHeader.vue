@@ -21,40 +21,73 @@
       </MenuButton>
       <transition
         enter-active-class="transition duration-300 ease-out"
-        enter-from-class="transform translate-y-full opacity-0"
+        enter-from-class="transform -translate-x-full opacity-0"
         enter-to-class="transform opacity-100"
         leave-active-class="transition duration-100 ease-in"
         leave-from-class="transform opacity-100"
-        leave-to-class="transform translate-y-full opacity-0"
+        leave-to-class="transform-translate-x-full opacity-0"
       >
         <MenuItems
-          class="absolute bottom-0 w-full border-t border-slate-300 flex flex-col space-y-4 bg-gray-50 rounded-lg text-slate-900 p-4 z-20"
+          class="absolute left-0 inset-y-0 w-1/2 border-t border-slate-300 flex flex-col space-y-4 bg-gray-50 rounded-lg text-slate-900 p-4 z-20"
         >
+          <MenuButton class="absolute top-4 right-4 p-2">
+            <ArrowLeftOnRectangleIcon
+              class="text-slate-900 dark:text-slate-100 h-6 w-6"
+            />
+          </MenuButton>
           <menu-item>
-            <router-link to="/" class="font-paytone text-lg p-2">
+            <router-link to="/" class="font-paytone text-lg p-2 mt-12">
               Playabl
             </router-link>
           </menu-item>
-          <MenuItem>
-            <router-link
-              class="px-2 py-1"
-              :to="`${
-                store.user ? '/communities/joined' : '/communities/browse'
-              }`"
-              active-class="text-brand-500 border-l border-brand-500 dark:border-brand-300"
+          <Disclosure as="div" class="text-left px-2 py-1">
+            <DisclosureButton> Communities </DisclosureButton>
+            <DisclosurePanel
+              class="pt-3 pl-2 flex flex-col gap-3 font-semibold text-blue-700"
             >
-              Communities
-            </router-link>
-          </MenuItem>
-          <MenuItem>
-            <router-link
-              class="px-2 py-1"
-              :to="`${store.user ? '/games/joined' : '/games/browse'}`"
-              active-class="text-brand-500 border-l border-brand-500 dark:border-brand-300"
+              <RouterLink v-if="store.user" to="/communities/joined">
+                Joined
+              </RouterLink>
+              <RouterLink
+                to="/communities/browse?sort.key=member-count&sort.dir=desc"
+              >
+                Browse
+              </RouterLink>
+              <RouterLink v-if="store.user" to="/communities/manage">
+                Manage
+              </RouterLink>
+              <RouterLink to="/communities/new"> Create New </RouterLink>
+            </DisclosurePanel>
+          </Disclosure>
+
+          <Disclosure as="div" class="text-left px-2 py-1">
+            <DisclosureButton> Games </DisclosureButton>
+            <DisclosurePanel
+              class="pt-3 pl-2 flex flex-col gap-3 font-semibold text-blue-700"
             >
-              Games
-            </router-link>
-          </MenuItem>
+              <RouterLink v-if="store.user" to="/games/joined">
+                Joined
+              </RouterLink>
+              <RouterLink to="/games/browse?sort.key=start_time&sort.dir=asc">
+                Browse
+              </RouterLink>
+              <RouterLink v-if="store.user" to="/games/manage">
+                Manage
+              </RouterLink>
+              <RouterLink to="/games/new"> Create New </RouterLink>
+            </DisclosurePanel>
+          </Disclosure>
+
+          <Disclosure as="div" class="text-left px-2 py-1">
+            <DisclosureButton> Events </DisclosureButton>
+            <DisclosurePanel
+              class="pt-3 pl-2 flex flex-col gap-3 font-semibold text-blue-700"
+            >
+              <RouterLink to="/events/browse"> Browse </RouterLink>
+              <RouterLink to="/events/new"> Create New </RouterLink>
+            </DisclosurePanel>
+          </Disclosure>
+
           <hr />
           <menu-item>
             <router-link
@@ -102,12 +135,21 @@
 import { ref } from "vue";
 import { supabase } from "@/supabase";
 import { RouterLink, useRouter } from "vue-router";
-import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue";
+import {
+  Menu,
+  MenuButton,
+  MenuItems,
+  MenuItem,
+  Disclosure,
+  DisclosureButton,
+  DisclosurePanel,
+} from "@headlessui/vue";
 import OutlineButton from "../Buttons/OutlineButton.vue";
 import { Bars3Icon, ArrowTopRightOnSquareIcon } from "@heroicons/vue/20/solid";
 import { store } from "@/store";
 import { unreadNotifications } from "@/util/notifications";
 import { log } from "@/util/logger";
+import { ArrowLeftOnRectangleIcon } from "@heroicons/vue/24/outline";
 
 const isSigningOut = ref(false);
 const router = useRouter();

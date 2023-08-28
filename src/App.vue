@@ -9,7 +9,6 @@
       :open="showNewProfileModal"
       @close="showNewProfileModal = false"
     />
-    <MessageBox />
     <OfflineIndicator />
   </AppShell>
 </template>
@@ -18,7 +17,6 @@ import { store } from "./store";
 import { getUserAccess, getUserMemberships } from "./storeActions";
 import { supabase } from "./supabase";
 import ToasterManager from "./components/Toast/ToasterManager.vue";
-import MessageBox from "./components/MessageBox/MessageBox.vue";
 import { useRoute, useRouter } from "vue-router";
 import NewProfileModal from "./components/Modals/NewProfileModal.vue";
 import OfflineIndicator from "./components/OfflineIndicator.vue";

@@ -10,26 +10,28 @@
       "
     >
       <template #page-controls>
-        <UrlSortDropdown :key-options="keyOptions" />
-        <div class="flex flex-col">
-          <FormLabel>Game Types</FormLabel>
-          <FormMultiSelect v-model="tags" :options="GAME_TAG_OPTIONS" />
-        </div>
-        <div class="flex flex-col">
-          <FormLabel no-margin>Filter</FormLabel>
-          <div class="flex items-center gap-2 mt-2 mb-3">
-            <FormCheckbox
-              id="code-of-conduct"
-              v-model="filter"
-              value="code-of-conduct"
-            />
-            <FormLabel for="code-of-conduct" no-margin
-              >Has Code of Conduct</FormLabel
-            >
+        <div class="grid gap-3">
+          <UrlSortDropdown :key-options="keyOptions" />
+          <div class="flex flex-col">
+            <FormLabel>Game Types</FormLabel>
+            <FormMultiSelect v-model="tags" :options="GAME_TAG_OPTIONS" />
           </div>
-          <div class="flex items-center gap-2 mb-3">
-            <FormCheckbox id="open" v-model="filter" value="open" />
-            <FormLabel for="open" no-margin>Is Open Access</FormLabel>
+          <div class="flex flex-col">
+            <FormLabel no-margin>Filter</FormLabel>
+            <div class="flex items-center gap-2 mt-2 mb-3">
+              <FormCheckbox
+                id="code-of-conduct"
+                v-model="filter"
+                value="code-of-conduct"
+              />
+              <FormLabel for="code-of-conduct" no-margin
+                >Has Code of Conduct</FormLabel
+              >
+            </div>
+            <div class="flex items-center gap-2 mb-3">
+              <FormCheckbox id="open" v-model="filter" value="open" />
+              <FormLabel for="open" no-margin>Is Open Access</FormLabel>
+            </div>
           </div>
         </div>
       </template>

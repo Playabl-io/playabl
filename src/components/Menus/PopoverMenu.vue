@@ -1,5 +1,5 @@
 <template>
-  <section class="relative flex flex-col items-center">
+  <section class="relative flex flex-col">
     <Popover>
       <PopoverButton
         v-slot="{ open }"
@@ -16,9 +16,10 @@
         leave-to-class="transform scale-70 opacity-0"
       >
         <PopoverPanel
+          v-slot="{ close }"
           class="absolute z-20 whitespace-nowrap top-full mt-2 p-2 flex flex-col items-start space-y-2 bg-white border border-grey-50 rounded-lg shadow-md text-slate-900"
         >
-          <slot name="items"></slot>
+          <slot name="items" :close="close"></slot>
         </PopoverPanel>
       </transition>
     </Popover>

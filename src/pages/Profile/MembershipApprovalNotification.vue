@@ -1,7 +1,7 @@
 <template>
   <li class="p-4">
     <div class="flex flex-col">
-      <div class="flex justify-between">
+      <div class="flex flex-wrap justify-between">
         <span class="flex items-center gap-2">
           <CheckCircleIcon class="w-6 h-6 text-green-600" />
           <p class="font-semibold grow">

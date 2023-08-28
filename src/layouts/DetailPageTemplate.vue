@@ -33,27 +33,41 @@
       </nav>
       <NavMenu v-else class="bg-white border border-gray-300 rounded-md p-2">
         <template #title>
-          {{ route.name }}
+          <p class="font-semibold">
+            {{ route.name }}
+          </p>
         </template>
-        <template #items>
+        <template #items="{ close }">
           <template v-for="link in routes">
-            <div v-if="'children' in link" :key="link.label">
-              <p class="text-xs font-semibold">
-                {{ link.label }}
-              </p>
-              <div class="pl-4">
-                <NavMenuItem
+            <template v-if="'children' in link">
+              <div
+                :key="link.label"
+                class="my-3 py-2 border-t border-solid border-gray-300"
+              >
+                <p class="text-xs font-semibold text-slate-500 mb-1">
+                  {{ link.label }}
+                </p>
+                <PopoverButton
                   v-for="child in link.children"
                   :key="child.label"
+                  :as="NavMenuItem"
                   :to="child.path"
+                  class="pl-4"
+                  @click="close"
                 >
                   {{ child.label }}
-                </NavMenuItem>
+                </PopoverButton>
               </div>
-            </div>
-            <NavMenuItem v-else-if="link.path" :key="link.path" :to="link.path">
+            </template>
+            <PopoverButton
+              v-else-if="link.path"
+              :key="link.path"
+              :as="NavMenuItem"
+              :to="link.path"
+              @click="close"
+            >
               {{ link.label }}
-            </NavMenuItem>
+            </PopoverButton>
           </template>
         </template>
       </NavMenu>
@@ -71,6 +85,7 @@ import { z } from "zod";
 import NavMenu from "@/components/Menus/NavMenu.vue";
 import BaseTemplate from "./BaseTemplate.vue";
 import NavMenuItem from "@/components/Menus/NavMenuItem.vue";
+import { PopoverButton } from "@headlessui/vue";
 const breakpoints = useBreakpoints(breakpointsTailwind);
 const isSmAndLarger = breakpoints.greater("sm");
 

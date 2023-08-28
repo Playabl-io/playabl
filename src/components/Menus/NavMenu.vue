@@ -1,10 +1,10 @@
 <template>
   <PopoverMenu>
-    <template #title="{ open: internalOpen }">
-      <slot name="title" :open="internalOpen"></slot>
+    <template #title>
+      <slot name="title"></slot>
     </template>
-    <template #items>
-      <slot name="items"></slot>
+    <template #items="{ close }">
+      <slot name="items" :close="close"></slot>
     </template>
   </PopoverMenu>
 </template>
