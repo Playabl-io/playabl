@@ -10,14 +10,16 @@
             <template #title>
               {{ link.label }}
             </template>
-            <template #items>
-              <NavMenuItem
+            <template #items="{ close }">
+              <PopoverButton
                 v-for="child in link.children"
                 :key="child.label"
+                :as="NavMenuItem"
                 :to="child.path"
+                @click="close"
               >
                 {{ child.label }}
-              </NavMenuItem>
+              </PopoverButton>
             </template>
           </NavMenu>
           <RouterLink
