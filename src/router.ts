@@ -294,6 +294,9 @@ const routes = [
     path: "/events/new",
     name: "New Event",
     component: () => import("@/pages/Events/NewEvent.vue"),
+    meta: {
+      requiresAuth: true,
+    },
   },
   {
     path: "/events/:event_id",
