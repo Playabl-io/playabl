@@ -25,10 +25,10 @@
         enter-to-class="transform opacity-100"
         leave-active-class="transition duration-100 ease-in"
         leave-from-class="transform opacity-100"
-        leave-to-class="transform-translate-x-full opacity-0"
+        leave-to-class="transform -translate-x-full opacity-0"
       >
         <MenuItems
-          class="absolute left-0 inset-y-0 w-1/2 border-t border-slate-300 flex flex-col space-y-4 bg-gray-50 rounded-lg text-slate-900 p-4 z-20"
+          class="absolute left-0 inset-y-0 w-1/2 flex flex-col space-y-4 bg-gray-50 rounded-r-sm text-slate-900 p-4 z-20 shadow-lg"
         >
           <MenuButton class="absolute top-4 right-4 p-2">
             <ArrowLeftOnRectangleIcon
