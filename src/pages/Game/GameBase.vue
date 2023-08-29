@@ -1,5 +1,5 @@
 <template>
-  <BaseTemplate>
+  <DetailPageTemplate :routes="routes">
     <div v-if="isLoading" class="h-full grid place-items-center">
       <LoadingSpinner color="brand-500" />
     </div>
@@ -42,7 +42,7 @@
         </div>
       </div>
 
-      <div class="mt-8 flex flex-wrap gap-8">
+      <div class="mt-8 mb-6 flex flex-wrap gap-8">
         <GameBadge
           v-if="gameStore.game?.system"
           title="System"
@@ -86,31 +86,6 @@
           </template>
         </GameBadge>
       </div>
-
-      <section class="my-12 flex justify-between items-baseline text-sm">
-        <div class="flex space-x-4 py-2">
-          <router-link
-            :to="`/games/${id}`"
-            exact-active-class="border-b border-brand-500 dark:border-brand-300"
-          >
-            Sessions
-          </router-link>
-          <router-link
-            v-if="hasAccess"
-            :to="`/games/${id}/info`"
-            exact-active-class="border-b border-brand-500 dark:border-brand-300"
-          >
-            Additional Info
-          </router-link>
-          <router-link
-            v-if="canManage && !gameStore.game.deleted_at"
-            :to="`/games/${id}/manage`"
-            active-class="border-b border-brand-500 dark:border-brand-300"
-          >
-            Manage
-          </router-link>
-        </div>
-      </section>
       <router-view v-slot="{ Component, route }">
         <KeepAlive>
           <component
@@ -122,7 +97,7 @@
         </KeepAlive>
       </router-view>
     </div>
-  </BaseTemplate>
+  </DetailPageTemplate>
 </template>
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from "vue";
@@ -130,7 +105,7 @@ import { useRoute, useRouter } from "vue-router";
 import { RealtimeChannel } from "@supabase/realtime-js";
 import { supabase } from "@/supabase";
 import { log } from "@/util/logger";
-import BaseTemplate from "@/layouts/BaseTemplate.vue";
+import DetailPageTemplate from "@/layouts/DetailPageTemplate.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import Heading from "@/components/Heading.vue";
 import { store } from "@/store";
@@ -170,6 +145,28 @@ const userIsInTheGame = computed(() =>
 
 const hasAccess = computed(() => {
   return userIsInTheGame.value || canManage.value;
+});
+
+const routes = computed(() => {
+  const result = [
+    {
+      label: "Overview",
+      path: `/games/${id}/overview`,
+    },
+  ];
+  if (hasAccess.value) {
+    result.push({
+      label: "Additional Info",
+      path: `/games/${id}/info`,
+    });
+  }
+  if (canManage.value && !gameStore.game.deleted_at) {
+    result.push({
+      label: "Manage",
+      path: `/games/${id}/manage`,
+    });
+  }
+  return result;
 });
 
 onMounted(async () => {

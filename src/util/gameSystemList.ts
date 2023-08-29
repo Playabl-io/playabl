@@ -36,3 +36,27 @@ export default [
   "Wanderhome",
   "Warhammer",
 ];
+
+export const GAME_TAGS = [
+  "Call of Cthulhu",
+  "Crunchy",
+  "D&D",
+  "Fantasy",
+  "Fate",
+  "Indie",
+  "LARP",
+  "gmless",
+  "Narrative",
+  "OSR",
+  "PBTA",
+  "Rules light",
+  "Sci-fi",
+  "Star Trek",
+  "Star Wars",
+  "Story games",
+];
+
+export const GAME_TAG_OPTIONS = GAME_TAGS.map((val) => ({
+  label: val,
+  value: val,
+}));

@@ -102,10 +102,17 @@ const routes = [
   },
   {
     path: "/communities/browse",
+    name: "Communities Browse",
     component: CommunitiesAll,
     meta: {
       title: "Playabl - Communities",
     },
+    beforeEnter: [
+      queryHandlerFactory({
+        [SORT_KEY_PATH]: "member-count",
+        [SORT_DIR_PATH]: sortDirs.desc,
+      }),
+    ],
   },
   {
     path: "/communities/manage",
@@ -132,7 +139,11 @@ const routes = [
     children: [
       {
         path: "",
-        name: "Home",
+        redirect: { name: "Community Overview" },
+      },
+      {
+        path: "overview",
+        name: "Community Overview",
         component: CommunityHome,
       },
       {
@@ -162,7 +173,7 @@ const routes = [
         children: [
           {
             path: "overview",
-            name: "Community Overview",
+            name: "Community Management Overview",
             component: CommunityOverview,
           },
           {
@@ -208,6 +219,12 @@ const routes = [
     meta: {
       title: "Playabl - Games",
     },
+    beforeEnter: [
+      queryHandlerFactory({
+        [SORT_KEY_PATH]: sortKeys.startTime,
+        [SORT_DIR_PATH]: sortDirs.asc,
+      }),
+    ],
   },
   {
     path: "/games/manage",
@@ -234,18 +251,17 @@ const routes = [
     children: [
       {
         path: "",
+        redirect: { name: "Game Overview" },
+      },
+      {
+        path: "overview",
         component: GameHome,
+        name: "Game Overview",
       },
       {
         path: "info",
+        name: "Game Additional Info",
         component: () => import("@/pages/Game/GameDetails.vue"),
-        meta: {
-          requiresAuth: true,
-        },
-      },
-      {
-        path: "messages",
-        component: () => import("@/pages/Game/GameMessages.vue"),
         meta: {
           requiresAuth: true,
         },
@@ -278,6 +294,9 @@ const routes = [
     path: "/events/new",
     name: "New Event",
     component: () => import("@/pages/Events/NewEvent.vue"),
+    meta: {
+      requiresAuth: true,
+    },
   },
   {
     path: "/events/:event_id",

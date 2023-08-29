@@ -6,7 +6,11 @@
       >
         <span class="block truncate">{{
           modelValue.length > 0
-            ? modelValue.map((val) => val.label).join(", ")
+            ? modelValue
+                .map(
+                  (val) => options.find((option) => option.value === val)?.label
+                )
+                .join(", ")
             : label
         }}</span>
         <span
@@ -31,7 +35,7 @@
             v-for="option in options"
             v-slot="{ active, selected }"
             :key="option.value"
-            :value="option"
+            :value="option.value"
             as="template"
           >
             <li
@@ -75,7 +79,7 @@ type Option = {
 
 defineProps({
   modelValue: {
-    type: Array as PropType<Option[]>,
+    type: Array as PropType<Option["value"][]>,
     required: true,
   },
   options: {

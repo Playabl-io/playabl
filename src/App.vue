@@ -9,7 +9,6 @@
       :open="showNewProfileModal"
       @close="showNewProfileModal = false"
     />
-    <MessageBox />
     <OfflineIndicator />
   </AppShell>
 </template>
@@ -18,7 +17,6 @@ import { store } from "./store";
 import { getUserAccess, getUserMemberships } from "./storeActions";
 import { supabase } from "./supabase";
 import ToasterManager from "./components/Toast/ToasterManager.vue";
-import MessageBox from "./components/MessageBox/MessageBox.vue";
 import { useRoute, useRouter } from "vue-router";
 import NewProfileModal from "./components/Modals/NewProfileModal.vue";
 import OfflineIndicator from "./components/OfflineIndicator.vue";
@@ -28,7 +26,6 @@ import { log } from "./util/logger";
 import AppShell from "./layouts/AppShell.vue";
 import LoadingSpinner from "./components/LoadingSpinner.vue";
 import { Notification } from "./typings/Notification";
-import { loadUserManagedCommunities } from "./api/communityMemberships";
 
 const route = useRoute();
 const router = useRouter();
@@ -120,11 +117,6 @@ async function loadNotificationsAndSubscribe() {
   notificationSubscription.value = subscription;
 }
 
-async function setUserManagedCommunities(userId: string) {
-  const response = await loadUserManagedCommunities({ userId });
-  store.userManagedCommunities = response;
-}
-
 onMounted(async () => {
   const user = await supabase.auth.getUser();
   if (user.error) {
@@ -133,7 +125,6 @@ onMounted(async () => {
   }
   if (user.data?.user?.id) {
     await Promise.all([
-      setUserManagedCommunities(user.data.user.id),
       getUserAccess(user.data.user.id),
       getUserMemberships(user.data.user.id),
     ]);

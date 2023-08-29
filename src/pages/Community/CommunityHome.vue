@@ -56,7 +56,7 @@
             <dd class="font-semibold">{{ communityStore.gamesCount }}</dd>
           </span>
           <span>
-            <dt class="text-xs text-opacity-60">Community Since</dt>
+            <dt class="text-xs text-opacity-60">On Playabl Since</dt>
             <dd class="font-semibold">
               {{
                 format(

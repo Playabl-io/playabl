@@ -137,7 +137,7 @@
       <div v-if="accessGroup === 'limited'" class="flex flex-col">
         <FormLabel>Limit access based on these policies</FormLabel>
         <FormMultiSelect
-          v-model="eventAccessLevels"
+          v-model="form.event_access_levels"
           :disabled="isPublished"
           label="Select access policies"
           :options="accessOptions"
@@ -391,25 +391,6 @@ const errors = computed(() => {
     });
   }
   return issues;
-});
-
-const eventAccessLevels = computed({
-  get() {
-    return (
-      form.event_access_levels?.reduce((acc, id) => {
-        const option = accessOptions.value.find(
-          (option) => option.value === id
-        );
-        if (option) {
-          acc.push(option);
-        }
-        return acc;
-      }, [] as { label: string; value: number }[]) ?? []
-    );
-  },
-  set(newVal) {
-    form.event_access_levels = newVal.map((val) => val.value);
-  },
 });
 
 onMounted(async () => {

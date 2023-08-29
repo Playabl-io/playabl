@@ -1,19 +1,14 @@
 <template>
-  <MenuItem v-slot="{ active }">
-    <RouterLink
-      :class="{ [activeMenuItem]: active }"
-      class="flex gap-4 p-2 rounded-md w-full text-sm font-semibold"
-      active-class="bg-purple-100 text-brand-500"
-      :to="to"
-    >
-      <slot></slot>
-    </RouterLink>
-  </MenuItem>
+  <RouterLink
+    class="flex gap-4 p-2 rounded-md w-full text-sm font-semibold hover:bg-gray-100 hover:cursor-pointer"
+    active-class="bg-purple-100 text-brand-500"
+    :to="to"
+    @click="$emit('click')"
+  >
+    <slot></slot>
+  </RouterLink>
 </template>
 <script setup lang="ts">
-import { MenuItem } from "@headlessui/vue";
-const activeMenuItem = "bg-gray-100 cursor-pointer";
-
 defineProps({
   to: {
     type: String,

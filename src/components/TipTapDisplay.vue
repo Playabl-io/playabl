@@ -26,7 +26,7 @@ const editor = useEditor({
   ],
   editorProps: {
     attributes: {
-      class: "prose sm:prose-sm lg:prose-lg w-full",
+      class: "prose sm:prose-sm lg:prose-lg w-full md:!max-w-4xl lg:!max-w-6xl",
     },
   },
 });

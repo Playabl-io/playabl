@@ -1,26 +1,43 @@
 <template>
-  <div class="grid md:grid-cols-3 gap-6 h-full">
-    <div>
-      <div class="flex flex-col gap-6 sticky top-24">
-        <PrimaryButton
-          v-if="allowCreateNew"
-          class="shadow-md"
-          @click="emit('createNew')"
-        >
-          New {{ title }}
-        </PrimaryButton>
-        <div class="rounded-md bg-white shadow-md flex flex-col gap-6 p-4">
+  <div class="grid sm:grid-cols-3 gap-6 h-full items-start">
+    <div class="flex flex-col gap-6 sm:sticky sm:top-20">
+      <PrimaryButton
+        v-if="allowCreateNew"
+        class="shadow-sm"
+        @click="emit('createNew')"
+      >
+        New {{ title }}
+      </PrimaryButton>
+      <div class="rounded-md bg-white shadow-sm flex flex-col gap-4 p-4">
+        <template v-if="!isSmAndLarger">
+          <Disclosure>
+            <DisclosureButton class="text-sm font-semibold">
+              Tap for controls
+            </DisclosureButton>
+            <DisclosurePanel>
+              <slot name="page-controls"></slot>
+            </DisclosurePanel>
+          </Disclosure>
+        </template>
+        <template v-else>
           <slot name="page-controls"></slot>
-        </div>
+        </template>
       </div>
     </div>
-    <div class="md:col-span-2 rounded-md w-full">
+
+    <div class="sm:col-span-2 rounded-md w-full">
       <slot name="content"></slot>
     </div>
   </div>
 </template>
 <script setup lang="ts">
+import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
+import { useBreakpoints, breakpointsTailwind } from "@vueuse/core";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
+import OutlineButton from "@/components/Buttons/OutlineButton.vue";
+
+const breakpoints = useBreakpoints(breakpointsTailwind);
+const isSmAndLarger = breakpoints.greater("sm");
 
 defineProps({
   allowCreateNew: {
@@ -33,7 +50,7 @@ defineProps({
   },
 });
 
-const emit = defineEmits(["createNew"]);
+const emit = defineEmits(["createNew", "clear"]);
 </script>
 <style scoped>
 .controls {

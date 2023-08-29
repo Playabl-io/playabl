@@ -32,3 +32,9 @@ export interface Community {
   signup_method: SignupMethods;
   banned_emails?: string[];
 }
+
+export interface CommunityBrowse extends Community {
+  community_memberships: {
+    count: number;
+  }[];
+}

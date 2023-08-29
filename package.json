@@ -30,6 +30,7 @@
     "@vueuse/core": "^10.2.1",
     "@vueuse/head": "~1.1.26",
     "@vueuse/integrations": "^10.2.1",
+    "@vueuse/router": "^10.3.0",
     "@xstate/vue": "^2.0.0",
     "axios": "^1.4.0",
     "date-fns": "^2.30.0",

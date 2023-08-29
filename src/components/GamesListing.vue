@@ -1,5 +1,5 @@
 <template>
-  <section class="grid gap-8 mt-12">
+  <section class="grid gap-8">
     <span v-if="isLoading" class="place-self-center">
       <LoadingSpinner color="brand-500" />
     </span>
@@ -8,7 +8,7 @@
       <hr class="last:hidden border-slate-200" />
     </template>
     <template v-else>
-      <p>Sorry, no results</p>
+      <NoResultsExplorer />
     </template>
   </section>
 </template>
@@ -17,6 +17,7 @@ import { PropType } from "vue";
 import { GameListing } from "@/typings/Game";
 import LoadingSpinner from "./LoadingSpinner.vue";
 import GameListingVue from "./GameListing.vue";
+import NoResultsExplorer from "./Search/NoResultsExplorer.vue";
 
 defineProps({
   isLoading: {
