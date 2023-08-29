@@ -30,22 +30,7 @@
     <template #content>
       <LoadingSpinner v-if="loading" color="brand-500" />
       <div v-else class="grid gap-6">
-        <div
-          v-if="activeEvents.length === 0"
-          class="grid place-items-center relative"
-        >
-          <p class="md:font-lg font-semibold text-center pt-12">
-            Keep searching, explorer. The results you're looking for aren't
-            here.
-          </p>
-          <img
-            src="/searching.png"
-            alt=""
-            width="100%"
-            height="100%"
-            class="w-full object-contain relative -top-4"
-          />
-        </div>
+        <NoResultsExplorer v-if="activeEvents.length === 0" />
         <RouterLink
           v-for="event in activeEvents"
           :key="event.id"
@@ -74,7 +59,7 @@
               </p>
             </div>
             <div
-              class="line-clamp-6 prose mt-6 force-clamp"
+              class="line-clamp-6 prose mt-6 md:!max-w-4xl force-clamp"
               v-html="event.description"
             />
           </Well>
@@ -104,6 +89,7 @@ import { store } from "@/store";
 import FormCheckbox from "@/components/Forms/FormCheckbox.vue";
 import FormLabel from "@/components/Forms/FormLabel.vue";
 import { SORT_DIR, SORT_KEY } from "@/util/urlParams";
+import NoResultsExplorer from "@/components/Search/NoResultsExplorer.vue";
 
 const route = useRoute();
 const router = useRouter();

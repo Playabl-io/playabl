@@ -102,6 +102,7 @@ const routes = [
   },
   {
     path: "/communities/browse",
+    name: "Communities Browse",
     component: CommunitiesAll,
     meta: {
       title: "Playabl - Communities",

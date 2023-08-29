@@ -61,7 +61,6 @@ import { log } from "@/util/logger";
 import {
   SORT_DIR,
   SORT_DIR_PATH,
-  SORT_KEY,
   SORT_KEY_PATH,
   sortKeys,
   sortDirs,

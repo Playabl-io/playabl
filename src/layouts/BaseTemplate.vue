@@ -14,7 +14,10 @@
       You are not authorized to view that page
     </InfoBanner>
   </transition>
-  <main class="py-8 px-4 md:container md:mx-auto max-w-6xl grow">
+  <main
+    class="px-4 md:container md:mx-auto max-w-6xl grow"
+    :class="[isSmAndLarger ? 'py-20' : 'py-8']"
+  >
     <slot></slot>
   </main>
 </template>

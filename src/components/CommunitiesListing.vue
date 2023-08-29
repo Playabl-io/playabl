@@ -3,6 +3,7 @@
     <span v-if="isLoading" class="place-self-center">
       <LoadingSpinner color="brand-500" />
     </span>
+    <NoResultsExplorer v-else-if="communities.length === 0" />
     <template v-for="community in communities" v-else :key="community.id">
       <CommunityListing :community="community" />
       <hr class="last:hidden border-slate-200" />
@@ -14,6 +15,7 @@ import { PropType } from "vue";
 import { CommunityBrowse } from "@/typings/Community";
 import LoadingSpinner from "./LoadingSpinner.vue";
 import CommunityListing from "./CommunityListing.vue";
+import NoResultsExplorer from "@/components/Search/NoResultsExplorer.vue";
 
 defineProps({
   isLoading: {

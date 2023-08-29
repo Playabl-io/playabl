@@ -8,7 +8,9 @@
         <template v-for="link in parsedRoutes">
           <NavMenu v-if="'children' in link" :key="link.label">
             <template #title>
-              {{ link.label }}
+              <p class="text-sm font-semibold">
+                {{ link.label }}
+              </p>
             </template>
             <template #items="{ close }">
               <PopoverButton

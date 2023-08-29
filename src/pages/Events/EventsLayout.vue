@@ -45,7 +45,12 @@ const isAdmin = computed(() => {
 });
 const routes = computed(() => {
   if (!eventStore.event) {
-    return [];
+    return [
+      {
+        label: "Overview",
+        path: "overview",
+      },
+    ];
   }
   const result = [
     {
