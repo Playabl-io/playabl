@@ -28,7 +28,7 @@ export async function loadUserCommunityMembership({
 export async function loadUserCommunities({ userId }: { userId: string }) {
   const { data, error } = await supabase
     .from("community_memberships")
-    .select("*, community_id (*)")
+    .select("*, community_id!inner(*)")
     .eq("user_id", userId)
     .is("community_id.deleted_at", null);
   if (error) {
