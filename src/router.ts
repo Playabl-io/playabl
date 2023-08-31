@@ -148,12 +148,17 @@ const routes = [
       },
       {
         path: "calendar",
-        name: "Calendar",
+        name: "Community Calendar",
         component: () => import("@/pages/Community/CommunityCalendar.vue"),
+        beforeEnter: [
+          queryHandlerFactory({
+            date: format(new Date(), "yyyy-MM"),
+          }),
+        ],
       },
       {
         path: "events",
-        name: "Events",
+        name: "Community Events",
         component: () => import("@/pages/Community/CommunityEvents.vue"),
         beforeEnter: [
           queryHandlerFactory({
@@ -164,7 +169,7 @@ const routes = [
       },
       {
         path: "membership",
-        name: "Membership",
+        name: "Community Membership",
         component: () => import("@/pages/Community/CommunityMembership.vue"),
       },
       {

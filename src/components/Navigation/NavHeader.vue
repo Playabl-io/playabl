@@ -79,7 +79,6 @@ const { isScrolling, directions, arrivedState, y } = useScroll(window);
 
 watch([isScrolling, directions], () => {
   if (isScrolling.value && directions.bottom && !scrollPoint.value) {
-    console.log(y.value);
     scrollPoint.value = y.value;
   }
   if (isScrolling.value && directions.top) {
