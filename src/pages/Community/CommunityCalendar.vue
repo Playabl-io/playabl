@@ -93,7 +93,7 @@
             :sessions="filteredSessions"
             :sessions-by-game="(sessionsByGame as Record<string, GameSession[]>)"
             :reference-date="referenceDate"
-            @update-reference-date="referenceDate = $event"
+            @update-reference-date="onDateChange"
             @refresh="refreshSessions"
           />
         </TabPanel>
@@ -103,7 +103,7 @@
             :sessions-by-game="(sessionsByGame as Record<string, GameSession[]>)"
             :reference-date="referenceDate"
             :selected-date="selectedDate"
-            @update-reference-date="referenceDate = $event"
+            @update-reference-date="onDateChange"
             @update-selected-date="selectedDate = $event"
             @refresh="refreshSessions"
           />
@@ -114,7 +114,7 @@
 </template>
 <script setup lang="ts">
 import { onMounted, ref, watch, computed } from "vue";
-import { startOfMonth, endOfMonth, addMonths } from "date-fns";
+import { startOfMonth, endOfMonth, addMonths, format } from "date-fns";
 import {
   TabGroup,
   TabList,
@@ -139,6 +139,10 @@ import CalendarView from "./CalendarView.vue";
 import ListView from "./ListView.vue";
 import { store } from "@/store";
 import * as R from "ramda";
+import { useRoute, useRouter } from "vue-router";
+
+const route = useRoute();
+const router = useRouter();
 
 const options = [
   {
@@ -154,9 +158,18 @@ const options = [
 const loading = ref(false);
 
 const sessions = ref<GameSession[]>([]);
-const referenceDate = ref<Date>(startOfMonth(new Date()));
+const referenceDate = computed(() => {
+  if (route.query.date && typeof route.query.date === "string") {
+    return new Date(route.query.date);
+  }
+  return new Date();
+});
 const selectedDate = ref<Date>();
 const sortOption = ref(options[0]);
+
+function onDateChange(date: Date) {
+  router.push({ query: { date: format(date, "yyyy-MM") } });
+}
 
 const sessionsByGame = computed(() => {
   const groupByGame = R.groupBy((session: GameSession) =>
