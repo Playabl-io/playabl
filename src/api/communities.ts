@@ -7,18 +7,12 @@ import axios from "axios";
 
 export async function loadCreatorAndAdminCommunities() {
   if (!store.user) return;
-  const { data, error } = await supabase
-    .from("community_memberships")
-    .select("role_id, user_id, community_id (*)")
-    .lt("role_id", 3)
-    .eq("user_id", store.user.id)
-    .is("community_id.deleted_at", null);
-  if (error) {
-    log({ error });
-  }
-  if (data) {
-    return data.map((membership) => membership.community_id);
-  }
+
+  return Object.values(store.userCommunityMembership)
+    .filter((membership) => {
+      return membership.communityMembership.role_id < 3;
+    })
+    .map((entry) => entry.community);
 }
 
 export async function joinCommunity({
