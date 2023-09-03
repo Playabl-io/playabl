@@ -114,7 +114,7 @@
 </template>
 <script setup lang="ts">
 import { onMounted, ref, watch, computed } from "vue";
-import { startOfMonth, endOfMonth, addMonths, format } from "date-fns";
+import { startOfMonth, endOfMonth, addMonths, format, parse } from "date-fns";
 import {
   TabGroup,
   TabList,
@@ -160,14 +160,19 @@ const loading = ref(false);
 const sessions = ref<GameSession[]>([]);
 const referenceDate = computed(() => {
   if (route.query.date && typeof route.query.date === "string") {
-    return new Date(route.query.date);
+    const date = parse(route.query.date, "yyyy-MM", new Date());
+    console.log("Parsed date", date);
+    return date;
   }
-  return new Date();
+  const date = new Date();
+  console.log("Parsed date", date);
+  return date;
 });
 const selectedDate = ref<Date>();
 const sortOption = ref(options[0]);
 
 function onDateChange(date: Date) {
+  console.log("Navigate to", format(date, "yyyy-MM"));
   router.push({ query: { date: format(date, "yyyy-MM") } });
 }
 

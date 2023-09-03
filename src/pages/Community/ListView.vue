@@ -4,7 +4,7 @@
       <GhostButton @click="priorMonth">
         <ChevronLeftIcon class="h-6 w-6" />
       </GhostButton>
-      <Heading as="h3" level="h4">
+      <Heading as="h3" level="h4" class="w-64 text-center">
         {{ format(referenceDate, "MMMM, yyyy") }}
       </Heading>
       <GhostButton @click="nextMonth">
