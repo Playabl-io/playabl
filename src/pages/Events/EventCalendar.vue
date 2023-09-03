@@ -114,7 +114,7 @@
 </template>
 <script setup lang="ts">
 import { onMounted, ref, watch, computed } from "vue";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 import {
   TabGroup,
   TabList,
@@ -146,9 +146,11 @@ const router = useRouter();
 
 const referenceDate = computed(() => {
   if (route.query.date && typeof route.query.date === "string") {
-    return new Date(route.query.date);
+    const date = parse(route.query.date, "yyyy-MM", new Date());
+    return date;
   }
-  return new Date();
+  const date = new Date();
+  return date;
 });
 
 function onDateChange(date: Date) {
