@@ -103,9 +103,12 @@ async function updateProfile() {
       isDefinedAndNoMatch(email.value, store.userSession?.user.email) ||
       isDefinedAndNoMatch(email.value, store.userSession?.user.new_email);
     if (emailsDontMatch) {
-      showConfirmEmailBanner.value = true;
-      const { error } = await supabase.auth.updateUser({ email: email.value });
+      const { error } = await supabase.auth.updateUser({
+        email: email.value,
+      });
+      console.error(error);
       if (error) throw error;
+      showConfirmEmailBanner.value = true;
     }
     const updates = {
       username: username.value,
