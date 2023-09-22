@@ -18,6 +18,7 @@
 </template>
 <script setup lang="ts">
 import { onMounted, ref, onUnmounted, computed } from "vue";
+import { format } from "date-fns";
 import { loadEventAndCommunityByEventId } from "@/api/communityEvents";
 import DetailPageTemplate from "@/layouts/DetailPageTemplate.vue";
 import { CommunityEvent } from "@/typings/CommunityEvent";
@@ -52,6 +53,7 @@ const routes = computed(() => {
       },
     ];
   }
+
   const result = [
     {
       label: "Overview",
@@ -61,9 +63,13 @@ const routes = computed(() => {
   if (isCancelled.value) {
     return result;
   }
+  const eventBrowseDate = format(
+    new Date(eventStore.event.start_time),
+    "yyyy-MM"
+  );
   result.push({
     label: "Calendar",
-    path: "calendar",
+    path: `calendar?date=${eventBrowseDate}`,
   });
   if (isAdmin.value) {
     result.push({
