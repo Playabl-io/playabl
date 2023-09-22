@@ -148,7 +148,15 @@ const soonestRsvp = computed(() => {
   } else {
     accessTimes = props.session.access_times;
   }
-  return getSoonestRsvpTime(store.userCommunityAccess, accessTimes);
+  const membership =
+    store.userCommunityMembership?.[gameStore.game.community_id];
+
+  const allowDefault = membership && membership.communityMembership.role_id > 0;
+  return getSoonestRsvpTime(
+    store.userCommunityAccess,
+    accessTimes,
+    allowDefault
+  );
 });
 
 const accessNeeded = computed(() => {
