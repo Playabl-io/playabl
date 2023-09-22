@@ -77,7 +77,7 @@
     </div>
 
     <swiper-container
-      :modules="[Navigation]"
+      :modules="[Pagination]"
       :slides-per-view="1"
       :breakpoints="{
         640: {
@@ -86,11 +86,12 @@
         },
         1280: {
           slidesPerView: 3,
-          spaceBetween: 50,
+          spaceBetween: 20,
         },
       }"
-      :navigation="{
-        hiddenClass: 'hidden',
+      :pagination="{
+        type: 'bullets',
+        clickable: true,
       }"
     >
       <swiper-slide v-for="game in eventStore.eventGames" :key="game.id">
@@ -121,7 +122,7 @@ import { format } from "date-fns";
 import { UserCircleIcon } from "@heroicons/vue/24/outline";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue";
 import { ROLES } from "@/util/roles";
-import { Navigation } from "swiper/modules";
+import { Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 
