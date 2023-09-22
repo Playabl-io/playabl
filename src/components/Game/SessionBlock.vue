@@ -27,7 +27,7 @@
         Join
       </PrimaryButton>
       <div v-else-if="soonestRsvp" class="text-sm text-slate-700 text-center">
-        RSVP available {{ formatRelative(soonestRsvp, now) }}
+        RSVP available {{ format(soonestRsvp, "EEE, MMM do h:mm aa") }}
       </div>
       <div v-else-if="!notAMember" class="text-slate-700 text-sm">
         <p>
@@ -82,7 +82,7 @@
 </template>
 <script setup lang="ts">
 import { computed, PropType, ref } from "vue";
-import { format, formatRelative } from "date-fns";
+import { format } from "date-fns";
 import * as R from "ramda";
 import { Session } from "@/typings/Session";
 import {
@@ -100,9 +100,6 @@ import AddToGoogleCal from "./AddToGoogleCal.vue";
 import DownloadCal from "./DownloadCal.vue";
 import SecondaryButton from "../Buttons/SecondaryButton.vue";
 import { Profile } from "@/typings/Profile";
-import { useNow } from "@vueuse/core";
-
-const now = useNow();
 
 const { showSuccess, showError } = useToast();
 
