@@ -4,8 +4,8 @@
   >
     <slot name="icon"></slot>
     <div class="flex flex-col items-end">
-      <p class="font-semibold text-right">{{ value }}</p>
-      <p class="text-xs text-slate-600 line-clamp-3">{{ title }}</p>
+      <p class="font-semibold text-right line-clamp-3">{{ value }}</p>
+      <p class="text-xs text-slate-600">{{ title }}</p>
     </div>
   </div>
 </template>
