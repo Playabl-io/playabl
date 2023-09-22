@@ -141,8 +141,3 @@ onMounted(async () => {
   loadingUser.value = false;
 });
 </script>
-<style>
-:root {
-  --swiper-navigation-color: #4622b8;
-}
-</style>
