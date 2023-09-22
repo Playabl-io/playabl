@@ -139,8 +139,12 @@ export function userCanRsvp({
 
 export function getSoonestRsvpTime(
   userAccess: CommunityAccess[],
-  rsvpTimes: RsvpTimes
+  rsvpTimes: RsvpTimes,
+  allowDefault = false
 ) {
+  if (allowDefault && rsvpTimes.default) {
+    return rsvpTimes.default.rsvpAvailableTime;
+  }
   const possibleTimes = userAccess
     .map((access) => rsvpTimes[access.access_level_id]?.rsvpAvailableTime)
     .filter(Boolean);

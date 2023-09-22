@@ -1,10 +1,10 @@
 <template>
   <div
-    class="absolute flex flex-col space-y-4 top-6 right-2 sm:top-6 sm:right-12"
+    class="fixed flex flex-col space-y-4 top-6 right-2 sm:top-6 sm:right-12 z-50"
   >
     <transition-group
       enter-active-class="transform-gpu duration-300 ease-out"
-      leave-active-class="absolute transform-gpu duration-200"
+      leave-active-class="fixed transform-gpu duration-200"
       enter-from-class="opacity-0 scale-70"
       leave-to-class="opacity-0 scale-70"
       enter-to-class="opacity-1 scale-100"
