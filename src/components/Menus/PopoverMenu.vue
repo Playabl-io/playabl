@@ -3,7 +3,7 @@
     <Popover>
       <PopoverButton
         v-slot="{ open }"
-        class="p-2 rounded-md hover:bg-gray-200 relative"
+        class="p-2 rounded-md hover:bg-white hover:shadow-md relative"
       >
         <slot name="title" :open="open"></slot>
       </PopoverButton>
