@@ -9,9 +9,10 @@
   >
     <header
       v-if="!navHidden"
-      class="w-screen fixed top-0 py-2 px-12 grid grid-cols-6 bg-inherit items-center box-border z-10"
+      class="w-screen fixed top-0 py-2 px-12 grid grid-cols-6 items-center box-border z-10"
       :class="{
-        'shadow-md border-b border-solid border-gray-50': !arrivedState.top,
+        'shadow-md border-b border-solid border-gray-50 backdrop-blur-md bg-neutral-50 bg-opacity-75':
+          !arrivedState.top,
       }"
       v-bind="$attrs"
     >
