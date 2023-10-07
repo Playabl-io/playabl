@@ -17,7 +17,7 @@
     "@headlessui/vue": "^1.7.14",
     "@heroicons/vue": "^2.0.18",
     "@iconify/vue": "^3.2.1",
-    "@netlify/functions": "^1.6.0",
+    "@netlify/functions": "^2.2.0",
     "@stripe/stripe-js": "^1.54.1",
     "@supabase/supabase-js": "^2.2.2",
     "@tanstack/vue-table": "^8.9.3",
