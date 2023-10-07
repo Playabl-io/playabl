@@ -12,7 +12,7 @@ export interface ToastMessage {
 
 const messages = ref<ToastMessage[]>([]);
 
-const timers: Record<string, NodeJS.Timer> = {};
+const timers: Record<string, NodeJS.Timeout> = {};
 
 export default function useToast() {
   const showSuccess = ({

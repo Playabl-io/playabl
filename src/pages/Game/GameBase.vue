@@ -213,7 +213,8 @@ async function getGameData() {
     setSubscription(data.id);
     setSessionDataInStore(data.sessions);
     loadAndSetAttendeesInStore(
-      R.compose(R.uniq, R.flatten, R.pluck("rsvps"))(data.sessions)
+      // @ts-expect-error crazy ramda stuff that is too complicated
+      R.compose(R.uniq, R.flatten, R.pluck("rsvps"))(data.sessions) as string[]
     );
     gameData.value = data;
 
