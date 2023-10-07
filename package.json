@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "vite",
+    "netlify": "netlify dev",
     "type-check": "vue-tsc --noEmit --skipLibCheck",
     "devtools": "vue-devtools",
     "build": "vue-tsc --noEmit --skipLibCheck && vite build",
@@ -73,7 +74,7 @@
     "eslint-plugin-node": "~11.1",
     "eslint-plugin-promise": "~6.1.1",
     "eslint-plugin-vue": "~9.15.1",
-    "netlify-cli": "^15.8.0",
+    "netlify-cli": "^16.5.0",
     "postcss": "~8.4.24",
     "postcss-nesting": "~11.3.0",
     "prettier": "2.8.8",
