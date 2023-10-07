@@ -7,7 +7,7 @@
     "devtools": "vue-devtools",
     "build": "vue-tsc --noEmit --skipLibCheck && vite build",
     "preview": "vite build && vite preview",
-    "start": "yarn dev & wait-on tcp:3000 -v",
+    "start": "npm run dev & wait-on tcp:3000 -v",
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "lint": "eslint --ext .js,.vue,.ts src"

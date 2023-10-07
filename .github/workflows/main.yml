@@ -1,9 +1,5 @@
 name: CI
 
-env:
-  VITE_SUPABASE_URL: https://ngswpesjxakdiljptvrv.supabase.co
-  VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYzODU5MjI0NywiZXhwIjoxOTU0MTY4MjQ3fQ.v8U0k0-NKE8prdsA-tkdrC9SS40eZ1j7yKZjldpArqE
-
 on:
   push:
     branches: [main]
@@ -17,45 +13,16 @@ jobs:
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-
-      ## Yarn dir
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-
-      ## Cache
-      - name: Cache yarn cache
-        uses: actions/cache@v2
-        id: cache-yarn-cache2
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn2-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn2-
+      # - uses: actions/checkout@v2
 
       ## Dependencies
       - name: Install Dependencies
-        if: |
-          steps.cache-yarn-cache.outputs.cache-hit != 'true'
-        run: yarn --frozen-lockfile
+        run: npm ci
 
       ## Build
       - name: Build
-        run: yarn build
+        run: npm run build
 
       ## Test
       - name: Run tests
-        run: yarn test
-      # - name: Run component tests
-      #   run: yarn test:ci-components
-
-      # - name: Start Vite devserver
-      #   run: yarn start
-
-      # - name: Upload artifacts on fail
-      #   uses: actions/upload-artifact@v2
-      #   if: failure()
-      #   with:
-      #     name: videos
-      #     path: tests/e2e/videos/
+        run: npm run test
