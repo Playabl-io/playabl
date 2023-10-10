@@ -24,5 +24,7 @@ const options = {
 };
 
 // The agent loader code executes immediately on instantiation.
-// eslint-disable-next-line
-new BrowserAgent(options);
+if (import.meta.env.PROD) {
+  // eslint-disable-next-line
+  new BrowserAgent(options);
+}
