@@ -1,7 +1,7 @@
 <template>
   <BaseTemplate>
     <Heading as="h1" level="h1">Privacy Policy</Heading>
-    <p class="text-xs text-slate-700 mt-2">Last updated: October 23rd, 2022</p>
+    <p class="text-xs text-slate-700 mt-2">Last updated: October 10th, 2023</p>
     <p class="prose mt-12">
       The information we collect about you is not sold or transferred to any
       third party except to provide services to you as part of your use of the
@@ -34,6 +34,15 @@
           >AWS</a
         >
         for application services and processing
+      </li>
+      <li>
+        <a
+          href="https://newrelic.com/"
+          target="_blank"
+          rel="noreferrer noopener"
+          >New Relic</a
+        >
+        for application and session error monitoring and reporting
       </li>
     </ul>
     <p class="prose mt-6">

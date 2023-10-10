@@ -1,12 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import IndexPage from "@/pages/IndexPage.vue";
-import InvitePage from "@/pages/InvitePage.vue";
-import SignIn from "@/pages/SignIn.vue";
-import ProfilePage from "@/pages/Profile/ProfilePage.vue";
-import NotificationsPage from "@/pages/Profile/NotificationsPage.vue";
-import MediaPage from "@/pages/Profile/MediaPage.vue";
-import SettingsPage from "@/pages/Profile/SettingsPage.vue";
 import CommunitiesAll from "@/pages/CommunitiesAll.vue";
 import CommunitiesJoined from "@/pages/CommunitiesJoined.vue";
 import CommunityHome from "@/pages/Community/CommunityHome.vue";
@@ -48,21 +42,21 @@ const routes = [
   },
   {
     path: "/invite/:invite_id",
-    component: InvitePage,
+    component: () => import("@/pages/InvitePage.vue"),
     meta: {
       title: "Playabl",
     },
   },
   {
     path: "/login",
-    component: SignIn,
+    component: () => import("@/pages/SignIn.vue"),
     meta: {
       title: "Playabl - Sign In",
     },
   },
   {
     path: "/profile",
-    component: ProfilePage,
+    component: () => import("@/pages/Profile/ProfilePage.vue"),
     meta: {
       title: "Playabl - Profile",
       requiresAuth: true,
@@ -70,7 +64,7 @@ const routes = [
   },
   {
     path: "/notifications",
-    component: NotificationsPage,
+    component: () => import("@/pages/Profile/NotificationsPage.vue"),
     meta: {
       title: "Playabl - Notifications",
       requiresAuth: true,
@@ -78,7 +72,7 @@ const routes = [
   },
   {
     path: "/media",
-    component: MediaPage,
+    component: () => import("@/pages/Profile/MediaPage.vue"),
     meta: {
       title: "Playabl - Media",
       requiresAuth: true,
@@ -86,7 +80,7 @@ const routes = [
   },
   {
     path: "/settings",
-    component: SettingsPage,
+    component: () => import("@/pages/Profile/SettingsPage.vue"),
     meta: {
       title: "Playabl - Settings",
       requiresAuth: true,
