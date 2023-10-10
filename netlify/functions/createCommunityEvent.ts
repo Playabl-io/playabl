@@ -1,11 +1,10 @@
 import { Handler } from "@netlify/functions";
-import { createClient } from "@supabase/supabase-js";
-import { authenticateUser, userIsCommunityAdmin } from "../utils";
-
-export const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE
-);
+import {
+  authenticateUser,
+  userIsCommunityAdmin,
+  supabase,
+  logError,
+} from "../utils";
 
 export const handler: Handler = async (event) => {
   const user = await authenticateUser(event);
@@ -15,9 +14,9 @@ export const handler: Handler = async (event) => {
       body: "not authorized",
     };
   }
-  const communityEvent = JSON.parse(event.body);
-  const isAdmin = userIsCommunityAdmin({
-    userId: user.data.user.id,
+  const communityEvent = JSON.parse(event.body ?? "");
+  const isAdmin = await userIsCommunityAdmin({
+    userId: user.data?.user?.id ?? "",
     communityId: communityEvent.community_id,
   });
   if (isAdmin) {
@@ -28,6 +27,7 @@ export const handler: Handler = async (event) => {
       .single();
 
     if (error) {
+      await logError({ message: JSON.stringify(error) });
       return {
         statusCode: 400,
         body: error.message,
@@ -37,6 +37,11 @@ export const handler: Handler = async (event) => {
     return {
       statusCode: 201,
       body: JSON.stringify(data),
+    };
+  } else {
+    return {
+      statusCode: 403,
+      body: "not authorized",
     };
   }
 };

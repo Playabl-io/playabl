@@ -40,6 +40,7 @@
     "form-data": "^4.0.0",
     "ics": "^3.2.0",
     "lodash.isequal": "^4.5.0",
+    "newrelic": "^11.1.0",
     "ramda": "^0.29.0",
     "swiper": "^10.1.0",
     "swrv": "^1.0.3",

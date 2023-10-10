@@ -1,13 +1,7 @@
 import { Handler } from "@netlify/functions";
-import { createClient } from "@supabase/supabase-js";
 import * as R from "ramda";
-import { authenticateUser, userIsCommunityAdmin } from "../utils";
+import { authenticateUser, userIsCommunityAdmin, supabase } from "../utils";
 import { rsvpTimes } from "../../src/util/time";
-
-export const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE
-);
 
 export const handler: Handler = async (event) => {
   const user = await authenticateUser(event);
@@ -18,7 +12,7 @@ export const handler: Handler = async (event) => {
     };
   }
   const updatedCommunityEvent = JSON.parse(event.body);
-  const isAdmin = userIsCommunityAdmin({
+  const isAdmin = await userIsCommunityAdmin({
     userId: user.data.user.id,
     communityId: updatedCommunityEvent.community_id,
   });
@@ -54,7 +48,7 @@ export const handler: Handler = async (event) => {
     const accessLevelsHaveChanged =
       R.difference(
         current.event_access_levels || [],
-        updatedCommunityEvent.event_access_levels || []
+        updatedCommunityEvent.event_access_levels || [],
       ).length > 0;
     if (
       accessLevelsHaveChanged ||
@@ -74,7 +68,7 @@ export const handler: Handler = async (event) => {
       const times = rsvpTimes(
         levels ?? [],
         updatedCommunityEvent.fixed_access_time ?? undefined,
-        levels.length > 0 ? "policy" : "global"
+        levels.length > 0 ? "policy" : "global",
       );
 
       const sessionsToCreate = eventSessions.map((session) => {

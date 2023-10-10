@@ -1,9 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 import axios from "axios";
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE
+export const supabase = createClient(
+  process.env.SUPABASE_URL ?? "",
+  process.env.SUPABASE_SERVICE_ROLE ?? "",
 );
 
 export async function authenticateUser(event) {
@@ -36,20 +36,25 @@ export function sendEmail(message) {
   return sendEmails([message]);
 }
 
-export function sendEmails(messages) {
-  return axios.post(
-    "https://api.mailjet.com/v3.1/send",
-    {
-      Messages: messages,
-    },
-    {
-      auth: {
-        username: process.env.MJ_USER,
-        password: process.env.MJ_PW,
+function sendEmails(messages) {
+  return axios
+    .post(
+      "https://api.mailjet.com/v3.1/send",
+      {
+        Messages: messages,
       },
-      timeout: 7000,
-    }
-  );
+      {
+        auth: {
+          username: process.env.MJ_USER ?? "",
+          password: process.env.MJ_PW ?? "",
+        },
+        timeout: 7000,
+      },
+    )
+    .catch(async (error) => {
+      error.message = error.message || "Failed to send emails";
+      await logError({ message: JSON.stringify(error) });
+    });
 }
 
 export async function loadCommunitySupportEmails(communityId: string): Promise<
@@ -62,7 +67,12 @@ export async function loadCommunitySupportEmails(communityId: string): Promise<
 > {
   const community = await loadCommunity(communityId);
   const admins = await loadCommunityAdmins(communityId);
-  let contacts = [];
+  let contacts: {
+    name: string;
+    email: string;
+    id?: string;
+    email_preferences?: Record<string, boolean>;
+  }[] = [];
   contacts = contacts.concat(admins);
 
   if (community.support_email) {
@@ -108,6 +118,7 @@ export async function loadCommunityAdmins(communityId: string) {
       email_preferences: profile.email_preferences,
     }));
   }
+  return [];
 }
 
 export async function addNotificationRecord(notification: {
@@ -152,4 +163,34 @@ export function buildCommunityAdminMessage({
       related_url: relatedUrl,
     },
   };
+}
+
+export async function logToNewRelic(data = {}) {
+  const API_KEY = process.env.NEW_RELIC_LICENSE_KEY ?? "";
+  try {
+    await axios.post(
+      `https://log-api.eu.newrelic.com/log/v1?Api-Key=${API_KEY}`,
+      {
+        timestamp: new Date().getTime(),
+        ...data,
+      },
+    );
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function logInfo({ message }: { message: string }) {
+  await logToNewRelic({
+    logtype: "netlify-function",
+    message,
+    level: "info",
+  });
+}
+export async function logError({ message }: { message: string }) {
+  await logToNewRelic({
+    logtype: "netlify-function",
+    message,
+    level: "error",
+  });
 }
