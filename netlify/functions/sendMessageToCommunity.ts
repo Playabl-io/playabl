@@ -1,16 +1,11 @@
 import { Handler } from "@netlify/functions";
-import { createClient } from "@supabase/supabase-js";
 import {
   addNotificationRecord,
   buildCommunityAdminMessage,
   loadCommunitySupportEmails,
   sendEmail,
+  supabase,
 } from "../utils";
-
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE
-);
 
 export const handler: Handler = async (event) => {
   if (event.httpMethod !== "POST") {

@@ -1,10 +1,6 @@
 import { Handler } from "@netlify/functions";
-import { createClient } from "@supabase/supabase-js";
-
-export const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE
-);
+import { supabase } from "../utils";
+import { cancelGame, leaveSession } from "../rpc";
 
 export const handler: Handler = async (event) => {
   const { token } = event.headers;
@@ -50,7 +46,7 @@ export const handler: Handler = async (event) => {
   // get games they're playing in
   const sessions = await getUpcomingSessions({ userId, communityId });
   await Promise.allSettled(
-    sessions.map((session) => leaveSession({ sessionId: session.id, userId }))
+    sessions.map((session) => leaveSession({ sessionId: session.id, userId })),
   );
 
   // remove community access
@@ -126,32 +122,4 @@ export async function removeCommunityAccess({
     .delete()
     .eq("user_id", userId)
     .eq("community_id", communityId);
-}
-
-async function cancelGame(gameId: string) {
-  const { error } = await supabase.rpc("cancel_game", {
-    game_id: gameId,
-  });
-  if (error) {
-    console.log(error);
-    throw error;
-  }
-}
-
-async function leaveSession({
-  sessionId,
-  userId,
-}: {
-  sessionId: string;
-  userId: string;
-}) {
-  const { data, error } = await supabase.rpc("leave_session", {
-    user_id: userId,
-    session_id: Number(sessionId),
-  });
-  if (error) {
-    console.log(error);
-    throw error;
-  }
-  return data;
 }

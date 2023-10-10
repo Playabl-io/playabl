@@ -1,5 +1,5 @@
 import { Handler } from "@netlify/functions";
-import axios from "axios";
+import { sendEmail } from "../utils";
 
 export const handler: Handler = async (event) => {
   const { authorization } = event.headers;
@@ -22,36 +22,22 @@ export const handler: Handler = async (event) => {
 };
 
 function sendUnreadNotificationEmail({ name, email, count }) {
-  return axios.post(
-    "https://api.mailjet.com/v3.1/send",
-    {
-      Messages: [
-        {
-          From: {
-            Email: "notifications@playabl.io",
-            Name: "Playabl Notifications",
-          },
-          To: [
-            {
-              Email: email,
-              Name: name,
-            },
-          ],
-          TemplateID: 4366949,
-          TemplateLanguage: true,
-          Subject: "You have new notifications on Playabl",
-          Variables: {
-            count,
-          },
-        },
-      ],
+  return sendEmail({
+    From: {
+      Email: "notifications@playabl.io",
+      Name: "Playabl Notifications",
     },
-    {
-      auth: {
-        username: process.env.MJ_USER,
-        password: process.env.MJ_PW,
+    To: [
+      {
+        Email: email,
+        Name: name,
       },
-      timeout: 7000,
-    }
-  );
+    ],
+    TemplateID: 4366949,
+    TemplateLanguage: true,
+    Subject: "You have new notifications on Playabl",
+    Variables: {
+      count,
+    },
+  });
 }

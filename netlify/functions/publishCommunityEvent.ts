@@ -1,11 +1,10 @@
 import { Handler } from "@netlify/functions";
-import { createClient } from "@supabase/supabase-js";
-import { authenticateUser, userIsCommunityAdmin } from "../utils";
-
-export const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE
-);
+import {
+  authenticateUser,
+  userIsCommunityAdmin,
+  supabase,
+  logError,
+} from "../utils";
 
 export const handler: Handler = async (event) => {
   const user = await authenticateUser(event);
@@ -28,7 +27,7 @@ export const handler: Handler = async (event) => {
       body: "No event matching event ID" + eventId,
     };
   }
-  const isAdmin = userIsCommunityAdmin({
+  const isAdmin = await userIsCommunityAdmin({
     userId: user.data.user.id,
     communityId: current.community_id,
   });
@@ -47,6 +46,7 @@ export const handler: Handler = async (event) => {
     .single();
 
   if (error) {
+    await logError({ message: JSON.stringify(error) });
     return {
       statusCode: 400,
       body: error.message,

@@ -1,11 +1,6 @@
 import { ROLES } from "../../src/util/roles";
 import { Handler } from "@netlify/functions";
-import { createClient } from "@supabase/supabase-js";
-
-export const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE
-);
+import { logError, supabase } from "../utils";
 
 export const handler: Handler = async (event) => {
   const { inviteId, userId, communityId } = event.queryStringParameters;
@@ -14,7 +9,7 @@ export const handler: Handler = async (event) => {
     .select("is_revoked")
     .eq("id", inviteId)
     .single();
-  if (data.is_revoked) {
+  if (data?.is_revoked) {
     return {
       statusCode: 404,
       body: JSON.stringify({
@@ -30,7 +25,13 @@ export const handler: Handler = async (event) => {
         data: response,
       }),
     };
-  } catch (error) {}
+  } catch (error) {
+    await logError({ message: JSON.stringify(error) });
+    return {
+      statusCode: 500,
+      boday: "Unable to complete request",
+    };
+  }
 };
 
 async function joinCommunity({

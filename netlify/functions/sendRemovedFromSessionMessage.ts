@@ -1,12 +1,7 @@
 import { Handler } from "@netlify/functions";
-import { createClient } from "@supabase/supabase-js";
+import { sendEmail, supabase } from "../utils";
 import axios from "axios";
 import { format } from "date-fns";
-
-export const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE
-);
 
 export const handler: Handler = async (event) => {
   const { toEmail, toName, gameName, gameId, sessionTime } =
@@ -16,7 +11,7 @@ export const handler: Handler = async (event) => {
 
   const user = await supabase.auth.getUser(token);
 
-  if (user.data.user.aud !== "authenticated") {
+  if (user.data?.user?.aud !== "authenticated") {
     return {
       statusCode: 403,
       boday: JSON.stringify({
@@ -39,44 +34,24 @@ export const handler: Handler = async (event) => {
 };
 
 function sendRemovalEmail({ name, email, relatedUrl, gameName, sessionTime }) {
-  return axios
-    .post(
-      "https://api.mailjet.com/v3.1/send",
+  return sendEmail({
+    From: {
+      Email: "notifications@playabl.io",
+      Name: "Playabl Notifications",
+    },
+    To: [
       {
-        Messages: [
-          {
-            From: {
-              Email: "notifications@playabl.io",
-              Name: "Playabl Notifications",
-            },
-            To: [
-              {
-                Email: email,
-                Name: name,
-              },
-            ],
-            TemplateID: 4647989,
-            TemplateLanguage: true,
-            Subject: `You have been removed from a session of ${gameName}`,
-            Variables: {
-              game_name: gameName,
-              related_url: relatedUrl,
-              session_time: sessionTime,
-            },
-          },
-        ],
+        Email: email,
+        Name: name,
       },
-      {
-        auth: {
-          username: process.env.MJ_USER,
-          password: process.env.MJ_PW,
-        },
-      }
-    )
-    .then((response) => {
-      console.log(response);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+    ],
+    TemplateID: 4647989,
+    TemplateLanguage: true,
+    Subject: `You have been removed from a session of ${gameName}`,
+    Variables: {
+      game_name: gameName,
+      related_url: relatedUrl,
+      session_time: sessionTime,
+    },
+  });
 }

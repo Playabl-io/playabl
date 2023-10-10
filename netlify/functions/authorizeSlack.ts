@@ -1,12 +1,7 @@
 import { Handler } from "@netlify/functions";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "../utils";
 import axios from "axios";
 import FormData from "form-data";
-
-export const supabase = createClient(
-  process.env.SUPABASE_URL as string,
-  process.env.SUPABASE_SERVICE_ROLE as string
-);
 
 export const handler: Handler = async (event) => {
   const clientSecret = process.env.SLACK_CLIENT_SECRET;

@@ -1,14 +1,8 @@
 import { Handler } from "@netlify/functions";
-import { createClient } from "@supabase/supabase-js";
-import axios from "axios";
+import { logError, sendEmail, supabase } from "../utils";
+import { joinSession, leaveSession } from "../rpc";
 import { userCanRsvp } from "../../src/util/time";
 import { GameSession } from "../../src/typings/Session";
-
-export const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE
-);
-
 export const handler: Handler = async (event) => {
   const method = event.httpMethod;
   const { sessionId, userId } = event.queryStringParameters;
@@ -17,7 +11,7 @@ export const handler: Handler = async (event) => {
 
   const user = await supabase.auth.getUser(token);
 
-  if (user.data.user.aud !== "authenticated") {
+  if (user.data?.user?.aud !== "authenticated") {
     return {
       statusCode: 403,
       boday: JSON.stringify({
@@ -44,12 +38,12 @@ export const handler: Handler = async (event) => {
       };
     }
     const beforeRsvps = session.rsvps;
-    const data = await joinSession({ sessionId, userId });
-    if (data.error) {
+    const { error, status } = await joinSession({ sessionId, userId });
+    if (error) {
       return {
-        statusCode: data.status,
+        statusCode: status,
         body: JSON.stringify({
-          error: data.error,
+          error,
         }),
       };
     }
@@ -62,7 +56,9 @@ export const handler: Handler = async (event) => {
         gameName: game.title,
       });
     } catch (error) {
-      console.error("Failed to send notification to game creator");
+      error.message =
+        error.message || "Failed to send notification to game creator";
+      await logError({ message: JSON.stringify(error) });
     }
     if (beforeRsvps.length < game.participant_count) {
       await sendRsvpEmail({
@@ -74,9 +70,6 @@ export const handler: Handler = async (event) => {
     }
     return {
       statusCode: 201,
-      body: JSON.stringify({
-        data,
-      }),
     };
   }
   if (method === "DELETE") {
@@ -125,7 +118,7 @@ async function confirmRsvpAccess({
     return false;
   }
   return userCanRsvp({
-    userAccess,
+    userAccess: userAccess ?? [],
     session,
     hostId: session.creator_id,
     userId,
@@ -167,76 +160,26 @@ async function getUserProfile({ userId }) {
   return data;
 }
 
-async function joinSession({
-  sessionId,
-  userId,
-}: {
-  sessionId: string;
-  userId: string;
-}) {
-  return supabase.rpc("join_session", {
-    user_id: userId,
-    session_id: Number(sessionId),
-  });
-}
-
-async function leaveSession({
-  sessionId,
-  userId,
-}: {
-  sessionId: string;
-  userId: string;
-}) {
-  const { data, error } = await supabase.rpc("leave_session", {
-    user_id: userId,
-    session_id: Number(sessionId),
-  });
-  if (error) {
-    console.log(error);
-  }
-  return data;
-}
-
 function sendRsvpEmail({ name, email, relatedUrl, gameName }) {
-  return axios
-    .post(
-      "https://api.mailjet.com/v3.1/send",
+  return sendEmail({
+    From: {
+      Email: "notifications@playabl.io",
+      Name: "Playabl Notifications",
+    },
+    To: [
       {
-        Messages: [
-          {
-            From: {
-              Email: "notifications@playabl.io",
-              Name: "Playabl Notifications",
-            },
-            To: [
-              {
-                Email: email,
-                Name: name,
-              },
-            ],
-            TemplateID: 3700697,
-            TemplateLanguage: true,
-            Subject: "Playabl RSVP Success",
-            Variables: {
-              game_name: gameName,
-              related_url: relatedUrl,
-            },
-          },
-        ],
+        Email: email,
+        Name: name,
       },
-      {
-        auth: {
-          username: process.env.MJ_USER,
-          password: process.env.MJ_PW,
-        },
-      }
-    )
-    .then((response) => {
-      console.log(response);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+    ],
+    TemplateID: 3700697,
+    TemplateLanguage: true,
+    Subject: "Playabl RSVP Success",
+    Variables: {
+      game_name: gameName,
+      related_url: relatedUrl,
+    },
+  });
 }
 
 async function notifyGameCreator({
