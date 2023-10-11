@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "vite",
     "netlify": "netlify dev",
+    "type-gen": "npx supabase gen types typescript --local > src/typings/supabase.ts",
     "type-check": "vue-tsc --noEmit --skipLibCheck",
     "devtools": "vue-devtools",
     "build": "vue-tsc --noEmit --skipLibCheck && vite build",
