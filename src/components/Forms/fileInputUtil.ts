@@ -4,7 +4,7 @@ const { showError } = useToast();
 
 export function handleFileDrop(
   event: DragEvent,
-  sizeLimit = { value: 3000000, label: "3 MB" }
+  sizeLimit = { value: 1000000, label: "1 MB" },
 ) {
   const dt = event.dataTransfer;
   const file = dt?.files[0];
@@ -23,7 +23,7 @@ export function handleFileDrop(
 
 export function handleFileChange(
   event: Event,
-  sizeLimit = { value: 3000000, label: "3 MB" }
+  sizeLimit = { value: 1000000, label: "1 MB" },
 ) {
   const target = event.target as HTMLInputElement;
   const file = target.files?.[0];

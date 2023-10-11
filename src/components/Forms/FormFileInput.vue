@@ -66,7 +66,7 @@ const props = defineProps({
   },
   sizeLimit: {
     type: String,
-    default: "3 MB",
+    default: "1 MB",
   },
   currentImage: {
     type: String,
@@ -95,7 +95,7 @@ watch(
         reader.readAsDataURL(newFile);
       }
     }
-  }
+  },
 );
 
 function clearFile() {
