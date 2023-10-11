@@ -1,9 +1,6 @@
 name: Deploy Migrations to Production
 
 on:
-  pull_request:
-    branches:
-      - main
   push:
     branches:
       - main
@@ -11,6 +8,7 @@ on:
 
 jobs:
   deploy:
+    environment: production
     runs-on: ubuntu-latest
 
     env:
@@ -25,5 +23,5 @@ jobs:
         with:
           version: latest
 
-      - run: supabase link --project-ref $SUPABASE_PROJECT_ID -p $SUPABASE_DB_PASSWORD --debug
-      - run: supabase db push --dry-run
+      - run: supabase link --project-ref $SUPABASE_PROJECT_ID -p $SUPABASE_DB_PASSWORD
+      - run: supabase db push

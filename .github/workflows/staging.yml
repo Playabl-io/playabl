@@ -8,6 +8,7 @@ on:
 
 jobs:
   deploy:
+    environment: staging
     runs-on: ubuntu-latest
 
     env:
@@ -22,5 +23,5 @@ jobs:
         with:
           version: latest
 
-      - run: supabase link --project-ref $SUPABASE_PROJECT_ID
+      - run: supabase link --project-ref $SUPABASE_PROJECT_ID -p $SUPABASE_DB_PASSWORD
       - run: supabase db push
