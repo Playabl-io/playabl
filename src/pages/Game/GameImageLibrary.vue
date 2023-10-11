@@ -3,7 +3,7 @@
   <FormFileInput
     :current-image="existingImageToUse?.src || gameStore.coverImage"
     :file="existingImageToUse?.src || newCoverImage"
-    size-limit="3 MB"
+    size-limit="1 MB"
     @file-change="onFileChange"
     @file-drop="onFileDrop"
     @clear-file="clearFile"
@@ -57,7 +57,7 @@ function clearFile() {
 }
 
 function onFileDrop(event: DragEvent) {
-  const file = handleFileDrop(event, { value: 3000000, label: "3 MB" });
+  const file = handleFileDrop(event, { value: 1000000, label: "1 MB" });
   if (file) {
     existingImageToUse.value = undefined;
     newCoverImage.value = file;
@@ -65,7 +65,7 @@ function onFileDrop(event: DragEvent) {
 }
 
 function onFileChange(event: Event) {
-  const file = handleFileChange(event, { value: 3000000, label: "3 MB" });
+  const file = handleFileChange(event, { value: 1000000, label: "1 MB" });
   if (file) {
     existingImageToUse.value = undefined;
     newCoverImage.value = file;
