@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "vite",
     "netlify": "netlify dev",
+    "dashboard": "open http://localhost:54323",
     "type-gen": "npx supabase gen types typescript --local > src/typings/supabase.ts",
     "type-check": "vue-tsc --noEmit --skipLibCheck",
     "devtools": "vue-devtools",

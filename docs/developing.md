@@ -4,7 +4,7 @@ See [local development](https://supabase.com/docs/guides/cli/local-development) 
 
 ### Storage
 
-The storage buckets have to be manually created. After you've got the supabase CLI running and the application is started, you can go to the local supabase dashboard and create the storage buckets:
+The storage buckets have to be manually created after any database setup or reset. After you've got the supabase CLI running and the application is started, you can go to the local supabase dashboard and create the storage buckets:
 
 - cover-images
 - avatars
