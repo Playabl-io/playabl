@@ -11,7 +11,10 @@
           <p>
             {{ display }}
           </p>
-          <p class="text-sm text-slate-700">
+          <p
+            v-if="gameStore.attendees[id].pronouns"
+            class="text-sm text-slate-700"
+          >
             ({{ gameStore.attendees[id].pronouns }})
           </p>
         </div>
