@@ -10,7 +10,8 @@ INSERT INTO "auth"."users" ("instance_id", "id", "aud", "role", "email", "encryp
 	('00000000-0000-0000-0000-000000000000', '7f087630-ae6f-4ab7-90a3-fca84c29df94', 'authenticated', 'authenticated', 'player@playabl.io', crypt('let-me-in-please', gen_salt('bf')), '2023-10-11 13:29:40.460296+00', NULL, '', NULL, '', NULL, '', '', NULL, '2023-10-11 13:29:40.46246+00', '{"provider": "email", "providers": ["email"]}', '{}', NULL, '2023-10-11 13:29:40.451705+00', '2023-10-11 13:29:40.465108+00', NULL, NULL, '', '', NULL, '', 0, NULL, '', NULL, false, NULL);
 
 -- PROFILES
-UPDATE "public"."profiles" set username = 'Player Bob' where id = '7f087630-ae6f-4ab7-90a3-fca84c29df94';
+UPDATE "public"."profiles" set username = 'Admin Alice' where id = '6699279a-6e4f-4f16-a33a-da89440c60e8';
+UPDATE "public"."profiles" set username = 'Player Peter' where id = '7f087630-ae6f-4ab7-90a3-fca84c29df94';
 
 -- COMMUNITIES
 -- After community creation - db triggers handle creating default access and community owner access
@@ -25,9 +26,9 @@ INSERT INTO "public"."community_memberships" ("created_at", "role_id", "communit
 -- At this point, we have two users who are both members of the same community. One is Admin, one is player
 
 -- GAMES
-INSERT INTO "public"."games" ("id", "title", "description", "cover_image", "draft_state", "deleted_at", "community_id", "creator_id", "system", "virtual_tabletop", "will_be_recorded", "participant_count", "uses_safety_tools", "description_as_flat_text", "event_id") VALUES
-	(1, 'Cold Iron', '"<p><strong>In space, no one can hear you scream</strong></p>"', NULL, 'published', NULL, '5bee3b3a-59c3-4272-ac16-079d37bd73fa', '6699279a-6e4f-4f16-a33a-da89440c60e8', 'ALIEN', '', true, 4, true, 'In space, no one can hear you scream', NULL);
+INSERT INTO "public"."games" ("title", "description", "cover_image", "draft_state", "deleted_at", "community_id", "creator_id", "system", "virtual_tabletop", "will_be_recorded", "participant_count", "uses_safety_tools", "description_as_flat_text", "event_id") VALUES
+	('Cold Iron', '"<p><strong>In space, no one can hear you scream</strong></p>"', NULL, 'published', NULL, '5bee3b3a-59c3-4272-ac16-079d37bd73fa', '6699279a-6e4f-4f16-a33a-da89440c60e8', 'ALIEN', '', true, 4, true, 'In space, no one can hear you scream', NULL);
 
 -- SESSIONS
-INSERT INTO "public"."sessions" ("id", "created_at", "start_time", "end_time", "game_id", "access_times", "creator_id", "has_openings", "participant_count", "community_id", "rsvps", "deleted_at") VALUES
-	(1, '2023-10-12 09:04:40.551653+00', EXTRACT(EPOCH FROM NOW() + INTERVAL '8 HOURS') * 1000, EXTRACT(EPOCH FROM NOW() + INTERVAL '12 HOURS') * 1000, 1, '"{\"1\":{\"name\":\"All member access\",\"rsvpAvailableTime\":1697101500000,\"humanReadableRsvpTime\":\"10/12/2023, 11:05:00 AM\"}}"', '6699279a-6e4f-4f16-a33a-da89440c60e8', true, 4, '5bee3b3a-59c3-4272-ac16-079d37bd73fa', '{7f087630-ae6f-4ab7-90a3-fca84c29df94}', NULL);
+INSERT INTO "public"."sessions" ("created_at", "start_time", "end_time", "game_id", "access_times", "creator_id", "has_openings", "participant_count", "community_id", "rsvps", "deleted_at") VALUES
+	('2023-10-12 09:04:40.551653+00', EXTRACT(EPOCH FROM NOW() + INTERVAL '8 HOURS') * 1000, EXTRACT(EPOCH FROM NOW() + INTERVAL '12 HOURS') * 1000, 1, '"{\"1\":{\"name\":\"All member access\",\"rsvpAvailableTime\":1697101500000,\"humanReadableRsvpTime\":\"10/12/2023, 11:05:00 AM\"}}"', '6699279a-6e4f-4f16-a33a-da89440c60e8', true, 4, '5bee3b3a-59c3-4272-ac16-079d37bd73fa', '{7f087630-ae6f-4ab7-90a3-fca84c29df94}', NULL);
