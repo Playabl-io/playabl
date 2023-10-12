@@ -19,13 +19,21 @@
       </p>
     </div>
     <ChooseCommunity
-      v-if="['chooseCommunity', 'getCommunityPostingDate'].includes(state.value as string)"
+      v-if="
+        ['chooseCommunity', 'getCommunityPostingDate'].includes(
+          state.value as string,
+        )
+      "
       :communities="state.context.communities"
       :loading="['getCommunityPostingDate'].includes(state.value as string)"
       @select="send('SELECT', $event)"
     />
     <div
-      v-if="['gameDetails', 'gameSessions', 'submitting'].includes(state.value as string)"
+      v-if="
+        ['gameDetails', 'gameSessions', 'submitting'].includes(
+          state.value as string,
+        )
+      "
       class="max-w-2xl mx-auto"
     >
       <Heading level="h4" as="h1"> Create a new game </Heading>
@@ -55,7 +63,9 @@
       </div>
     </div>
     <form
-      v-if="['gameDetails', 'missingDescription'].includes(state.value as string)"
+      v-if="
+        ['gameDetails', 'missingDescription'].includes(state.value as string)
+      "
       class="grid grid-cols-1 gap-12 max-w-2xl mx-auto relative"
       @submit.prevent="send('ADVANCE')"
     >
@@ -203,7 +213,11 @@
       </div>
     </form>
     <form
-      v-if="['gameSessions', 'invalidGameSessions', 'submitting'].includes(state.value as string)"
+      v-if="
+        ['gameSessions', 'invalidGameSessions', 'submitting'].includes(
+          state.value as string,
+        )
+      "
       id="secondScreen"
       class="max-w-2xl mx-auto"
       @submit.prevent="send('SUBMIT')"
@@ -378,7 +392,6 @@ import { getUpcomingCommunityEvents } from "@/api/communityEvents";
 import { CommunityEvent } from "@/typings/CommunityEvent";
 import FormSelect from "@/components/Forms/FormSelect.vue";
 import { useUrlSearchParams } from "@vueuse/core";
-import flags from "@/util/flags";
 
 const { showSuccess, showError } = useToast();
 const router = useRouter();
@@ -604,7 +617,7 @@ const newGameMachine = createMachine<{
         showError({ message: "Unable to create game" });
       },
     },
-  }
+  },
 );
 
 const { state, send } = useMachine(newGameMachine);
@@ -775,7 +788,7 @@ async function submitGame() {
 
   function getLevelsFromStore(ids: number[]) {
     return store.communityAccessLevels.filter((level) =>
-      ids.includes(level.id)
+      ids.includes(level.id),
     );
   }
 
@@ -786,7 +799,7 @@ async function submitGame() {
   const times = rsvpTimes(
     levels,
     selectedEvent.value?.fixed_access_time ?? undefined,
-    levels.length > 0 ? "policy" : "global"
+    levels.length > 0 ? "policy" : "global",
   );
 
   let imagePath;
@@ -820,8 +833,10 @@ async function submitGame() {
   };
   const game = await createGame(newGame);
 
-  // send game to SNS
-  publishGame(game);
+  if (import.meta.env.PROD) {
+    // send game to SNS
+    publishGame(game);
+  }
 
   const sessionsToCreate = sessionIds.value.reduce((acc, id) => {
     const sessionPartial = sessions.value[id];
@@ -830,11 +845,16 @@ async function submitGame() {
     return acc.concat(sessionPartial);
   }, [] as NewSession[]);
 
-  await Promise.all(
-    sessionsToCreate.map((session) => {
-      return supabase.from("sessions").insert(session);
-    })
-  );
+  console.info("sessions", sessionsToCreate);
+
+  try {
+    await supabase.from("sessions").insert(sessionsToCreate);
+  } catch (error) {
+    showError({
+      message:
+        "An error occurred setting up the sessions. Please manually review.",
+    });
+  }
 
   showSuccess({ message: "Game created" });
   router.push(`/games/${game.id}`);
