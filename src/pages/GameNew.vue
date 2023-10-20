@@ -845,8 +845,6 @@ async function submitGame() {
     return acc.concat(sessionPartial);
   }, [] as NewSession[]);
 
-  console.info("sessions", sessionsToCreate);
-
   try {
     await supabase.from("sessions").insert(sessionsToCreate);
   } catch (error) {
