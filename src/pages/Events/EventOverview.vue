@@ -68,7 +68,17 @@
       </Popover>
     </div>
     <div class="flex justify-between items-end my-6">
-      <Heading level="h6">Upcoming Games</Heading>
+      <div>
+        <Heading level="h6">Upcoming Games</Heading>
+        <RouterLink
+          :to="`/events/${eventStore.event.id}/calendar?date=${format(
+            new Date(eventStore.event.start_time),
+            'yyyy-MM',
+          )}`"
+          class="text-sm text-blue-700 underline mt-2"
+          >or browse the event calendar</RouterLink
+        >
+      </div>
       <PrimaryButton
         v-if="isCreatorOrAdmin"
         :to="`/games/new?event_id=${eventStore.event?.id}&community_id=${eventStore.event?.community_id}`"
@@ -92,6 +102,9 @@
       :pagination="{
         type: 'bullets',
         clickable: true,
+        dynamicBullets: true,
+        grabCursor: true,
+        centeredSlides: true,
       }"
     >
       <swiper-slide v-for="game in eventStore.eventGames" :key="game.id">
@@ -149,7 +162,7 @@ const accessModel = computed(() => {
     eventStore.event?.event_access_levels?.length > 0
   ) {
     const userHasAccess = eventStore.event.event_access_levels.some((id) =>
-      store.userCommunityAccess.find((policy) => policy.access_level_id === id)
+      store.userCommunityAccess.find((policy) => policy.access_level_id === id),
     );
     if (userHasAccess) {
       return {
