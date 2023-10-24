@@ -2,12 +2,10 @@ import { store } from "../store";
 import { ref, onMounted, onUnmounted, computed } from "vue";
 import { getSoonestRsvpTime, userCanRsvp } from "@/util/time";
 import { gameStore } from "@/pages/Game/gameStore";
-import { useNow } from "@vueuse/core";
 import { Session } from "@/typings/Session";
 import { formatDistance, formatRelative } from "date-fns/esm";
 
 export function useCanRsvp({ session }: { session: Session }) {
-  const now = useNow();
   const canRsvp = ref(false);
   const compareDate = ref(new Date());
   const interval = ref<NodeJS.Timeout>();
@@ -22,7 +20,6 @@ export function useCanRsvp({ session }: { session: Session }) {
         session,
         hostId: gameStore.game.creator_id,
         userId: store.user?.id,
-        time: now.value,
       });
       canRsvp.value = result;
     } else {

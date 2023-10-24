@@ -25,6 +25,7 @@ import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue";
 import { UserCircleIcon } from "@heroicons/vue/24/outline";
 import { useCanRsvp } from "@/composables/useCanRsvp";
 import { Session } from "@/typings/Session";
+import { store } from "@/store";
 
 const props = defineProps({
   sampleSession: {
@@ -38,6 +39,12 @@ const { accessNeeded, soonestRsvp } = useCanRsvp({
 });
 
 const accessModel = computed(() => {
+  if (props.sampleSession.creator_id === store.user?.id) {
+    return {
+      button: "You created this game",
+      content: "You created and can manage this game and its players",
+    };
+  }
   if (soonestRsvp.value) {
     return {
       button: "You have access",

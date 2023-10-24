@@ -98,7 +98,6 @@ export function userCanRsvp({
   session,
   userId,
   hostId,
-  time,
 }: {
   userAccess: CommunityAccess[];
   session: {
@@ -108,7 +107,6 @@ export function userCanRsvp({
   };
   userId?: Profile["id"];
   hostId: string;
-  time?: Date;
 }): boolean {
   /**
    * Confirm user is signed in, not the host, and not rsvpd
@@ -123,7 +121,7 @@ export function userCanRsvp({
   /**
    * Confirm session is in the future
    */
-  if (isBefore(session.start_time, time || new Date())) {
+  if (isBefore(session.start_time, new Date())) {
     return false;
   }
   /**
