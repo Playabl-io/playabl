@@ -16,6 +16,13 @@
       {{ upcomingSessions.length }} upcoming
       {{ pluralize({ count: upcomingSessions.length, singular: "session" }) }}
     </Heading>
+    <PrimaryButton
+      v-if="canRsvpToAtLeastOne"
+      class="mb-4"
+      :is-loading="joining"
+      @click="joinAllSessions"
+      >Join All Sessions</PrimaryButton
+    >
     <div class="grid md:grid-cols-2 gap-8">
       <SessionBlock
         v-for="session in upcomingSessions"
@@ -24,6 +31,7 @@
         :participant-count="session.participant_count"
         :is-owner="isOwner"
         :not-a-member="userIsNotMember"
+        :is-joining="joining"
       />
     </div>
 
@@ -75,6 +83,14 @@ import { gameStore } from "./gameStore";
 import { ROLES } from "@/util/roles";
 import Heading from "@/components/Heading.vue";
 import { pluralize } from "@/util/grammar";
+import { joinSession } from "@/api/gamesAndSessions";
+import { store } from "@/store";
+import useToast from "@/components/Toast/useToast";
+import { userCanRsvp } from "@/util/time";
+
+const { showSuccess, showError } = useToast();
+
+const joining = ref(false);
 
 const props = defineProps({
   isOwner: {
@@ -107,9 +123,47 @@ const upcomingSessions = computed(() =>
     isAfter(session.start_time, new Date()),
   ),
 );
+
 const pastSessions = computed(() =>
   gameStore.sessions.filter((session) =>
     isBefore(session.start_time, new Date()),
   ),
 );
+
+const canRsvpToAtLeastOne = computed(() =>
+  upcomingSessions.value.some((session) =>
+    userCanRsvp({
+      session,
+      userId: store.user?.id,
+      hostId: session.creator_id,
+      userAccess: store.userCommunityAccess,
+    }),
+  ),
+);
+
+async function joinAllSessions() {
+  const user = store.user;
+  const id = user?.id;
+  if (!id) return;
+
+  joining.value = true;
+
+  const results = await Promise.allSettled(
+    upcomingSessions.value.map((session) =>
+      joinSession({ sessionId: session.id, userId: id }),
+    ),
+  );
+
+  console.log(results);
+
+  if (results.every((result) => result.status === "fulfilled")) {
+    showSuccess({ message: "Joined all sessions" });
+  } else if (results.some((result) => result.status === "fulfilled")) {
+    showSuccess({ message: "Joined some sessions. Please manually review." });
+  } else {
+    showError({ message: "Unable to join" });
+  }
+
+  joining.value = false;
+}
 </script>

@@ -20,6 +20,7 @@
           v-if="userIsInTheGame"
           :is-loading="isProcessing"
           class="w-full"
+          :disabled="isJoining"
           @click="handleLeave"
         >
           Leave session
@@ -28,6 +29,7 @@
           v-else-if="canRsvp"
           class="w-full"
           :is-loading="isProcessing"
+          :disabled="isJoining"
           @click="handleJoin"
         >
           Join
@@ -118,6 +120,10 @@ const props = defineProps({
   notAMember: {
     type: Boolean,
     required: true,
+  },
+  isJoining: {
+    type: Boolean,
+    default: false,
   },
 });
 
