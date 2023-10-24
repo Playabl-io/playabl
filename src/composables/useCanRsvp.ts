@@ -37,6 +37,9 @@ export function useCanRsvp({ session }: { session: Session }) {
   });
 
   const soonestRsvp = computed(() => {
+    if (session.creator_id === store.user?.id) {
+      return null;
+    }
     let accessTimes;
     if (typeof session.access_times === "string") {
       accessTimes = JSON.parse(session.access_times);
