@@ -9,7 +9,7 @@ import { CommunityMembership } from "./typings/CommunityMembership";
 import { ROLES } from "./util/roles";
 
 interface Store {
-  user?: Profile | null;
+  user: Profile | null;
   userSession?: Session | null;
   notifications: Notification[];
   communityAccessLevels: AccessLevel[];
@@ -52,12 +52,15 @@ watch(
       return acc;
     }, [] as Community[]);
     store.userManagedCommunities = managedCommunities;
-  }
+  },
 );
 
 export const userCommunityMembershipIds = computed(() =>
-  Object.values(store.userCommunityMembership).reduce((acc, cur) => {
-    acc.push(cur.community.id);
-    return acc;
-  }, [] as Community["id"][])
+  Object.values(store.userCommunityMembership).reduce(
+    (acc, cur) => {
+      acc.push(cur.community.id);
+      return acc;
+    },
+    [] as Community["id"][],
+  ),
 );

@@ -16,6 +16,9 @@
       {{ upcomingSessions.length }} upcoming
       {{ pluralize({ count: upcomingSessions.length, singular: "session" }) }}
     </Heading>
+    <PrimaryButton class="mb-4" :is-loading="joining" @click="joinAllSessions"
+      >Join All Sessions</PrimaryButton
+    >
     <div class="grid md:grid-cols-2 gap-8">
       <SessionBlock
         v-for="session in upcomingSessions"
@@ -24,6 +27,7 @@
         :participant-count="session.participant_count"
         :is-owner="isOwner"
         :not-a-member="userIsNotMember"
+        :is-joining="joining"
       />
     </div>
 
@@ -75,6 +79,10 @@ import { gameStore } from "./gameStore";
 import { ROLES } from "@/util/roles";
 import Heading from "@/components/Heading.vue";
 import { pluralize } from "@/util/grammar";
+import { joinSession } from "@/api/gamesAndSessions";
+import { store } from "@/store";
+
+const joining = ref(false);
 
 const props = defineProps({
   isOwner: {
@@ -112,4 +120,20 @@ const pastSessions = computed(() =>
     isBefore(session.start_time, new Date()),
   ),
 );
+
+async function joinAllSessions() {
+  const user = store.user;
+  const id = user?.id;
+  if (!id) return;
+
+  joining.value = true;
+
+  await Promise.allSettled(
+    upcomingSessions.value.map((session) =>
+      joinSession({ sessionId: session.id, userId: id }),
+    ),
+  );
+
+  joining.value = false;
+}
 </script>

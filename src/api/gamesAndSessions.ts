@@ -110,7 +110,7 @@ export async function loadBrowsableGames({
   const query = supabase
     .from("games")
     .select(
-      "*, community_id (id, name), sessions!inner(*), community_events(*)"
+      "*, community_id (id, name), sessions!inner(*), community_events(*)",
     )
     .is("deleted_at", null)
     .in("sessions.has_openings", openOnly ? [true] : [true, false])
@@ -154,7 +154,7 @@ export async function loadChronologicalCommunityGames(communityIds: string[]) {
   const { data, error } = await supabase
     .from("games")
     .select(
-      "*, community_id (id, name), sessions!inner(*), community_events(*)"
+      "*, community_id (id, name), sessions!inner(*), community_events(*)",
     )
     .is("deleted_at", null)
     .gte("sessions.start_time", today.getTime())
@@ -174,7 +174,7 @@ export async function loadGamesWithOpenings() {
   const { data, error } = await supabase
     .from("games")
     .select(
-      "*, community_id (id, name), sessions!inner(*), community_events(*)"
+      "*, community_id (id, name), sessions!inner(*), community_events(*)",
     )
     .is("deleted_at", null)
     .eq("sessions.has_openings", true)
@@ -194,7 +194,7 @@ export async function loadCommunityGamesWithOpenings(communityIds: string[]) {
   const { data, error } = await supabase
     .from("games")
     .select(
-      "*, community_id (id, name), sessions!inner(id, start_time, has_openings), community_events(*)"
+      "*, community_id (id, name), sessions!inner(id, start_time, has_openings), community_events(*)",
     )
     .is("deleted_at", null)
     .eq("sessions.has_openings", true)
@@ -339,18 +339,18 @@ export async function rsvpToAllGameSessions({
 }) {
   const now = new Date();
   const futureSessions = gameSessions.filter(
-    (session) => session.start_time >= now.getTime()
+    (session) => session.start_time >= now.getTime(),
   );
   const joinPromises = await Promise.allSettled(
     futureSessions.map((session) =>
-      joinSession({ sessionId: session.id, userId })
-    )
+      joinSession({ sessionId: session.id, userId }),
+    ),
   );
   const failedPromises = joinPromises.filter(
-    (promise) => promise.status === "rejected"
+    (promise) => promise.status === "rejected",
   );
   const successPromises = joinPromises.filter(
-    (promise) => promise.status === "fulfilled"
+    (promise) => promise.status === "fulfilled",
   );
 
   return {
@@ -378,7 +378,7 @@ export async function joinSession({
       headers: {
         token: session.access_token,
       },
-    }
+    },
   )
     .then((response) => {
       if (!response.ok) {
@@ -388,13 +388,11 @@ export async function joinSession({
     })
     .catch((error) => {
       log({ error });
-      throw error;
     });
 
   if (data.error) {
     const error = new Error(data.error.message);
     log({ error });
-    throw error;
   }
   return data;
 }
@@ -417,7 +415,7 @@ export async function leaveSession({
       headers: {
         token: session.access_token,
       },
-    }
+    },
   )
     .then((response) => {
       if (!response.ok) {
@@ -456,7 +454,7 @@ export async function sendRemovalEmail({
       headers: {
         token: session.access_token,
       },
-    }
+    },
   ).catch((error) => {
     log({ error });
     throw error;
@@ -538,7 +536,7 @@ export async function publishGame(game: Game) {
 
 export async function updateSession(
   id: Session["id"],
-  update: Partial<Session>
+  update: Partial<Session>,
 ) {
   const { error } = await supabase
     .from("sessions")
@@ -567,7 +565,7 @@ export async function addSession(session: Partial<Session>) {
 }
 
 export async function loadGamesAndSessionsForEvent(
-  eventId: CommunityEvent["id"]
+  eventId: CommunityEvent["id"],
 ) {
   const today = new Date();
   const { data, error } = await supabase
