@@ -95,7 +95,7 @@ export async function searchInCommunityMembers(query: {
     .eq("community_memberships.community_id", query.communityId)
     .in("community_memberships.role_id", query.roleIds)
     .or(
-      `username.ilike.%${query.searchTerm}%,email.ilike.%${query.searchTerm}%`
+      `username.ilike.%${query.searchTerm}%,email.ilike.%${query.searchTerm}%`,
     )
     .order("username", { ascending: true })
     .range(query.from, query.to);
@@ -123,13 +123,13 @@ export async function searchCommunityMembers(query: {
       "*, community_memberships!inner(id, community_id, role_id), community_access!inner(id, user_id, access_level_id)",
       {
         count: "estimated",
-      }
+      },
     )
     .eq("community_memberships.community_id", query.communityId)
     .in("community_memberships.role_id", query.roleIds)
     .in("community_access.access_level_id", query.accessIds)
     .or(
-      `username.ilike.%${query.searchTerm}%,email.ilike.%${query.searchTerm}%`
+      `username.ilike.%${query.searchTerm}%,email.ilike.%${query.searchTerm}%`,
     )
     .order("username", { ascending: true })
     .range(query.from, query.to);
@@ -230,16 +230,16 @@ export async function checkForCommunityRequest({
   userId: string;
   communityId: string;
 }) {
-  const { data, error } = await supabase
+  const { data, error, status } = await supabase
     .from("community_membership_requests")
     .select("*")
     .eq("user_id", userId)
-    .eq("community_id", communityId)
-    .single();
-  if (error) {
+    .eq("community_id", communityId);
+
+  if (error && status !== 406) {
     log({ error });
-    throw error;
   }
+
   return data;
 }
 
@@ -267,7 +267,7 @@ export async function processMembershipRequest({
       headers: {
         token: session.access_token,
       },
-    }
+    },
   );
 
   return data;

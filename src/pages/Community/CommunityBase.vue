@@ -36,7 +36,6 @@ import { loadUpcomingCommunityGamesWithCount } from "@/api/gamesAndSessions";
 import {
   checkForCommunityRequest,
   loadCommunityAdmins,
-  loadUserCommunityMembership,
 } from "@/api/communityMemberships";
 import {
   getCommunityMemberCount,
@@ -50,11 +49,14 @@ const currentRoute = useRoute();
 const router = useRouter();
 
 const communityRoute = computed(
-  () => communityStore.community.url_short_name || communityStore.community.id
+  () => communityStore.community.url_short_name || communityStore.community.id,
 );
 
+type navRoute = { label: string; path: string };
+type navGroup = { label: string; children: navRoute[] };
+
 const routes = computed(() => {
-  const result: any[] = [
+  const result: (navRoute | navGroup)[] = [
     {
       label: "Overview",
       path: `/communities/${communityRoute.value}/overview`,
@@ -129,44 +131,48 @@ onMounted(async () => {
   } else {
     await getCommunity(id);
   }
+  setMembershipStatus();
+  if (currentRoute.path.includes("manage") && !communityStore.isAdmin) {
+    router.replace(`/communities/${id}?unauthorized=true`);
+  }
   await Promise.allSettled([
     getMemberCount(),
-    getMembershipStatus(),
     loadUpcomingGames(),
     loadUpcomingEvents(),
     loadAdmins(),
     loadMembershipRequest(),
   ]);
-  if (currentRoute.path.includes("manage") && !communityStore.isAdmin) {
-    router.replace(`/communities/${id}?unauthorized=true`);
-  }
   isLoading.value = false;
 });
 
 onBeforeUnmount(clearCommunityStore);
 
-async function getMembershipStatus() {
+function setMembershipStatus() {
   if (!store.user) return;
 
-  const data = await loadUserCommunityMembership({
-    communityId: communityStore.community.id,
-    userId: store.user.id,
-  });
-  if (!data) return;
-  communityStore.isAdmin = data.role_id === ADMIN;
-  communityStore.isCreator = data.role_id === CREATOR;
-  communityStore.isPlayer = data.role_id === PLAYER;
-  communityStore.userRoleId = data.role_id;
+  const membership =
+    store.userCommunityMembership?.[communityStore.community.id];
+
+  communityStore.isAdmin = membership?.communityMembership?.role_id === ADMIN;
+  communityStore.isCreator =
+    membership?.communityMembership?.role_id === CREATOR;
+  communityStore.isPlayer = membership?.communityMembership?.role_id === PLAYER;
+  communityStore.userRoleId = membership?.communityMembership?.role_id;
 }
 
 async function loadMembershipRequest() {
-  if (!store.user) return;
-  const request = await checkForCommunityRequest({
-    userId: store.user.id,
-    communityId: communityStore.community.id,
-  });
-  if (request) {
-    communityStore.membershipRequest = request;
+  // if they have a membership, there should not be a request
+  if (!store.user || communityStore.userRoleId) return;
+  try {
+    const request = await checkForCommunityRequest({
+      userId: store.user.id,
+      communityId: communityStore.community.id,
+    });
+    if (request) {
+      communityStore.membershipRequest = request[0];
+    }
+  } catch (error) {
+    log({ error });
   }
 }
 
@@ -190,7 +196,7 @@ async function setCommunityDataInStore(data: Community) {
 
 async function loadUpcomingGames() {
   const { data, count } = await loadUpcomingCommunityGamesWithCount(
-    communityStore.community.id
+    communityStore.community.id,
   );
   if (count !== null) {
     communityStore.gamesCount = count;
