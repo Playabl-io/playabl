@@ -42,9 +42,11 @@
       />
     </div>
   </section>
-  <Heading level="h6" as="h6" class="mt-12 mb-3"> About </Heading>
-  <section class="grid items-center gap-4">
-    <div v-if="gameStore.coverImage" class="aspect-w-16 aspect-h-9 max-w-lg">
+  <Heading level="h6" as="h6" class="mt-12 mb-3 max-w-2xl mx-auto">
+    About
+  </Heading>
+  <section class="grid items-center gap-4 max-w-2xl mx-auto">
+    <div v-if="gameStore.coverImage" class="aspect-w-16 aspect-h-9">
       <img
         class="w-full h-full object-center object-cover rounded-lg"
         :src="gameStore.coverImage"
@@ -53,7 +55,7 @@
     </div>
     <div
       v-if="gameStore.game?.description"
-      class="p-4 bg-white rounded-lg max-w-lg"
+      class="p-4 bg-white rounded-lg"
       :class="{
         'col-span-full': !gameStore.coverImage,
       }"
