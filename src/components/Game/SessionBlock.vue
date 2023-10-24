@@ -37,7 +37,7 @@
           class="text-slate-700 text-center flex items-center flex-wrap gap-1"
         >
           {{ rsvpAvailableMessage }}
-          <span class="italic"> ({{ timeTillRsvp }}) </span>
+          <span v-if="timeTillRsvp" class="italic"> ({{ timeTillRsvp }}) </span>
         </div>
       </div>
     </div>

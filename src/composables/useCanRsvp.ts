@@ -80,7 +80,7 @@ export function useCanRsvp({ session }: { session: Session }) {
       ? formatDistance(soonestRsvp.value, compareDate.value, {
           includeSeconds: true,
         })
-      : "",
+      : null,
   );
 
   return {
