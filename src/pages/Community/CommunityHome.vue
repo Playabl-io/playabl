@@ -25,15 +25,15 @@
             {{
               isBefore(
                 new Date(communityStore.communityEvents[0].start_time),
-                now
+                now,
               )
                 ? `Event happening till ${formatRelative(
                     new Date(communityStore.communityEvents[0].end_time),
-                    now
+                    now,
                   )}`
                 : `Next event starts ${formatRelative(
                     new Date(communityStore.communityEvents[0].start_time),
-                    now
+                    now,
                   )}`
             }}!
           </p>
@@ -61,7 +61,7 @@
               {{
                 format(
                   new Date(communityStore.community.created_at),
-                  "LLL do, yyyy"
+                  "LLL do, yyyy",
                 )
               }}
             </dd>
@@ -216,11 +216,6 @@
           Slack
         </a>
       </div>
-      <div
-        v-if="communityStore.community.twitter"
-        id="twitter-timeline"
-        class="shadow-md rounded-lg [height:480px] overflow-auto"
-      />
     </div>
     <SignUpModal
       :open="displaySignUp"
@@ -236,7 +231,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, ref } from "vue";
 import { format, formatRelative, isBefore } from "date-fns";
 import { EnvelopeIcon } from "@heroicons/vue/24/outline";
 import { communityStore } from "./communityStore";
@@ -273,19 +268,6 @@ const isBanned = computed(() => {
     return communityStore.community.banned_emails?.includes(user.email);
   }
   return false;
-});
-
-onMounted(async () => {
-  if (communityStore.community.twitter) {
-    // @ts-expect-error TS doesn't know we loaded twitter
-    window.twttr?.widgets.createTimeline(
-      {
-        sourceType: "profile",
-        screenName: communityStore.community.twitter,
-      },
-      document.getElementById("twitter-timeline")
-    );
-  }
 });
 
 function handleSignInAndJoin() {

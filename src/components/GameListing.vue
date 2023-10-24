@@ -29,8 +29,13 @@
         <DisclosureButton
           class="p-4 bg-violet-100 text-brand-500 text-left rounded-lg flex justify-between"
         >
-          {{ game.sessions.length }} upcoming
-          {{ pluralize({ count: game.sessions.length, singular: "session" }) }}
+          <div class="text-sm">
+            {{ game.sessions.length }} upcoming
+            {{
+              pluralize({ count: game.sessions.length, singular: "session" })
+            }}
+            starting {{ format(game.sessions[0].start_time, "MMM do") }}
+          </div>
           <component
             :is="open ? ChevronDownIcon : ChevronUpIcon"
             class="h-5 w-5"
@@ -155,6 +160,7 @@ import { joinSession } from "@/api/gamesAndSessions";
 import useToast from "./Toast/useToast";
 import LoadingSpinner from "./LoadingSpinner.vue";
 import { Session } from "@/typings/Session";
+import { format } from "date-fns";
 
 const { showError, showSuccess } = useToast();
 
@@ -175,7 +181,7 @@ const reservableSessions = computed(() => {
       session,
       userId: store.user?.id,
       hostId: props.game.creator_id,
-    })
+    }),
   );
 });
 const saving = ref(false);
@@ -208,9 +214,9 @@ async function handleRsvpToAll() {
     const results = await Promise.allSettled(
       reservableSessions.value.map((session) =>
         joinSession({ sessionId: session.id, userId }).then(() =>
-          addUserToLocalSession(session.id, userId)
-        )
-      )
+          addUserToLocalSession(session.id, userId),
+        ),
+      ),
     );
     for (const result of results) {
       if (result.status === "rejected") {
