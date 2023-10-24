@@ -17,12 +17,16 @@
       {{ pluralize({ count: upcomingSessions.length, singular: "session" }) }}
     </Heading>
     <PrimaryButton
-      v-if="canRsvpToAtLeastOne"
+      v-if="upcomingUnjoined.length > 0 && soonestRsvp"
       class="mb-4"
       :is-loading="joining"
+      :disabled="!canRsvp"
       @click="joinAllSessions"
-      >Join All Sessions</PrimaryButton
     >
+      <p v-if="!canRsvp">RSVPs open in {{ timeTillRsvp }}</p>
+      <p v-else>Join all upcoming sessions</p>
+    </PrimaryButton>
+
     <div class="grid md:grid-cols-2 gap-8">
       <SessionBlock
         v-for="session in upcomingSessions"
@@ -86,7 +90,7 @@ import { pluralize } from "@/util/grammar";
 import { joinSession } from "@/api/gamesAndSessions";
 import { store } from "@/store";
 import useToast from "@/components/Toast/useToast";
-import { userCanRsvp } from "@/util/time";
+import { useCanRsvp } from "@/composables/useCanRsvp";
 
 const { showSuccess, showError } = useToast();
 
@@ -130,16 +134,21 @@ const pastSessions = computed(() =>
   ),
 );
 
-const canRsvpToAtLeastOne = computed(() =>
-  upcomingSessions.value.some((session) =>
-    userCanRsvp({
-      session,
-      userId: store.user?.id,
-      hostId: session.creator_id,
-      userAccess: store.userCommunityAccess,
-    }),
+const upcomingUnjoined = computed(() =>
+  upcomingSessions.value.filter(
+    (session) => !session.rsvps.includes(store.user?.id ?? ""),
   ),
 );
+
+const { soonestRsvp, canRsvp, timeTillRsvp } = useCanRsvp({
+  session: upcomingUnjoined.value[0] || {
+    access_times: "",
+    rsvps: [],
+    creator_id: "",
+    start_time: 0,
+    end_time: 0,
+  },
+});
 
 async function joinAllSessions() {
   const user = store.user;
@@ -153,8 +162,6 @@ async function joinAllSessions() {
       joinSession({ sessionId: session.id, userId: id }),
     ),
   );
-
-  console.log(results);
 
   if (results.every((result) => result.status === "fulfilled")) {
     showSuccess({ message: "Joined all sessions" });
