@@ -81,6 +81,9 @@ import Heading from "@/components/Heading.vue";
 import { pluralize } from "@/util/grammar";
 import { joinSession } from "@/api/gamesAndSessions";
 import { store } from "@/store";
+import useToast from "@/components/Toast/useToast";
+
+const { showSuccess, showError } = useToast();
 
 const joining = ref(false);
 
@@ -128,11 +131,21 @@ async function joinAllSessions() {
 
   joining.value = true;
 
-  await Promise.allSettled(
+  const results = await Promise.allSettled(
     upcomingSessions.value.map((session) =>
       joinSession({ sessionId: session.id, userId: id }),
     ),
   );
+
+  console.log(results);
+
+  if (results.every((result) => result.status === "fulfilled")) {
+    showSuccess({ message: "Joined all sessions" });
+  } else if (results.some((result) => result.status === "fulfilled")) {
+    showSuccess({ message: "Joined some sessions. Please manually review." });
+  } else {
+    showError({ message: "Unable to join" });
+  }
 
   joining.value = false;
 }

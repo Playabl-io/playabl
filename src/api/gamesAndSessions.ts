@@ -390,11 +390,9 @@ export async function joinSession({
       log({ error });
     });
 
-  if (data.error) {
-    const error = new Error(data.error.message);
-    log({ error });
+  if (data) {
+    return data;
   }
-  return data;
 }
 
 export async function leaveSession({
