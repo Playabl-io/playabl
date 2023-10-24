@@ -16,7 +16,7 @@
           Cancelled
         </div>
       </div>
-      <div class="flex flex-col gap-3 items-start text-blue-700 mt-6">
+      <div class="flex flex-col gap-3 items-start mt-6">
         <p class="text-slate-700">
           By
           {{
@@ -25,24 +25,27 @@
           }}
         </p>
         <div class="flex gap-2">
-          <UserGroupIcon class="w-5 h-5" />
+          <UserGroupIcon class="w-5 h-5 text-blue-700" />
           <router-link
             :to="`/communities/${
               gameStore.community.url_short_name || gameStore.community.id
             }`"
-            class="text-sm underline decoration-dashed"
+            class="text-sm text-blue-700 border-b border-dashed border-blue-600"
           >
             {{ gameStore.community.name }}
           </router-link>
         </div>
         <div v-if="gameStore.game.community_events" class="flex gap-2">
-          <CalendarIcon class="w-5 h-5" />
+          <CalendarIcon class="w-5 h-5 text-blue-700" />
           <router-link
-            class="text-sm underline decoration-dashed"
+            class="text-sm text-blue-700 border-b border-dashed border-blue-600"
             :to="`/events/${gameStore.game.community_events.id}`"
           >
             {{ gameStore.game.community_events.title }}
           </router-link>
+        </div>
+        <div v-if="gameData?.sessions[0]" class="grid gap-2">
+          <GameAccessPopover :sample-session="gameData?.sessions[0]" />
         </div>
       </div>
 
@@ -130,6 +133,7 @@ import {
 import GameBadge from "@/components/Game/GameBadge.vue";
 import { ROLES } from "@/util/roles";
 import { getCoverImageUrl } from "@/api/storage";
+import GameAccessPopover from "./GameAccessPopover.vue";
 
 const router = useRouter();
 const currentRoute = useRoute();
