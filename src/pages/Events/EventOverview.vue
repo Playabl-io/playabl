@@ -68,7 +68,14 @@
       </Popover>
     </div>
     <div class="flex justify-between items-end my-6">
-      <Heading level="h6">Upcoming Games</Heading>
+      <div>
+        <Heading level="h6">Upcoming Games</Heading>
+        <RouterLink
+          :to="`/events/${eventStore.event.id}/calendar`"
+          class="text-sm text-blue-700 underline mt-2"
+          >or browse the event calendar</RouterLink
+        >
+      </div>
       <PrimaryButton
         v-if="isCreatorOrAdmin"
         :to="`/games/new?event_id=${eventStore.event?.id}&community_id=${eventStore.event?.community_id}`"

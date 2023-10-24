@@ -1,26 +1,5 @@
 <template>
   <div class="flex flex-col gap-4 justify-center">
-    <section class="w-full rounded-md">
-      <template v-if="selectedDate">
-        <Heading level="h5" as="h5">
-          {{ format(selectedDate, "LLLL do") }}
-        </Heading>
-        <ul
-          class="mt-4 overflow-visible grid md:grid-cols-2 lg:grid-cols-3 gap-6 items-start"
-        >
-          <MiniGameItem
-            v-for="session in sessionsForDay(selectedDate)"
-            :key="session.id"
-            :all-game-sessions="sessionsByGame[String(session.game_id.id)]"
-            :session="session"
-            @refresh="emit('refresh')"
-          />
-        </ul>
-      </template>
-      <div v-else class="h-full flex flex-col justify-center items-center">
-        <p class="text-lg font-light">Select a date to see events</p>
-      </div>
-    </section>
     <section class="w-full">
       <DisplayCalendar
         :reference-date="referenceDate"
@@ -54,6 +33,27 @@
           </ul>
         </template>
       </DisplayCalendar>
+    </section>
+    <section class="w-full rounded-md">
+      <template v-if="selectedDate">
+        <Heading level="h5" as="h5">
+          {{ format(selectedDate, "LLLL do") }}
+        </Heading>
+        <ul
+          class="mt-4 overflow-visible grid md:grid-cols-2 lg:grid-cols-3 gap-6 items-start"
+        >
+          <MiniGameItem
+            v-for="session in sessionsForDay(selectedDate)"
+            :key="session.id"
+            :all-game-sessions="sessionsByGame[String(session.game_id.id)]"
+            :session="session"
+            @refresh="emit('refresh')"
+          />
+        </ul>
+      </template>
+      <div v-else class="h-full flex flex-col justify-center items-center">
+        <p class="text-lg font-light">Select a date to see events</p>
+      </div>
     </section>
   </div>
 </template>
@@ -94,7 +94,7 @@ const emit = defineEmits([
 
 function sessionsForDay(day: Date) {
   const dateSessions = props.sessions?.filter((session) =>
-    isSameDay(day, new Date(session.start_time))
+    isSameDay(day, new Date(session.start_time)),
   );
   return dateSessions;
 }
