@@ -13,6 +13,10 @@ Create each as a public bucket, with 1 MB upload limit.
 
 Next, you have to add the RLS policies. For each bucket, you can do the quick start option and use the **Give users access to only their own a top level folder named as uid** template. Enable all operations and save. This will allow each user full access to their own bucket which is stored under their ID. And since the buckets are public, anyone can read the contents.
 
+### Replication
+
+Realtime replication is not turned on by default and has to be manually activated.
+
 ## Local user
 
-One user is seeded in the database during setup. You can log in with this user after starting the web app with the email `developer@playabl.io` and password `let-me-in-please`.
+There are two users seeded - a community admin and a player.`developer@playabl.io` is the admin, and `player@playbl.io` is the player. Both have the password `let-me-in-please`.

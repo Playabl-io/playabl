@@ -1,5 +1,4 @@
 import { AccessLevel, RsvpTimes } from "@/typings/AccessLevel";
-import { Community } from "@/typings/Community";
 import { CommunityAccess } from "@/typings/CommunityAccess";
 import { Profile } from "@/typings/Profile";
 import { GameSession } from "@/typings/Session";
@@ -32,7 +31,7 @@ const timeBeforeMapper = {
 export function rsvpTimes(
   accessTimes: AccessLevel[],
   defaultOverride?: number,
-  overrideBehavior: "global" | "policy" = "policy"
+  overrideBehavior: "global" | "policy" = "policy",
 ): RsvpTimes {
   /**
    * All priority periods run concurrently. This means the policy with the longest priority
@@ -44,14 +43,14 @@ export function rsvpTimes(
   const times = accessTimes.map((time) => {
     return maxTimeMapper[time.time_denomination]?.(
       now,
-      time.priority_access_time
+      time.priority_access_time,
     );
   });
   const maxTime = max(times);
   accessTimes.forEach((time) => {
     const rsvpDate = timeBeforeMapper[time.time_denomination]?.(
       maxTime,
-      time.priority_access_time
+      time.priority_access_time,
     );
     const rounded = roundToNearestMinutes(defaultOverride || rsvpDate);
 
@@ -79,7 +78,7 @@ export function rsvpTimes(
 
 export function compareUserAccessToRsvpTimes(
   userAccess: CommunityAccess[],
-  rsvpTimes: RsvpTimes
+  rsvpTimes: RsvpTimes,
 ) {
   const access = userAccess.map((access) => {
     /**
@@ -140,7 +139,7 @@ export function userCanRsvp({
 export function getSoonestRsvpTime(
   userAccess: CommunityAccess[],
   rsvpTimes: RsvpTimes,
-  allowDefault = false
+  allowDefault = false,
 ) {
   if (allowDefault && rsvpTimes.default) {
     return rsvpTimes.default.rsvpAvailableTime;

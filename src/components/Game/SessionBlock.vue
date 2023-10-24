@@ -1,5 +1,10 @@
 <template>
-  <div class="p-4 rounded-md relative bg-white shadow-sm">
+  <div
+    class="p-4 rounded-md relative shadow-sm"
+    :class="[
+      isBefore(session.start_time, new Date()) ? 'bg-slate-50' : 'bg-white',
+    ]"
+  >
     <div>
       <p class="text-lg font-bold">
         {{ format(new Date(session.start_time), "EEE, MMM do") }}
@@ -9,37 +14,31 @@
         {{ format(new Date(session.end_time), "h:mm a O") }}
       </p>
     </div>
-    <div v-if="!isOwner" class="mt-4 mb-8">
-      <SecondaryButton
-        v-if="userIsInTheGame"
-        :is-loading="isProcessing"
-        class="w-full"
-        @click="handleLeave"
-      >
-        Leave session
-      </SecondaryButton>
-      <PrimaryButton
-        v-else-if="canRsvp"
-        class="w-full"
-        :is-loading="isProcessing"
-        @click="handleJoin"
-      >
-        Join
-      </PrimaryButton>
-      <div v-else-if="soonestRsvp" class="text-sm text-slate-700 text-center">
-        RSVP available {{ format(soonestRsvp, "EEE, MMM do h:mm aa") }}
-      </div>
-      <div v-else-if="!notAMember" class="text-slate-700 text-sm">
-        <p>
-          You cannot RSVP because this game requires an access level you do not
-          have. Please contact the community managers for help.
-        </p>
-        <p class="font-semibold text-sm mt-4">
-          RSVP access requires one of the following
-        </p>
-        <ul class="list-disc list-inside mt-1">
-          <li v-for="name in accessNeeded" :key="name">{{ name }}</li>
-        </ul>
+    <div v-if="!isBefore(session.start_time, new Date())">
+      <div v-if="!isOwner" class="mt-4 mb-8">
+        <SecondaryButton
+          v-if="userIsInTheGame"
+          :is-loading="isProcessing"
+          class="w-full"
+          @click="handleLeave"
+        >
+          Leave session
+        </SecondaryButton>
+        <PrimaryButton
+          v-else-if="canRsvp"
+          class="w-full"
+          :is-loading="isProcessing"
+          @click="handleJoin"
+        >
+          Join
+        </PrimaryButton>
+        <div
+          v-else
+          class="text-slate-700 text-center flex items-center flex-wrap gap-1"
+        >
+          {{ rsvpAvailableMessage }}
+          <span v-if="timeTillRsvp" class="italic"> ({{ timeTillRsvp }}) </span>
+        </div>
       </div>
     </div>
     <div class="mt-8 grid gap-4">
@@ -82,7 +81,7 @@
 </template>
 <script setup lang="ts">
 import { computed, PropType, ref } from "vue";
-import { format } from "date-fns";
+import { format, isBefore } from "date-fns";
 import * as R from "ramda";
 import { Session } from "@/typings/Session";
 import {
@@ -91,7 +90,6 @@ import {
   sendRemovalEmail,
 } from "@/api/gamesAndSessions";
 import PrimaryButton from "../Buttons/PrimaryButton.vue";
-import { getSoonestRsvpTime, userCanRsvp } from "@/util/time";
 import { store } from "@/store";
 import useToast from "../Toast/useToast";
 import { gameStore } from "@/pages/Game/gameStore";
@@ -100,6 +98,7 @@ import AddToGoogleCal from "./AddToGoogleCal.vue";
 import DownloadCal from "./DownloadCal.vue";
 import SecondaryButton from "../Buttons/SecondaryButton.vue";
 import { Profile } from "@/typings/Profile";
+import { useCanRsvp } from "@/composables/useCanRsvp";
 
 const { showSuccess, showError } = useToast();
 
@@ -124,62 +123,21 @@ const props = defineProps({
 
 const isProcessing = ref(false);
 
-const canRsvp = computed(() => {
-  const membership =
-    store.userCommunityMembership?.[gameStore.game.community_id];
-  if (membership && membership.communityMembership.role_id > 0) {
-    return userCanRsvp({
-      userAccess: store.userCommunityAccess,
-      session: props.session,
-      hostId: gameStore.game.creator_id,
-      userId: store.user?.id,
-    });
-  }
-  return false;
-});
-
-const soonestRsvp = computed(() => {
-  let accessTimes;
-  if (typeof props.session.access_times === "string") {
-    accessTimes = JSON.parse(props.session.access_times);
-  } else {
-    accessTimes = props.session.access_times;
-  }
-  const membership =
-    store.userCommunityMembership?.[gameStore.game.community_id];
-
-  const allowDefault = membership && membership.communityMembership.role_id > 0;
-  return getSoonestRsvpTime(
-    store.userCommunityAccess,
-    accessTimes,
-    allowDefault
-  );
-});
-
-const accessNeeded = computed(() => {
-  let accessTimes;
-  if (typeof props.session.access_times === "string") {
-    accessTimes = JSON.parse(props.session.access_times);
-  } else {
-    accessTimes = props.session.access_times;
-  }
-  const accessTimeNames: string[] = [];
-  for (const access in accessTimes) {
-    accessTimeNames.push(accessTimes[access].name);
-  }
-  return accessTimeNames;
+const { canRsvp, timeTillRsvp, rsvpAvailableMessage } = useCanRsvp({
+  session: props.session,
 });
 
 const splitAtParticipantCount = R.splitAt(props.participantCount);
 const rsvps = computed(
   () =>
-    gameStore.sessions.find((session) => session.id === props.session.id)?.rsvps
+    gameStore.sessions.find((session) => session.id === props.session.id)
+      ?.rsvps,
 );
 const participants = computed(() => {
   return splitAtParticipantCount(rsvps.value ?? []);
 });
-const userIsInTheGame = computed(() =>
-  rsvps.value?.includes(store.user?.id ?? "")
+const userIsInTheGame = computed(
+  () => rsvps.value?.includes(store.user?.id ?? ""),
 );
 
 async function handleJoin() {
