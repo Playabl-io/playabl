@@ -92,6 +92,9 @@
       :pagination="{
         type: 'bullets',
         clickable: true,
+        dynamicBullets: true,
+        grabCursor: true,
+        centeredSlides: true,
       }"
     >
       <swiper-slide v-for="game in eventStore.eventGames" :key="game.id">
@@ -149,7 +152,7 @@ const accessModel = computed(() => {
     eventStore.event?.event_access_levels?.length > 0
   ) {
     const userHasAccess = eventStore.event.event_access_levels.some((id) =>
-      store.userCommunityAccess.find((policy) => policy.access_level_id === id)
+      store.userCommunityAccess.find((policy) => policy.access_level_id === id),
     );
     if (userHasAccess) {
       return {
