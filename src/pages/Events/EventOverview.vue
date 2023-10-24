@@ -71,7 +71,10 @@
       <div>
         <Heading level="h6">Upcoming Games</Heading>
         <RouterLink
-          :to="`/events/${eventStore.event.id}/calendar`"
+          :to="`/events/${eventStore.event.id}/calendar?date=${format(
+            new Date(eventStore.event.start_time),
+            'yyyy-MM',
+          )}`"
           class="text-sm text-blue-700 underline mt-2"
           >or browse the event calendar</RouterLink
         >
