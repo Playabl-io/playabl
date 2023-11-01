@@ -61,10 +61,10 @@ defineProps({
 });
 
 const selectedSortKey = ref(
-  (params[SORT_KEY_PATH] as string) || sortKeyOptions[0].value
+  (params[SORT_KEY_PATH] as string) || sortKeyOptions[0].value,
 );
 const selectedSortDir = ref(
-  (params["sort.dir"] as string) || sortDirOptions[0].value
+  (params["sort.dir"] as string) || sortDirOptions[0].value,
 );
 
 watch([selectedSortKey, selectedSortDir], () => {

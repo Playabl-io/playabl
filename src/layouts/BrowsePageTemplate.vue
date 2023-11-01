@@ -34,7 +34,6 @@
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 import { useBreakpoints, breakpointsTailwind } from "@vueuse/core";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
-import OutlineButton from "@/components/Buttons/OutlineButton.vue";
 
 const breakpoints = useBreakpoints(breakpointsTailwind);
 const isSmAndLarger = breakpoints.greater("sm");

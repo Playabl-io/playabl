@@ -4,7 +4,15 @@ import { GameDetailBlock, GameListing, NewGame, Game } from "@/typings/Game";
 import { GameSession, Session } from "@/typings/Session";
 import { log } from "@/util/logger";
 import { Community } from "@/typings/Community";
-import { startOfDay, endOfDay } from "date-fns";
+import {
+  startOfDay,
+  endOfDay,
+  parse,
+  isAfter,
+  isBefore,
+  addSeconds,
+  subSeconds,
+} from "date-fns";
 
 import axios from "axios";
 import { CommunityEvent } from "@/typings/CommunityEvent";
@@ -36,6 +44,42 @@ function filterDraftEventGames(record: GameListing) {
     return record.community_events?.draft_state === "PUBLISHED";
   }
   return true;
+}
+
+export function sessionIsWithinRange({
+  session,
+  starttime,
+  endtime,
+}: {
+  session: { start_time: Session["start_time"]; end_time: Session["end_time"] };
+  starttime?: string | null;
+  endtime?: string | null;
+}) {
+  const sessionStart = new Date(session.start_time);
+  const sessionEnd = new Date(session.end_time);
+  let startsOnTime = true;
+  let endsOnTime = true;
+  if (starttime) {
+    // remove 30 seconds since the user time is inclusive
+    const startLimit = subSeconds(parse(starttime, "HH:mm", sessionStart), 30);
+    startsOnTime = isAfter(sessionStart, startLimit);
+  }
+  if (endtime) {
+    // add 30 seconds since the user time is inclusive
+    const endLimit = addSeconds(parse(endtime, "HH:mm", sessionEnd), 30);
+    endsOnTime = isBefore(sessionEnd, endLimit);
+  }
+  return startsOnTime && endsOnTime;
+}
+
+export function filterGameSessionsByTimeRange(
+  record: GameListing,
+  starttime?: string,
+  endtime?: string,
+) {
+  return record.sessions.some((session) =>
+    sessionIsWithinRange({ session, starttime, endtime }),
+  );
 }
 
 export async function createGame(newGame: NewGame) {
@@ -85,7 +129,7 @@ export async function loadBrowsableGames({
   openOnly,
   isRecorded,
   usesSafetyTools,
-  joinedCommunities,
+  communities,
   minPlayer = "0",
   maxPlayer,
   system,
@@ -95,7 +139,7 @@ export async function loadBrowsableGames({
   openOnly: boolean;
   isRecorded: boolean;
   usesSafetyTools: boolean;
-  joinedCommunities: boolean;
+  communities: string[];
   minPlayer?: string;
   maxPlayer?: string;
   system?: string;
@@ -128,8 +172,8 @@ export async function loadBrowsableGames({
     query.like("system", system);
   }
 
-  if (joinedCommunities) {
-    query.in("community_id", userCommunityMembershipIds.value);
+  if (communities.length) {
+    query.in("community_id", communities);
   }
 
   const { data, error } = await query;

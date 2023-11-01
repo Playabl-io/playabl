@@ -28,6 +28,7 @@ interface Store {
       communityMembership: CommunityMembership;
     }
   >;
+  userSettings: Profile["user_settings"];
 }
 
 export const store = reactive<Store>({
@@ -40,6 +41,7 @@ export const store = reactive<Store>({
   userManagedCommunities: [],
   userCommunityAccess: [],
   userCommunityMembership: {},
+  userSettings: {},
 });
 
 watch(

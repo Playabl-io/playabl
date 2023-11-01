@@ -2,13 +2,14 @@
   <Listbox :model-value="modelValue" multiple @update:model-value="onUpdate">
     <div class="relative z-10">
       <ListboxButton
-        class="relative w-full h-10 cursor-default rounded-md bg-white py-2 pl-3 pr-10 text-left border border-gray-300 border-solid focus-styles sm:text-sm"
+        class="relative w-full h-10 cursor-default rounded-md bg-white py-2 pl-3 pr-10 text-left border border-gray-300 border-solid focus-styles sm:text-sm text-slate-900"
       >
         <span class="block truncate">{{
           modelValue.length > 0
             ? modelValue
                 .map(
-                  (val) => options.find((option) => option.value === val)?.label
+                  (val) =>
+                    options.find((option) => option.value === val)?.label,
                 )
                 .join(", ")
             : label

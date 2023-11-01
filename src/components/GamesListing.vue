@@ -4,7 +4,11 @@
       <LoadingSpinner color="brand-500" />
     </span>
     <template v-for="game in games" v-else-if="games.length" :key="game.id">
-      <GameListingVue :id="game.id" :game="game" />
+      <GameListingVue
+        :id="game.id"
+        :game="game"
+        @add-user-to-game-session="emit('addUserToGameSession', $event)"
+      />
       <hr class="last:hidden border-slate-200" />
     </template>
     <template v-else>
@@ -29,4 +33,6 @@ defineProps({
     required: true,
   },
 });
+
+const emit = defineEmits(["addUserToGameSession"]);
 </script>
