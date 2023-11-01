@@ -41,6 +41,10 @@ supabase.auth.onAuthStateChange(async (event, session) => {
       if (session !== null && session.user) {
         store.userSession = session;
         const profile = await loadProfile(session.user.id);
+        if (!profile) {
+          supabase.auth.signOut();
+          break;
+        }
         store.user = profile;
 
         if (!notificationSubscription.value) {
@@ -92,9 +96,9 @@ async function loadNotificationsAndSubscribe() {
       },
       (payload) => {
         store.notifications = store.notifications.concat(
-          payload.new as Notification
+          payload.new as Notification,
         );
-      }
+      },
     )
     .on(
       "postgres_changes",
@@ -111,7 +115,7 @@ async function loadNotificationsAndSubscribe() {
           }
           return notification;
         });
-      }
+      },
     )
     .subscribe();
   notificationSubscription.value = subscription;
