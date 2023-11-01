@@ -1,6 +1,6 @@
 <template>
   <div class="grid sm:grid-cols-3 gap-6 h-full items-start">
-    <div class="flex flex-col gap-6 sm:sticky sm:top-20">
+    <div class="flex flex-col gap-6">
       <PrimaryButton
         v-if="allowCreateNew"
         class="shadow-sm"
