@@ -2,7 +2,9 @@
   <div
     class="flex items-center gap-2 w-full border border-gray-100 p-2 rounded-md"
   >
-    <div class="grid grid-cols-3 gap-4 session-time-grid w-full">
+    <div
+      class="grid grid-cols-2 lg:grid-cols-3 gap-4 session-time-grid items-center w-full"
+    >
       <p class="text-sm">
         {{ format(new Date(session.start_time), "EEE, MMM do") }}
       </p>
@@ -25,7 +27,7 @@
 
     <div class="ml-auto flex items-center gap-2 relative">
       <div
-        v-if="isPlayingInGame"
+        v-if="isPlayingInGame || true"
         class="p-2 rounded-md bg-green-200 flex items-center space-x-1 shadow-sm"
       >
         <p class="text-sm font-semibold">RSVP'd</p>
@@ -38,7 +40,6 @@
         <p class="text-sm font-semibold">Waitlist</p>
         <ExclamationCircleIcon class="h-4 w-4 text-violet-600" />
       </div>
-
       <Menu>
         <MenuButton>
           <EllipsisHorizontalCircleIcon class="h-6 w-6" />
@@ -136,6 +137,11 @@ const canRsvp = computed(() =>
 </script>
 <style scoped>
 .session-time-grid {
-  grid-template-columns: 140px 1fr 150px;
+  grid-template-columns: 1fr;
+}
+@media screen(lg) {
+  .session-time-grid {
+    grid-template-columns: 140px 1fr 150px;
+  }
 }
 </style>
