@@ -27,7 +27,7 @@
 
     <div class="ml-auto flex items-center gap-2 relative">
       <div
-        v-if="isPlayingInGame || true"
+        v-if="isPlayingInGame"
         class="p-2 rounded-md bg-green-200 flex items-center space-x-1 shadow-sm"
       >
         <p class="text-sm font-semibold">RSVP'd</p>

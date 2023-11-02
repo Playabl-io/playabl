@@ -40,7 +40,28 @@
           </div>
           <div>
             <div class="mb-2">
-              <FormLabel no-margin>Time of Day</FormLabel>
+              <FormLabel no-margin
+                >Time of Day
+                <Tooltip position="right">
+                  <template #trigger="{ toggleTooltip }">
+                    <InformationCircleIcon
+                      class="w-4 h-5"
+                      @mouseenter="toggleTooltip"
+                      @mouseleave="toggleTooltip"
+                      @focus="toggleTooltip"
+                      @blur="toggleTooltip"
+                    />
+                  </template>
+                  <template #tooltip>
+                    <p class="max-w-sm">
+                      Time of day will limit results to games with one or more
+                      sessions that fall within the time window. To find
+                      sessions that cross borders of days, specify only one
+                      boundary.
+                    </p>
+                  </template>
+                </Tooltip>
+              </FormLabel>
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div class="flex flex-col gap-1">
@@ -127,6 +148,8 @@ import { store } from "@/store";
 import { supabase } from "@/supabase";
 import FormMultiSelect from "@/components/Forms/FormMultiSelect.vue";
 import { pluralize } from "@/util/grammar";
+import { InformationCircleIcon } from "@heroicons/vue/24/outline";
+import Tooltip from "@/components/Tooltip.vue";
 
 const route = useRoute();
 const router = useRouter();
