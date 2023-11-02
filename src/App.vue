@@ -46,6 +46,7 @@ supabase.auth.onAuthStateChange(async (event, session) => {
           break;
         }
         store.user = profile;
+        store.userSettings = profile.user_settings;
 
         if (!notificationSubscription.value) {
           loadNotificationsAndSubscribe();
