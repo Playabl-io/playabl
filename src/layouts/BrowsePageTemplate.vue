@@ -12,7 +12,7 @@
         <template v-if="!isSmAndLarger">
           <Disclosure>
             <DisclosureButton class="text-sm font-semibold">
-              Tap for controls
+              Open filters and sort
             </DisclosureButton>
             <DisclosurePanel>
               <slot name="page-controls"></slot>
