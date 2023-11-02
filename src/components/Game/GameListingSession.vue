@@ -5,13 +5,24 @@
     <div
       class="grid grid-cols-2 lg:grid-cols-3 gap-4 session-time-grid items-center w-full"
     >
-      <p class="text-sm">
-        {{ format(new Date(session.start_time), "EEE, MMM do") }}
-      </p>
-      <p class="text-sm">
-        {{ format(new Date(session.start_time), "hh:mm aa") }} -
-        {{ format(new Date(session.end_time), "hh:mm aa") }}
-      </p>
+      <template v-if="isSameDay(startDate, endDate)">
+        <p class="text-sm">
+          {{ format(startDate, "EEE, MMM do") }}
+        </p>
+        <p class="text-sm">
+          {{ format(startDate, "hh:mm aa") }} -
+          {{ format(endDate, "hh:mm aa") }}
+        </p>
+      </template>
+      <template v-else>
+        <p class="text-sm">
+          {{ format(startDate, "EEE, MMM do") }}
+        </p>
+        <p class="text-sm">
+          {{ format(startDate, "hh:mm aa") }} -
+          {{ format(endDate, "hh:mm aa, MMM do") }}
+        </p>
+      </template>
       <div class="text-sm flex gap-1 items-center">
         <CheckCircleIcon
           v-if="session.rsvps.length < session.participant_count"
@@ -89,7 +100,7 @@
 import { PropType, computed } from "vue";
 import { Session } from "@/typings/Session";
 import { store } from "@/store";
-import { format } from "date-fns";
+import { format, isSameDay } from "date-fns";
 import {
   StarIcon,
   ExclamationCircleIcon,
@@ -109,6 +120,9 @@ const props = defineProps({
     required: true,
   },
 });
+
+const startDate = computed(() => new Date(props.session.start_time));
+const endDate = computed(() => new Date(props.session.end_time));
 
 const emit = defineEmits(["rsvp"]);
 

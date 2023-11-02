@@ -5,18 +5,28 @@
       isBefore(session.start_time, new Date()) ? 'bg-slate-50' : 'bg-white',
     ]"
   >
-    <div>
+    <div v-if="isSameDay(startDate, endDate)">
       <p class="text-lg font-bold">
-        {{ format(new Date(session.start_time), "EEE, MMM do") }}
+        {{ format(startDate, "EEE, MMM do") }}
       </p>
       <p class="text-sm text-slate-800">
-        {{ format(new Date(session.start_time), "h:mm a") }} -
-        {{ format(new Date(session.end_time), "h:mm a O") }}
+        {{ format(startDate, "h:mm a") }} -
+        {{ format(endDate, "h:mm a O") }}
       </p>
-      <div v-if="!isWithinRange" class="text-sm text-red-500 flex gap-1 mt-2">
-        <ExclamationTriangleIcon class="w-5 h-5" />
-        <p>This session is outside of your preferred time</p>
-      </div>
+    </div>
+    <div v-else>
+      <p class="text-lg font-bold">
+        {{ format(startDate, "EEE, MMM do") }} -
+        {{ format(endDate, "EEE, MMM do") }}
+      </p>
+      <p class="text-sm text-slate-800">
+        {{ format(startDate, "h:mm a") }} -
+        {{ format(endDate, "h:mm a O") }}
+      </p>
+    </div>
+    <div v-if="!isWithinRange" class="text-sm text-red-500 flex gap-1 mt-2">
+      <ExclamationTriangleIcon class="w-5 h-5" />
+      <p>This session is outside of your preferred time</p>
     </div>
     <div v-if="!isBefore(session.start_time, new Date())">
       <div v-if="!isOwner" class="mt-4 mb-8">
@@ -87,7 +97,7 @@
 </template>
 <script setup lang="ts">
 import { computed, PropType, ref } from "vue";
-import { format, isBefore } from "date-fns";
+import { format, isBefore, isSameDay } from "date-fns";
 import * as R from "ramda";
 import { Session } from "@/typings/Session";
 import {
@@ -142,6 +152,9 @@ const isWithinRange = computed(() =>
     endtime: store.userSettings?.endtime,
   }),
 );
+
+const startDate = computed(() => new Date(props.session.start_time));
+const endDate = computed(() => new Date(props.session.end_time));
 
 const { canRsvp, timeTillRsvp, rsvpAvailableMessage } = useCanRsvp({
   session: props.session,
