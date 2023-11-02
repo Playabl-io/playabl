@@ -30,6 +30,7 @@
               class="w-full h-full rounded-lg bg-gradient-to-tl from-blue-100 to-blue-200"
             />
           </div>
+          <p class="text-xs mt-2">Playabl shows images in 16:9 format</p>
         </div>
         <div class="flex flex-col items-center justify-center mt-4 sm:mt-0">
           <button
