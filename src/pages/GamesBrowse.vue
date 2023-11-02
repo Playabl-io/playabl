@@ -78,6 +78,16 @@
         </div>
       </template>
       <template #content>
+        <div class="mb-6">
+          <Heading as="h6" level="h6" class="text-right">
+            {{
+              `${filteredByTimeRange.length} ${pluralize({
+                count: filteredByTimeRange.length,
+                singular: "result",
+              })}`
+            }}
+          </Heading>
+        </div>
         <GamesListing
           :is-loading="isLoading"
           :games="filteredByTimeRange"
@@ -91,6 +101,7 @@
 import { onMounted, ref, watch, computed } from "vue";
 import BrowsePageTemplate from "@/layouts/BrowsePageTemplate.vue";
 import BaseTemplate from "@/layouts/BaseTemplate.vue";
+import Heading from "@/components/Heading.vue";
 import FormLabel from "@/components/Forms/FormLabel.vue";
 import FormCheckbox from "@/components/Forms/FormCheckbox.vue";
 import GamesListing from "@/components/GamesListing.vue";
@@ -115,6 +126,7 @@ import FilterDropdown from "@/components/Dropdown/FilterDropdown.vue";
 import { store } from "@/store";
 import { supabase } from "@/supabase";
 import FormMultiSelect from "@/components/Forms/FormMultiSelect.vue";
+import { pluralize } from "@/util/grammar";
 
 const route = useRoute();
 const router = useRouter();

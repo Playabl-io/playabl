@@ -65,9 +65,11 @@ export function sessionIsWithinRange({
     startsOnTime = isAfter(sessionStart, startLimit);
   }
   if (endtime) {
-    // add 30 seconds since the user time is inclusive
-    const endLimit = addSeconds(parse(endtime, "HH:mm", sessionEnd), 30);
-    endsOnTime = isBefore(sessionEnd, endLimit);
+    const endLimitBasedOnStartDate = addSeconds(
+      parse(endtime, "HH:mm", sessionStart),
+      30,
+    );
+    endsOnTime = isBefore(sessionEnd, endLimitBasedOnStartDate);
   }
   return startsOnTime && endsOnTime;
 }

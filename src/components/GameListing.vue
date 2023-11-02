@@ -53,7 +53,7 @@
           leave-from-class="transform opacity-100"
           leave-to-class="transform opacity-0"
         >
-          <DisclosurePanel class="p-4 flex flex-col gap-3">
+          <DisclosurePanel class="py-4 flex flex-col gap-3">
             <template v-if="saving">
               <LoadingSpinner class="mx-auto" color="brand-500" />
             </template>
@@ -65,8 +65,8 @@
                 :creator-id="game.creator_id"
                 @rsvp="handleRsvp"
               />
-              <div v-if="partitionedSessions[1].length" class="mt-2">
-                <p class="text-xs mb-1">
+              <template v-if="partitionedSessions[1].length">
+                <p class="text-xs">
                   Some sessions are outside of your preferred time range
                 </p>
                 <GameListingSession
@@ -76,7 +76,7 @@
                   :creator-id="game.creator_id"
                   @rsvp="handleRsvp"
                 />
-              </div>
+              </template>
               <PrimaryButton
                 v-if="reservableSessions.length > 0"
                 @click="handleRsvpToAll"
