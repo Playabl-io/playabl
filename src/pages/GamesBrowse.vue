@@ -73,6 +73,13 @@
                 <FormInput v-model="endtime" type="time" />
               </div>
             </div>
+            <button
+              v-if="store.user"
+              class="text-blue-700 text-xs underline my-1"
+              @click="setUserSettings"
+            >
+              Save time preference to my profile
+            </button>
           </div>
 
           <div class="flex flex-col">
@@ -119,7 +126,7 @@
   </BaseTemplate>
 </template>
 <script setup lang="ts">
-import { onMounted, ref, watch, computed } from "vue";
+import { onMounted, onUnmounted, ref, watch, computed } from "vue";
 import BrowsePageTemplate from "@/layouts/BrowsePageTemplate.vue";
 import BaseTemplate from "@/layouts/BaseTemplate.vue";
 import Heading from "@/components/Heading.vue";
@@ -150,6 +157,9 @@ import FormMultiSelect from "@/components/Forms/FormMultiSelect.vue";
 import { pluralize } from "@/util/grammar";
 import { InformationCircleIcon } from "@heroicons/vue/24/outline";
 import Tooltip from "@/components/Tooltip.vue";
+import useToast from "@/components/Toast/useToast";
+
+const { showSuccess, showError } = useToast();
 
 const route = useRoute();
 const router = useRouter();
@@ -173,6 +183,13 @@ const communityOptions = ref<{ label: string; value: string }[]>([]);
 onMounted(async () => {
   loadCommunityNames();
   loadGames();
+});
+
+onUnmounted(() => {
+  if (store.user) {
+    // reset the userSettings to match what is saved to the profile
+    store.userSettings = { ...store.user?.user_settings };
+  }
 });
 
 async function loadCommunityNames() {
@@ -211,6 +228,31 @@ async function loadGames() {
   isLoading.value = false;
 }
 
+async function setUserSettings() {
+  const update = {
+    ...store.userSettings,
+    starttime: starttime.value,
+    endtime: endtime.value,
+  };
+  if (store?.user?.id) {
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          user_settings: update,
+        })
+        .eq("id", store.user.id);
+      store.user.user_settings = update;
+      if (error) {
+        throw error;
+      }
+      showSuccess({ message: "Time preference saved" });
+    } catch (error) {
+      showError({ message: "Unable to save user settings" });
+    }
+  }
+}
+
 watch([route], () => {
   loadGames();
 });
@@ -221,18 +263,7 @@ watch(starttime, async (newTime) => {
     starttime: newTime,
     endtime: endtime.value,
   };
-  if (store?.user?.id) {
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        user_settings: update,
-      })
-      .eq("id", store.user.id);
-    store.user.user_settings = update;
-    if (error) {
-      console.log(error);
-    }
-  }
+
   store.userSettings = update;
 });
 
@@ -242,18 +273,7 @@ watch(endtime, async (newTime) => {
     starttime: starttime.value,
     endtime: newTime,
   };
-  if (store?.user?.id) {
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        user_settings: update,
-      })
-      .eq("id", store.user.id);
-    store.user.user_settings = update;
-    if (error) {
-      console.log(error);
-    }
-  }
+
   store.userSettings = update;
 });
 
