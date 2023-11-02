@@ -36,6 +36,16 @@
         </div>
       </template>
       <template #content>
+        <div class="mb-6">
+          <Heading as="h6" level="h6" class="text-right">
+            {{
+              `${communities.length} ${pluralize({
+                count: communities.length,
+                singular: "result",
+              })}`
+            }}
+          </Heading>
+        </div>
         <CommunitiesListing
           :is-loading="isLoading"
           :communities="communities"
@@ -68,6 +78,8 @@ import {
 } from "@/util/urlParams";
 import FormMultiSelect from "@/components/Forms/FormMultiSelect.vue";
 import { GAME_TAG_OPTIONS } from "@/util/gameSystemList";
+import { pluralize } from "@/util/grammar";
+import Heading from "@/components/Heading.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -97,7 +109,7 @@ const keyOptions = [
 onMounted(loadCommunities);
 
 const sortByMemberCount = R.sortBy(
-  (community: CommunityBrowse) => community.community_memberships[0]?.count
+  (community: CommunityBrowse) => community.community_memberships[0]?.count,
 );
 
 async function loadCommunities() {

@@ -1,6 +1,6 @@
 <template>
   <select
-    class="h-10 rounded-md border border-solid border-gray-300 text-slate-900 dark:bg-slate-200 focus-styles"
+    class="h-10 rounded-md border border-solid border-gray-300 text-slate-900 sm:text-sm dark:bg-slate-200 focus-styles"
     v-bind="$attrs"
     @change="handleChange"
   >

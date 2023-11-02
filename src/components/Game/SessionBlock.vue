@@ -13,6 +13,10 @@
         {{ format(new Date(session.start_time), "h:mm a") }} -
         {{ format(new Date(session.end_time), "h:mm a O") }}
       </p>
+      <div v-if="!isWithinRange" class="text-sm text-red-500 flex gap-1 mt-2">
+        <ExclamationTriangleIcon class="w-5 h-5" />
+        <p>This session is outside of your preferred time</p>
+      </div>
     </div>
     <div v-if="!isBefore(session.start_time, new Date())">
       <div v-if="!isOwner" class="mt-4 mb-8">
@@ -90,6 +94,7 @@ import {
   joinSession,
   leaveSession,
   sendRemovalEmail,
+  sessionIsWithinRange,
 } from "@/api/gamesAndSessions";
 import PrimaryButton from "../Buttons/PrimaryButton.vue";
 import { store } from "@/store";
@@ -101,6 +106,7 @@ import DownloadCal from "./DownloadCal.vue";
 import SecondaryButton from "../Buttons/SecondaryButton.vue";
 import { Profile } from "@/typings/Profile";
 import { useCanRsvp } from "@/composables/useCanRsvp";
+import { ExclamationTriangleIcon } from "@heroicons/vue/24/outline";
 
 const { showSuccess, showError } = useToast();
 
@@ -128,6 +134,14 @@ const props = defineProps({
 });
 
 const isProcessing = ref(false);
+
+const isWithinRange = computed(() =>
+  sessionIsWithinRange({
+    session: props.session,
+    starttime: store.userSettings?.starttime,
+    endtime: store.userSettings?.endtime,
+  }),
+);
 
 const { canRsvp, timeTillRsvp, rsvpAvailableMessage } = useCanRsvp({
   session: props.session,

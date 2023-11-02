@@ -32,9 +32,13 @@
           <div class="text-sm">
             {{ game.sessions.length }} upcoming
             {{
-              pluralize({ count: game.sessions.length, singular: "session" })
+              pluralize({
+                count: game.sessions.length,
+                singular: "session",
+              })
             }}
-            starting {{ format(game.sessions[0].start_time, "MMM do") }}
+            starting
+            {{ format(game.sessions[0].start_time, "MMM do") }}
           </div>
           <component
             :is="open ? ChevronDownIcon : ChevronUpIcon"
@@ -49,18 +53,30 @@
           leave-from-class="transform opacity-100"
           leave-to-class="transform opacity-0"
         >
-          <DisclosurePanel class="p-4 flex flex-col gap-3">
+          <DisclosurePanel class="py-4 flex flex-col gap-3">
             <template v-if="saving">
               <LoadingSpinner class="mx-auto" color="brand-500" />
             </template>
             <template v-else>
               <GameListingSession
-                v-for="session in sessions"
+                v-for="session in partitionedSessions[0]"
                 :key="session.id"
                 :session="session"
                 :creator-id="game.creator_id"
                 @rsvp="handleRsvp"
               />
+              <template v-if="partitionedSessions[1].length">
+                <p class="text-xs">
+                  Some sessions are outside of your preferred time range
+                </p>
+                <GameListingSession
+                  v-for="session in partitionedSessions[1]"
+                  :key="session.id"
+                  :session="session"
+                  :creator-id="game.creator_id"
+                  @rsvp="handleRsvp"
+                />
+              </template>
               <PrimaryButton
                 v-if="reservableSessions.length > 0"
                 @click="handleRsvpToAll"
@@ -156,11 +172,12 @@ import GameListingSession from "./Game/GameListingSession.vue";
 import PrimaryButton from "./Buttons/PrimaryButton.vue";
 import { store } from "@/store";
 import { userCanRsvp } from "@/util/time";
-import { joinSession } from "@/api/gamesAndSessions";
+import { joinSession, sessionIsWithinRange } from "@/api/gamesAndSessions";
 import useToast from "./Toast/useToast";
 import LoadingSpinner from "./LoadingSpinner.vue";
 import { Session } from "@/typings/Session";
 import { format } from "date-fns";
+import * as R from "ramda";
 
 const { showError, showSuccess } = useToast();
 
@@ -171,11 +188,23 @@ const props = defineProps({
   },
 });
 
-const sessions = ref(props.game.sessions);
+const emit = defineEmits(["addUserToGameSession"]);
+
+const partitionedSessions = computed(() =>
+  R.partition(
+    (session) =>
+      sessionIsWithinRange({
+        session,
+        starttime: store.userSettings?.starttime,
+        endtime: store.userSettings?.endtime,
+      }),
+    props.game.sessions,
+  ),
+);
 
 const coverImageUrl = ref("");
 const reservableSessions = computed(() => {
-  return sessions.value.filter((session) =>
+  return props.game.sessions.filter((session) =>
     userCanRsvp({
       userAccess: store.userCommunityAccess,
       session,
@@ -198,7 +227,11 @@ async function handleRsvp(sessionId: Session["id"]) {
   try {
     await joinSession({ sessionId, userId: store.user.id });
     showSuccess({ message: "Successfully joined session" });
-    addUserToLocalSession(sessionId, store.user.id);
+    emit("addUserToGameSession", {
+      gameId: props.game.id,
+      sessionId,
+      userId: store.user.id,
+    });
   } catch (error) {
     showError({ message: "Unable to RSVP to session" });
   } finally {
@@ -213,9 +246,13 @@ async function handleRsvpToAll() {
     saving.value = true;
     const results = await Promise.allSettled(
       reservableSessions.value.map((session) =>
-        joinSession({ sessionId: session.id, userId }).then(() =>
-          addUserToLocalSession(session.id, userId),
-        ),
+        joinSession({ sessionId: session.id, userId }).then(() => {
+          emit("addUserToGameSession", {
+            gameId: props.game.id,
+            sessionId: session.id,
+            userId,
+          });
+        }),
       ),
     );
     for (const result of results) {
@@ -228,14 +265,5 @@ async function handleRsvpToAll() {
   } finally {
     saving.value = false;
   }
-}
-
-function addUserToLocalSession(sessionId: Session["id"], userId: string) {
-  sessions.value = sessions.value.map((session) => {
-    if (session.id === sessionId) {
-      session.rsvps.push(userId);
-    }
-    return session;
-  });
 }
 </script>

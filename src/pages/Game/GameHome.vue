@@ -27,7 +27,7 @@
       <p v-else>Join all upcoming sessions</p>
     </PrimaryButton>
 
-    <div class="grid md:grid-cols-2 gap-8">
+    <div class="grid md:grid-cols-2 gap-8 items-start">
       <SessionBlock
         v-for="session in upcomingSessions"
         :key="session.id"

@@ -5,7 +5,7 @@
       'border-red-500': hasError,
       'border-gray-300': !hasError,
     }"
-    class="h-10 p-2 rounded-md border border-gray-300 text-slate-900 dark:bg-slate-200 focus-styles"
+    class="h-10 p-2 rounded-md border border-gray-300 text-slate-900 sm:text-sm dark:bg-slate-200 focus-styles"
     :value="modelValue"
     @input="handleInput"
   />
@@ -13,7 +13,7 @@
 <script setup lang="ts">
 defineProps({
   modelValue: {
-    type: [String, Number],
+    type: null,
     default: "",
   },
   hasError: {

@@ -122,6 +122,7 @@ const handleLogin = async () => {
       store.user = {
         id: user.id,
         email: user?.email || "",
+        user_settings: {},
       };
     }
     const redirect = route.query.redirect;

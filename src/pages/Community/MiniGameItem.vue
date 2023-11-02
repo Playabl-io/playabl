@@ -154,13 +154,17 @@
           {{ format(session.start_time, "EEE, MMM do h:mm aa") }} -
           {{ format(session.end_time, "EEE, MMM do h:mm aa") }}
         </p>
+        <div v-if="!isWithinRange" class="text-sm text-red-500 flex gap-1 mt-2">
+          <ExclamationTriangleIcon class="w-5 h-5" />
+          <p>This session is outside of your preferred time</p>
+        </div>
         <p class="text-xs text-slate-700 mt-1">
           {{
             formatDuration(
               intervalToDuration({
                 start: session.start_time,
                 end: session.end_time,
-              })
+              }),
             )
           }}
         </p>
@@ -204,7 +208,7 @@
                     intervalToDuration({
                       start: related.start_time,
                       end: related.end_time,
-                    })
+                    }),
                   )
                 }}
               </li>
@@ -246,7 +250,11 @@ import {
 import { userCanRsvp } from "@/util/time";
 import { store } from "@/store";
 import useToast from "@/components/Toast/useToast";
-import { rsvpToAllGameSessions, joinSession } from "@/api/gamesAndSessions";
+import {
+  rsvpToAllGameSessions,
+  joinSession,
+  sessionIsWithinRange,
+} from "@/api/gamesAndSessions";
 import { getCoverImageUrl } from "@/api/storage";
 import { pluralize } from "@/util/grammar";
 
@@ -265,9 +273,17 @@ const props = defineProps({
 
 const emit = defineEmits(["refresh"]);
 
+const isWithinRange = computed(() =>
+  sessionIsWithinRange({
+    session: props.session,
+    starttime: store.userSettings?.starttime,
+    endtime: store.userSettings?.endtime,
+  }),
+);
+
 const { data: gameCoverImage } = useSWRV(
   props.session.game_id.cover_image,
-  getCoverImageUrl
+  getCoverImageUrl,
 );
 const { data } = useSWRV<Profile>(props.session.creator_id, loadProfile);
 
@@ -291,7 +307,7 @@ const isWaitlisted = computed(() => {
 });
 
 const relatedSessions = computed(() =>
-  props.allGameSessions.filter((session) => session.id !== props.session.id)
+  props.allGameSessions.filter((session) => session.id !== props.session.id),
 );
 
 const otherReservableSessions = computed(() =>
@@ -301,8 +317,8 @@ const otherReservableSessions = computed(() =>
       session,
       userId: store.user?.id,
       hostId: props.session.creator_id,
-    })
-  )
+    }),
+  ),
 );
 
 const canRsvpToRelatedSessions = computed(() => {
@@ -311,7 +327,7 @@ const canRsvpToRelatedSessions = computed(() => {
 });
 
 const sessionPlacement = computed(() =>
-  props.allGameSessions.indexOf(props.session)
+  props.allGameSessions.indexOf(props.session),
 );
 
 async function rsvpToSession() {

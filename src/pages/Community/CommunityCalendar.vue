@@ -91,7 +91,7 @@
           <ListView
             :loading="loading"
             :sessions="filteredSessions"
-            :sessions-by-game="(sessionsByGame as Record<string, GameSession[]>)"
+            :sessions-by-game="sessionsByGame as Record<string, GameSession[]>"
             :reference-date="referenceDate"
             @update-reference-date="onDateChange"
             @refresh="refreshSessions"
@@ -100,7 +100,7 @@
         <TabPanel>
           <CalendarView
             :sessions="filteredSessions"
-            :sessions-by-game="(sessionsByGame as Record<string, GameSession[]>)"
+            :sessions-by-game="sessionsByGame as Record<string, GameSession[]>"
             :reference-date="referenceDate"
             :selected-date="selectedDate"
             @update-reference-date="onDateChange"
@@ -161,24 +161,21 @@ const sessions = ref<GameSession[]>([]);
 const referenceDate = computed(() => {
   if (route.query.date && typeof route.query.date === "string") {
     const date = parse(route.query.date, "yyyy-MM", new Date());
-    console.log("Parsed date", date);
     return date;
   }
   const date = new Date();
-  console.log("Parsed date", date);
   return date;
 });
 const selectedDate = ref<Date>();
 const sortOption = ref(options[0]);
 
 function onDateChange(date: Date) {
-  console.log("Navigate to", format(date, "yyyy-MM"));
   router.push({ query: { date: format(date, "yyyy-MM") } });
 }
 
 const sessionsByGame = computed(() => {
   const groupByGame = R.groupBy((session: GameSession) =>
-    String(session.game_id.id)
+    String(session.game_id.id),
   );
   return groupByGame(sessions.value);
 });
@@ -190,12 +187,12 @@ const filteredSessions = computed(() => {
   let filteredSessions = sessions.value;
   if (excludeOwnGames.value) {
     filteredSessions = sessions.value.filter(
-      (session) => session.creator_id !== store.user?.id
+      (session) => session.creator_id !== store.user?.id,
     );
   }
   if (excludeRsvpdGames.value) {
     filteredSessions = filteredSessions.filter(
-      (session) => !session.rsvps.includes(store.user?.id || "")
+      (session) => !session.rsvps.includes(store.user?.id || ""),
     );
   }
   return filteredSessions;
@@ -211,13 +208,13 @@ watch(
   () => referenceDate.value,
   (newVal) => {
     sortOption.value.value(newVal);
-  }
+  },
 );
 watch(
   () => sortOption.value,
   (newVal) => {
     newVal.value(referenceDate.value);
-  }
+  },
 );
 
 async function refreshSessions() {

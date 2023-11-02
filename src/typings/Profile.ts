@@ -13,4 +13,8 @@ export interface Profile {
     rsvp_to_my_game_enabled: boolean;
     send_community_admin_messages: boolean;
   };
+  user_settings: {
+    starttime?: string | null;
+    endtime?: string | null;
+  } | null;
 }

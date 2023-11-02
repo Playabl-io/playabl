@@ -14,7 +14,11 @@
     >
       <p
         v-if="showTooltip"
-        class="absolute z-20 bg-neutral-50 bottom-full mb-2 text-sm p-3 rounded-md shadow-md border border-solid border-gray-100 w-max"
+        class="absolute z-20 bg-neutral-50 text-sm p-3 rounded-md shadow-md border border-solid border-gray-100 w-max"
+        :class="{
+          'mb-2 bottom-full': position === 'top',
+          'left-full -translate-y-1/2 ml-2': position === 'right',
+        }"
       >
         <slot name="tooltip"></slot>
       </p>
@@ -23,6 +27,13 @@
 </template>
 <script setup lang="ts">
 import { ref } from "vue";
+
+defineProps({
+  position: {
+    type: String,
+    default: "top",
+  },
+});
 
 const showTooltip = ref(false);
 

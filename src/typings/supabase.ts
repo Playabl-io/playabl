@@ -616,6 +616,7 @@ export interface Database {
           subscriptions: string[] | null
           twitter: string | null
           updated_at: string | null
+          user_settings: Json | null
           username: string | null
           website: string | null
         }
@@ -629,6 +630,7 @@ export interface Database {
           subscriptions?: string[] | null
           twitter?: string | null
           updated_at?: string | null
+          user_settings?: Json | null
           username?: string | null
           website?: string | null
         }
@@ -642,6 +644,7 @@ export interface Database {
           subscriptions?: string[] | null
           twitter?: string | null
           updated_at?: string | null
+          user_settings?: Json | null
           username?: string | null
           website?: string | null
         }
