@@ -171,7 +171,7 @@ export async function loadBrowsableGames({
   }
 
   if (system) {
-    query.like("system", `%${system}%`);
+    query.ilike("system", `%${system}%`);
   }
 
   if (communities.length) {
