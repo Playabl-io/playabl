@@ -47,7 +47,12 @@ export async function uploadToCoverImageStorage({
 export const getCoverImageUrl = async (path: string) => {
   const { data } = await supabase.storage
     .from("cover-images")
-    .getPublicUrl(path);
+    .getPublicUrl(path, {
+      transform: {
+        height: 600,
+        width: 1066,
+      },
+    });
   return data.publicUrl ?? "";
 };
 
@@ -71,6 +76,11 @@ export async function uploadToAvatarStorage(file: File) {
 
 export const getAvatarImageUrl = async (path?: string) => {
   if (!path) return "";
-  const { data } = await supabase.storage.from("avatars").getPublicUrl(path);
+  const { data } = await supabase.storage.from("avatars").getPublicUrl(path, {
+    transform: {
+      height: 100,
+      width: 100,
+    },
+  });
   return data.publicUrl ?? "";
 };
