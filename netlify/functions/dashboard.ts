@@ -11,7 +11,7 @@ export const handler: Handler = async (event) => {
   // load open games in next 7 days
   const { data: openGames, error: openGamesError } = await supabase
     .from("sessions")
-    .select("*, game_id(*, event_id(*), sessions(*))")
+    .select("*, game_id(*, community_events(*), sessions(*))")
     .is("deleted_at", null)
     .gte("start_time", today.getTime())
     .lte("end_time", sevenDaysFromNow.getTime())
@@ -138,7 +138,7 @@ export const handler: Handler = async (event) => {
   // load open games in next 7 days
   const { data: games, error: gamesError } = await supabase
     .from("sessions")
-    .select("*, game_id(*, event_id(*), sessions(*))")
+    .select("*, game_id(*, community_events(*), sessions(*))")
     .is("deleted_at", null)
     .neq("creator_id", user.data.user.id)
     .in("community_id", communityIds)

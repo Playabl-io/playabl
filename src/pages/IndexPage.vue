@@ -128,6 +128,8 @@ import { Session } from "@/typings/Session";
 import { Profile } from "@/typings/Profile";
 import Heading from "@/components/Heading.vue";
 import MiniGameItem from "./Community/MiniGameItem.vue";
+import { CommunityEvent } from "@/typings/CommunityEvent";
+import { Game } from "@/typings/Game";
 
 const route = useRoute();
 
@@ -138,11 +140,9 @@ const showConfirmEmailBanner = ref(
 );
 
 export type sessionWithGame = Session & {
-  game_id: {
-    title: string;
-    id: number;
+  game_id: Game & {
     sessions: Session[];
-    event_id: { title: string; id: number } | null;
+    community_events: CommunityEvent | null;
   };
   community_id: {
     name: string;
