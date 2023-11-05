@@ -380,7 +380,8 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
   scrollBehavior(to, from, savedPosition) {
-    window.scrollTo({ top: savedPosition?.top, behavior: "instant" });
+    console.log({ to, from, savedPosition });
+    window.scrollTo({ top: savedPosition?.top ?? 0, behavior: "instant" });
   },
 });
 

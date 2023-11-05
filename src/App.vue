@@ -10,6 +10,38 @@
       @close="showNewProfileModal = false"
     />
     <OfflineIndicator />
+    <div
+      v-if="store.user && !shownDashboardAnnouncement"
+      class="z-50 fixed inset-x-0 mx-2 md:mx-auto w-fit rounded-xl bottom-6 p-6 bg-teal-200 text-teal-900 flex items-center gap-3 max-w-4xl"
+    >
+      <DismissButton
+        label="dismiss notification"
+        class="absolute top-2 right-2"
+        @click="shownDashboardAnnouncement = true"
+      />
+      <div class="grid grid-cols-6 gap-6">
+        <img
+          v-if="isSmAndLarger"
+          src="/public/images/task_done.png"
+          class="w-full"
+        />
+        <div
+          class="flex flex-col justify-center gap-2 col-span-full sm:col-span-5 sm:text-right"
+        >
+          <p class="md:text-lg font-semibold">
+            Your personal view of your next week of gaming is now available!
+          </p>
+          <p>
+            <router-link
+              to="/#welcome"
+              class="text-blue-700 underline"
+              @click="shownDashboardAnnouncement = true"
+              >Check it out now</router-link
+            >, or any time on the home page.
+          </p>
+        </div>
+      </div>
+    </div>
   </AppShell>
 </template>
 <script setup lang="ts">
@@ -26,7 +58,13 @@ import { log } from "./util/logger";
 import AppShell from "./layouts/AppShell.vue";
 import LoadingSpinner from "./components/LoadingSpinner.vue";
 import { Notification } from "./typings/Notification";
+import { useStorage, breakpointsTailwind, useBreakpoints } from "@vueuse/core";
+import DismissButton from "./components/Buttons/DismissButton.vue";
 
+const breakpoints = useBreakpoints(breakpointsTailwind);
+const isSmAndLarger = breakpoints.greater("sm");
+
+const shownDashboardAnnouncement = useStorage("dashboard-announcement", false);
 const route = useRoute();
 const router = useRouter();
 
