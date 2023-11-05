@@ -28,7 +28,7 @@
         leave-to-class="transform -translate-x-full opacity-0"
       >
         <MenuItems
-          class="absolute left-0 inset-y-0 w-1/2 flex flex-col space-y-4 bg-gray-50 rounded-r-sm text-slate-900 p-4 z-20 shadow-lg"
+          class="fixed left-0 inset-y-0 w-1/2 flex flex-col space-y-4 bg-gray-50 rounded-r-sm text-slate-900 p-4 z-20 shadow-lg"
         >
           <MenuButton class="absolute top-4 right-4 p-2">
             <ArrowLeftOnRectangleIcon
@@ -89,7 +89,7 @@
           </Disclosure>
 
           <hr />
-          <menu-item>
+          <menu-item v-if="store.user">
             <router-link
               class="px-2 py-1"
               to="/profile"
@@ -98,7 +98,7 @@
               Profile
             </router-link>
           </menu-item>
-          <menu-item>
+          <menu-item v-if="store.user">
             <router-link
               class="px-2 py-1 flex items-center"
               to="/notifications"
@@ -111,6 +111,15 @@
               >
                 {{ store.notifications.length }}
               </div>
+            </router-link>
+          </menu-item>
+          <menu-item v-else>
+            <router-link
+              class="px-2 py-1"
+              to="/login"
+              active-class="text-brand-500 border-l border-brand-500 dark:border-brand-300"
+            >
+              Sign in
             </router-link>
           </menu-item>
           <MenuItem class="px-2 py-1 flex items-center">

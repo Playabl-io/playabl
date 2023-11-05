@@ -61,7 +61,8 @@
         ]"
       />
     </div>
-    <div v-if="store.user">
+
+    <section v-if="store.user">
       <div class="full-width bg-brand-500 text-white min-h-[250px]">
         <div
           class="py-4 md:container md:mx-auto max-w-6xl px-4 grid grid-cols-2 gap-2 items-center"
@@ -92,7 +93,7 @@
       <div class="flex flex-col gap-12 mt-12">
         <UserDashboard :db="db" />
       </div>
-    </div>
+    </section>
     <section
       v-else
       id="find-your-next-game"
