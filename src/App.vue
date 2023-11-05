@@ -29,7 +29,7 @@
           class="flex flex-col justify-center gap-2 col-span-full sm:col-span-5 sm:text-right"
         >
           <p class="md:text-lg font-semibold">
-            You're personal view of your next week of gaming is now available!
+            Your personal view of your next week of gaming is now available!
           </p>
           <p>
             <router-link
