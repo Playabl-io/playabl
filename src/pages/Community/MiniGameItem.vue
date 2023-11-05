@@ -234,7 +234,6 @@ import {
 } from "@heroicons/vue/20/solid";
 import { format, formatDuration, intervalToDuration } from "date-fns";
 import Heading from "@/components/Heading.vue";
-import { Session } from "@/typings/Session";
 import useSWRV from "swrv";
 import { loadProfile } from "@/api/profiles";
 import UserBadge from "@/components/UserBadge.vue";
@@ -258,17 +257,25 @@ import {
 } from "@/api/gamesAndSessions";
 import { getCoverImageUrl } from "@/api/storage";
 import { pluralize } from "@/util/grammar";
-import { sessionWithGame } from "../IndexPage.vue";
+import { GameSession, Session } from "@/typings/Session";
 
 const { showSuccess, showError } = useToast();
 
 const props = defineProps({
   session: {
-    type: Object as PropType<sessionWithGame>,
+    type: Object as PropType<Omit<GameSession, "community_id">>,
     required: true,
   },
   allGameSessions: {
-    type: Array as PropType<Session[]>,
+    type: Array as PropType<
+      {
+        start_time: number;
+        end_time: number;
+        id: string;
+        rsvps: Session["rsvps"];
+        access_times?: Session["access_times"];
+      }[]
+    >,
     required: true,
   },
 });

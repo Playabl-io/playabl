@@ -1,7 +1,7 @@
 import * as R from "ramda";
 import { supabase } from "@/supabase";
 import { GameDetailBlock, GameListing, NewGame, Game } from "@/typings/Game";
-import { GameSession, Session } from "@/typings/Session";
+import { Session } from "@/typings/Session";
 import { log } from "@/util/logger";
 import { Community } from "@/typings/Community";
 import {
@@ -379,7 +379,7 @@ export async function rsvpToAllGameSessions({
   gameSessions,
   userId,
 }: {
-  gameSessions: GameSession[];
+  gameSessions: { start_time: number; id: string }[];
   userId: string;
 }) {
   const now = new Date();
