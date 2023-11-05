@@ -80,10 +80,8 @@ import ProfileTemplate from "@/layouts/ProfileTemplate.vue";
 import { updateProfile } from "@/api/profiles";
 import Heading from "@/components/Heading.vue";
 import LinkButton from "@/components/Buttons/LinkButton.vue";
-import Tooltip from "@/components/Tooltip.vue";
 import { store } from "@/store";
 import useToast from "@/components/Toast/useToast";
-import { InformationCircleIcon } from "@heroicons/vue/24/outline";
 import SecondaryButton from "@/components/Buttons/SecondaryButton.vue";
 
 const { showSuccess, showError } = useToast();
