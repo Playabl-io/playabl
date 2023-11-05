@@ -104,7 +104,7 @@
       </div>
       <div
         class="grid grid-cols-2 place-content-start items-start gap-4"
-        :class="{ 'col-span-full md:grid-cols-4': !coverImageUrl }"
+        :class="{ 'col-span-full lg:grid-cols-4': !coverImageUrl }"
       >
         <GameBadge v-if="game.system" title="System" :value="game.system">
           <template #icon>

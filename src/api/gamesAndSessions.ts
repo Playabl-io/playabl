@@ -1,7 +1,7 @@
 import * as R from "ramda";
 import { supabase } from "@/supabase";
 import { GameDetailBlock, GameListing, NewGame, Game } from "@/typings/Game";
-import { GameSession, Session } from "@/typings/Session";
+import { Session } from "@/typings/Session";
 import { log } from "@/util/logger";
 import { Community } from "@/typings/Community";
 import {
@@ -17,7 +17,6 @@ import {
 import axios from "axios";
 import { CommunityEvent } from "@/typings/CommunityEvent";
 import { SORT_DIR, SORT_KEY, sortDirs, sortKeys } from "@/util/urlParams";
-import { userCommunityMembershipIds } from "@/store";
 
 // helper functions
 const sortSessionByTimeAsc = (a: Session, b: Session) => {
@@ -380,7 +379,7 @@ export async function rsvpToAllGameSessions({
   gameSessions,
   userId,
 }: {
-  gameSessions: GameSession[];
+  gameSessions: { start_time: number; id: string }[];
   userId: string;
 }) {
   const now = new Date();
@@ -417,7 +416,7 @@ export async function joinSession({
     data: { session },
   } = await supabase.auth.getSession();
   if (!session?.access_token) return;
-  const data = await fetch(
+  fetch(
     `/.netlify/functions/processRsvp?sessionId=${sessionId}&userId=${userId}`,
     {
       method: "POST",
@@ -430,15 +429,10 @@ export async function joinSession({
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      return response.json();
     })
     .catch((error) => {
       log({ error });
     });
-
-  if (data) {
-    return data;
-  }
 }
 
 export async function leaveSession({

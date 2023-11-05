@@ -519,9 +519,7 @@ const newGameMachine = createMachine<{
       },
       gameSessions: {
         entry: () => {
-          document
-            .getElementById("app")
-            ?.scrollTo({ top: 0, behavior: "smooth" });
+          window.scrollTo({ top: 0, behavior: "instant" });
         },
         on: {
           CHOOSE_NEW_COMMUNITY: "chooseCommunity",

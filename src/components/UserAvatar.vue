@@ -51,7 +51,7 @@ watch(
     if (newAvatarUrl) {
       imagePath.value = await getAvatarImageUrl(newAvatarUrl);
     }
-  }
+  },
 );
 
 const avatarChar = computed(() => props.username.charAt(0));
@@ -59,9 +59,9 @@ const avatarStyles = computed(() => getColorCombo(avatarChar.value));
 
 function getColorCombo(character: string) {
   return /[A-F]/i.test(character)
-    ? "bg-sky-100 text-sky-800"
+    ? "bg-sky-200 text-sky-800"
     : /[G-N]/i.test(character)
-    ? "bg-violet-100 text-violet-800"
-    : "bg-green-100 text-green-800";
+    ? "bg-violet-200 text-violet-800"
+    : "bg-green-200 text-green-800";
 }
 </script>

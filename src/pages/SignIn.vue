@@ -129,7 +129,7 @@ const handleLogin = async () => {
     if (redirect && typeof redirect === "string") {
       router.push(redirect);
     } else {
-      router.push("/profile");
+      router.push("/");
     }
   } catch (error) {
     if (error instanceof Error) {

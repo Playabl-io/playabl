@@ -1,5 +1,5 @@
 <template>
-  <li class="rounded-lg bg-white shadow-sm">
+  <div class="rounded-lg bg-white shadow-sm">
     <div class="relative">
       <div v-if="gameCoverImage" class="aspect-w-16 aspect-h-9">
         <router-link :to="`/games/${session.game_id.id}`">
@@ -192,12 +192,12 @@
           />
         </DisclosureButton>
         <transition
-          enter-active-class="transition duration-100 ease-out"
-          enter-from-class="transform scale-95 opacity-0"
-          enter-to-class="transform scale-100 opacity-100"
+          enter-active-class="transition duration-200 ease-out"
+          enter-from-class="transform opacity-0"
+          enter-to-class="transform opacity-100"
           leave-active-class="transition duration-75 ease-out"
-          leave-from-class="transform scale-100 opacity-100"
-          leave-to-class="transform scale-95 opacity-0"
+          leave-from-class="transform opacity-100"
+          leave-to-class="transform opacity-0"
         >
           <DisclosurePanel class="text-sm text-slate-700 p-4">
             <ul class="list-disc list-inside leading-relaxed">
@@ -217,7 +217,7 @@
         </transition>
       </Disclosure>
     </section>
-  </li>
+  </div>
 </template>
 <script setup lang="ts">
 import { computed, PropType } from "vue";
@@ -230,10 +230,10 @@ import {
   ChevronRightIcon,
   StarIcon,
   ExclamationCircleIcon,
+  ExclamationTriangleIcon,
 } from "@heroicons/vue/20/solid";
 import { format, formatDuration, intervalToDuration } from "date-fns";
 import Heading from "@/components/Heading.vue";
-import { GameSession } from "@/typings/Session";
 import useSWRV from "swrv";
 import { loadProfile } from "@/api/profiles";
 import UserBadge from "@/components/UserBadge.vue";
@@ -257,16 +257,25 @@ import {
 } from "@/api/gamesAndSessions";
 import { getCoverImageUrl } from "@/api/storage";
 import { pluralize } from "@/util/grammar";
+import { GameSession, Session } from "@/typings/Session";
 
 const { showSuccess, showError } = useToast();
 
 const props = defineProps({
   session: {
-    type: Object as PropType<GameSession>,
+    type: Object as PropType<Omit<GameSession, "community_id">>,
     required: true,
   },
   allGameSessions: {
-    type: Object as PropType<GameSession[]>,
+    type: Array as PropType<
+      {
+        start_time: number;
+        end_time: number;
+        id: string;
+        rsvps: Session["rsvps"];
+        access_times?: Session["access_times"];
+      }[]
+    >,
     required: true,
   },
 });
@@ -327,7 +336,7 @@ const canRsvpToRelatedSessions = computed(() => {
 });
 
 const sessionPlacement = computed(() =>
-  props.allGameSessions.indexOf(props.session),
+  props.allGameSessions.findIndex((session) => session.id === props.session.id),
 );
 
 async function rsvpToSession() {
