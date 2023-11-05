@@ -3,7 +3,7 @@
     enter-active-class="transition duration-150 ease-out"
     enter-from-class="transform opacity-0"
     enter-to-class="transform opacity-100"
-    leave-active-class="transition ease-out duration-700"
+    leave-active-class="transition ease-out duration-150"
     leave-from-class="transform opacity-100"
     leave-to-class="transform opacity-0"
   >
@@ -11,7 +11,7 @@
       v-if="!navHidden"
       class="w-screen fixed top-0 py-2 px-12 grid grid-cols-6 items-center box-border z-10"
       :class="{
-        'shadow-md border-b border-solid border-gray-50 backdrop-blur-md bg-neutral-50 bg-opacity-75':
+        'shadow-md border-b border-solid border-gray-50 bg-neutral-50':
           !arrivedState.top,
       }"
       v-bind="$attrs"
@@ -89,7 +89,7 @@ watch([isScrolling, directions], () => {
 });
 
 watch([scrollPoint, y], () => {
-  if (y.value - scrollPoint.value > 75) {
+  if (y.value - scrollPoint.value > 15) {
     navHidden.value = true;
   }
 });

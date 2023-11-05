@@ -14,10 +14,11 @@
     >
       <p
         v-if="showTooltip"
-        class="absolute z-20 bg-neutral-50 text-sm p-3 rounded-md shadow-md border border-solid border-gray-100 w-max"
+        class="absolute z-20 bg-white text-sm p-3 rounded-md shadow-md border border-solid border-gray-100 w-max"
         :class="{
           'mb-2 bottom-full': position === 'top',
           'left-full -translate-y-1/2 ml-2': position === 'right',
+          'right-full -translate-y-1/2 mr-2': position === 'left',
         }"
       >
         <slot name="tooltip"></slot>

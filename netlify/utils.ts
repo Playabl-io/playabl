@@ -180,17 +180,19 @@ export async function logToNewRelic(data = {}) {
   }
 }
 
-export async function logInfo({ message }: { message: string }) {
+export async function logInfo({ message, ...rest }: { message: string }) {
   await logToNewRelic({
     logtype: "netlify-function",
     message,
     level: "info",
+    ...rest,
   });
 }
-export async function logError({ message }: { message: string }) {
+export async function logError({ message, ...rest }: { message: string }) {
   await logToNewRelic({
     logtype: "netlify-function",
     message,
     level: "error",
+    ...rest,
   });
 }

@@ -1,10 +1,13 @@
 <template>
   <component
     :is="table ? 'button' : 'div'"
-    class="bg-blue-700 text-white text-left grid border border-solid border-gray-300 rounded-lg p-4"
+    class="text-left grid border border-solid border-gray-300 rounded-lg p-4"
+    :class="{
+      'bg-blue-700 text-white': variant === 'filled',
+    }"
     @click="showRecords = true"
   >
-    <p>{{ title }}</p>
+    <p class="mb-2 text-right">{{ title }}</p>
     <p class="text-2xl place-self-end font-semibold">
       {{ value }}
     </p>
@@ -48,6 +51,13 @@ defineProps({
     type: Object as PropType<Table<any>>,
     required: false,
     default: undefined,
+  },
+  variant: {
+    type: String as PropType<"filled" | "outline">,
+    default: "filled",
+    validator(val: string) {
+      return ["filled", "outline"].includes(val);
+    },
   },
 });
 </script>

@@ -63,6 +63,6 @@ const hasOpenings = computed(() => {
 
 const { data: gameCoverImage } = useSWRV(
   props.game.cover_image,
-  getCoverImageUrl
+  getCoverImageUrl,
 );
 </script>

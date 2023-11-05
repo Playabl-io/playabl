@@ -1,45 +1,76 @@
 <template>
-  <base-template>
-    <div v-if="isLoading" class="grid place-content-center">
-      <LoadingSpinner color="brand-500" />
-    </div>
-    <template v-else>
-      <GamesHeading>
-        <template #heading>
-          <Heading level="h6" as="h2" class="mb-6">Your upcoming games</Heading>
-        </template>
-      </GamesHeading>
-      <section class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
-        <GameCard v-for="game in games" :key="game.id" :game="game" />
-      </section>
-      <hr class="my-20" />
-      <GamesHeading>
-        <template #heading>
-          <Heading level="h6" as="h2" class="mb-6">Your past games</Heading>
-        </template>
-      </GamesHeading>
-      <section class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
-        <GameCard v-for="game in pastGames" :key="game.id" :game="game">
-          <template #sessions-title>
-            {{ game.sessions.length }}
-            {{
-              pluralize({ count: game.sessions.length, singular: "session" })
-            }}
-          </template>
-        </GameCard>
-      </section>
-    </template>
-  </base-template>
+  <BaseTemplate>
+    <section>
+      <Heading level="h4" as="h2" class="mb-3">Games you created</Heading>
+      <div v-if="isLoading" class="grid place-content-center">
+        <LoadingSpinner color="brand-500" />
+      </div>
+      <TabGroup v-else>
+        <TabList class="flex gap-4">
+          <Tab v-slot="{ selected }" as="template">
+            <button
+              class="py-2 text-sm focus-styles"
+              :class="{
+                'text-brand-500 border-b border-brand-500': selected,
+                'bg-transparent text-black': !selected,
+              }"
+            >
+              Upcoming
+            </button>
+          </Tab>
+          <Tab v-slot="{ selected }" as="template">
+            <button
+              class="py-2 text-sm focus-styles"
+              :class="{
+                'text-brand-500 border-b border-brand-500': selected,
+                'bg-transparent text-black': !selected,
+              }"
+            >
+              Past
+            </button>
+          </Tab>
+        </TabList>
+        <TabPanels class="mt-6">
+          <TabPanel
+            class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 items-start"
+          >
+            <p v-if="games.length === 0" class="text-sm col-span-full">
+              No upcoming games
+            </p>
+            <GameCard v-for="game in games" :key="game.id" :game="game" />
+          </TabPanel>
+          <TabPanel
+            class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 items-start"
+          >
+            <p v-if="pastGames.length === 0" class="text-sm col-span-full">
+              No past games
+            </p>
+            <GameCard v-for="game in pastGames" :key="game.id" :game="game">
+              <template #sessions-title>
+                {{ game.sessions.length }}
+                {{
+                  pluralize({
+                    count: game.sessions.length,
+                    singular: "session",
+                  })
+                }}
+              </template>
+            </GameCard>
+          </TabPanel>
+        </TabPanels>
+      </TabGroup>
+    </section>
+  </BaseTemplate>
 </template>
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import * as R from "ramda";
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/vue";
 import BaseTemplate from "@/layouts/BaseTemplate.vue";
+import * as R from "ramda";
 import { GameListing } from "@/typings/Game";
 import GameCard from "@/components/Game/GameCard.vue";
 import Heading from "@/components/Heading.vue";
 import { loadManagedGames, loadPastManagedGames } from "@/api/gamesAndSessions";
-import GamesHeading from "@/components/GamesHeading.vue";
 import { store } from "@/store";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import { pluralize } from "@/util/grammar";
@@ -59,7 +90,7 @@ async function loadUpcomingGames() {
   if (data) {
     const [withSessions, withoutSessions] = R.partition(
       (game) => game?.sessions?.length > 0,
-      data
+      data,
     );
     games.value = withSessions.concat(withoutSessions);
   }

@@ -32,7 +32,7 @@
 
     <tbody>
       <tr
-        v-for="row in table.getRowModel().rows.slice(0, 10)"
+        v-for="row in table.getRowModel().rows"
         :key="row.id"
         class="odd:bg-gray-100"
       >
@@ -69,7 +69,7 @@ import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/vue/24/outline";
 
 defineProps({
   table: {
-    type: Object as PropType<Table<unknown>>,
+    type: Object as PropType<Table<any>>,
     required: true,
   },
 });

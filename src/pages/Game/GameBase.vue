@@ -307,6 +307,8 @@ function setSubscription(gameId: number) {
     .subscribe();
 }
 function removeSubscription() {
-  supabase.removeChannel(subscription);
+  if (subscription) {
+    supabase.removeChannel(subscription);
+  }
 }
 </script>
