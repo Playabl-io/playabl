@@ -106,7 +106,6 @@ const sessionColumns = [
     id: "actions",
     cell: (props) => {
       const original = props.row.original;
-      console.log({ original });
       return h(
         RouterLink,
         {
