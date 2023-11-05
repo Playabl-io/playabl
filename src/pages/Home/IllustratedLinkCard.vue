@@ -19,6 +19,8 @@
           :key="link.href"
           :href="link.href"
           class="text-brand-500 hover:underline focuse:underline text-right lg:text-sm"
+          :target="link.external ? '__blank' : ''"
+          rel="noreferrer noopener"
           >{{ link.label }}</a
         >
       </div>
@@ -43,7 +45,9 @@ defineProps({
     required: true,
   },
   links: {
-    type: Array as PropType<{ href: string; label: string }[]>,
+    type: Array as PropType<
+      { href: string; label: string; external?: boolean }[]
+    >,
     required: true,
   },
 });

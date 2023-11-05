@@ -16,20 +16,24 @@
         sub-title="Here are some guides to help you get started on Playabl"
         :links="[
           {
-            href: '#',
+            href: 'https://docs.playabl.io/guides/communities/finding-communities.html',
             label: 'Finding and joining communities',
+            external: true,
           },
           {
-            href: '#',
+            href: 'https://docs.playabl.io/guides/games/finding-games.html',
             label: 'Finding and joining games',
+            external: true,
           },
           {
-            href: '#',
+            href: 'https://docs.playabl.io/guides/communities/starting-a-community.html',
             label: 'Starting a community',
+            external: true,
           },
           {
-            href: '#',
+            href: 'https://docs.playabl.io/guides/events/running-events.html',
             label: 'Running a community event',
+            external: true,
           },
         ]"
       />
@@ -39,16 +43,20 @@
         sub-title="Here are some links to help you get to gaming"
         :links="[
           {
-            href: '#',
-            label: 'Browse newest games in your communities',
+            href: '/login',
+            label: 'Sign in or create an account',
+          },
+          {
+            href: '/games/browse?sort.key=created_at&sort.dir=desc&filter=open',
+            label: 'Browse newest games across communities',
+          },
+          {
+            href: '/communities/browse?sort.key=member-count&sort.dir=desc',
+            label: 'Browse communities',
           },
           {
             href: '/#find-your-next-game',
             label: 'Find a game for this week',
-          },
-          {
-            href: '#',
-            label: 'See all of your upcoming games',
           },
         ]"
       />
@@ -87,10 +95,11 @@
     </div>
     <section
       v-else
+      id="find-your-next-game"
       class="full-width bg-gradient-to-br from-blue-700 to-blue-900 py-12"
     >
       <div class="p-4 md:container md:mx-auto max-w-6xl">
-        <Heading id="find-your-next-game" as="h4" level="h4" class="text-white">
+        <Heading as="h4" level="h4" class="text-white">
           Ready for another game?
         </Heading>
         <p class="text-sm mt-2 mb-4 text-white">
