@@ -166,50 +166,71 @@ export const handler: Handler = async (event) => {
 };
 
 async function loadJointSessions(userA: string, userB: string) {
+  const users = [userA, userB];
   const { data, error } = await supabase
     .from("sessions")
     .select("*, game_id(title, id)")
     .is("deleted_at", null)
-    .contains("rsvps", [userA, userB])
+    .contains("rsvps", users)
     .order("start_time");
 
   if (error) {
     logError(error);
   }
 
-  return data;
+  return data?.filter((session) => {
+    return (
+      users.every(
+        (user) => session.rsvps.indexOf(user) < session.participant_count,
+      ) ?? []
+    );
+  });
 }
 
 async function loadManagedSessions(dashboardUser: string, userB: string) {
+  const users = [userB];
   const { data, error } = await supabase
     .from("sessions")
     .select("*, game_id(title, id)")
     .is("deleted_at", null)
     .eq("creator_id", dashboardUser)
-    .contains("rsvps", [userB])
+    .contains("rsvps", users)
     .order("start_time");
 
   if (error) {
     logError(error);
   }
 
-  return data;
+  return data?.filter((session) => {
+    return (
+      users.every(
+        (user) => session.rsvps.indexOf(user) < session.participant_count,
+      ) ?? []
+    );
+  });
 }
 
 async function loadPastPlayedGames(player: string, gm: string) {
+  const users = [player];
   const { data, error } = await supabase
     .from("sessions")
     .select("*, game_id(title, id)")
     .is("deleted_at", null)
     .eq("creator_id", gm)
-    .contains("rsvps", [player])
+    .contains("rsvps", users)
     .order("start_time", { ascending: true });
 
   if (error) {
     logError(error);
   }
 
-  return data ?? [];
+  return data?.filter((session) => {
+    return (
+      users.every(
+        (user) => session.rsvps.indexOf(user) < session.participant_count,
+      ) ?? []
+    );
+  });
 }
 
 // helper functions taken based on gamesAndSessions.ts
