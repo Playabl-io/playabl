@@ -130,14 +130,14 @@
         </div>
       </div>
       <div class="text-blue-700 bg-gray-100 p-4 rounded-md">
-        <div class="flex gap-2">
-          <UserGroupIcon class="w-5 h-5" />
+        <div class="flex gap-2 mb-2">
+          <UserGroupIcon class="w-5 h-5 shrink-0" />
           <router-link
             :to="`/communities/${
               session.game_id.community_id.url_short_name ||
               session.game_id.community_id.id
             }`"
-            class="text-sm text-blue-700 border-b border-dashed border-blue-600"
+            class="text-sm line-clamp-2 underline decoration-dashed"
           >
             {{ session.game_id.community_id.name }}
           </router-link>
