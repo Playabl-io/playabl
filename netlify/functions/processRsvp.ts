@@ -1,3 +1,5 @@
+import * as ics from "ics";
+import { format } from "date-fns";
 import { Handler } from "@netlify/functions";
 import { logError, sendEmail, supabase } from "../utils";
 import { joinSession, leaveSession } from "../rpc";
@@ -61,11 +63,18 @@ export const handler: Handler = async (event) => {
       await logError({ message: JSON.stringify(error) });
     }
     if (beforeRsvps.length < game.participant_count) {
+      const calItem = createCalendarAttachment({
+        startTime: session.start_time,
+        endTime: session.end_time,
+        title: game.title,
+        gameId: game.id,
+      });
       await sendRsvpEmail({
         gameName: game.title,
         relatedUrl: `https://app.playabl.io/games/${game.id}`,
         email: user.email,
         name: user.username || user.email,
+        calItem,
       });
     }
     return {
@@ -160,7 +169,19 @@ async function getUserProfile({ userId }) {
   return data;
 }
 
-function sendRsvpEmail({ name, email, relatedUrl, gameName }) {
+function sendRsvpEmail({
+  name,
+  email,
+  relatedUrl,
+  gameName,
+  calItem,
+}: {
+  name: string;
+  email: string;
+  relatedUrl: string;
+  gameName: string;
+  calItem?: string;
+}) {
   return sendEmail({
     From: {
       Email: "notifications@playabl.io",
@@ -179,7 +200,44 @@ function sendRsvpEmail({ name, email, relatedUrl, gameName }) {
       game_name: gameName,
       related_url: relatedUrl,
     },
+    ...(calItem && {
+      Attachments: [
+        {
+          ContentType: "text/plain",
+          Filename: "calendar_invite.ics",
+          Base64Content: calItem,
+        },
+      ],
+    }),
   });
+}
+
+function createCalendarAttachment({
+  startTime,
+  endTime,
+  title,
+  gameId,
+}: {
+  startTime: number;
+  endTime: number;
+  title: string;
+  gameId: number | string;
+}) {
+  const { value } = ics.createEvent({
+    start: format(startTime, "yyyy-M-d-H-m")
+      .split("-")
+      .map((val) => parseInt(val)) as [number, number, number, number, number],
+    end: format(endTime, "yyyy-M-d-H-m")
+      .split("-")
+      .map((val) => parseInt(val)) as [number, number, number, number, number],
+    title: `Playabl RSVP - ${title}`,
+    url: `https://app.playabl.io/games/${gameId}`,
+    busyStatus: "BUSY",
+    description: `You've successfully RSVP'd for ${title}. For full details, please visit the Playabl game page and check with your game facilitator, and don't forget to update your RSVP if you can no longer make it. Game URL - https://app.playabl.io/games/${gameId}`,
+  });
+  if (value) {
+    return btoa(value);
+  }
 }
 
 async function notifyGameCreator({
