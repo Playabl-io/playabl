@@ -91,7 +91,9 @@
           <ListView
             :loading="loading"
             :sessions="filteredSessions"
-            :sessions-by-game="sessionsByGame as Record<string, GameSession[]>"
+            :sessions-by-game="
+              sessionsByGame as Record<string, sessionWithGame[]>
+            "
             :reference-date="referenceDate"
             @update-reference-date="onDateChange"
             @refresh="refreshSessions"
@@ -100,7 +102,9 @@
         <TabPanel>
           <CalendarView
             :sessions="filteredSessions"
-            :sessions-by-game="sessionsByGame as Record<string, GameSession[]>"
+            :sessions-by-game="
+              sessionsByGame as Record<string, sessionWithGame[]>
+            "
             :reference-date="referenceDate"
             :selected-date="selectedDate"
             @update-reference-date="onDateChange"
@@ -128,7 +132,6 @@ import {
 } from "@headlessui/vue";
 import { AdjustmentsHorizontalIcon } from "@heroicons/vue/24/outline";
 import FormLabel from "@/components/Forms/FormLabel.vue";
-import { GameSession } from "@/typings/Session";
 import {
   loadOpenCommunitySessions,
   loadAllCommunitySessions,
@@ -140,6 +143,7 @@ import ListView from "./ListView.vue";
 import { store } from "@/store";
 import * as R from "ramda";
 import { useRoute, useRouter } from "vue-router";
+import { sessionWithGame } from "../IndexPage.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -157,7 +161,7 @@ const options = [
 
 const loading = ref(false);
 
-const sessions = ref<GameSession[]>([]);
+const sessions = ref<sessionWithGame[]>([]);
 const referenceDate = computed(() => {
   if (route.query.date && typeof route.query.date === "string") {
     const date = parse(route.query.date, "yyyy-MM", new Date());
@@ -174,7 +178,7 @@ function onDateChange(date: Date) {
 }
 
 const sessionsByGame = computed(() => {
-  const groupByGame = R.groupBy((session: GameSession) =>
+  const groupByGame = R.groupBy((session: sessionWithGame) =>
     String(session.game_id.id),
   );
   return groupByGame(sessions.value);

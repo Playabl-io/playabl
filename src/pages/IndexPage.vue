@@ -153,11 +153,11 @@ const showConfirmEmailBanner = ref(
 export type sessionWithGame = Omit<Session, "game_id"> & {
   game_id: Game & {
     sessions: Session[];
-  };
-  community_id: {
-    name: string;
-    id: string;
-    url_short_name?: string;
+    community_id: {
+      name: string;
+      id: string;
+      url_short_name?: string;
+    };
   };
 };
 export type sessionWithGameTitleAndId = Session & {

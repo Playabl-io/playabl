@@ -129,17 +129,28 @@
           <ExclamationCircleIcon class="h-4 w-4 text-violet-600" />
         </div>
       </div>
-      <div
-        v-if="session.game_id.community_events"
-        class="flex gap-2 text-blue-700 bg-gray-100 p-4 rounded-md"
-      >
-        <CalendarIcon class="w-5 h-5 shrink-0" />
-        <a
-          :href="`/events/${session.game_id.community_events.id}`"
-          class="font-semibold text-sm line-clamp-2 underline decoration-dashed"
-        >
-          {{ session.game_id.community_events.title }}
-        </a>
+      <div class="text-blue-700 bg-gray-100 p-4 rounded-md">
+        <div class="flex gap-2">
+          <UserGroupIcon class="w-5 h-5" />
+          <router-link
+            :to="`/communities/${
+              session.game_id.community_id.url_short_name ||
+              session.game_id.community_id.id
+            }`"
+            class="text-sm text-blue-700 border-b border-dashed border-blue-600"
+          >
+            {{ session.game_id.community_id.name }}
+          </router-link>
+        </div>
+        <div v-if="session.game_id.community_events" class="flex gap-2">
+          <CalendarIcon class="w-5 h-5 shrink-0" />
+          <a
+            :href="`/events/${session.game_id.community_events.id}`"
+            class="font-semibold text-sm line-clamp-2 underline decoration-dashed"
+          >
+            {{ session.game_id.community_events.title }}
+          </a>
+        </div>
       </div>
       <div>
         <router-link :to="`/games/${session.game_id.id}`">
@@ -225,6 +236,7 @@ import {
   EllipsisHorizontalCircleIcon,
   CheckCircleIcon,
   CalendarIcon,
+  UserGroupIcon,
 } from "@heroicons/vue/24/outline";
 import {
   ChevronRightIcon,
@@ -257,13 +269,14 @@ import {
 } from "@/api/gamesAndSessions";
 import { getCoverImageUrl } from "@/api/storage";
 import { pluralize } from "@/util/grammar";
-import { GameSession, Session } from "@/typings/Session";
+import { Session } from "@/typings/Session";
+import { sessionWithGame } from "../IndexPage.vue";
 
 const { showSuccess, showError } = useToast();
 
 const props = defineProps({
   session: {
-    type: Object as PropType<Omit<GameSession, "community_id">>,
+    type: Object as PropType<sessionWithGame>,
     required: true,
   },
   allGameSessions: {

@@ -91,7 +91,9 @@
           <ListView
             :loading="loading"
             :sessions="filteredSessions"
-            :sessions-by-game="(sessionsByGame as Record<string, GameSession[]>)"
+            :sessions-by-game="
+              sessionsByGame as Record<string, sessionWithGame[]>
+            "
             :reference-date="referenceDate"
             @update-reference-date="onDateChange"
             @refresh="refreshSessions"
@@ -100,7 +102,9 @@
         <TabPanel>
           <CalendarView
             :sessions="filteredSessions"
-            :sessions-by-game="(sessionsByGame as Record<string, GameSession[]>)"
+            :sessions-by-game="
+              sessionsByGame as Record<string, sessionWithGame[]>
+            "
             :reference-date="referenceDate"
             :selected-date="selectedDate"
             @update-reference-date="onDateChange"
@@ -128,7 +132,6 @@ import {
 } from "@headlessui/vue";
 import { AdjustmentsHorizontalIcon } from "@heroicons/vue/24/outline";
 import FormLabel from "@/components/Forms/FormLabel.vue";
-import { GameSession } from "@/typings/Session";
 import {
   loadOpenEventSessions,
   loadEventSessions,
@@ -140,6 +143,7 @@ import { store } from "@/store";
 import * as R from "ramda";
 import { eventStore } from "./eventStore";
 import { useRoute, useRouter } from "vue-router";
+import { sessionWithGame } from "../IndexPage.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -170,13 +174,13 @@ const options = [
 
 const loading = ref(false);
 
-const sessions = ref<GameSession[]>([]);
+const sessions = ref<sessionWithGame[]>([]);
 const selectedDate = ref<Date>();
 const sortOption = ref(options[0]);
 
 const sessionsByGame = computed(() => {
-  const groupByGame = R.groupBy((session: GameSession) =>
-    String(session.game_id.id)
+  const groupByGame = R.groupBy((session: sessionWithGame) =>
+    String(session.game_id.id),
   );
   return groupByGame(sessions.value);
 });
@@ -188,12 +192,12 @@ const filteredSessions = computed(() => {
   let filteredSessions = sessions.value;
   if (excludeOwnGames.value) {
     filteredSessions = sessions.value.filter(
-      (session) => session.creator_id !== store.user?.id
+      (session) => session.creator_id !== store.user?.id,
     );
   }
   if (excludeRsvpdGames.value) {
     filteredSessions = filteredSessions.filter(
-      (session) => !session.rsvps.includes(store.user?.id || "")
+      (session) => !session.rsvps.includes(store.user?.id || ""),
     );
   }
   return filteredSessions;
@@ -209,7 +213,7 @@ watch(
   () => sortOption.value,
   (newVal) => {
     newVal.value();
-  }
+  },
 );
 
 async function refreshSessions() {

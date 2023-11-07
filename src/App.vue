@@ -1,9 +1,6 @@
 <template>
   <AppShell>
-    <div v-if="loadingUser" class="grow grid place-content-center">
-      <LoadingSpinner color="brand-500" />
-    </div>
-    <router-view v-else></router-view>
+    <router-view></router-view>
     <ToasterManager />
     <NewProfileModal
       :open="showNewProfileModal"
@@ -69,7 +66,7 @@ const route = useRoute();
 const router = useRouter();
 
 const showNewProfileModal = ref(false);
-const loadingUser = ref(true);
+// const loadingUser = ref(false);
 const notificationSubscription = ref();
 
 supabase.auth.onAuthStateChange(async (event, session) => {
@@ -164,7 +161,7 @@ onMounted(async () => {
   const user = await supabase.auth.getUser();
   if (user.error) {
     // No logged in user
-    loadingUser.value = false;
+    // loadingUser.value = false;
   }
   if (user.data?.user?.id) {
     await Promise.all([
@@ -181,6 +178,6 @@ onMounted(async () => {
       });
     }
   }
-  loadingUser.value = false;
+  // loadingUser.value = false;
 });
 </script>
