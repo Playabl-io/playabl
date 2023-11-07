@@ -33,7 +33,7 @@
           </p>
           <p>
             <router-link
-              to="/#welcome"
+              to="/"
               class="text-blue-700 underline"
               @click="shownDashboardAnnouncement = true"
               >Check it out now</router-link
