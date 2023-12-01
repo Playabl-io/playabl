@@ -9,7 +9,7 @@
         new email.
       </p>
     </InfoBanner>
-    <div class="flex flex-col gap-12">
+    <div class="flex flex-col gap-12 mt-12">
       <div class="grid lg:grid-cols-2 gap-6">
         <IllustratedLinkCard
           img-path="/images/task_list.png"
@@ -45,15 +45,19 @@
           :links="jumpToLinks"
         />
       </div>
-      <section v-if="store.user">
+      <section v-if="loadingDb">
         <div class="full-width bg-brand-500 text-white">
           <div
-            class="py-12 md:container md:mx-auto max-w-6xl px-12 grid sm:grid-cols-3 gap-12 items-center"
+            class="py-12 md:container md:mx-auto max-w-6xl px-12 grid sm:grid-cols-3 min-h-[480px] gap-12 items-center"
+          ></div>
+        </div>
+      </section>
+      <section v-if="store.user && !loadingDb">
+        <div class="full-width bg-brand-500 text-white">
+          <div
+            class="py-12 md:container md:mx-auto max-w-6xl px-12 grid sm:grid-cols-3 min-h-[400px] gap-12 items-center"
           >
-            <p v-if="loadingDb">
-              Loading your personal dashboard. One moment please.
-            </p>
-            <div v-else class="sm:col-span-2 flex flex-col gap-2">
+            <div class="sm:col-span-2 flex flex-col gap-2">
               <p class="text-lg md:text-3xl lg:text-4xl">
                 Welcome {{ store.user.username || store.user.email }}
               </p>
@@ -69,24 +73,21 @@
             />
           </div>
         </div>
-        <div
-          v-if="!loadingDb"
-          class="my-8 p-8 rounded-lg flex items-center gap-6 bg-teal-300"
-        >
+        <div class="my-8 p-8 rounded-lg flex items-center gap-6 bg-teal-300">
           <LightBulbIcon class="w-6 h-6 text-teal-700 shrink-0" />
           <p class="text-teal-900 text-sm md:text-base">
             You can click on a user's image or avatar and see more info about
             times you've played together
           </p>
         </div>
-        <div v-if="!loadingDb" class="flex flex-col gap-12 mt-12">
+        <div class="flex flex-col gap-12 mt-12">
           <UserDashboard :db="db" />
         </div>
       </section>
-      <section v-else id="sign-up">
+      <section v-else-if="!store.user && !loadingDb" id="sign-up">
         <div class="full-width bg-brand-500 text-white">
           <div
-            class="py-12 md:container md:mx-auto max-w-6xl px-12 grid sm:grid-cols-3 gap-12 items-center"
+            class="py-12 md:container md:mx-auto max-w-6xl px-12 grid sm:grid-cols-3 min-h-[480px] gap-12 items-center"
           >
             <div class="flex flex-col gap-2 place-self-center sm:col-span-2">
               <p class="text-lg md:text-3xl lg:text-4xl font-paytone">
@@ -225,7 +226,7 @@ const db = ref<dashboard>({
   playerHistory: {},
 });
 
-const loadingDb = ref(false);
+const loadingDb = ref(true);
 
 async function loadDashboard() {
   loadingDb.value = true;
@@ -234,5 +235,12 @@ async function loadDashboard() {
   loadingDb.value = false;
 }
 onMounted(loadDashboard);
-watch(() => store.user, loadDashboard);
+watch(
+  () => store.user,
+  (newVal, lastVal) => {
+    if (newVal?.id && newVal.id !== lastVal?.id && !loadingDb.value) {
+      loadDashboard();
+    }
+  },
+);
 </script>
