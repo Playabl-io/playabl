@@ -119,7 +119,7 @@
               to="/login"
               active-class="text-brand-500 border-l border-brand-500 dark:border-brand-300"
             >
-              Sign in
+              Sign up or sign in
             </router-link>
           </menu-item>
           <MenuItem class="px-2 py-1 flex items-center">

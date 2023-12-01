@@ -96,8 +96,12 @@
       </transition>
     </Menu>
     <div v-else class="flex gap-3 items-center">
-      <PrimaryButton @click="signUpMode = 'sign-up'">Sign Up</PrimaryButton>
-      <LinkButton @click="signUpMode = 'sign-in'"> Sign in </LinkButton>
+      <PrimaryButton class="whitespace-nowrap" @click="signUpMode = 'sign-up'"
+        >Sign Up</PrimaryButton
+      >
+      <LinkButton class="whitespace-nowrap" @click="signUpMode = 'sign-in'">
+        Sign in
+      </LinkButton>
     </div>
   </section>
   <SignUpModal

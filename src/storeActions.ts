@@ -23,7 +23,6 @@ export async function getUserAccess(id: string) {
 }
 
 export async function triggerUserAccessLoad(id: string) {
-  console.log("trigger user load");
   getUserAccess(id);
   getUserMemberships(id);
 }
