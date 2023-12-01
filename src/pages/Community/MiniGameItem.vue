@@ -146,7 +146,7 @@
           <CalendarIcon class="w-5 h-5 shrink-0" />
           <a
             :href="`/events/${session.game_id.community_events.id}`"
-            class="font-semibold text-sm line-clamp-2 underline decoration-dashed"
+            class="text-sm line-clamp-2 underline decoration-dashed"
           >
             {{ session.game_id.community_events.title }}
           </a>

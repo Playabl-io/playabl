@@ -53,7 +53,6 @@ import { onMounted, ref } from "vue";
 import { loadProfile } from "./api/profiles";
 import { log } from "./util/logger";
 import AppShell from "./layouts/AppShell.vue";
-import LoadingSpinner from "./components/LoadingSpinner.vue";
 import { Notification } from "./typings/Notification";
 import { useStorage, breakpointsTailwind, useBreakpoints } from "@vueuse/core";
 import DismissButton from "./components/Buttons/DismissButton.vue";
@@ -66,7 +65,6 @@ const route = useRoute();
 const router = useRouter();
 
 const showNewProfileModal = ref(false);
-// const loadingUser = ref(false);
 const notificationSubscription = ref();
 
 supabase.auth.onAuthStateChange(async (event, session) => {
@@ -160,8 +158,10 @@ async function loadNotificationsAndSubscribe() {
 onMounted(async () => {
   const user = await supabase.auth.getUser();
   if (user.error) {
-    // No logged in user
-    // loadingUser.value = false;
+    log({
+      level: "error",
+      message: "Error loading user:" + user.error.message,
+    });
   }
   if (user.data?.user?.id) {
     await Promise.all([
@@ -178,6 +178,5 @@ onMounted(async () => {
       });
     }
   }
-  // loadingUser.value = false;
 });
 </script>
