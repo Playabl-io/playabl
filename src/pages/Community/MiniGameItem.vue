@@ -129,8 +129,8 @@
           <ExclamationCircleIcon class="h-4 w-4 text-violet-600" />
         </div>
       </div>
-      <div class="text-blue-700 bg-gray-100 p-4 rounded-md">
-        <div class="flex gap-2 mb-2">
+      <div class="text-blue-700 bg-gray-100 p-4 rounded-md flex flex-col gap-2">
+        <div class="flex gap-2">
           <UserGroupIcon class="w-5 h-5 shrink-0" />
           <router-link
             :to="`/communities/${
