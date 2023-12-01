@@ -44,6 +44,7 @@ import {
 } from "@/api/communities";
 import { isUuid } from "@/util/uuid";
 import { getUpcomingCommunityEvents } from "@/api/communityEvents";
+import { triggerUserAccessLoad } from "@/storeActions";
 
 const currentRoute = useRoute();
 const router = useRouter();
@@ -117,6 +118,9 @@ const communityData = ref<Community>();
 const isLoading = ref(true);
 
 onMounted(async () => {
+  if (store?.user?.id) {
+    triggerUserAccessLoad(store.user.id);
+  }
   if (typeof id !== "string") throw new Error("Unusable community id param");
   if (!isUuid(id)) {
     const data = (await loadCommunityByShortName({

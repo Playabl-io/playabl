@@ -63,21 +63,20 @@
     </div>
 
     <section v-if="store.user">
-      <div
-        class="full-width bg-brand-500 text-white min-h-[250px] md:min-h-[360px] lg:min-h-[415px]"
-      >
+      <div class="full-width bg-brand-500 text-white">
         <div
-          class="py-4 md:container md:mx-auto max-w-6xl px-4 grid grid-cols-2 gap-2 items-center"
+          class="py-12 md:container md:mx-auto max-w-6xl px-12 grid sm:grid-cols-3 gap-12 items-center"
         >
-          <div class="flex flex-col gap-2 place-self-center">
-            <p class="text-lg md:text-2xl">
+          <div class="sm:col-span-2 flex flex-col gap-2">
+            <p class="text-lg md:text-3xl lg:text-4xl">
               Welcome {{ store.user.username || store.user.email }}
             </p>
-            <p class="md:text-lg text-teal-300 font-semibold">
+            <p class="md:text-lg lg:text-xl text-teal-300 font-semibold">
               Here's your next week of gaming
             </p>
           </div>
           <img
+            v-if="isSmAndLarger"
             src="/images/calendar.png"
             class="bg-cover w-full max-w-sm"
             alt=""
@@ -96,34 +95,38 @@
         <UserDashboard :db="db" />
       </div>
     </section>
-    <section
-      v-else
-      id="find-your-next-game"
-      class="full-width bg-gradient-to-br from-blue-700 to-blue-900 py-12"
-    >
-      <div class="p-4 md:container md:mx-auto max-w-6xl">
-        <Heading as="h4" level="h4" class="text-white">
-          Ready for another game?
-        </Heading>
-        <p class="text-sm mt-2 mb-4 text-white">
-          Sessions with openings in the next seven days
-        </p>
+    <section v-else class="mb-12">
+      <div class="full-width bg-brand-500 text-white">
         <div
-          class="py-8 min-h-[400px] flex gap-6 overflow-auto snap-x snap-mandatory rounded-md"
+          class="py-12 md:container md:mx-auto max-w-6xl px-12 grid sm:grid-cols-3 gap-12 items-center"
         >
-          <div
-            v-for="game in db.games"
-            :key="game.id"
-            class="snap-center flex-none w-80"
-          >
-            <MiniGameItem
-              :session="game"
-              :all-game-sessions="game.game_id.sessions"
-            />
+          <div class="flex flex-col gap-2 place-self-center sm:col-span-2">
+            <p class="text-lg md:text-3xl lg:text-4xl font-paytone">
+              Join roleplaying communities and games now with your free acount
+            </p>
+            <BaseButton
+              class="text-slate-700 font-bold mt-6 bg-teal-400"
+              @click="showSignUp = true"
+            >
+              Sign up now
+            </BaseButton>
           </div>
+          <img
+            v-if="isSmAndLarger"
+            src="/images/task_done.png"
+            class="bg-cover w-full max-w-sm"
+            alt=""
+          />
         </div>
       </div>
     </section>
+    <NextWeekGames :db="db" />
+    <SignUpModal
+      :open="showSignUp"
+      initial-form="sign-up"
+      @signed-in="showSignUp = false"
+      @cancel="showSignUp = false"
+    />
   </BaseTemplate>
 </template>
 <script setup lang="ts">
@@ -138,9 +141,14 @@ import { LightBulbIcon } from "@heroicons/vue/24/outline";
 import client from "@/api/client";
 import { Session } from "@/typings/Session";
 import { Profile } from "@/typings/Profile";
-import Heading from "@/components/Heading.vue";
-import MiniGameItem from "./Community/MiniGameItem.vue";
 import { Game } from "@/typings/Game";
+import NextWeekGames from "./Home/NextWeekGames.vue";
+import SignUpModal from "@/components/Modals/SignUpModal.vue";
+import BaseButton from "@/components/Buttons/BaseButton.vue";
+import { breakpointsTailwind, useBreakpoints } from "@vueuse/core";
+
+const breakpoints = useBreakpoints(breakpointsTailwind);
+const isSmAndLarger = breakpoints.greater("sm");
 
 const route = useRoute();
 
@@ -149,6 +157,7 @@ const showConfirmEmailBanner = ref(
     "#message=Confirmation+link+accepted.+Please+proceed+to+confirm+link+sent+to+the+other+email",
   ),
 );
+const showSignUp = ref(false);
 
 export type sessionWithGame = Omit<Session, "game_id"> & {
   game_id: Game & {

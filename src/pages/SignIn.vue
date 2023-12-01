@@ -4,27 +4,33 @@
       <p v-if="submitted" class="grid place-items-center text-xl font-bold">
         Awesome! Watch your email for a confirmation message very soon!
       </p>
-      <SignUpForm
-        v-else-if="displaySignUp"
-        :loading="loading"
-        @sign-in="displaySignUp = false"
-        @sign-up-with-email="handleSignUp"
-        @sign-up-with-google="signInWithGoogle"
-      />
+      <div v-else-if="displaySignUp" class="lg:max-w-2xl mx-auto">
+        <SignUpForm
+          :loading="loading"
+          @sign-in="displaySignUp = false"
+          @sign-up-with-email="handleSignUp"
+          @sign-up-with-google="signInWithGoogle"
+        />
+      </div>
       <form
         v-else
-        class="flex flex-col lg:max-w-xl mx-auto"
+        class="flex flex-col lg:max-w-2xl mx-auto"
         @submit.prevent="handleLogin"
       >
         <Heading level="h1" as="h5" class="mb-3">Sign in</Heading>
-        <LinkButton
-          class="self-start text-sm"
+        <BaseButton
           type="button"
+          size="bare"
+          class="text-blue-700 mr-auto"
           @click="displaySignUp = true"
         >
           Need an account? Sign up
-        </LinkButton>
-        <div class="flex flex-col mt-6">
+        </BaseButton>
+        <div class="flex justify-center mt-12">
+          <GoogleButton @click="signInWithGoogle" />
+        </div>
+        <p class="text-xs text-slate-700 text-center my-4">OR</p>
+        <div class="flex flex-col">
           <form-label for="email"> Email </form-label>
           <form-input id="email" v-model="email" type="email" required />
         </div>
@@ -44,14 +50,10 @@
         </primary-button>
         <RouterLink
           to="/forgot-password"
-          class="mt-6 text-sm text-slate-700 hover:underline"
+          class="mt-2 text-sm text-slate-700 hover:underline"
         >
           Forgot password?
         </RouterLink>
-        <p class="text-xs text-slate-700 text-center my-4">OR</p>
-        <div class="flex justify-center">
-          <GoogleButton @click="signInWithGoogle" />
-        </div>
       </form>
     </section>
   </BaseTemplate>
@@ -64,13 +66,13 @@ import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import { ref } from "vue";
 import { supabase } from "@/supabase";
 import BaseTemplate from "@/layouts/BaseTemplate.vue";
-import LinkButton from "@/components/Buttons/LinkButton.vue";
 import useToast from "@/components/Toast/useToast";
 import { log } from "@/util/logger";
 import { useRouter, useRoute } from "vue-router";
 import { store } from "@/store";
 import GoogleButton from "@/components/Buttons/GoogleButton.vue";
 import SignUpForm from "../components/SignUpForm.vue";
+import BaseButton from "@/components/Buttons/BaseButton.vue";
 
 const route = useRoute();
 const router = useRouter();

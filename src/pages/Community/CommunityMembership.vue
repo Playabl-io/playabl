@@ -17,11 +17,11 @@
         </a>
       </div>
       <div class="grid gap-4">
-        <div v-for="level in accessLevels" :key="level.access_level_id.id">
-          <p>{{ level.access_level_id.name }}</p>
+        <div v-for="level in accessLevels" :key="level.id">
+          <p>{{ level.name }}</p>
           <p class="text-slate-600 text-sm">
-            {{ level.access_level_id.priority_access_time }}
-            {{ level.access_level_id.time_denomination }}
+            {{ level.priority_access_time }}
+            {{ level.time_denomination }}
           </p>
         </div>
       </div>
@@ -72,7 +72,7 @@
   </DeleteModal>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import Heading from "@/components/Heading.vue";
 import SectionContainer from "@/components/SectionContainer.vue";
 import { AccessLevel } from "@/typings/AccessLevel";
@@ -80,23 +80,24 @@ import { store } from "@/store";
 import { loadUserCommunityAccessLevels } from "@/api/communityAccess";
 import { ROLES } from "@/util/roles";
 import { communityStore } from "./communityStore";
-import { loadUserCommunityMembership } from "@/api/communityMemberships";
-import { CommunityMembership } from "@/typings/CommunityMembership";
 import WarningButton from "@/components/Buttons/WarningButton.vue";
 import DeleteModal from "@/components/Modals/DeleteModal.vue";
 import { leaveCommunity } from "@/api/communities";
 import useToast from "@/components/Toast/useToast";
+import { triggerUserAccessLoad } from "@/storeActions";
 
 const { showSuccess, showError } = useToast();
 
 const loading = ref(true);
 const isLeaving = ref(false);
-const accessLevels = ref<{ access_level_id: AccessLevel }[]>([]);
-const membership = ref<CommunityMembership>();
+const accessLevels = ref<AccessLevel[]>([]);
+const membership = computed(() => {
+  return store.userCommunityMembership[communityStore.community.id];
+});
 const leaveCommunityModalOpen = ref(false);
 
 onMounted(async () => {
-  await Promise.all([getUserCommunityAccess(), getUserMembership()]);
+  await getUserCommunityAccess();
   loading.value = false;
 });
 
@@ -108,29 +109,20 @@ async function getUserCommunityAccess() {
     communityId: communityStore.community.id,
   });
   if (results) {
-    accessLevels.value = results;
-  }
-}
-
-async function getUserMembership() {
-  if (!store.user?.id) return;
-
-  const data = await loadUserCommunityMembership({
-    userId: store.user.id,
-    communityId: communityStore.community.id,
-  });
-  if (data) {
-    membership.value = data;
+    accessLevels.value = results.map(({ access_level_id: level }) => level);
   }
 }
 
 async function handleLeave() {
+  if (!store?.user?.id) {
+    return;
+  }
   isLeaving.value = true;
   try {
     await leaveCommunity(communityStore.community.id);
+    triggerUserAccessLoad(store?.user?.id);
     showSuccess({ message: `You have left ${communityStore.community.name}` });
     leaveCommunityModalOpen.value = false;
-    membership.value = undefined;
     accessLevels.value = [];
     communityStore.userRoleId = -1;
     communityStore.isAdmin = false;

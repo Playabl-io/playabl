@@ -95,10 +95,24 @@
         </MenuItems>
       </transition>
     </Menu>
-    <router-link v-else to="/login" class="whitespace-nowrap hover:underline">
-      Sign in
-    </router-link>
+    <div v-else class="flex gap-3 items-center">
+      <PrimaryButton @click="signUpMode = 'sign-up'">Sign Up</PrimaryButton>
+      <LinkButton @click="signUpMode = 'sign-in'"> Sign in </LinkButton>
+    </div>
   </section>
+  <SignUpModal
+    v-if="signUpMode === 'sign-up'"
+    open
+    @signed-in="signUpMode = 'closed'"
+    @cancel="signUpMode = 'closed'"
+  />
+  <SignUpModal
+    v-if="signUpMode === 'sign-in'"
+    open
+    initial-form="sign-in"
+    @signed-in="signUpMode = 'closed'"
+    @cancel="signUpMode = 'closed'"
+  />
 </template>
 <script setup lang="ts">
 import { ref } from "vue";
@@ -112,8 +126,13 @@ import LoadingSpinner from "./LoadingSpinner.vue";
 import { log } from "@/util/logger";
 import UserAvatar from "./UserAvatar.vue";
 import flags from "@/util/flags";
+import PrimaryButton from "./Buttons/PrimaryButton.vue";
+import SignUpModal from "./Modals/SignUpModal.vue";
+import LinkButton from "./Buttons/LinkButton.vue";
+
 const activeMenuItem = "bg-gray-100 cursor-pointer";
 
+const signUpMode = ref<"sign-up" | "sign-in" | "closed">("closed");
 const isSigningOut = ref(false);
 const router = useRouter();
 

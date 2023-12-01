@@ -1,43 +1,50 @@
 <template>
-  <form
-    class="flex flex-col lg:max-w-xl mx-auto"
-    @submit.prevent="handleSubmit"
-  >
+  <form class="flex flex-col" @submit.prevent="handleSubmit">
     <slot name="heading">
       <Heading level="h1" as="h5" class="mb-3">Sign up</Heading>
     </slot>
-    <p class="text-sm font-medium">
+    <p class="font-medium mt-3">
       Sign up to join or start communities and play in games
     </p>
-    <LinkButton
+    <BaseButton
       type="button"
-      class="mr-auto mt-1 text-sm"
+      class="mr-auto mt-1 text-blue-700"
+      size="bare"
       @click="emit('signIn')"
     >
       Have an account already? Sign in
-    </LinkButton>
-    <form-label class="flex flex-col mt-6"> Email </form-label>
+    </BaseButton>
+    <div class="flex justify-center mt-12 mb-6">
+      <GoogleButton @click="emit('signUpWithGoogle')" />
+    </div>
+    <p class="text-xs text-slate-700 text-center my-4">OR</p>
+    <form-label class="flex flex-col mt-4"> Sign up with email </form-label>
     <form-input v-model="email" type="email" required />
-    <Popover class="relative">
-      <PopoverButton
-        type="button"
-        class="flex items-center gap-1 mr-auto mt-1 rounded-md hover:underline focus-styles"
-      >
-        <InformationCircleIcon class="w-4 h-4" />
-        <p class="text-xs text-slate-700">How will my email be used?</p>
-      </PopoverButton>
-
-      <PopoverPanel
-        class="absolute z-10 mt-2 bg-white p-4 rounded-md shadow-md border border-solid border-gray-100"
-      >
+    <LinkButton
+      type="button"
+      class="flex items-center gap-1 mr-auto mt-2 rounded-md hover:underline focus-styles"
+      @click="showEmailInfo = !showEmailInfo"
+    >
+      <InformationCircleIcon class="w-4 h-4" />
+      <p class="text-xs text-slate-700">How will my email be used?</p>
+    </LinkButton>
+    <Transition
+      enter-active-class="transition duration-150 ease-out"
+      enter-from-class="transform opacity-0"
+      enter-to-class="transform opacity-100"
+      leave-active-class="transition duration-75 ease-out"
+      leave-from-class="transform opacity-100"
+      leave-to-class="transform opacity-0"
+    >
+      <Well v-if="showEmailInfo" class="mt-3">
         <p class="text-sm leading-relaxed">
           Your email is used to notify you when RSVP status for games change,
           and is made available to the game facilitators and community
           administrators you join. You should sign up with a public email.
         </p>
-      </PopoverPanel>
-    </Popover>
-    <div class="mt-4">
+      </Well>
+    </Transition>
+    <div v-if="email.length > 0" class="mt-4">
       <form-label class="flex flex-col"> Password </form-label>
       <div class="flex items-end">
         <form-input
@@ -84,7 +91,10 @@
         {{ passwordError }}
       </p>
     </div>
-    <div class="text-xs text-slate-700 mt-6">
+    <primary-button :is-loading="loading" class="mt-6">
+      Sign up
+    </primary-button>
+    <div class="text-xs text-slate-700 mt-3">
       By signing up, you agree to the Playabl
       <router-link
         class="text-brand-500"
@@ -104,13 +114,6 @@
         Privacy Policy
       </router-link>
     </div>
-    <primary-button :is-loading="loading" class="mt-2">
-      Sign up
-    </primary-button>
-    <p class="text-xs text-slate-700 text-center my-4">OR</p>
-    <div class="flex justify-center">
-      <GoogleButton @click="emit('signUpWithGoogle')" />
-    </div>
   </form>
 </template>
 <script setup lang="ts">
@@ -120,7 +123,6 @@ import {
   EyeSlashIcon,
   InformationCircleIcon,
 } from "@heroicons/vue/24/outline";
-import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue";
 import FormLabel from "@/components/Forms/FormLabel.vue";
 import FormInput from "@/components/Forms/FormInput.vue";
 import Heading from "@/components/Heading.vue";
@@ -128,6 +130,8 @@ import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import LinkButton from "@/components/Buttons/LinkButton.vue";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
 import GoogleButton from "@/components/Buttons/GoogleButton.vue";
+import BaseButton from "./Buttons/BaseButton.vue";
+import Well from "./Well.vue";
 
 const emit = defineEmits(["signUpWithEmail", "signUpWithGoogle", "signIn"]);
 
@@ -137,6 +141,8 @@ defineProps({
     required: true,
   },
 });
+
+const showEmailInfo = ref(false);
 
 const email = ref("");
 const password = ref("");

@@ -43,7 +43,11 @@
 </template>
 <script setup lang="ts">
 import { store } from "./store";
-import { getUserAccess, getUserMemberships } from "./storeActions";
+import {
+  getUserAccess,
+  getUserMemberships,
+  triggerUserAccessLoad,
+} from "./storeActions";
 import { supabase } from "./supabase";
 import ToasterManager from "./components/Toast/ToasterManager.vue";
 import { useRoute, useRouter } from "vue-router";
@@ -80,6 +84,7 @@ supabase.auth.onAuthStateChange(async (event, session) => {
         }
         store.user = profile;
         store.userSettings = profile.user_settings;
+        triggerUserAccessLoad(session.user.id);
 
         if (!notificationSubscription.value) {
           loadNotificationsAndSubscribe();
