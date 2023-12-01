@@ -36,7 +36,7 @@
                   db.playerHistory[session.creator_id].email
                 "
                 :player-history="db.playerHistory[session.creator_id]"
-                :community-id="session.community_id.id"
+                :community-id="session.game_id.community_id.id"
                 position="top"
               />
               <div class="flex flex-col gap-1">
@@ -67,7 +67,7 @@
                       db.playerHistory[rsvp].email
                     "
                     :player-history="db.playerHistory[rsvp]"
-                    :community-id="session.community_id.id"
+                    :community-id="session.game_id.community_id.id"
                     position="top"
                   />
                 </template>
@@ -120,7 +120,7 @@
                       db.playerHistory[rsvp].email
                     "
                     :player-history="db.playerHistory[rsvp]"
-                    :community-id="session.community_id.id"
+                    :community-id="session.game_id.community_id.id"
                     :position="isMdAndLarger ? 'left' : 'top'"
                     show-new-member-status
                   />

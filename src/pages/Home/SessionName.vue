@@ -7,17 +7,17 @@
     </router-link>
     <router-link
       :to="`/communities/${
-        session.community_id?.url_short_name || session.community_id?.id
+        session.game_id.community_id?.url_short_name ||
+        session.game_id.community_id?.id
       }`"
       class="text-sm text-brand-500 mt-1"
     >
-      {{ session.community_id?.name }}
+      {{ session.game_id.community_id?.name }}
     </router-link>
   </div>
 </template>
 <script lang="ts" setup>
 import { PropType } from "vue";
-import { format } from "date-fns";
 import { sessionWithGame } from "../IndexPage.vue";
 
 defineProps({

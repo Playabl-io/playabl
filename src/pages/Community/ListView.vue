@@ -67,22 +67,21 @@ import {
   Squares2X2Icon,
   ListBulletIcon,
 } from "@heroicons/vue/24/outline";
-import { GameSession } from "@/typings/Session";
 import Heading from "@/components/Heading.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
 import SecondaryButton from "@/components/Buttons/SecondaryButton.vue";
 import MiniGameItem from "./MiniGameItem.vue";
 import ListViewItem from "./ListViewItem.vue";
-import { CommunityAccess } from "@/typings/CommunityAccess";
+import { sessionWithGame } from "../IndexPage.vue";
 
 const props = defineProps({
   sessions: {
-    type: Object as PropType<GameSession[]>,
+    type: Object as PropType<sessionWithGame[]>,
     required: true,
   },
   sessionsByGame: {
-    type: Object as PropType<Record<string, GameSession[]>>,
+    type: Object as PropType<Record<string, sessionWithGame[]>>,
     required: true,
   },
   referenceDate: {
@@ -107,7 +106,7 @@ const monthSessions = computed(() => {
   const start = startOfMonth(props.referenceDate).getTime();
   const end = endOfMonth(props.referenceDate).getTime();
   return props.sessions.filter(
-    (session) => session.start_time >= start && session.end_time <= end
+    (session) => session.start_time >= start && session.end_time <= end,
   );
 });
 

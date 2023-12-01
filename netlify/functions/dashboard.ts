@@ -3,6 +3,9 @@ import { authenticateUser, supabase, logError } from "../utils";
 import * as R from "ramda";
 import { addDays, endOfDay } from "date-fns";
 
+const SESSION_WITH_GAME_AND_COMMUNITY_INFO =
+  "*, game_id(*, community_events(*), sessions(*), community_id(*))";
+
 export const handler: Handler = async (event) => {
   const today = new Date();
   const sevenDaysFromNow = endOfDay(addDays(today, 7));
@@ -11,7 +14,7 @@ export const handler: Handler = async (event) => {
   // load open games in next 7 days
   const { data: openGames, error: openGamesError } = await supabase
     .from("sessions")
-    .select("*, game_id(*, community_events(*), sessions(*))")
+    .select(SESSION_WITH_GAME_AND_COMMUNITY_INFO)
     .is("deleted_at", null)
     .gte("start_time", today.getTime())
     .lte("end_time", sevenDaysFromNow.getTime())
@@ -47,9 +50,7 @@ export const handler: Handler = async (event) => {
   // load sessions playing in next 7 days
   const { data: playing, error: playingError } = await supabase
     .from("sessions")
-    .select(
-      "*, game_id(title, id, event_id(id, title), sessions(*)), community_id(name, id, url_short_name)",
-    )
+    .select(SESSION_WITH_GAME_AND_COMMUNITY_INFO)
     .is("deleted_at", null)
     .contains("rsvps", [user.data.user.id])
     .gte("start_time", today.getTime())
@@ -63,9 +64,7 @@ export const handler: Handler = async (event) => {
   // load sessions managing in next 7 days
   const { data: managing, error: managingError } = await supabase
     .from("sessions")
-    .select(
-      "*, game_id(title, id, event_id(id, title), sessions(*)), community_id(name, id, url_short_name)",
-    )
+    .select(SESSION_WITH_GAME_AND_COMMUNITY_INFO)
     .is("deleted_at", null)
     .eq("creator_id", user.data.user.id)
     .gte("start_time", today.getTime())
@@ -138,7 +137,7 @@ export const handler: Handler = async (event) => {
   // load open games in next 7 days
   const { data: games, error: gamesError } = await supabase
     .from("sessions")
-    .select("*, game_id(*, community_events(*), sessions(*))")
+    .select(SESSION_WITH_GAME_AND_COMMUNITY_INFO)
     .is("deleted_at", null)
     .neq("creator_id", user.data.user.id)
     .in("community_id", communityIds)

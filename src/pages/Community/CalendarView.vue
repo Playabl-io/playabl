@@ -60,20 +60,20 @@
 <script setup lang="ts">
 import { PropType } from "vue";
 import { isSameDay, format } from "date-fns";
-import { GameSession } from "@/typings/Session";
 import DisplayCalendar from "@/components/Calendar/DisplayCalendar.vue";
 
 import Tooltip from "@/components/Tooltip.vue";
 import Heading from "@/components/Heading.vue";
 import MiniGameItem from "./MiniGameItem.vue";
+import { sessionWithGame } from "../IndexPage.vue";
 
 const props = defineProps({
   sessions: {
-    type: Object as PropType<GameSession[]>,
+    type: Object as PropType<sessionWithGame[]>,
     required: true,
   },
   sessionsByGame: {
-    type: Object as PropType<Record<string, GameSession[]>>,
+    type: Object as PropType<Record<string, sessionWithGame[]>>,
     required: true,
   },
   referenceDate: {

@@ -30,7 +30,7 @@
             intervalToDuration({
               start: session.start_time,
               end: session.end_time,
-            })
+            }),
           )
         }}
       </p>
@@ -147,7 +147,7 @@
                   intervalToDuration({
                     start: related.start_time,
                     end: related.end_time,
-                  })
+                  }),
                 )
               }}
             </li>
@@ -162,7 +162,6 @@ import { computed, PropType } from "vue";
 import { EllipsisHorizontalCircleIcon } from "@heroicons/vue/24/outline";
 import { ChevronRightIcon } from "@heroicons/vue/20/solid";
 import { format, formatDuration, intervalToDuration } from "date-fns";
-import { GameSession } from "@/typings/Session";
 import useSWRV from "swrv";
 import { loadProfile } from "@/api/profiles";
 import UserBadge from "@/components/UserBadge.vue";
@@ -181,16 +180,17 @@ import { store } from "@/store";
 import useToast from "@/components/Toast/useToast";
 import { rsvpToAllGameSessions, joinSession } from "@/api/gamesAndSessions";
 import { numberToWord } from "@/util/grammar";
+import { sessionWithGame } from "../IndexPage.vue";
 
 const { showSuccess, showError } = useToast();
 
 const props = defineProps({
   session: {
-    type: Object as PropType<GameSession>,
+    type: Object as PropType<sessionWithGame>,
     required: true,
   },
   allGameSessions: {
-    type: Object as PropType<GameSession[]>,
+    type: Object as PropType<sessionWithGame[]>,
     required: true,
   },
 });
@@ -207,7 +207,7 @@ const canRsvp = userCanRsvp({
 });
 
 const relatedSessions = computed(() =>
-  props.allGameSessions.filter((session) => session.id !== props.session.id)
+  props.allGameSessions.filter((session) => session.id !== props.session.id),
 );
 
 const otherReservableSessions = computed(() =>
@@ -217,8 +217,8 @@ const otherReservableSessions = computed(() =>
       session,
       userId: store.user?.id,
       hostId: props.session.creator_id,
-    })
-  )
+    }),
+  ),
 );
 
 const canRsvpToRelatedSessions = computed(() => {
@@ -227,7 +227,7 @@ const canRsvpToRelatedSessions = computed(() => {
 });
 
 const sessionPlacement = computed(() =>
-  props.allGameSessions.indexOf(props.session)
+  props.allGameSessions.indexOf(props.session),
 );
 
 async function rsvpToSession() {

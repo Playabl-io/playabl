@@ -300,7 +300,7 @@ export async function loadOpenCommunitySessions({
 }) {
   const { data, error } = await supabase
     .from("sessions")
-    .select("*, game_id(*, community_events(*))")
+    .select("*, game_id(*, community_events(*), sessions(*), community_id(*))")
     .is("deleted_at", null)
     .eq("community_id", communityId)
     .eq("has_openings", true)
@@ -328,7 +328,7 @@ export async function loadAllCommunitySessions({
 }) {
   const { data, error } = await supabase
     .from("sessions")
-    .select("*, game_id(*, community_events(*))")
+    .select("*, game_id(*, community_events(*), sessions(*), community_id(*))")
     .is("deleted_at", null)
     .eq("community_id", communityId)
     .gte("start_time", startOfDay(startDate).getTime())
@@ -347,7 +347,9 @@ export async function loadAllCommunitySessions({
 export async function loadOpenEventSessions({ eventId }: { eventId: number }) {
   const { data, error } = await supabase
     .from("sessions")
-    .select("*, game_id!inner(*)")
+    .select(
+      "*, game_id!inner(*, community_events(*), sessions(*), community_id(*))",
+    )
     .is("deleted_at", null)
     .eq("has_openings", true)
     .eq("game_id.event_id", eventId)
@@ -363,7 +365,9 @@ export async function loadOpenEventSessions({ eventId }: { eventId: number }) {
 export async function loadEventSessions({ eventId }: { eventId: number }) {
   const { data, error } = await supabase
     .from("sessions")
-    .select("*, game_id!inner(*)")
+    .select(
+      "*, game_id!inner(*, community_events(*), sessions(*), community_id(*))",
+    )
     .is("deleted_at", null)
     .eq("game_id.event_id", eventId)
     .order("start_time", { ascending: true });
