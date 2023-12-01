@@ -4,9 +4,10 @@
     <p class="text-sm">
       {{ subTitle }}
     </p>
-    <div class="grid sm:grid-cols-3 md:grid-cols-5 gap-4 mt-6">
+    <div class="grid sm:grid-cols-3 md:grid-cols-5 gap-8 mt-6">
       <img
-        class="md:col-span-2 w-3/5 sm:w-full md:w-3/5 lg:w-full bg-cover mx-auto"
+        v-if="isSmAndLarger"
+        class="md:col-span-2 sm:w-full md:w-3/5 lg:w-full bg-cover mx-auto"
         :src="imgPath"
         alt=""
         width="100%"
@@ -30,6 +31,10 @@
 <script setup lang="ts">
 import { PropType } from "vue";
 import Heading from "../../components/Heading.vue";
+import { breakpointsTailwind, useBreakpoints } from "@vueuse/core";
+
+const breakpoints = useBreakpoints(breakpointsTailwind);
+const isSmAndLarger = breakpoints.greater("sm");
 
 defineProps({
   title: {

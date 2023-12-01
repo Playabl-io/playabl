@@ -21,3 +21,8 @@ export async function getUserAccess(id: string) {
     store.userCommunityAccess = data;
   }
 }
+
+export async function triggerUserAccessLoad(id: string) {
+  getUserAccess(id);
+  getUserMemberships(id);
+}

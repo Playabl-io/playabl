@@ -89,7 +89,11 @@
             v-else-if="communityStore.community.signup_method === 'REQUEST'"
             :is-loading="isJoining"
             class="w-full"
-            @click="displayRequestToJoinModal = true"
+            @click="
+              store.user
+                ? (displayRequestToJoinModal = true)
+                : (displaySignUp = true)
+            "
           >
             Request to join community
           </PrimaryButton>

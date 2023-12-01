@@ -9,125 +9,117 @@
         new email.
       </p>
     </InfoBanner>
-    <div class="grid lg:grid-cols-2 gap-6 mt-8 mb-12">
-      <IllustratedLinkCard
-        img-path="/images/task_list.png"
-        title="Welcome to Playabl"
-        sub-title="Here are some guides to help you get started on Playabl"
-        :links="[
-          {
-            href: 'https://docs.playabl.io/guides/communities/finding-communities.html',
-            label: 'Finding and joining communities',
-            external: true,
-          },
-          {
-            href: 'https://docs.playabl.io/guides/games/finding-games.html',
-            label: 'Finding and joining games',
-            external: true,
-          },
-          {
-            href: 'https://docs.playabl.io/guides/communities/starting-a-community.html',
-            label: 'Starting a community',
-            external: true,
-          },
-          {
-            href: 'https://docs.playabl.io/guides/events/running-events.html',
-            label: 'Running a community event',
-            external: true,
-          },
-        ]"
-      />
-      <IllustratedLinkCard
-        img-path="/images/world_travel.png"
-        title="Jump To"
-        sub-title="Here are some links to help you get to gaming"
-        :links="[
-          {
-            href: '/login',
-            label: 'Sign in or create an account',
-          },
-          {
-            href: '/games/browse?sort.key=created_at&sort.dir=desc&filter=open',
-            label: 'Browse newest games across communities',
-          },
-          {
-            href: '/communities/browse?sort.key=member-count&sort.dir=desc',
-            label: 'Browse communities',
-          },
-          {
-            href: '/#find-your-next-game',
-            label: 'Find a game for this week',
-          },
-        ]"
-      />
-    </div>
-
-    <section v-if="store.user">
-      <div
-        class="full-width bg-brand-500 text-white min-h-[250px] md:min-h-[360px] lg:min-h-[415px]"
-      >
-        <div
-          class="py-4 md:container md:mx-auto max-w-6xl px-4 grid grid-cols-2 gap-2 items-center"
-        >
-          <div class="flex flex-col gap-2 place-self-center">
-            <p class="text-lg md:text-2xl">
-              Welcome {{ store.user.username || store.user.email }}
-            </p>
-            <p class="md:text-lg text-teal-300 font-semibold">
-              Here's your next week of gaming
-            </p>
-          </div>
-          <img
-            src="/images/calendar.png"
-            class="bg-cover w-full max-w-sm"
-            alt=""
-          />
-        </div>
+    <div class="flex flex-col gap-12">
+      <div class="grid lg:grid-cols-2 gap-6">
+        <IllustratedLinkCard
+          img-path="/images/task_list.png"
+          title="Welcome to Playabl"
+          sub-title="Here are some guides to help you get started on Playabl"
+          :links="[
+            {
+              href: 'https://docs.playabl.io/guides/communities/finding-communities.html',
+              label: 'Finding and joining communities',
+              external: true,
+            },
+            {
+              href: 'https://docs.playabl.io/guides/games/finding-games.html',
+              label: 'Finding and joining games',
+              external: true,
+            },
+            {
+              href: 'https://docs.playabl.io/guides/communities/starting-a-community.html',
+              label: 'Starting a community',
+              external: true,
+            },
+            {
+              href: 'https://docs.playabl.io/guides/events/running-events.html',
+              label: 'Running a community event',
+              external: true,
+            },
+          ]"
+        />
+        <IllustratedLinkCard
+          img-path="/images/world_travel.png"
+          title="Jump To"
+          sub-title="Here are some links to help you get to gaming"
+          :links="jumpToLinks"
+        />
       </div>
-
-      <div class="my-8 p-8 rounded-lg flex items-center gap-6 bg-teal-300">
-        <LightBulbIcon class="w-6 h-6 text-teal-700 shrink-0" />
-        <p class="text-teal-900 text-sm md:text-base">
-          You can click on a user's image or avatar and see more info about
-          times you've played together
-        </p>
-      </div>
-      <div class="flex flex-col gap-12 mt-12">
-        <UserDashboard :db="db" />
-      </div>
-    </section>
-    <section
-      v-else
-      id="find-your-next-game"
-      class="full-width bg-gradient-to-br from-blue-700 to-blue-900 py-12"
-    >
-      <div class="p-4 md:container md:mx-auto max-w-6xl">
-        <Heading as="h4" level="h4" class="text-white">
-          Ready for another game?
-        </Heading>
-        <p class="text-sm mt-2 mb-4 text-white">
-          Sessions with openings in the next seven days
-        </p>
-        <div
-          class="py-8 min-h-[400px] flex gap-6 overflow-auto snap-x snap-mandatory rounded-md"
-        >
+      <section v-if="store.user">
+        <div class="full-width bg-brand-500 text-white">
           <div
-            v-for="game in db.games"
-            :key="game.id"
-            class="snap-center flex-none w-80"
+            class="py-12 md:container md:mx-auto max-w-6xl px-12 grid sm:grid-cols-3 gap-12 items-center"
           >
-            <MiniGameItem
-              :session="game"
-              :all-game-sessions="game.game_id.sessions"
+            <p v-if="loadingDb">
+              Loading your personal dashboard. One moment please.
+            </p>
+            <div v-else class="sm:col-span-2 flex flex-col gap-2">
+              <p class="text-lg md:text-3xl lg:text-4xl">
+                Welcome {{ store.user.username || store.user.email }}
+              </p>
+              <p class="md:text-lg lg:text-xl text-teal-300 font-semibold">
+                Here's your next week of gaming
+              </p>
+            </div>
+            <img
+              v-if="isSmAndLarger"
+              src="/images/calendar.png"
+              class="bg-cover w-full max-w-sm"
+              alt=""
             />
           </div>
         </div>
-      </div>
-    </section>
+        <div
+          v-if="!loadingDb"
+          class="my-8 p-8 rounded-lg flex items-center gap-6 bg-teal-300"
+        >
+          <LightBulbIcon class="w-6 h-6 text-teal-700 shrink-0" />
+          <p class="text-teal-900 text-sm md:text-base">
+            You can click on a user's image or avatar and see more info about
+            times you've played together
+          </p>
+        </div>
+        <div v-if="!loadingDb" class="flex flex-col gap-12 mt-12">
+          <UserDashboard :db="db" />
+        </div>
+      </section>
+      <section v-else id="sign-up">
+        <div class="full-width bg-brand-500 text-white">
+          <div
+            class="py-12 md:container md:mx-auto max-w-6xl px-12 grid sm:grid-cols-3 gap-12 items-center"
+          >
+            <div class="flex flex-col gap-2 place-self-center sm:col-span-2">
+              <p class="text-lg md:text-3xl lg:text-4xl font-paytone">
+                Join roleplaying communities and games now with your free acount
+              </p>
+              <BaseButton
+                class="text-slate-700 font-bold mt-6 bg-teal-400"
+                @click="showSignUp = true"
+              >
+                Sign up now
+              </BaseButton>
+            </div>
+            <img
+              v-if="isSmAndLarger"
+              src="/images/task_done.png"
+              class="bg-cover w-full max-w-sm"
+              alt=""
+            />
+          </div>
+        </div>
+      </section>
+      <NextWeekGames :db="db" />
+    </div>
+    <SignUpModal
+      :open="showSignUp"
+      initial-form="sign-up"
+      @signed-in="showSignUp = false"
+      @cancel="showSignUp = false"
+    />
   </BaseTemplate>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import InfoBanner from "@/components/Banners/InfoBanner.vue";
 import BaseTemplate from "@/layouts/BaseTemplate.vue";
 import { useRoute } from "vue-router";
@@ -138,9 +130,14 @@ import { LightBulbIcon } from "@heroicons/vue/24/outline";
 import client from "@/api/client";
 import { Session } from "@/typings/Session";
 import { Profile } from "@/typings/Profile";
-import Heading from "@/components/Heading.vue";
-import MiniGameItem from "./Community/MiniGameItem.vue";
 import { Game } from "@/typings/Game";
+import NextWeekGames from "./Home/NextWeekGames.vue";
+import SignUpModal from "@/components/Modals/SignUpModal.vue";
+import BaseButton from "@/components/Buttons/BaseButton.vue";
+import { breakpointsTailwind, useBreakpoints } from "@vueuse/core";
+
+const breakpoints = useBreakpoints(breakpointsTailwind);
+const isSmAndLarger = breakpoints.greater("sm");
 
 const route = useRoute();
 
@@ -149,6 +146,45 @@ const showConfirmEmailBanner = ref(
     "#message=Confirmation+link+accepted.+Please+proceed+to+confirm+link+sent+to+the+other+email",
   ),
 );
+const showSignUp = ref(false);
+
+const jumpToLinks = computed(() => {
+  if (store.user) {
+    return [
+      {
+        href: "/games/browse?sort.key=created_at&sort.dir=desc&filter=open",
+        label: "Browse newest games across communities",
+      },
+      {
+        href: "/communities/browse?sort.key=member-count&sort.dir=desc",
+        label: "Browse communities",
+      },
+      {
+        href: "/#find-your-next-game",
+        label: "Find a game for this week",
+      },
+    ];
+  } else {
+    return [
+      {
+        href: "/#sign-up",
+        label: "Sign in or create an account",
+      },
+      {
+        href: "/games/browse?sort.key=created_at&sort.dir=desc&filter=open",
+        label: "Browse newest games across communities",
+      },
+      {
+        href: "/communities/browse?sort.key=member-count&sort.dir=desc",
+        label: "Browse communities",
+      },
+      {
+        href: "/#find-your-next-game",
+        label: "Find a game for this week",
+      },
+    ];
+  }
+});
 
 export type sessionWithGame = Omit<Session, "game_id"> & {
   game_id: Game & {
@@ -189,8 +225,14 @@ const db = ref<dashboard>({
   playerHistory: {},
 });
 
-onMounted(async () => {
+const loadingDb = ref(false);
+
+async function loadDashboard() {
+  loadingDb.value = true;
   const { data } = await client.get("/.netlify/functions/dashboard");
   db.value = data;
-});
+  loadingDb.value = false;
+}
+onMounted(loadDashboard);
+watch(() => store.user, loadDashboard);
 </script>

@@ -1,7 +1,7 @@
 <template>
   <BaseTemplate>
     <Heading as="h1" level="h1">Privacy Policy</Heading>
-    <p class="text-xs text-slate-700 mt-2">Last updated: October 10th, 2023</p>
+    <p class="text-xs text-slate-700 mt-2">Last updated: December 1st, 2023</p>
     <p class="prose mt-12">
       The information we collect about you is not sold or transferred to any
       third party except to provide services to you as part of your use of the
@@ -57,8 +57,10 @@
       are comfortable with having available to others.
     </p>
     <p class="prose mt-6">
-      For any questions or concerns, or to request account deletion, contact
-      <a href="mailto:support@playabl.io">Playabl Support</a>.
+      For any questions or concerns, or to request account deletion,
+      <a target="_blank" href="https://github.com/Playabl-io/playabl/issues"
+        >please reach out on GitHub</a
+      >.
     </p>
   </BaseTemplate>
 </template>
