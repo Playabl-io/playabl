@@ -262,7 +262,7 @@ const coverImageUrl = ref("");
 
 onMounted(async () => {
   if (props.community.cover_image) {
-    const publicUrl = await getCoverImageUrl(props.community.cover_image);
+    const publicUrl = await getCoverImageUrl(props.community.cover_image, true);
     if (publicUrl) {
       coverImageUrl.value = publicUrl;
     }

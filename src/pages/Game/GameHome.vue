@@ -1,6 +1,6 @@
 <template>
   <section v-if="!gameStore.game.deleted_at">
-    <div v-if="userIsNotMember" class="flex flex-col items-center mb-12">
+    <div v-if="!membership" class="flex flex-col items-center mb-12">
       <p class="text-sm text-slate-700 font-semibold mb-3">
         You must be a member of the community to RSVP
       </p>
@@ -33,8 +33,7 @@
         :key="session.id"
         :session="session"
         :participant-count="session.participant_count"
-        :is-owner="isOwner"
-        :not-a-member="userIsNotMember"
+        :not-a-member="!membership"
         :is-joining="joining"
       />
     </div>
@@ -49,8 +48,7 @@
         :key="session.id"
         :session="session"
         :participant-count="session.participant_count"
-        :is-owner="isOwner"
-        :not-a-member="userIsNotMember"
+        :not-a-member="!membership"
       />
     </div>
   </section>
@@ -77,14 +75,13 @@
   </section>
 </template>
 <script setup lang="ts">
-import { onMounted, ref, computed, PropType } from "vue";
+import { onMounted, ref, computed } from "vue";
 import { isAfter, isBefore } from "date-fns";
 import TipTapDisplay from "@/components/TipTapDisplay.vue";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import SessionBlock from "@/components/Game/SessionBlock.vue";
 import { getCoverImageUrl } from "@/api/storage";
 import { gameStore } from "./gameStore";
-import { ROLES } from "@/util/roles";
 import Heading from "@/components/Heading.vue";
 import { pluralize } from "@/util/grammar";
 import { joinSession } from "@/api/gamesAndSessions";
@@ -96,31 +93,20 @@ const { showSuccess, showError } = useToast();
 
 const joining = ref(false);
 
-const props = defineProps({
-  isOwner: {
-    type: Boolean,
-    required: true,
-  },
-  userMembership: {
-    type: Object as PropType<{
-      user_id?: string;
-      role_id?: ROLES;
-    }>,
-    required: true,
-  },
-});
-
 const gameCoverImage = ref("");
 
 onMounted(async () => {
   if (gameStore.game?.cover_image) {
-    gameCoverImage.value = await getCoverImageUrl(gameStore.game.cover_image);
+    gameCoverImage.value = await getCoverImageUrl(
+      gameStore.game.cover_image,
+      true,
+    );
   }
 });
 
-const userIsNotMember = computed(
-  () => props.userMembership.role_id === undefined,
-);
+const membership = computed(() => {
+  return store.userCommunityMembership[gameStore.game.community_id];
+});
 
 const upcomingSessions = computed(() =>
   gameStore.sessions.filter((session) =>

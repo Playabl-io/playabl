@@ -93,7 +93,7 @@ const coverImageUrl = ref("");
 
 onMounted(async () => {
   if (props.game.cover_image) {
-    coverImageUrl.value = await getCoverImageUrl(props.game.cover_image);
+    coverImageUrl.value = await getCoverImageUrl(props.game.cover_image, false);
   }
 });
 </script>

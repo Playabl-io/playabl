@@ -8,7 +8,7 @@
   >
     <InfoBanner
       v-if="route.query.unauthorized"
-      class="my-4 max-w-4xl mx-auto"
+      class="mt-32 max-w-4xl mx-auto"
       @dismiss="router.replace(route.path)"
     >
       You are not authorized to view that page
