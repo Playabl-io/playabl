@@ -192,7 +192,10 @@ async function setCommunityDataInStore(data: Community) {
   communityData.value = data;
   communityStore.community = data;
   if (data?.cover_image) {
-    communityStore.coverImageUrl = await getCoverImageUrl(data.cover_image);
+    communityStore.coverImageUrl = await getCoverImageUrl(
+      data.cover_image,
+      true,
+    );
   } else {
     communityStore.coverImageUrl = undefined;
   }

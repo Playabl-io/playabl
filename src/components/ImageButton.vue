@@ -39,6 +39,9 @@ const props = defineProps({
 const src = ref("");
 onMounted(async () => {
   if (!store.user?.id) return;
-  src.value = await getCoverImageUrl(`${store.user.id}/${props.image.name}`);
+  src.value = await getCoverImageUrl(
+    `${store.user.id}/${props.image.name}`,
+    false,
+  );
 });
 </script>

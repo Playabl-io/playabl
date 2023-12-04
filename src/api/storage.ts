@@ -44,14 +44,16 @@ export async function uploadToCoverImageStorage({
   }
 }
 
-export const getCoverImageUrl = async (path: string) => {
+export const getCoverImageUrl = async (path: string, transform = false) => {
   const { data } = await supabase.storage
     .from("cover-images")
     .getPublicUrl(path, {
-      transform: {
-        height: 600,
-        width: 1066,
-      },
+      transform: transform
+        ? {
+            height: 600,
+            width: 1066,
+          }
+        : undefined,
     });
   return data.publicUrl ?? "";
 };

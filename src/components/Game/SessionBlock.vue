@@ -120,6 +120,8 @@ import { ExclamationTriangleIcon } from "@heroicons/vue/24/outline";
 
 const { showSuccess, showError } = useToast();
 
+const isOwner = computed(() => gameStore.game.creator_id === store.user?.id);
+
 const props = defineProps({
   session: {
     type: Object as PropType<Session>,
@@ -127,10 +129,6 @@ const props = defineProps({
   },
   participantCount: {
     type: Number,
-    required: true,
-  },
-  isOwner: {
-    type: Boolean,
     required: true,
   },
   notAMember: {

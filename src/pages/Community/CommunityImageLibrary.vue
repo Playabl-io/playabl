@@ -108,7 +108,7 @@ async function updateImage() {
         cover_image: imagePath,
       })
       .eq("id", communityStore.community.id);
-    const publicUrl = await getCoverImageUrl(imagePath);
+    const publicUrl = await getCoverImageUrl(imagePath, false);
     communityStore.coverImageUrl = publicUrl;
     newCoverImage.value = null;
     showSuccess({ message: "Cover image updated" });

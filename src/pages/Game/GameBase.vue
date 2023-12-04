@@ -93,16 +93,7 @@
           </template>
         </GameBadge>
       </div>
-      <router-view v-slot="{ Component, route }">
-        <KeepAlive>
-          <component
-            :is="Component"
-            :key="route.meta.usePathKey ? route.path : undefined"
-            :is-owner="isOwner"
-            :user-membership="userMembership"
-          />
-        </KeepAlive>
-      </router-view>
+      <router-view> </router-view>
     </div>
   </DetailPageTemplate>
 </template>
@@ -120,7 +111,6 @@ import { GameWithCommunityAndSessions } from "@/typings/Game";
 import { clearGameStore, gameStore } from "./gameStore";
 import * as R from "ramda";
 import { Session } from "@/typings/Session";
-import { loadUserCommunityMembership } from "@/api/communityMemberships";
 import {
   UsersIcon,
   TagIcon,
@@ -140,10 +130,7 @@ const currentRoute = useRoute();
 const { game_id: id } = currentRoute.params;
 
 const gameData = ref<GameWithCommunityAndSessions>();
-const canManage = ref(false);
-const isOwner = ref(false);
 const isLoading = ref(true);
-const userMembership = ref({});
 
 const userIsInTheGame = computed(() =>
   gameStore.sessions.some((session) =>
@@ -151,6 +138,15 @@ const userIsInTheGame = computed(() =>
   ),
 );
 
+const membership = computed(() => {
+  return store.userCommunityMembership[gameStore.game.community_id];
+});
+
+const canManage = computed(
+  () =>
+    membership.value?.communityMembership?.role_id === ROLES.admin ||
+    gameStore.game.creator_id === store.user?.id,
+);
 const hasAccess = computed(() => {
   return userIsInTheGame.value || canManage.value;
 });
@@ -228,17 +224,6 @@ async function getGameData() {
 
     if (data.cover_image) {
       loadCoverImageUrl(data.cover_image);
-    }
-
-    if (store.user?.id) {
-      isOwner.value = data.creator_id.id === store.user?.id;
-      const membership = await loadUserCommunityMembership({
-        userId: store.user.id,
-        communityId: data.community_id.id,
-      });
-      if (!membership) return;
-      userMembership.value = membership;
-      canManage.value = membership.role_id === ROLES.admin || isOwner.value;
     }
   }
 }
