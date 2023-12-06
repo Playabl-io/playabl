@@ -19,13 +19,8 @@
       </p>
     </div>
     <ChooseCommunity
-      v-if="
-        ['chooseCommunity', 'getCommunityPostingDate'].includes(
-          state.value as string,
-        )
-      "
+      v-if="['chooseCommunity'].includes(state.value as string)"
       :communities="state.context.communities"
-      :loading="['getCommunityPostingDate'].includes(state.value as string)"
       @select="send('SELECT', $event)"
     />
     <div
@@ -121,6 +116,13 @@
             :options="gameSystemList"
             placeholder="Select or specify a system"
           />
+          <a
+            href="https://github.com/Playabl-io/playabl/blob/main/src/util/gameSystemList.ts"
+            class="text-xs mt-2 mr-auto text-blue-700"
+            target="_blank"
+          >
+            Edit this list on GitHub
+          </a>
         </div>
         <div class="flex flex-col">
           <FormLabel for="participantCount" required> Player count </FormLabel>
@@ -200,9 +202,7 @@
           </p>
         </Well>
         <div class="w-full">
-          <PrimaryButton class="w-full">
-            Next <ArrowSmallRightIcon class="h-6 w-6" />
-          </PrimaryButton>
+          <PrimaryButton class="w-full"> Next </PrimaryButton>
           <p
             v-if="state.value === 'missingDescription'"
             class="text-red-500 mt-1 text-center"
@@ -223,13 +223,14 @@
       @submit.prevent="send('SUBMIT')"
     >
       <Heading level="h6" as="h2" class="mb-2">Sessions</Heading>
-      <p v-if="communityPostingLimit" class="text-sm mb-2">
-        Community calendar limit -
-        {{ format(communityPostingLimit, "LLLL do") }}
-      </p>
-      <p class="text-sm text-slate-700">
-        All times in your timezone - {{ getUserTimezone() }}
-      </p>
+      <Well>
+        Start by creating the sessions for your game. Planned sessions will
+        appear below where you can choose to pre-seat any community members.
+        These members will be assigned seats in the order you add them, and it
+        is not possible to "skip" a seat (i.e. put someone on the waiting list
+        and leave a seat open).
+      </Well>
+
       <Well v-if="selectedEvent" class="mt-3">
         <p class="text-sm font-semibold">
           Event {{ selectedEvent.title }} runs from
@@ -239,55 +240,13 @@
         </p>
       </Well>
       <div class="grid gap-6 mt-6">
-        <div class="grid lg:grid-cols-2 gap-10">
-          <div class="grid gap-8">
-            <div>
-              <FormLabel>Start date</FormLabel>
-              <DatePicker
-                :selected="startDate"
-                :not-before="sessionNotBefore"
-                :not-after="sessionNotAfter"
-                @select="updateStartDate"
-              />
-            </div>
-            <div class="flex flex-col">
-              <FormLabel for="start-time"> Start time </FormLabel>
-              <FormTimeInput
-                id="start-time"
-                @set-time="sessionStartTime = $event"
-              />
-            </div>
-          </div>
-          <div class="grid gap-8">
-            <div>
-              <FormLabel> End date </FormLabel>
-              <DatePicker
-                :selected="endDate"
-                :not-before="startDate"
-                :not-after="sessionNotAfter"
-                @select="updateEndDate"
-              />
-            </div>
-            <div class="flex flex-col">
-              <FormLabel for="end-time"> End time </FormLabel>
-              <FormTimeInput
-                id="end-time"
-                @set-time="sessionEndTime = $event"
-              />
-            </div>
-          </div>
-        </div>
-        <p v-if="dateError" class="text-red-500 mt-2 font-semibold">
-          {{ dateError }}
-        </p>
-        <SecondaryButton
+        <PrimaryButton
           type="button"
           class="my-2 w-full"
-          :disabled="Boolean(dateError) || dateIncomplete"
-          @click="addSession"
+          @click="newSessionModalOpen = true"
         >
-          Add session
-        </SecondaryButton>
+          Add sessions
+        </PrimaryButton>
         <div
           aria-live="polite"
           class="relative rounded-lg [min-height:128px] max-w-2xl p-4 bg-gradient-to-br from-emerald-500 to-sky-500"
@@ -334,6 +293,14 @@
         </div>
       </div>
     </form>
+    <NewSessionsModal
+      :open="newSessionModalOpen"
+      :not-before="sessionNotBefore"
+      :not-after="sessionNotAfter"
+      @cancel="newSessionModalOpen = false"
+      @close="newSessionModalOpen = false"
+      @submit="addSessions"
+    />
   </BaseTemplate>
 </template>
 <script setup lang="ts">
@@ -341,32 +308,22 @@ import { supabase } from "@/supabase";
 import { useRouter } from "vue-router";
 import { computed, ref, watch } from "vue";
 import { v4 as uuidv4 } from "uuid";
-import { isBefore, set, format, isAfter } from "date-fns";
+import { format } from "date-fns";
 import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/vue";
-import {
-  UserGroupIcon,
-  ArrowSmallRightIcon,
-  ArrowSmallLeftIcon,
-} from "@heroicons/vue/24/outline";
+import { UserGroupIcon, ArrowSmallLeftIcon } from "@heroicons/vue/24/outline";
 import BaseTemplate from "@/layouts/BaseTemplate.vue";
 import FormCheckbox from "@/components/Forms/FormCheckbox.vue";
 import FormLabel from "@/components/Forms/FormLabel.vue";
 import FormInput from "@/components/Forms/FormInput.vue";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import OutlineButton from "@/components/Buttons/OutlineButton.vue";
-import SecondaryButton from "@/components/Buttons/SecondaryButton.vue";
 import Heading from "@/components/Heading.vue";
-import DatePicker from "@/components/Calendar/DatePicker.vue";
-import FormTimeInput from "@/components/Forms/FormTimeInput.vue";
 import LinkButton from "@/components/Buttons/LinkButton.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import Well from "@/components/Well.vue";
 import { NewSession } from "@/typings/Session";
-import {
-  loadCreatorAndAdminCommunities,
-  selectFromCommunity,
-} from "@/api/communities";
+import { loadCreatorAndAdminCommunities } from "@/api/communities";
 import { Community } from "@/typings/Community";
 import { GAME_DRAFT_STATE, NewGame } from "@/typings/Game";
 import AccessTimes from "@/components/Game/AccessTimes.vue";
@@ -375,7 +332,7 @@ import { loadCommunityAccessTimes } from "@/api/communityAccess";
 import { store } from "@/store";
 import useToast from "@/components/Toast/useToast";
 import { createGame, publishGame } from "@/api/gamesAndSessions";
-import { rsvpTimes, getStartOfToday, getUserTimezone } from "@/util/time";
+import { rsvpTimes, getStartOfToday } from "@/util/time";
 import FormFileInput from "@/components/Forms/FormFileInput.vue";
 import {
   handleFileChange,
@@ -392,11 +349,29 @@ import { getUpcomingCommunityEvents } from "@/api/communityEvents";
 import { CommunityEvent } from "@/typings/CommunityEvent";
 import FormSelect from "@/components/Forms/FormSelect.vue";
 import { useUrlSearchParams } from "@vueuse/core";
+import NewSessionsModal from "@/components/Modals/NewSessionsModal.vue";
 
 const { showSuccess, showError } = useToast();
 const router = useRouter();
 
 const startOfToday = getStartOfToday();
+
+const userCreatorCommunities = computed(() => {
+  return Object.values(store.userCommunityMembership)
+    .filter((membership) => {
+      return membership.communityMembership.role_id < 3;
+    })
+    .map((entry) => entry.community);
+});
+
+watch(
+  () => userCreatorCommunities.value,
+  () => {
+    // only noCommunities state responds to this
+    // hacky way to update if someone logs in
+    send("UPDATE_COMMUNITIES");
+  },
+);
 
 const newGameMachine = createMachine<{
   communities: Community[];
@@ -452,21 +427,18 @@ const newGameMachine = createMachine<{
         ],
       },
       noCommunities: {
-        type: "final",
+        on: {
+          UPDATE_COMMUNITIES: {
+            target: "loadCommunities",
+          },
+        },
       },
       chooseCommunity: {
         on: {
           SELECT: {
-            target: "getCommunityPostingDate",
+            target: "gameDetails",
             actions: ["assignCommunity"],
           },
-        },
-      },
-      getCommunityPostingDate: {
-        invoke: {
-          src: (context) =>
-            getCommunityPostingDate(context.selectedCommunity?.id ?? ""),
-          onDone: "gameDetails",
         },
       },
       gameDetails: {
@@ -645,12 +617,16 @@ const participantCount = ref<number>();
 const isRecorded = ref(false);
 const usesSafetyTools = ref(false);
 
-const sessionStartTime = ref("");
-const sessionEndTime = ref("");
-const startDate = ref<Date>(new Date());
-const endDate = ref<Date>(new Date());
+const newSessionModalOpen = ref(false);
 
-const communityPostingLimit = ref<Date>();
+const communityPostingLimit = computed(() => {
+  if (state.value.context.selectedCommunity?.furthest_posting_date) {
+    return new Date(
+      state.value.context.selectedCommunity?.furthest_posting_date,
+    );
+  }
+  return undefined;
+});
 
 const selectedEvent = computed(() => {
   return state.value.context.communityEvents.find((event) => {
@@ -669,13 +645,6 @@ const sessionNotAfter = computed(() => {
     : communityPostingLimit.value;
 });
 
-watch(sessionNotBefore, () => {
-  if (isBefore(startDate.value, sessionNotBefore.value)) {
-    startDate.value = sessionNotBefore.value;
-    endDate.value = sessionNotBefore.value;
-  }
-});
-
 const furthestPostingDateIsInPast = computed(() => {
   if (!communityPostingLimit.value) return false;
   return getStartOfToday().getTime() > communityPostingLimit.value.getTime();
@@ -684,60 +653,6 @@ const furthestPostingDateIsInPast = computed(() => {
 function setFlatDescription(_: string, text: string) {
   descriptionAsFlatText.value = text;
 }
-
-function updateStartDate(date: Date) {
-  startDate.value = date;
-  if (startDate.value.getTime() > endDate.value.getTime()) {
-    endDate.value = date;
-  }
-}
-function updateEndDate(date: Date) {
-  endDate.value = date;
-}
-
-const startDateAndTime = computed(() => {
-  if (!sessionStartTime.value || !startDate.value) return 0;
-  const [startHours, startMinutes] = sessionStartTime.value.split(":");
-  return set(startDate.value, {
-    hours: Number(startHours),
-    minutes: Number(startMinutes),
-  }).getTime();
-});
-
-const endDateAndTime = computed(() => {
-  if (!sessionEndTime.value || !endDate.value) return 0;
-  const [endHours, endMinutes] = sessionEndTime.value.split(":");
-  return set(endDate.value, {
-    hours: Number(endHours),
-    minutes: Number(endMinutes),
-  }).getTime();
-});
-
-const dateError = computed(() => {
-  if (!startDateAndTime.value || !endDateAndTime.value) {
-    return "";
-  }
-  if (isBefore(endDateAndTime.value, startDateAndTime.value)) {
-    return "End date and time cannot be before start date and time";
-  }
-  if (
-    selectedEvent.value?.start_time &&
-    isBefore(startDateAndTime.value, selectedEvent.value?.start_time)
-  ) {
-    return "Session time cannot be before the start of the event";
-  }
-  if (
-    selectedEvent.value?.end_time &&
-    isAfter(endDateAndTime.value, selectedEvent.value?.end_time)
-  ) {
-    return "Session time cannot end after the end of the event";
-  }
-  return "";
-});
-
-const dateIncomplete = computed(() => {
-  return startDateAndTime.value === 0 || endDateAndTime.value === 0;
-});
 
 function onFileDrop(event: DragEvent) {
   const file = handleFileDrop(event);
@@ -760,20 +675,22 @@ function clearFile() {
   existingImageToUse.value = undefined;
 }
 
-function addSession() {
+function addSessions(dates: { start: Date; end: Date }[]) {
   if (!store.user || !state.value.context.selectedCommunity?.id) return;
-  const localId = uuidv4();
-  sessions.value[localId] = {
-    start_time: startDateAndTime.value,
-    end_time: endDateAndTime.value,
-    creator_id: store.user.id,
-    game_id: 0,
-    participant_count: participantCount.value || 0,
-    has_openings: true,
-    community_id: state.value.context.selectedCommunity.id,
-    rsvps: [],
-  };
-  sessionIds.value.push(localId);
+  for (const date of dates) {
+    const localId = uuidv4();
+    sessions.value[localId] = {
+      start_time: date.start.getTime(),
+      end_time: date.end.getTime(),
+      creator_id: store.user.id,
+      game_id: 0,
+      participant_count: participantCount.value || 0,
+      has_openings: true,
+      community_id: state.value.context.selectedCommunity.id,
+      rsvps: [],
+    };
+    sessionIds.value.push(localId);
+  }
 }
 
 function deleteSession(sessionId: string) {
@@ -867,16 +784,5 @@ async function getAccessLevels(communityId: string) {
     }
     return acc;
   }, [] as number[]);
-}
-
-async function getCommunityPostingDate(communityId: string) {
-  communityPostingLimit.value = undefined;
-  const data = await selectFromCommunity({
-    communityId,
-    select: "furthest_posting_date",
-  });
-  if (data?.furthest_posting_date) {
-    communityPostingLimit.value = new Date(data.furthest_posting_date);
-  }
 }
 </script>

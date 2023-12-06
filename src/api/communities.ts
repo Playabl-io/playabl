@@ -6,8 +6,6 @@ import { Community } from "@/typings/Community";
 import axios from "axios";
 
 export async function loadCreatorAndAdminCommunities() {
-  if (!store.user) return;
-
   return Object.values(store.userCommunityMembership)
     .filter((membership) => {
       return membership.communityMembership.role_id < 3;
@@ -178,7 +176,7 @@ export async function leaveCommunity(communityId: string, userId = "") {
         headers: {
           token: session.access_token,
         },
-      }
+      },
     )
     .catch((error) => {
       log({ error });
