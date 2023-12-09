@@ -11,7 +11,7 @@ import "./serviceWorkerRegistration";
 import "./assets/index.postcss";
 import "./styles/font.css";
 import "./styles/main.css";
-import("./newRelicAgent");
+import "./newRelicAgent";
 
 const head = createHead();
 const app = createApp(App);

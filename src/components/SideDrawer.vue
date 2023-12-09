@@ -35,7 +35,7 @@
   </teleport>
 </template>
 <script setup lang="ts">
-import { toRefs, ref } from "vue";
+import { ref } from "vue";
 import { onClickOutside } from "@vueuse/core";
 import { useFocusTrap } from "@vueuse/integrations/useFocusTrap";
 
@@ -45,11 +45,10 @@ const target = ref<HTMLElement>();
 onClickOutside(target, () => emit("close"));
 const { activate, deactivate } = useFocusTrap(target);
 
-const props = defineProps({
+defineProps({
   open: {
     type: Boolean,
     required: true,
   },
 });
-toRefs(props);
 </script>

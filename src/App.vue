@@ -7,6 +7,7 @@
       @close="showNewProfileModal = false"
     />
     <OfflineIndicator />
+    <ChangelogWidget />
   </AppShell>
 </template>
 <script setup lang="ts">
@@ -26,6 +27,7 @@ import { loadProfile } from "./api/profiles";
 import { log } from "./util/logger";
 import AppShell from "./layouts/AppShell.vue";
 import { Notification } from "./typings/Notification";
+import ChangelogWidget from "./ChangelogWidget.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -34,6 +36,7 @@ const showNewProfileModal = ref(false);
 const notificationSubscription = ref();
 
 supabase.auth.onAuthStateChange(async (event, session) => {
+  console.log(event, session);
   switch (event) {
     case "SIGNED_IN":
     case "TOKEN_REFRESHED":
@@ -68,6 +71,7 @@ supabase.auth.onAuthStateChange(async (event, session) => {
     case "SIGNED_OUT":
       store.user = null;
       store.userSession = null;
+      document.getElementById("changelogfy-client")?.remove();
       break;
   }
 });
