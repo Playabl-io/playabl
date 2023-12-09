@@ -224,11 +224,16 @@
     >
       <Heading level="h6" as="h2" class="mb-2">Sessions</Heading>
       <Well>
-        Start by creating the sessions for your game. Planned sessions will
-        appear below where you can choose to pre-seat any community members.
-        These members will be assigned seats in the order you add them, and it
-        is not possible to "skip" a seat (i.e. put someone on the waiting list
-        and leave a seat open).
+        <p class="text-sm">
+          Start by adding sessions for your game. After, if your community
+          allows it, you can pre-seat members to any planned sessions. These
+          members will be assigned seats in the order you add them, and it is
+          not possible to "skip" a seat (i.e. put someone on the waiting list
+          and leave a seat open).
+        </p>
+        <p class="text-sm mt-3">
+          You can review your sessions below before finalizing.
+        </p>
       </Well>
 
       <Well v-if="selectedEvent" class="mt-3">
@@ -240,13 +245,19 @@
         </p>
       </Well>
       <div class="grid gap-6 mt-6">
-        <PrimaryButton
-          type="button"
-          class="my-2 w-full"
-          @click="newSessionModalOpen = true"
-        >
-          Add sessions
-        </PrimaryButton>
+        <div class="grid gap-6">
+          <PrimaryButton type="button" @click="newSessionModalOpen = true">
+            Add sessions
+          </PrimaryButton>
+          <SecondaryButton
+            v-if="state.context.selectedCommunity?.allow_pre_seat"
+            color="blue"
+            :disabled="sessionIds.length === 0"
+            type="button"
+            @click="preSeatMemberModalOpen = true"
+            >Pre-seat a member</SecondaryButton
+          >
+        </div>
         <div
           aria-live="polite"
           class="relative rounded-lg [min-height:128px] max-w-2xl p-4 bg-gradient-to-br from-emerald-500 to-sky-500"
@@ -260,6 +271,7 @@
           <AddSessions
             :sessions="sessions"
             :session-ids="sessionIds"
+            :pre-seat-assignments="preSeatAssignments"
             @delete-session="deleteSession"
           />
         </div>
@@ -301,6 +313,15 @@
       @close="newSessionModalOpen = false"
       @submit="addSessions"
     />
+    <PreSeatMemberModal
+      v-if="state.context.selectedCommunity"
+      :open="preSeatMemberModalOpen"
+      :community-id="state.context.selectedCommunity.id"
+      :sessions="sessionIds.map((id) => ({ id, ...sessions[id] }))"
+      :pre-seat-assignments="preSeatAssignments"
+      @close="preSeatMemberModalOpen = false"
+      @save="preSeatAssignments = $event"
+    />
   </BaseTemplate>
 </template>
 <script setup lang="ts">
@@ -318,6 +339,7 @@ import FormLabel from "@/components/Forms/FormLabel.vue";
 import FormInput from "@/components/Forms/FormInput.vue";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import OutlineButton from "@/components/Buttons/OutlineButton.vue";
+import SecondaryButton from "@/components/Buttons/SecondaryButton.vue";
 import Heading from "@/components/Heading.vue";
 import LinkButton from "@/components/Buttons/LinkButton.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
@@ -350,6 +372,9 @@ import { CommunityEvent } from "@/typings/CommunityEvent";
 import FormSelect from "@/components/Forms/FormSelect.vue";
 import { useUrlSearchParams } from "@vueuse/core";
 import NewSessionsModal from "@/components/Modals/NewSessionsModal.vue";
+import PreSeatMemberModal from "@/components/Modals/PreSeatMemberModal.vue";
+import { Member } from "@/typings/Member";
+import client from "@/api/client";
 
 const { showSuccess, showError } = useToast();
 const router = useRouter();
@@ -618,6 +643,8 @@ const isRecorded = ref(false);
 const usesSafetyTools = ref(false);
 
 const newSessionModalOpen = ref(false);
+const preSeatMemberModalOpen = ref(false);
+const preSeatAssignments = ref<{ [id: string]: { members: Member[] } }>({});
 
 const communityPostingLimit = computed(() => {
   if (state.value.context.selectedCommunity?.furthest_posting_date) {
@@ -679,7 +706,7 @@ function addSessions(dates: { start: Date; end: Date }[]) {
   if (!store.user || !state.value.context.selectedCommunity?.id) return;
   for (const date of dates) {
     const localId = uuidv4();
-    sessions.value[localId] = {
+    const session = {
       start_time: date.start.getTime(),
       end_time: date.end.getTime(),
       creator_id: store.user.id,
@@ -689,6 +716,7 @@ function addSessions(dates: { start: Date; end: Date }[]) {
       community_id: state.value.context.selectedCommunity.id,
       rsvps: [],
     };
+    sessions.value[localId] = session;
     sessionIds.value.push(localId);
   }
 }
@@ -755,13 +783,22 @@ async function submitGame() {
 
   const sessionsToCreate = sessionIds.value.reduce((acc, id) => {
     const sessionPartial = sessions.value[id];
+    if (preSeatAssignments.value[id]?.members.length > 0) {
+      sessionPartial.rsvps = preSeatAssignments.value[id]?.members.map(
+        (member) => member.id,
+      );
+    }
     sessionPartial.access_times = JSON.stringify(times);
     sessionPartial.game_id = game.id;
     return acc.concat(sessionPartial);
   }, [] as NewSession[]);
 
   try {
-    await supabase.from("sessions").insert(sessionsToCreate);
+    const { data } = await supabase
+      .from("sessions")
+      .insert(sessionsToCreate)
+      .select();
+    await client.post(`/.netlify/functions/notifyPreSeat`, data);
   } catch (error) {
     showError({
       message:

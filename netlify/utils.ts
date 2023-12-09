@@ -127,7 +127,12 @@ export async function addNotificationRecord(notification: {
   email: string;
   message: string;
   related_url: string;
-  type: "community_admin_message";
+  type:
+    | "community_admin_message"
+    | "rsvp"
+    | "pre_seated_rsvp"
+    | "cancel"
+    | "notify_creator_of_rsvp";
   custom_fields: unknown;
 }) {
   const { error } = await supabase.from("notifications").insert(notification);

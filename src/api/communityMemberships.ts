@@ -140,6 +140,30 @@ export async function searchCommunityMembers(query: {
   return { data, count };
 }
 
+export async function searchForAMember(query: {
+  communityId: string;
+  searchTerm: string;
+  from: number;
+  to: number;
+}) {
+  const { data, error, count } = await supabase
+    .from("profiles")
+    .select("*, community_memberships!inner(id, community_id)", {
+      count: "estimated",
+    })
+    .eq("community_memberships.community_id", query.communityId)
+    .or(
+      `username.ilike.%${query.searchTerm}%,email.ilike.%${query.searchTerm}%`,
+    )
+    .order("username", { ascending: true })
+    .range(query.from, query.to);
+  if (error) {
+    log({ error });
+    throw error;
+  }
+  return { data, count };
+}
+
 export async function submitCommunityMembershipRequest({
   userId,
   message,

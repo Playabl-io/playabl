@@ -2,7 +2,8 @@
   <BaseButton
     v-bind="$attrs"
     :disabled="$attrs.disabled || isLoading"
-    class="p-2 rounded-md bg-gray-300 bg-opacity-60 hover:bg-opacity-90 transition-all dark:bg-slate-600 text-black dark:text-slate-100"
+    class="p-2 rounded-md transition-all"
+    :class="colorClasses"
   >
     <loading-spinner v-if="isLoading" color="brand-500" />
     <p v-if="isLoading" class="sr-only">Loading</p>
@@ -10,12 +11,26 @@
   </BaseButton>
 </template>
 <script setup lang="ts">
+import { computed } from "vue";
 import LoadingSpinner from "../LoadingSpinner.vue";
 import BaseButton from "./BaseButton.vue";
-defineProps({
+const props = defineProps({
   isLoading: {
     type: Boolean,
     default: false,
   },
+  color: {
+    type: String,
+    default: "gray",
+  },
+});
+const colorClasses = computed(() => {
+  switch (props.color) {
+    case "blue":
+      return "bg-blue-200 hover:bg-blue-300 text-slate-900";
+    case "gray":
+    default:
+      return "bg-gray-300 text-slate-900 bg-opacity-60 hover:bg-opacity-90";
+  }
 });
 </script>

@@ -1,0 +1,1 @@
+alter table "public"."communities" add column "allow_pre_seat" boolean not null default false;

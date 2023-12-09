@@ -6,14 +6,20 @@
         class="flex flex-col"
       >
         <Heading level="h6" as="h3" class="mb-6">Account settings</Heading>
-        <LinkButton class="mr-auto" to="/reset-password">
+        <PrimaryButton class="mr-auto" to="/reset-password">
           Update your password
-        </LinkButton>
+        </PrimaryButton>
       </div>
       <div class="flex flex-col">
         <Heading level="h6" as="h3" class="mb-6">Email settings</Heading>
         <fieldset :disabled="emailsEnabled === false">
-          <p class="mb-4">Email me when...</p>
+          <Well class="mb-4">
+            <p>
+              We will always email when you join or are seated in a game. You
+              can control when some other emails are sent below.
+            </p>
+          </Well>
+          <p class="mb-2 text-sm font-semibold">Email me when...</p>
           <div class="grid gap-2">
             <FormLabel class="flex items-center gap-2 font-normal" no-margin>
               <FormCheckbox v-model="unreadNotificationEmailsEnabled" />
@@ -57,13 +63,13 @@
             <FormInput v-model="endtime" type="time" />
           </div>
         </div>
-        <SecondaryButton
+        <PrimaryButton
           v-if="store.user"
           class="mt-4 mr-auto"
           @click="setUserSettings"
         >
-          Update preferences
-        </SecondaryButton>
+          Update user preferences
+        </PrimaryButton>
       </div>
     </div>
   </ProfileTemplate>
@@ -79,10 +85,9 @@ import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import ProfileTemplate from "@/layouts/ProfileTemplate.vue";
 import { updateProfile } from "@/api/profiles";
 import Heading from "@/components/Heading.vue";
-import LinkButton from "@/components/Buttons/LinkButton.vue";
 import { store } from "@/store";
 import useToast from "@/components/Toast/useToast";
-import SecondaryButton from "@/components/Buttons/SecondaryButton.vue";
+import Well from "@/components/Well.vue";
 
 const { showSuccess, showError } = useToast();
 

@@ -72,7 +72,7 @@ export const handler: Handler = async (event) => {
     .order("start_time", { ascending: true });
 
   if (managingError) {
-    // logError(gamesError);
+    logError(managingError);
   }
 
   // load info about facilitators they're playing with
@@ -89,7 +89,7 @@ export const handler: Handler = async (event) => {
     .in("id", [...uniquePlayers]);
 
   if (playerProfilesError) {
-    //
+    logError(playerProfilesError);
   }
 
   const { data: facilitatorProfiles, error: facilitatorProfilesError } =

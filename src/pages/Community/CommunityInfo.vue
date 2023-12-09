@@ -38,6 +38,9 @@
       :current-cutoff="communityStore.community.furthest_posting_date"
     />
   </SectionContainer>
+  <SectionContainer>
+    <AllowPreSeat :community-id="communityStore.community.id" />
+  </SectionContainer>
   <SideDrawer :open="editInfoDrawerOpen" @close="editInfoDrawerOpen = false">
     <EditCommunityInfo @close="editInfoDrawerOpen = false" />
   </SideDrawer>
@@ -59,6 +62,7 @@ import SideDrawer from "@/components/SideDrawer.vue";
 import EditCommunityInfo from "./EditCommunityInfo.vue";
 import CommunityEmailSettings from "./CommunityEmailSettings.vue";
 import CommunityShortName from "./CommunityShortName.vue";
+import AllowPreSeat from "./AllowPreSeat.vue";
 
 const editInfoDrawerOpen = ref(false);
 

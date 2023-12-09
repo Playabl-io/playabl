@@ -46,7 +46,9 @@
       </div>
       <div class="mt-6 flex gap-2 justify-end">
         <PrimaryButton>Continue</PrimaryButton>
-        <SecondaryButton>Cancel</SecondaryButton>
+        <SecondaryButton type="button" @click="$emit('cancel')"
+          >Cancel</SecondaryButton
+        >
       </div>
     </form>
   </BaseModal>

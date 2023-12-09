@@ -31,6 +31,7 @@ export interface Community {
   url_short_name?: string | null;
   signup_method: SignupMethods;
   banned_emails?: string[];
+  allow_pre_seat: boolean;
 }
 
 export interface CommunityBrowse extends Community {
