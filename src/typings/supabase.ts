@@ -51,6 +51,7 @@ export interface Database {
       }
       communities: {
         Row: {
+          allow_pre_seat: boolean
           allow_public_signup: boolean | null
           banned_emails: string[] | null
           code_of_conduct_url: string | null
@@ -80,6 +81,7 @@ export interface Database {
           website: string | null
         }
         Insert: {
+          allow_pre_seat?: boolean
           allow_public_signup?: boolean | null
           banned_emails?: string[] | null
           code_of_conduct_url?: string | null
@@ -109,6 +111,7 @@ export interface Database {
           website?: string | null
         }
         Update: {
+          allow_pre_seat?: boolean
           allow_public_signup?: boolean | null
           banned_emails?: string[] | null
           code_of_conduct_url?: string | null

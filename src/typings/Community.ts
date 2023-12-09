@@ -21,6 +21,7 @@ export interface Community {
   slack?: string | null;
   patreon?: string | null;
   facebook?: string | null;
+  /** @deprecated */
   allow_public_signup: boolean;
   created_at: string;
   furthest_posting_date?: number | null; // unix epoch number
