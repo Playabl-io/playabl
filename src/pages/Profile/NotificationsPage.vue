@@ -51,6 +51,7 @@ function notificationComponent(type: Notification["type"]) {
       return CancelNotification;
     case "rsvp":
     case "notify_creator_of_rsvp":
+    case "pre_seated_rsvp":
       return RsvpNotification;
     case "membership_request_approval":
       return MembershipApprovalNotification;

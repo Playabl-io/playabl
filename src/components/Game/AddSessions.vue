@@ -21,27 +21,44 @@
             @click="emit('deleteSession', sessionId)"
           />
         </div>
-        <p class="text-xs text-slate-700 dark:text-slate-300">
+        <p class="text-xs text-slate-700 font-semibold mb-3">
           Session {{ i + 1 }}
         </p>
-        <ul class="mt-2 text-xs font-semibold list-disc list-inside grid gap-2">
-          <li>
+
+        <div class="flex flex-col mb-3">
+          <p class="text-sm">Start time</p>
+          <p class="">
             {{
               format(
                 new Date(sessions[sessionId].start_time),
-                "EEE, MMM do, h:mm a"
+                "EEE, MMM do, h:mm a",
               )
             }}
-          </li>
-          <li>
+          </p>
+        </div>
+        <div class="flex flex-col">
+          <p class="text-sm">End time</p>
+          <p class="">
             {{
               format(
                 new Date(sessions[sessionId].end_time),
-                "EEE, MMM do, h:mm a"
+                "EEE, MMM do, h:mm a",
               )
             }}
-          </li>
-        </ul>
+          </p>
+        </div>
+        <template v-if="preSeatAssignments[sessionId]?.members">
+          <p class="text-sm mt-3">Pre-Seated</p>
+          <div class="flex flex-wrap gap-2">
+            <p class="">
+              {{
+                preSeatAssignments[sessionId]?.members
+                  .map((member) => member.username || member.email)
+                  .join(", ")
+              }}
+            </p>
+          </div>
+        </template>
       </div>
     </transition-group>
   </div>
@@ -51,6 +68,7 @@ import { PropType } from "vue";
 import { format } from "date-fns";
 import { NewSession } from "@/typings/Session";
 import DismissButton from "../Buttons/DismissButton.vue";
+import { Member } from "@/typings/Member";
 
 defineProps({
   sessions: {
@@ -59,6 +77,10 @@ defineProps({
   },
   sessionIds: {
     type: Array as PropType<string[]>,
+    required: true,
+  },
+  preSeatAssignments: {
+    type: Object as PropType<{ [id: string]: { members: Member[] } }>,
     required: true,
   },
 });

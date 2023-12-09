@@ -33,6 +33,7 @@ const DEFAULT_GAME_STATE = {
     allow_public_signup: false,
     created_at: "",
     signup_method: SignupMethods.PRIVATE,
+    allow_pre_seat: false,
   },
 };
 

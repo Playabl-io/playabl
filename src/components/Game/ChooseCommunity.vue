@@ -62,7 +62,6 @@
     <PrimaryButton
       class="w-full mt-6"
       :disabled="!selectedCommunity"
-      :is-loading="loading"
       @click="emit('select', { community: selectedCommunity })"
     >
       Next
@@ -70,7 +69,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { PropType, ref, toRefs } from "vue";
+import { PropType, ref } from "vue";
 import { Community } from "@/typings/Community";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/vue/24/outline";
 import PrimaryButton from "../Buttons/PrimaryButton.vue";
@@ -86,15 +85,10 @@ const selectedCommunity = ref<Community>();
 
 const emit = defineEmits(["select"]);
 
-const props = defineProps({
+defineProps({
   communities: {
     type: Array as PropType<Community[]>,
     required: true,
   },
-  loading: {
-    type: Boolean,
-    required: true,
-  },
 });
-toRefs(props);
 </script>

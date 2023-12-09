@@ -1,15 +1,20 @@
 import { Handler } from "@netlify/functions";
-import { buildCommunityAdminMessage, sendEmail } from "../utils";
+import { buildCommunityAdminMessage, logError, sendEmail } from "../utils";
+
+/**
+ * This function is called any time a record is written to the
+ * notifications table. This is where you can respond to the
+ * record type and send an email.
+ */
 
 export const handler: Handler = async (event) => {
   const { authorization } = event.headers;
   const { record } = JSON.parse(event.body);
 
   if (authorization !== process.env.WEB_MAIL_PASSWORD) {
-    console.warn(
-      "Unauthorized connection. Dropping notification ID",
-      record.id
-    );
+    logError({
+      message: "Unauthorized connection. Dropping record:" + record.id,
+    });
     return {
       statusCode: 403,
       body: JSON.stringify({
@@ -28,7 +33,25 @@ export const handler: Handler = async (event) => {
       });
       console.info("successfully sent rsvp email");
     } catch (error) {
-      console.error("failed to send rsvp email", error);
+      logError({
+        message: `failed to send rsvp email: ${error}`,
+      });
+    }
+  }
+  if (record.type === "pre_seated_rsvp") {
+    const adminMessage = sendPreSeatEmail({
+      name: record.user_name,
+      email: record.email,
+      relatedUrl: record.related_url,
+      gameName: record.custom_fields?.game_name,
+    });
+    try {
+      await sendEmail(adminMessage);
+      console.info("successfully sent community admin email");
+    } catch (error) {
+      logError({
+        message: `failed to send pre_seat email: ${error}`,
+      });
     }
   }
   if (record.type === "cancel") {
@@ -40,7 +63,9 @@ export const handler: Handler = async (event) => {
       });
       console.info("successfully sent cancel email");
     } catch (error) {
-      console.error("failed to send cancel email", error);
+      logError({
+        message: `failed to send cancel email: ${error}`,
+      });
     }
   }
   if (record.type === "notify_creator_of_rsvp") {
@@ -53,7 +78,9 @@ export const handler: Handler = async (event) => {
         });
         console.info("successfully sent new join email");
       } catch (error) {
-        console.error("failed to send new join email", error);
+        logError({
+          message: `failed to send join email: ${error}`,
+        });
       }
     }
   }
@@ -67,7 +94,9 @@ export const handler: Handler = async (event) => {
       });
       console.info("successfully sent membership approval email");
     } catch (error) {
-      console.error("failed to send membership approval email", error);
+      logError({
+        message: `failed to send membership_request email: ${error}`,
+      });
     }
   }
   if (
@@ -85,7 +114,9 @@ export const handler: Handler = async (event) => {
       await sendEmail(adminMessage);
       console.info("successfully sent community admin email");
     } catch (error) {
-      console.error("failed to send community admin email", error);
+      logError({
+        message: `failed to send community_admin email: ${error}`,
+      });
     }
   }
 
@@ -111,6 +142,28 @@ function sendMembershipApprovalEmail({ name, email, relatedUrl, message }) {
     Subject: "Playabl Community Membership Request Approved",
     Variables: {
       message,
+      related_url: relatedUrl,
+    },
+  };
+  return sendEmail(mailjetMessage);
+}
+function sendPreSeatEmail({ name, email, relatedUrl, gameName }) {
+  const mailjetMessage = {
+    From: {
+      Email: "notifications@playabl.io",
+      Name: "Playabl Notifications",
+    },
+    To: [
+      {
+        Email: email,
+        Name: name,
+      },
+    ],
+    TemplateID: 5423059,
+    TemplateLanguage: true,
+    Subject: `Playabl - You've been pre-seated for ${gameName}!`,
+    Variables: {
+      game_name: gameName,
       related_url: relatedUrl,
     },
   };

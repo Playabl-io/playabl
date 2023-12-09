@@ -1,12 +1,13 @@
 <template>
   <component
     :is="element"
-    class="flex justify-center items-center font-medium cursor-pointer focus-styles"
+    class="flex justify-center items-center font-medium focus-styles hover:shadow-sm"
     :class="{
       'p-3 min-h-10': size === 'default',
       'p-2 min-h-6 text-sm': size === 'small',
       'p-0': size === 'bare',
       'cursor-not-allowed opacity-50': $attrs.disabled,
+      'cursor-pointer ': !$attrs.disabled,
       'rounded-full': round,
       'rounded-md': !round,
     }"

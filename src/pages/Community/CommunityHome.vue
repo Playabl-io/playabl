@@ -259,10 +259,9 @@ const displaySignUp = ref(false);
 const displayRequestToJoinModal = ref(false);
 
 const isCommunityMember = computed(() => {
-  return (
-    communityStore.isAdmin ||
-    communityStore.isCreator ||
-    communityStore.isPlayer
+  return Boolean(
+    store.userCommunityMembership[communityStore.community.id]
+      ?.communityMembership?.id,
   );
 });
 

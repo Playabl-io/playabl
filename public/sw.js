@@ -6,7 +6,7 @@ self.addEventListener("install", function (event) {
         "/src/assets/Paytone_One/PaytoneOne-Regular.ttf",
         "/playabl_192.png",
       ]);
-    })
+    }),
   );
 });
 
@@ -16,6 +16,6 @@ self.addEventListener("fetch", function (event) {
   event.respondWith(
     fetch(event.request).catch(function () {
       return caches.match(event.request);
-    })
+    }),
   );
 });

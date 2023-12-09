@@ -17,6 +17,7 @@ import {
 import axios from "axios";
 import { CommunityEvent } from "@/typings/CommunityEvent";
 import { SORT_DIR, SORT_KEY, sortDirs, sortKeys } from "@/util/urlParams";
+import client from "./client";
 
 // helper functions
 const sortSessionByTimeAsc = (a: Session, b: Session) => {
