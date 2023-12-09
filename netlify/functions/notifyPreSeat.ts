@@ -34,13 +34,10 @@ export const handler: Handler = async (event) => {
     }, []),
   );
 
-  console.log(toNotify);
   const { data: profiles } = await supabase
     .from("profiles")
     .select("*")
     .in("id", [...toNotify]);
-
-  console.log(profiles);
 
   for (const user of profiles) {
     await addNotificationRecord({
