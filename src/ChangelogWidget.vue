@@ -29,8 +29,8 @@ const loadScript = async () => {
 
 function initHeadway() {
   const config = {
-    selector: ".headway", // CSS selector where to inject the badge
-    account: APP_ID, // your account ID, you can find it in Settings->Widget
+    selector: ".headway",
+    account: APP_ID,
     trigger: "#headway-trigger",
     translations: {
       title: "Latest updates",
@@ -41,7 +41,6 @@ function initHeadway() {
 }
 
 onMounted(async () => {
-  console.log("mount");
   await loadScript();
 });
 </script>

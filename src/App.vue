@@ -36,7 +36,6 @@ const showNewProfileModal = ref(false);
 const notificationSubscription = ref();
 
 supabase.auth.onAuthStateChange(async (event, session) => {
-  console.log(event, session);
   switch (event) {
     case "SIGNED_IN":
     case "TOKEN_REFRESHED":
