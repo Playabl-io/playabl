@@ -5,7 +5,7 @@
       <div class="items-center relative">
         <Menu>
           <MenuButton
-            class="border border-solid border-gray-200 bg-gray-200 bg-opacity-70 hover:bg-opacity-100 transition-all rounded-md h-10 w-10 grid place-content-center"
+            class="border border-solid border-gray-200 bg-white bg-opacity-70 hover:bg-opacity-100 transition-all rounded-md h-10 w-10 grid place-content-center"
           >
             <AdjustmentsHorizontalIcon class="h-6 w-6" />
           </MenuButton>
@@ -54,6 +54,23 @@
                     class="text-brand-500 rounded-md shadow-sm border border-gray-300 dark:bg-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-700 dark:focus-visible:ring-sky-500"
                   />
                   Hide games I'm in
+                </FormLabel>
+              </MenuItem>
+              <MenuItem v-slot="{ active }">
+                <FormLabel
+                  class="font-normal p-2 flex items-center gap-2 rounded-md"
+                  :class="{
+                    'bg-gray-200 bg-opacity-50': active,
+                  }"
+                  no-margin
+                >
+                  <input
+                    id="include-completed"
+                    v-model="includeCompleted"
+                    type="checkbox"
+                    class="text-brand-500 rounded-md shadow-sm border border-gray-300 dark:bg-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-700 dark:focus-visible:ring-sky-500"
+                  />
+                  Include finished sessions
                 </FormLabel>
               </MenuItem>
             </MenuItems>
@@ -118,7 +135,14 @@
 </template>
 <script setup lang="ts">
 import { onMounted, ref, watch, computed } from "vue";
-import { startOfMonth, endOfMonth, addMonths, format, parse } from "date-fns";
+import {
+  startOfMonth,
+  endOfMonth,
+  addMonths,
+  format,
+  parse,
+  isAfter,
+} from "date-fns";
 import {
   TabGroup,
   TabList,
@@ -144,9 +168,11 @@ import { store } from "@/store";
 import * as R from "ramda";
 import { useRoute, useRouter } from "vue-router";
 import { sessionWithGame } from "../IndexPage.vue";
+import { useNow } from "@vueuse/core";
 
 const route = useRoute();
 const router = useRouter();
+const now = useNow();
 
 const options = [
   {
@@ -186,6 +212,7 @@ const sessionsByGame = computed(() => {
 
 const excludeOwnGames = ref(false);
 const excludeRsvpdGames = ref(false);
+const includeCompleted = ref(false);
 
 const filteredSessions = computed(() => {
   let filteredSessions = sessions.value;
@@ -197,6 +224,11 @@ const filteredSessions = computed(() => {
   if (excludeRsvpdGames.value) {
     filteredSessions = filteredSessions.filter(
       (session) => !session.rsvps.includes(store.user?.id || ""),
+    );
+  }
+  if (!includeCompleted.value) {
+    filteredSessions = filteredSessions.filter((session) =>
+      isAfter(new Date(session.start_time), now.value),
     );
   }
   return filteredSessions;
