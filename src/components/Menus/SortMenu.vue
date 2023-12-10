@@ -2,7 +2,7 @@
   <Listbox :model-value="modelValue" @update:model-value="emitValueUpdate">
     <div class="relative">
       <ListboxButton
-        class="relative h-10 w-full py-2 pl-3 pr-10 text-left bg-gray-200 bg-opacity-70 hover:bg-opacity-100 text-slate-900 rounded-xl cursor-default focus-styles"
+        class="relative h-10 w-full py-2 pl-3 pr-10 text-left bg-white border border-solid border-gray-200 bg-opacity-70 hover:bg-opacity-100 text-slate-900 rounded-xl cursor-default focus-styles"
       >
         {{ modelValue.label }}
         <span

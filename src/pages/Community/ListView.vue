@@ -19,13 +19,35 @@
         :is="view === 'tile' ? SecondaryButton : GhostButton"
         @click="view = 'tile'"
       >
-        <Squares2X2Icon class="h-5 w-5 text-slate-700" />
+        <Tooltip>
+          <template #trigger="{ toggleTooltip }">
+            <Squares2X2Icon
+              class="h-5 w-5 text-slate-700"
+              @mouseenter="toggleTooltip"
+              @mouseleave="toggleTooltip"
+              @focus="toggleTooltip"
+              @blur="toggleTooltip"
+            />
+          </template>
+          <template #tooltip> Display as cards </template>
+        </Tooltip>
       </component>
       <component
         :is="view === 'list' ? SecondaryButton : GhostButton"
         @click="view = 'list'"
       >
-        <ListBulletIcon class="h-5 w-5 text-slate-700" />
+        <Tooltip>
+          <template #trigger="{ toggleTooltip }">
+            <ListBulletIcon
+              class="h-5 w-5 text-slate-700"
+              @mouseenter="toggleTooltip"
+              @mouseleave="toggleTooltip"
+              @focus="toggleTooltip"
+              @blur="toggleTooltip"
+            />
+          </template>
+          <template #tooltip> Display as list </template>
+        </Tooltip>
       </component>
     </div>
     <ul
@@ -74,6 +96,7 @@ import SecondaryButton from "@/components/Buttons/SecondaryButton.vue";
 import MiniGameItem from "./MiniGameItem.vue";
 import ListViewItem from "./ListViewItem.vue";
 import { sessionWithGame } from "../IndexPage.vue";
+import Tooltip from "@/components/Tooltip.vue";
 
 const props = defineProps({
   sessions: {
