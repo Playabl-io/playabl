@@ -10,15 +10,15 @@
       move-class="transform-gpu duration-300 ease-in"
     >
       <div
-        v-for="(sessionId, i) in sessionIds"
-        :key="sessionId"
+        v-for="(session, i) in sessions"
+        :key="session.id"
         class="relative flex-shrink-0 rounded-lg p-4 [width:225px] shadow-sm bg-white"
       >
         <div class="absolute top-1 right-1">
           <DismissButton
             label="Delete session"
             type="button"
-            @click="emit('deleteSession', sessionId)"
+            @click="emit('deleteSession', session.id)"
           />
         </div>
         <p class="text-xs text-slate-700 font-semibold mb-3">
@@ -28,31 +28,21 @@
         <div class="flex flex-col mb-3">
           <p class="text-sm">Start time</p>
           <p class="">
-            {{
-              format(
-                new Date(sessions[sessionId].start_time),
-                "EEE, MMM do, h:mm a",
-              )
-            }}
+            {{ format(new Date(session.start_time), "EEE, MMM do, h:mm a") }}
           </p>
         </div>
         <div class="flex flex-col">
           <p class="text-sm">End time</p>
           <p class="">
-            {{
-              format(
-                new Date(sessions[sessionId].end_time),
-                "EEE, MMM do, h:mm a",
-              )
-            }}
+            {{ format(new Date(session.end_time), "EEE, MMM do, h:mm a") }}
           </p>
         </div>
-        <template v-if="preSeatAssignments[sessionId]?.members">
+        <template v-if="preSeatAssignments[session.id]?.members">
           <p class="text-sm mt-3">Pre-Seated</p>
           <div class="flex flex-wrap gap-2">
             <p class="">
               {{
-                preSeatAssignments[sessionId]?.members
+                preSeatAssignments[session.id]?.members
                   .map((member) => member.username || member.email)
                   .join(", ")
               }}
@@ -72,11 +62,7 @@ import { Member } from "@/typings/Member";
 
 defineProps({
   sessions: {
-    type: Object as PropType<Record<string, NewSession>>,
-    required: true,
-  },
-  sessionIds: {
-    type: Array as PropType<string[]>,
+    type: Array as PropType<(NewSession & { id: string })[]>,
     required: true,
   },
   preSeatAssignments: {

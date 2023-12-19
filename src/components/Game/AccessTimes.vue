@@ -11,7 +11,7 @@
       <p class="text-sm text-slate-700 dark:text-slate-300 mb-3">
         Select what access levels to apply. Not sure how access levels work?
         <a
-          href="https://docs.playabl.io/communities/access-levels.html"
+          href="https://docs.playabl.io/guides/communities/access-levels.html"
           target="_blank"
           class="text-blue-700 underline"
         >
@@ -63,7 +63,7 @@
           {{
             format(
               new Date(accessTimes[level.id].rsvpAvailableTime),
-              "EEE, MMM do, h:mm a"
+              "EEE, MMM do, h:mm a",
             )
           }}
         </p>
@@ -107,7 +107,7 @@ const selectedLevels = computed(() =>
       acc.push(level);
     }
     return acc;
-  }, [] as AccessLevel[])
+  }, [] as AccessLevel[]),
 );
 
 const accessTimes = computed(() => {

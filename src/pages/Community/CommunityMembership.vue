@@ -9,7 +9,7 @@
           administrators
         </p>
         <a
-          href="https://docs.playabl.io/communities/access-levels.html"
+          href="https://docs.playabl.io/guides/communities/access-levels.html"
           target="_blank"
           class="text-blue-700 underline"
         >
