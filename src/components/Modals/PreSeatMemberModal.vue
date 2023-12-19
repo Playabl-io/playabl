@@ -18,8 +18,8 @@
     <div class="mt-4 p-3 rounded-md bg-gray-200 overflow-auto">
       <template v-if="selectedMember">
         <p class="text-xs mb-3">
-          Select which sessions to add them to. Click Select New to add sessions
-          to another user.
+          Select which sessions to add them to. Click Select New to choose
+          another user.
         </p>
         <div class="flex gap-3">
           <div

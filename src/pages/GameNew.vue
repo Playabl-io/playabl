@@ -269,8 +269,7 @@
             Added sessions will appear here
           </p>
           <AddSessions
-            :sessions="sessions"
-            :session-ids="sessionIds"
+            :sessions="sortedSessions"
             :pre-seat-assignments="preSeatAssignments"
             @delete-session="deleteSession"
           />
@@ -317,7 +316,7 @@
       v-if="state.context.selectedCommunity"
       :open="preSeatMemberModalOpen"
       :community-id="state.context.selectedCommunity.id"
-      :sessions="sessionIds.map((id) => ({ id, ...sessions[id] }))"
+      :sessions="sortedSessions"
       :pre-seat-assignments="preSeatAssignments"
       @close="preSeatMemberModalOpen = false"
       @save="preSeatAssignments = $event"
@@ -645,6 +644,12 @@ const usesSafetyTools = ref(false);
 const newSessionModalOpen = ref(false);
 const preSeatMemberModalOpen = ref(false);
 const preSeatAssignments = ref<{ [id: string]: { members: Member[] } }>({});
+
+const sortedSessions = computed(() => {
+  return sessionIds.value
+    .map((id) => ({ id, ...sessions.value[id] }))
+    .sort((sessionA, sessionB) => sessionA.start_time - sessionB.start_time);
+});
 
 const communityPostingLimit = computed(() => {
   if (state.value.context.selectedCommunity?.furthest_posting_date) {
