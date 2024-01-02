@@ -94,7 +94,7 @@ const emit = defineEmits(["close", "save", "delete"]);
 const title = ref(props.accessLevel?.name || "");
 const priorityAccessTime = ref(props.accessLevel?.priority_access_time || 0);
 const timeDenomination = ref(
-  props.accessLevel?.time_denomination || ACCESS_LEVEL_TIME_DENOMINATION.days
+  props.accessLevel?.time_denomination || ACCESS_LEVEL_TIME_DENOMINATION.days,
 );
 const isMandatory = ref(props.accessLevel?.is_mandatory || false);
 const applyOnJoin = ref(props.accessLevel?.apply_on_join || false);

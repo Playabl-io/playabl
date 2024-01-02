@@ -44,8 +44,26 @@
       </div>
       <div class="flex flex-col mt-4">
         <form-label class="flex flex-col" for="password"> Password </form-label>
-        <form-input id="password" v-model="password" type="password" required />
+        <div class="flex items-end gap-1">
+          <form-input
+            id="password"
+            v-model="password"
+            class="grow"
+            :type="showPw ? 'text' : 'password'"
+            required
+          />
+          <GhostButton type="button" class="ml-1" @click="showPw = !showPw">
+            <EyeSlashIcon v-if="showPw" class="h-5 w-6" />
+            <EyeIcon v-else class="h-5 w-6" />
+          </GhostButton>
+        </div>
       </div>
+      <RouterLink
+        to="/forgot-password"
+        class="text-xs text-slate-700 mt-1 hover:text-blue-700"
+      >
+        Forgot password?
+      </RouterLink>
       <primary-button :is-loading="loading" class="mt-4">
         Sign in
       </primary-button>
@@ -54,19 +72,21 @@
 </template>
 <script setup lang="ts">
 import { ref, PropType } from "vue";
+import { supabase } from "@/supabase";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/vue/24/outline";
 import BaseModal from "./BaseModal.vue";
 import FormLabel from "@/components/Forms/FormLabel.vue";
 import FormInput from "@/components/Forms/FormInput.vue";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import SignUpForm from "@/components/SignUpForm.vue";
 import GoogleButton from "@/components/Buttons/GoogleButton.vue";
-import { supabase } from "@/supabase";
 import useToast from "@/components/Toast/useToast";
 import { log } from "@/util/logger";
 import { store } from "@/store";
 import DismissButton from "../Buttons/DismissButton.vue";
 import { loadProfile } from "@/api/profiles";
 import BaseButton from "../Buttons/BaseButton.vue";
+import GhostButton from "../Buttons/GhostButton.vue";
 
 const { showSuccess, showError } = useToast();
 
@@ -87,6 +107,7 @@ const props = defineProps({
 
 const emit = defineEmits(["signedIn", "cancel"]);
 
+const showPw = ref(false);
 const email = ref("");
 const password = ref("");
 const loading = ref(false);

@@ -79,7 +79,6 @@
 </template>
 <script setup lang="ts">
 import { store } from "@/store";
-import { useRoute } from "vue-router";
 import {
   LockClosedIcon,
   BoltIcon,
@@ -104,7 +103,6 @@ import ListItemButton from "@/components/Buttons/ListItemButton.vue";
 import { drawerActions } from "@/util/machineActions";
 import { communityStore } from "./communityStore";
 
-const route = useRoute();
 const { showSuccess, showError } = useToast();
 
 const communityId = communityStore.community.id;
@@ -251,10 +249,10 @@ const accessLevelsMachine = createMachine(
     actions: {
       ...drawerActions,
       showModal: assign({
-        modalVisible: (context) => true,
+        modalVisible: () => true,
       }),
       hideModal: assign({
-        modalVisible: (context) => false,
+        modalVisible: () => false,
       }),
       assignAccessLevel: assign({
         accessLevel: (context, event) => {
@@ -264,7 +262,7 @@ const accessLevelsMachine = createMachine(
         },
       }),
       clearAccessLevel: assign({
-        accessLevel: (_, __) => undefined,
+        accessLevel: () => undefined,
       }),
       updateAccessLevel: (context, event: Record<string, unknown>) => {
         const data = event.data as AccessLevel;
@@ -274,7 +272,7 @@ const accessLevelsMachine = createMachine(
               return data;
             }
             return level;
-          }
+          },
         );
         showSuccess({ message: "Access rule updated" });
       },
@@ -286,7 +284,7 @@ const accessLevelsMachine = createMachine(
       removeAccessLevel: (context, event: Record<string, unknown>) => {
         const data = event.data as AccessLevel;
         store.communityAccessLevels = store.communityAccessLevels.filter(
-          (level) => level.id !== data.id
+          (level) => level.id !== data.id,
         );
         showSuccess({ message: "Access rule deleted" });
       },
@@ -295,7 +293,7 @@ const accessLevelsMachine = createMachine(
         showError({ message: event.data?.message || "Something went wrong" });
       },
     },
-  }
+  },
 );
 
 const { state, send } = useMachine(accessLevelsMachine);

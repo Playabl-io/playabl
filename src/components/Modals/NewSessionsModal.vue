@@ -5,13 +5,13 @@
         <p v-if="notBefore" class="text-sm">
           Earliest date available:
           <b>
-            {{ format(notBefore, "LLLL do yyyy") }}
+            {{ format(notBefore, "LLLL do yyyy h:mm a") }}
           </b>
         </p>
         <p v-if="notAfter" class="mt-2 text-sm">
           Latest date available:
           <b>
-            {{ format(notAfter, "LLLL do yyyy") }}
+            {{ format(notAfter, "LLLL do yyyy h:mm a") }}
           </b>
         </p>
         <p class="text-sm mt-2">
@@ -55,7 +55,7 @@
 </template>
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { set, format, addDays, isBefore } from "date-fns";
+import { set, format, addDays, isBefore, isAfter } from "date-fns";
 import FormInput from "../Forms/FormInput.vue";
 import FormLabel from "../Forms/FormLabel.vue";
 import Well from "../Well.vue";
@@ -81,7 +81,7 @@ function resetState() {
   selectedDates.value = [];
 }
 
-defineProps<{
+const props = defineProps<{
   open: boolean;
   notBefore: Date;
   notAfter?: Date;
@@ -113,6 +113,29 @@ const dateError = computed(() => {
   }
   if (isBefore(endDateAndTime, startDateAndTime)) {
     return "End time cannot be before start time";
+  }
+
+  for (const date of selectedDates.value) {
+    const [startHours, startMinutes] = startTime.value.split(":");
+    const [endHours, endMinutes] = endTime.value.split(":");
+    const startDate = set(date, {
+      hours: Number(startHours),
+      minutes: Number(startMinutes),
+    });
+    let endDate = set(date, {
+      hours: Number(endHours),
+      minutes: Number(endMinutes),
+    });
+    if (endTimeIsNextDay.value) {
+      endDate = addDays(endDate, 1);
+    }
+
+    if (isBefore(startDate, props.notBefore)) {
+      return "One or more sessions is before earliest available time";
+    }
+    if (props.notAfter && isAfter(endDate, props.notAfter)) {
+      return "One or more sessions is after latest available time";
+    }
   }
   return "";
 });

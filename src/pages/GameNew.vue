@@ -274,7 +274,6 @@
             @delete-session="deleteSession"
           />
         </div>
-        <hr class="my-10" />
         <AccessTimes
           :set-by-event="Boolean(selectedEvent)"
           :enabled-levels="state.context.enabledAccessLevels"
@@ -349,7 +348,6 @@ import { Community } from "@/typings/Community";
 import { GAME_DRAFT_STATE, NewGame } from "@/typings/Game";
 import AccessTimes from "@/components/Game/AccessTimes.vue";
 import ChooseCommunity from "@/components/Game/ChooseCommunity.vue";
-import { loadCommunityAccessTimes } from "@/api/communityAccess";
 import { store } from "@/store";
 import useToast from "@/components/Toast/useToast";
 import { createGame, publishGame } from "@/api/gamesAndSessions";
@@ -374,6 +372,7 @@ import NewSessionsModal from "@/components/Modals/NewSessionsModal.vue";
 import PreSeatMemberModal from "@/components/Modals/PreSeatMemberModal.vue";
 import { Member } from "@/typings/Member";
 import client from "@/api/client";
+import { getAccessLevels } from "@/storeActions";
 
 const { showSuccess, showError } = useToast();
 const router = useRouter();
@@ -813,18 +812,5 @@ async function submitGame() {
 
   showSuccess({ message: "Game created" });
   router.push(`/games/${game.id}`);
-}
-
-async function getAccessLevels(communityId: string) {
-  const data = await loadCommunityAccessTimes(communityId);
-  if (data) {
-    store.communityAccessLevels = data;
-  }
-  return store.communityAccessLevels.reduce((acc, level) => {
-    if (level.is_mandatory) {
-      acc.push(level.id);
-    }
-    return acc;
-  }, [] as number[]);
 }
 </script>

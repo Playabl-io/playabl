@@ -14,6 +14,7 @@ export async function createAccessLevel(accessLevel: NewAccessLevel) {
   const { data, error } = await supabase
     .from("access_levels")
     .insert(accessLevel)
+    .select()
     .single();
   if (error) throw error;
   return data;
