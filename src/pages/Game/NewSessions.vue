@@ -164,6 +164,7 @@ function getLevelsFromStore(ids: number[]) {
 }
 
 async function createSessions() {
+  isCreating.value = true;
   const levels = gameStore.game.community_events
     ? getLevelsFromStore(
         gameStore.game.community_events?.event_access_levels ?? [],
@@ -201,6 +202,8 @@ async function createSessions() {
       message:
         "An error occurred setting up the sessions. Please manually review.",
     });
+  } finally {
+    isCreating.value = false;
   }
 }
 
