@@ -15,13 +15,14 @@
       </OutlineButton>
     </div>
     <SectionContainer>
-      <span class="flex items-center justify-between mb-8">
-        <Heading level="h6" as="h3"> Sessions </Heading>
-        <LinkButton @click="newSessionDrawerOpen = true">
-          Add new session
-        </LinkButton>
-      </span>
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+      <div class="mb-8">
+        <Heading level="h6" as="h3"> Current sessions </Heading>
+        <p class="text-sm mt-2">
+          Edit or delete sessions. Wanting to add more sessions? Use the form
+          lower on this page
+        </p>
+      </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
         <div
           v-for="session in gameStore.sessions"
           :key="session.id"
@@ -94,19 +95,13 @@
       </div>
     </SectionContainer>
     <SectionContainer>
+      <NewSessions />
+    </SectionContainer>
+    <SectionContainer>
       <GameImageLibrary />
     </SectionContainer>
   </div>
-  <SideDrawer
-    :open="newSessionDrawerOpen"
-    @close="newSessionDrawerOpen = false"
-  >
-    <NewSession
-      :game-id="gameStore.game.id"
-      :community-id="gameStore.game.community_id"
-      @add-session="addSession"
-    />
-  </SideDrawer>
+
   <SideDrawer
     :open="editDescriptionDrawerOpen"
     @close="editDescriptionDrawerOpen = false"
@@ -167,16 +162,14 @@ import {
   TrashIcon,
   PencilSquareIcon,
 } from "@heroicons/vue/24/outline";
+import { gameStore } from "./gameStore";
 import SideDrawer from "@/components/SideDrawer.vue";
-import NewSession from "@/pages/Game/NewSession.vue";
-import LinkButton from "@/components/Buttons/LinkButton.vue";
 import { Session } from "@/typings/Session";
 import GhostButton from "@/components/Buttons/GhostButton.vue";
 import DeleteModal from "@/components/Modals/DeleteModal.vue";
 import SectionContainer from "@/components/SectionContainer.vue";
 import OutlineButton from "@/components/Buttons/OutlineButton.vue";
 import EditDescription from "@/pages/Game/EditDescription.vue";
-import { gameStore } from "./gameStore";
 import EditGameDetails from "./EditGameDetails.vue";
 import useToast from "@/components/Toast/useToast";
 import { log } from "@/util/logger";
@@ -184,10 +177,10 @@ import GameImageLibrary from "./GameImageLibrary.vue";
 import EditSessionDetails from "./EditSessionDetails.vue";
 import Tooltip from "@/components/Tooltip.vue";
 import DuplicateSessionModal from "./DuplicateSessionModal.vue";
+import NewSessions from "./NewSessions.vue";
 
 const { showSuccess, showError } = useToast();
 
-const newSessionDrawerOpen = ref(false);
 const editSessionDrawerOpen = ref(false);
 const editDescriptionDrawerOpen = ref(false);
 const editDetailsDrawerOpen = ref(false);
@@ -209,14 +202,6 @@ function clearEditSession() {
   sessionToEdit.value = undefined;
 }
 
-function addSession(session: Session) {
-  const transformedSession = {
-    ...session,
-    rsvps: [],
-  };
-  gameStore.sessions.push(transformedSession);
-  newSessionDrawerOpen.value = false;
-}
 function confirmDuplicate(session: Session) {
   sessionToDuplicate.value = session;
   duplicateSessionModalOpen.value = true;
@@ -234,7 +219,7 @@ async function handleDelete(session?: Session) {
   isDeleting.value = true;
   await supabase.from("sessions").delete().match({ id: session.id });
   gameStore.sessions = gameStore.sessions.filter(
-    (sesh) => sesh.id !== session.id
+    (sesh) => sesh.id !== session.id,
   );
   deleteSessionModalOpen.value = false;
   isDeleting.value = false;

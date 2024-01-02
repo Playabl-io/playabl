@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Heading level="h6" as="h2" class="mb-2">Access times</Heading>
+    <p class="mb-2 font-semibold">Session access times</p>
     <p
       v-if="setByEvent"
       class="text-sm text-slate-700 dark:text-slate-300 mb-3"
@@ -9,7 +9,8 @@
     </p>
     <template v-else>
       <p class="text-sm text-slate-700 dark:text-slate-300 mb-3">
-        Select what access levels to apply. Not sure how access levels work?
+        Select what access levels to apply to the new sessions. Not sure how
+        access levels work?
         <a
           href="https://docs.playabl.io/guides/communities/access-levels.html"
           target="_blank"

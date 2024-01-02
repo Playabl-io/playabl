@@ -27,7 +27,7 @@ const props = defineProps({
 const colorClasses = computed(() => {
   switch (props.color) {
     case "blue":
-      return "bg-blue-200 hover:bg-blue-300 text-slate-900";
+      return "bg-blue-100 hover:bg-blue-200 text-blue-700";
     case "gray":
     default:
       return "bg-gray-300 text-slate-900 bg-opacity-60 hover:bg-opacity-90";

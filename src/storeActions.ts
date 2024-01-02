@@ -1,4 +1,7 @@
-import { loadAllUserAccess } from "./api/communityAccess";
+import {
+  loadAllUserAccess,
+  loadCommunityAccessTimes,
+} from "./api/communityAccess";
 import { loadUserCommunities } from "./api/communityMemberships";
 import { store } from "./store";
 
@@ -25,4 +28,17 @@ export async function getUserAccess(id: string) {
 export async function triggerUserAccessLoad(id: string) {
   getUserAccess(id);
   getUserMemberships(id);
+}
+
+export async function getAccessLevels(communityId: string) {
+  const data = await loadCommunityAccessTimes(communityId);
+  if (data) {
+    store.communityAccessLevels = data;
+  }
+  return store.communityAccessLevels.reduce((acc, level) => {
+    if (level.is_mandatory) {
+      acc.push(level.id);
+    }
+    return acc;
+  }, [] as number[]);
 }
