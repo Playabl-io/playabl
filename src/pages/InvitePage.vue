@@ -69,7 +69,9 @@ async function loadCommunityInvite() {
     inviteInfo.value = {
       is_revoked: data.is_revoked,
       community_id: {
+        // @ts-expect-error supabase has wrong typing
         name: Array.isArray(data.community_id) ? "" : data.community_id?.name,
+        // @ts-expect-error supabase has wrong typing
         id: Array.isArray(data.community_id) ? "" : data.community_id?.id,
       },
     };
@@ -91,7 +93,7 @@ async function checkCommunityMember() {
 async function joinCommunity() {
   joining.value = true;
   const { data } = await fetch(
-    `/.netlify/functions/joinThroughInviteLink?inviteId=${route.params.invite_id}&userId=${store.user?.id}&communityId=${inviteInfo.value?.community_id.id}`
+    `/.netlify/functions/joinThroughInviteLink?inviteId=${route.params.invite_id}&userId=${store.user?.id}&communityId=${inviteInfo.value?.community_id.id}`,
   )
     .then((response) => response.json())
     .catch(() => {

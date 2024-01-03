@@ -35,21 +35,27 @@ const router = useRouter();
 const showNewProfileModal = ref(false);
 const notificationSubscription = ref();
 
+async function setupUserProfile(id: string) {
+  const profile = await loadProfile(id);
+  if (!profile) {
+    supabase.auth.signOut();
+  }
+  store.user = profile;
+  store.userSettings = profile.user_settings;
+
+  if (!profile.username && !profile.pronouns) {
+    showNewProfileModal.value = true;
+  }
+}
+
 supabase.auth.onAuthStateChange(async (event, session) => {
   switch (event) {
     case "SIGNED_IN":
     case "TOKEN_REFRESHED":
       if (session !== null && session.user) {
         store.userSession = session;
-        const profile = await loadProfile(session.user.id);
-        if (!profile) {
-          supabase.auth.signOut();
-          break;
-        }
-        store.user = profile;
-        store.userSettings = profile.user_settings;
+        setupUserProfile(session.user.id);
         triggerUserAccessLoad(session.user.id);
-
         if (!notificationSubscription.value) {
           loadNotificationsAndSubscribe();
         }
@@ -61,16 +67,12 @@ supabase.auth.onAuthStateChange(async (event, session) => {
           });
           router.push(route.query.redirect);
         }
-
-        if (!profile.username && !profile.pronouns) {
-          showNewProfileModal.value = true;
-        }
       }
       break;
+    case "INITIAL_SESSION":
     case "SIGNED_OUT":
       store.user = null;
       store.userSession = null;
-      document.getElementById("changelogfy-client")?.remove();
       break;
   }
 });

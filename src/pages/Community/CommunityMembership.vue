@@ -109,6 +109,7 @@ async function getUserCommunityAccess() {
     communityId: communityStore.community.id,
   });
   if (results) {
+    // @ts-expect-error supabase has wrong typing
     accessLevels.value = results.map(({ access_level_id: level }) => level);
   }
 }

@@ -38,28 +38,36 @@ async function getMemberAccess() {
     log({ error });
   }
   if (data) {
-    const memberAccessMap = data.reduce((acc, access) => {
-      if (
-        Array.isArray(access.access_level_id) ||
-        Array.isArray(access.user_id)
-      ) {
-        throw new Error("Unable to build member access map");
-      }
-      if (acc[access.user_id?.id]) {
-        acc[access.user_id?.id].push({
-          id: access.id,
-          name: access.access_level_id?.name,
-        });
-      } else {
-        acc[access.user_id?.id] = [
-          {
+    const memberAccessMap = data.reduce(
+      (acc, access) => {
+        if (
+          Array.isArray(access.access_level_id) ||
+          Array.isArray(access.user_id)
+        ) {
+          throw new Error("Unable to build member access map");
+        }
+        // @ts-expect-error supabase has wrong typing
+        if (acc[access.user_id?.id]) {
+          // @ts-expect-error supabase has wrong typing
+          acc[access.user_id?.id].push({
             id: access.id,
+            // @ts-expect-error supabase has wrong typing
             name: access.access_level_id?.name,
-          },
-        ];
-      }
-      return acc;
-    }, {} as Record<string, { id: number; name: string }[]>);
+          });
+        } else {
+          // @ts-expect-error supabase has wrong typing
+          acc[access.user_id?.id] = [
+            {
+              id: access.id,
+              // @ts-expect-error supabase has wrong typing
+              name: access.access_level_id?.name,
+            },
+          ];
+        }
+        return acc;
+      },
+      {} as Record<string, { id: number; name: string }[]>,
+    );
     store.communityMemberAccess = memberAccessMap;
   }
 }
