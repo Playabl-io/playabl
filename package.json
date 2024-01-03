@@ -22,7 +22,7 @@
     "@netlify/functions": "^2.2.0",
     "@newrelic/browser-agent": "^1.243.1",
     "@stripe/stripe-js": "^1.54.1",
-    "@supabase/supabase-js": "^2.2.2",
+    "@supabase/supabase-js": "^2.39.2",
     "@tanstack/vue-table": "^8.9.3",
     "@tiptap/core": "^2.0.3",
     "@tiptap/extension-link": "^2.0.3",
