@@ -6,7 +6,7 @@
     <div v-else>
       <div class="flex items-baseline justify-between mb-6">
         <router-link :to="`/communities/${id}`">
-          <Heading level="h1">{{ communityData?.name }}</Heading>
+          <Heading level="h1">{{ communityStore.community.name }}</Heading>
         </router-link>
       </div>
       <router-view v-slot="{ Component, route }">
@@ -113,8 +113,6 @@ const routes = computed(() => {
  * We'll confirm in onMounted
  */
 const { community_id: id } = currentRoute.params;
-
-const communityData = ref<Community>();
 const isLoading = ref(true);
 
 onMounted(async () => {
@@ -136,9 +134,6 @@ onMounted(async () => {
     await getCommunity(id);
   }
   setMembershipStatus();
-  if (currentRoute.path.includes("manage") && !communityStore.isAdmin) {
-    router.replace(`/communities/${id}?unauthorized=true`);
-  }
   await Promise.allSettled([
     getMemberCount(),
     loadUpcomingGames(),
@@ -147,6 +142,13 @@ onMounted(async () => {
     loadMembershipRequest(),
   ]);
   isLoading.value = false;
+  if (
+    currentRoute.path.includes("manage") &&
+    store.userCommunityMembership[communityStore.community.id]
+      ?.communityMembership.role_id !== ROLES.admin
+  ) {
+    router.replace(`/communities/${id}?unauthorized=true`);
+  }
 });
 
 onBeforeUnmount(clearCommunityStore);
@@ -189,7 +191,6 @@ async function getCommunity(id: string) {
 }
 
 async function setCommunityDataInStore(data: Community) {
-  communityData.value = data;
   communityStore.community = data;
   if (data?.cover_image) {
     communityStore.coverImageUrl = await getCoverImageUrl(
