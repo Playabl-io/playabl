@@ -1,66 +1,68 @@
 <template>
-  <BaseTemplate>
-    <section>
-      <Heading level="h4" as="h2" class="mb-3">Games you created</Heading>
-      <div v-if="isLoading" class="grid place-content-center">
-        <LoadingSpinner color="brand-500" />
-      </div>
-      <TabGroup v-else>
-        <TabList class="flex gap-4">
-          <Tab v-slot="{ selected }" as="template">
-            <button
-              class="py-2 text-sm focus-styles"
-              :class="{
-                'text-brand-500 border-b border-brand-500': selected,
-                'bg-transparent text-black': !selected,
-              }"
+  <AuthShell>
+    <BaseTemplate>
+      <section>
+        <Heading level="h4" as="h2" class="mb-3">Games you created</Heading>
+        <div v-if="isLoading" class="grid place-content-center">
+          <LoadingSpinner color="brand-500" />
+        </div>
+        <TabGroup v-else>
+          <TabList class="flex gap-4">
+            <Tab v-slot="{ selected }" as="template">
+              <button
+                class="py-2 text-sm focus-styles"
+                :class="{
+                  'text-brand-500 border-b border-brand-500': selected,
+                  'bg-transparent text-black': !selected,
+                }"
+              >
+                Upcoming
+              </button>
+            </Tab>
+            <Tab v-slot="{ selected }" as="template">
+              <button
+                class="py-2 text-sm focus-styles"
+                :class="{
+                  'text-brand-500 border-b border-brand-500': selected,
+                  'bg-transparent text-black': !selected,
+                }"
+              >
+                Past
+              </button>
+            </Tab>
+          </TabList>
+          <TabPanels class="mt-6">
+            <TabPanel
+              class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 items-start"
             >
-              Upcoming
-            </button>
-          </Tab>
-          <Tab v-slot="{ selected }" as="template">
-            <button
-              class="py-2 text-sm focus-styles"
-              :class="{
-                'text-brand-500 border-b border-brand-500': selected,
-                'bg-transparent text-black': !selected,
-              }"
+              <p v-if="games.length === 0" class="text-sm col-span-full">
+                No upcoming games
+              </p>
+              <GameCard v-for="game in games" :key="game.id" :game="game" />
+            </TabPanel>
+            <TabPanel
+              class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 items-start"
             >
-              Past
-            </button>
-          </Tab>
-        </TabList>
-        <TabPanels class="mt-6">
-          <TabPanel
-            class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 items-start"
-          >
-            <p v-if="games.length === 0" class="text-sm col-span-full">
-              No upcoming games
-            </p>
-            <GameCard v-for="game in games" :key="game.id" :game="game" />
-          </TabPanel>
-          <TabPanel
-            class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 items-start"
-          >
-            <p v-if="pastGames.length === 0" class="text-sm col-span-full">
-              No past games
-            </p>
-            <GameCard v-for="game in pastGames" :key="game.id" :game="game">
-              <template #sessions-title>
-                {{ game.sessions.length }}
-                {{
-                  pluralize({
-                    count: game.sessions.length,
-                    singular: "session",
-                  })
-                }}
-              </template>
-            </GameCard>
-          </TabPanel>
-        </TabPanels>
-      </TabGroup>
-    </section>
-  </BaseTemplate>
+              <p v-if="pastGames.length === 0" class="text-sm col-span-full">
+                No past games
+              </p>
+              <GameCard v-for="game in pastGames" :key="game.id" :game="game">
+                <template #sessions-title>
+                  {{ game.sessions.length }}
+                  {{
+                    pluralize({
+                      count: game.sessions.length,
+                      singular: "session",
+                    })
+                  }}
+                </template>
+              </GameCard>
+            </TabPanel>
+          </TabPanels>
+        </TabGroup>
+      </section>
+    </BaseTemplate>
+  </AuthShell>
 </template>
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
@@ -74,6 +76,7 @@ import { loadManagedGames, loadPastManagedGames } from "@/api/gamesAndSessions";
 import { store } from "@/store";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import { pluralize } from "@/util/grammar";
+import AuthShell from "@/layouts/AuthShell.vue";
 
 const isLoading = ref(true);
 const games = ref<GameListing[]>([]);

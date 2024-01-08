@@ -29,8 +29,7 @@
             <FormLabel for="name"> Support Email </FormLabel>
             <FormInput id="name" v-model="supportEmail" type="email" />
             <p class="text-xs text-slate-700 mt-1">
-              You can specify a support email for the community. Later, you can
-              choose where support emails are sent.
+              You can specify a support or contact email for the community
             </p>
           </div>
           <div class="flex flex-col">
@@ -76,9 +75,9 @@
         </p>
         <div class="grid grid-cols-1 gap-8">
           <div class="flex flex-col">
-            <FormLabel>
+            <p class="font-semibold">
               What kinds of games does your community organize and play?
-            </FormLabel>
+            </p>
             <p class="text-xs mt-1 text-slate-700">
               These will help others find and gauge interest in your community
             </p>
@@ -116,30 +115,53 @@
           </div>
           <hr />
           <div>
-            <div class="p-4 rounded-lg bg-gray-100 flex items-center space-x-2">
-              <FormCheckbox id="allow-public" v-model="allowPublicSignup" />
-              <FormLabel
-                class="font-normal"
-                for="allow-public"
-                :no-margin="true"
+            <p class="font-semibold">Community Sign Up</p>
+            <p class="text-xs text-slate-700 mt-2 mb-3">
+              Select how others can sign up for the community.
+            </p>
+            <ul class="text-sm list-inside list-disc mb-4 flex flex-col gap-2">
+              <li>
+                Public allows others to join from the listing page without any
+                invitation or need to request membership
+              </li>
+              <li>
+                Request allows others to submit a request for membership which
+                you can then approve or deny
+              </li>
+              <li>Private only allows people to join via invite link</li>
+            </ul>
+
+            <FormSelect v-model="signUpMethod">
+              <option
+                :selected="signUpMethod === SignupMethods.PUBLIC"
+                :value="SignupMethods.PUBLIC"
               >
-                Allow others to join without invite?
-              </FormLabel>
-            </div>
+                Public
+              </option>
+              <option
+                :selected="signUpMethod === SignupMethods.REQUEST"
+                :value="SignupMethods.REQUEST"
+              >
+                Request
+              </option>
+              <option
+                :selected="signUpMethod === SignupMethods.PRIVATE"
+                :value="SignupMethods.PRIVATE"
+              >
+                Private
+              </option>
+            </FormSelect>
           </div>
-          <div v-if="!allowPublicSignup" class="flex flex-col">
+          <div
+            v-if="signUpMethod === SignupMethods.REQUEST"
+            class="flex flex-col"
+          >
             <FormLabel for="name">
               How can people join your community?
             </FormLabel>
             <FormTextArea id="howToJoin" v-model="howToJoin" class="h-40" />
             <p class="text-xs text-slate-700 mt-1">
               Optional. Give people a short description on how they can join.
-            </p>
-          </div>
-          <div v-else>
-            <p>
-              You have opted to allow any user to become a member of your
-              community. This can be changed later.
             </p>
           </div>
         </div>
@@ -281,6 +303,10 @@
         </div>
       </form>
     </div>
+    <SignUpModal
+      :open="state.value === 'show_signup'"
+      @signed-in="createCommunity"
+    />
   </BaseTemplate>
 </template>
 <script setup lang="ts">
@@ -291,7 +317,7 @@ import { createMachine } from "xstate";
 import BaseTemplate from "@/layouts/BaseTemplate.vue";
 import FormLabel from "@/components/Forms/FormLabel.vue";
 import FormInput from "@/components/Forms/FormInput.vue";
-import FormCheckbox from "@/components/Forms/FormCheckbox.vue";
+import FormSelect from "@/components/Forms/FormSelect.vue";
 import FormTextArea from "@/components/Forms/FormTextArea.vue";
 import { AtSymbolIcon } from "@heroicons/vue/24/outline";
 import {
@@ -314,6 +340,8 @@ import {
 import ImageGalleryModal from "@/components/Modals/ImageGalleryModal.vue";
 import { EnhancedFileObject } from "@/typings/Storage";
 import { GAME_TAGS } from "@/util/gameSystemList";
+import SignUpModal from "@/components/Modals/SignUpModal.vue";
+import { Community, SignupMethods } from "@/typings/Community";
 
 const { showError } = useToast();
 
@@ -341,9 +369,7 @@ const newCommunityMachine = createMachine({
         ERROR: "screen3",
       },
     },
-    show_signup: {
-      type: "final",
-    },
+    show_signup: {},
   },
 });
 const { state, send } = useMachine(newCommunityMachine);
@@ -354,7 +380,7 @@ const description = ref("");
 const howToJoin = ref("");
 const gameTypes = ref<string[]>([]);
 const gameTypesError = ref("");
-const allowPublicSignup = ref(false);
+const signUpMethod = ref<Community["signup_method"]>(SignupMethods.PUBLIC);
 const coverImage = ref<File>();
 const website = ref("");
 const codeOfConductUrl = ref("");
@@ -439,7 +465,7 @@ async function createCommunity() {
         slack: slack.value,
         patreon: patreon.value,
         owner_id: store.user.id,
-        signup_method: allowPublicSignup.value ? "PUBLIC" : "PRIVATE",
+        signup_method: signUpMethod.value,
         cover_image: imagePath,
         code_of_conduct_url: codeOfConductUrl.value,
       })
