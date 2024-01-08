@@ -157,6 +157,7 @@ const handleLogin = async () => {
       password: password.value,
     });
     if (user) {
+      store.user = await loadProfile(user.id);
       showSuccess({ message: "Signed in" });
       emit("signedIn");
     }

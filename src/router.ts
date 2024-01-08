@@ -57,42 +57,22 @@ const routes = [
   {
     path: "/profile",
     component: () => import("@/pages/Profile/ProfilePage.vue"),
-    meta: {
-      title: "Playabl - Profile",
-      requiresAuth: true,
-    },
   },
   {
     path: "/notifications",
     component: () => import("@/pages/Profile/NotificationsPage.vue"),
-    meta: {
-      title: "Playabl - Notifications",
-      requiresAuth: true,
-    },
   },
   {
     path: "/media",
     component: () => import("@/pages/Profile/MediaPage.vue"),
-    meta: {
-      title: "Playabl - Media",
-      requiresAuth: true,
-    },
   },
   {
     path: "/settings",
     component: () => import("@/pages/Profile/SettingsPage.vue"),
-    meta: {
-      title: "Playabl - Settings",
-      requiresAuth: true,
-    },
   },
   {
     path: "/communities/joined",
     component: CommunitiesJoined,
-    meta: {
-      title: "Playabl - Communities",
-      requiresAuth: true,
-    },
   },
   {
     path: "/communities/browse",
@@ -111,18 +91,10 @@ const routes = [
   {
     path: "/communities/manage",
     component: CommunitiesManage,
-    meta: {
-      title: "Playabl - Communities",
-      requiresAuth: true,
-    },
   },
   {
     path: "/communities/new",
     component: () => import("@/pages/CommunityNew.vue"),
-    meta: {
-      title: "Playabl - New Community",
-      requiresAuth: true,
-    },
   },
   {
     path: "/communities/:community_id",
@@ -207,10 +179,6 @@ const routes = [
   {
     path: "/games/joined",
     component: GamesJoined,
-    meta: {
-      title: "Playabl - Games",
-      requiresAuth: true,
-    },
   },
   {
     path: "/games/browse",
@@ -228,18 +196,10 @@ const routes = [
   {
     path: "/games/manage",
     component: GamesManage,
-    meta: {
-      title: "Playabl - Games",
-      requiresAuth: true,
-    },
   },
   {
     path: "/games/new",
     component: () => import("@/pages/GameNew.vue"),
-    meta: {
-      title: "Playabl - New Game",
-      requiresAuth: true,
-    },
   },
   {
     path: "/games/:game_id",
@@ -261,16 +221,10 @@ const routes = [
         path: "info",
         name: "Game Additional Info",
         component: () => import("@/pages/Game/GameDetails.vue"),
-        meta: {
-          requiresAuth: true,
-        },
       },
       {
         path: "manage",
         component: () => import("@/pages/Game/GameManage.vue"),
-        meta: {
-          requiresAuth: true,
-        },
       },
     ],
   },
@@ -292,10 +246,7 @@ const routes = [
   {
     path: "/events/new",
     name: "New Event",
-    component: () => import("@/pages/Events/NewEvent.vue"),
-    meta: {
-      requiresAuth: true,
-    },
+    component: () => import("@/pages/Events/NewEventPage.vue"),
   },
   {
     path: "/events/:event_id",
@@ -327,9 +278,6 @@ const routes = [
         path: "manage",
         name: "Event Manage",
         component: () => import("@/pages/Events/EventManage.vue"),
-        meta: {
-          requiresAuth: true,
-        },
       },
     ],
   },
@@ -361,16 +309,10 @@ const routes = [
     path: "/reset-password",
     name: "ResetPassword",
     component: () => import("./pages/ResetPassword.vue"),
-    meta: {
-      requiresAuth: true,
-    },
   },
   {
     path: "/flags",
     name: "Flags",
-    meta: {
-      requiresAuth: true,
-    },
     component: () => import("./pages/FlagsUI.vue"),
   },
   { path: "/:pathMatch(.*)*", name: "NotFound", component: NotFound },

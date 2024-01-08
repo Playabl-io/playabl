@@ -12,28 +12,26 @@
 </template>
 <script setup lang="ts">
 import { store } from "./store";
-import {
-  getUserAccess,
-  getUserMemberships,
-  triggerUserAccessLoad,
-} from "./storeActions";
+import { triggerUserAccessLoad } from "./storeActions";
 import { supabase } from "./supabase";
 import ToasterManager from "./components/Toast/ToasterManager.vue";
 import { useRoute, useRouter } from "vue-router";
 import NewProfileModal from "./components/Modals/NewProfileModal.vue";
 import OfflineIndicator from "./components/OfflineIndicator.vue";
-import { onMounted, ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import { loadProfile } from "./api/profiles";
 import { log } from "./util/logger";
 import AppShell from "./layouts/AppShell.vue";
 import { Notification } from "./typings/Notification";
 import ChangelogWidget from "./ChangelogWidget.vue";
+import { Subscription } from "@supabase/supabase-js";
 
 const route = useRoute();
 const router = useRouter();
 
 const showNewProfileModal = ref(false);
 const notificationSubscription = ref();
+const supabaseSubscription = ref<Subscription>();
 
 async function setupUserProfile(id: string) {
   const profile = await loadProfile(id);
@@ -48,33 +46,46 @@ async function setupUserProfile(id: string) {
   }
 }
 
-supabase.auth.onAuthStateChange(async (event, session) => {
-  switch (event) {
-    case "SIGNED_IN":
-    case "TOKEN_REFRESHED":
-      if (session !== null && session.user) {
-        store.userSession = session;
-        setupUserProfile(session.user.id);
-        triggerUserAccessLoad(session.user.id);
-        if (!notificationSubscription.value) {
-          loadNotificationsAndSubscribe();
-        }
+onMounted(() => {
+  const {
+    data: { subscription },
+  } = supabase.auth.onAuthStateChange((event, session) => {
+    console.log("auth event", event, session);
+    switch (event) {
+      case "SIGNED_IN":
+      case "TOKEN_REFRESHED":
+        if (session !== null && session.user) {
+          store.userSession = session;
+          setupUserProfile(session.user.id);
+          triggerUserAccessLoad(session.user.id);
+          getFlags(session.user.id);
+          if (!notificationSubscription.value) {
+            loadNotificationsAndSubscribe();
+          }
 
-        if (route.query.redirect && typeof route.query.redirect === "string") {
-          log({
-            level: "info",
-            message: `Attempting redirect to ${route.query.redirect}`,
-          });
-          router.push(route.query.redirect);
+          if (
+            route.query.redirect &&
+            typeof route.query.redirect === "string"
+          ) {
+            log({
+              level: "info",
+              message: `Attempting redirect to ${route.query.redirect}`,
+            });
+            router.push(route.query.redirect);
+          }
         }
-      }
-      break;
-    case "INITIAL_SESSION":
-    case "SIGNED_OUT":
-      store.user = null;
-      store.userSession = null;
-      break;
-  }
+        break;
+      case "SIGNED_OUT":
+        store.user = null;
+        store.userSession = null;
+        break;
+    }
+  });
+  supabaseSubscription.value = subscription;
+});
+
+onUnmounted(() => {
+  supabaseSubscription.value?.unsubscribe();
 });
 
 async function loadNotificationsAndSubscribe() {
@@ -127,28 +138,15 @@ async function loadNotificationsAndSubscribe() {
   notificationSubscription.value = subscription;
 }
 
-onMounted(async () => {
-  const user = await supabase.auth.getUser();
-  if (user.error) {
-    log({
-      level: "error",
-      message: "Error loading user:" + user.error.message,
+async function getFlags(id: string) {
+  const { data } = await supabase
+    .from("flags")
+    .select("*")
+    .contains("user_ids", [id]);
+  if (data) {
+    data.forEach(({ flag }) => {
+      store.userEnabledFlags[flag] = true;
     });
   }
-  if (user.data?.user?.id) {
-    await Promise.all([
-      getUserAccess(user.data.user.id),
-      getUserMemberships(user.data.user.id),
-    ]);
-    const { data } = await supabase
-      .from("flags")
-      .select("*")
-      .contains("user_ids", [user.data.user.id]);
-    if (data) {
-      data.forEach(({ flag }) => {
-        store.userEnabledFlags[flag] = true;
-      });
-    }
-  }
-});
+}
 </script>
