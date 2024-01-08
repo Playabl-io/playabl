@@ -50,7 +50,6 @@ onMounted(() => {
   const {
     data: { subscription },
   } = supabase.auth.onAuthStateChange((event, session) => {
-    console.log("auth event", event, session);
     switch (event) {
       case "SIGNED_IN":
       case "TOKEN_REFRESHED":
