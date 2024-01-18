@@ -2,16 +2,15 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "isolatedModules": true,
-    "target": "esnext",
-    "module": "esnext",
+    "target": "ES6",
+    "module": "ESNext",
     "moduleResolution": "node",
     "strict": true,
     "jsx": "preserve",
     "sourceMap": false,
     "lib": ["esnext", "dom"],
-    "types": ["vite/client", "cypress", "node"],
+    "types": ["vite/client", "node"],
     "resolveJsonModule": true,
-    "plugins": [{ "name": "@vuedx/typescript-plugin-vue" }],
     "paths": {
       "@/*": ["./src/*"]
     }

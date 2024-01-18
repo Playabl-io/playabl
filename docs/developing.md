@@ -1,6 +1,10 @@
+# Developing
+
+Local development of Playabl uses Docker to run a containerized version of the backend alongside a local copy of the UI. The Netlify service is also supported locally and can be run to test serverless functions. There is also some AWS in the codebase, but Netlify is typically preferred for serverless functions.
+
 ## Supabase setup
 
-See [local development](https://supabase.com/docs/guides/cli/local-development) with supabase CLI.
+The local workflow is based on Supabase's guide for [local development](https://supabase.com/docs/guides/cli/local-development) with supabase CLI.
 
 ### Storage (optional)
 
@@ -15,8 +19,14 @@ Next, you have to add the RLS policies. For each bucket, you can do the quick st
 
 ### Replication
 
-Realtime replication is not turned on by default and has to be manually activated.
+Realtime replication is not turned on by default and has to be manually activated. For development, this is optional, but turning on sessions table replication is useful when working on features involving game management to make sure you match prod behavior.
 
 ## Local user
 
 There are two users seeded - a community admin and a player.`developer@playabl.io` is the admin, and `player@playbl.io` is the player. Both have the password `let-me-in-please`.
+
+## Common development commands
+
+The supabase CLI has several commands for interacting with the database that are helpful. [Find them here](https://supabase.com/docs/reference/cli/supabase-db).
+
+Most other frequently needed commands are setup as package scripts, so see the [package.json](../package.json) for available commands.

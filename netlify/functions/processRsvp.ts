@@ -1,24 +1,19 @@
 import * as ics from "ics";
 import { format } from "date-fns";
 import { Handler } from "@netlify/functions";
-import { logError, sendEmail, supabase } from "../utils";
+import { authenticateUser, logError, sendEmail, supabase } from "../utils";
 import { joinSession, leaveSession } from "../rpc";
 import { userCanRsvp } from "../../src/util/time";
 import { GameSession } from "../../src/typings/Session";
 export const handler: Handler = async (event) => {
   const method = event.httpMethod;
-  const { sessionId, userId } = event.queryStringParameters;
+  const { sessionId, userId, skipNotifyCreator } = event.queryStringParameters;
 
-  const { token } = event.headers;
-
-  const user = await supabase.auth.getUser(token);
-
-  if (user.data?.user?.aud !== "authenticated") {
+  const user = await authenticateUser(event);
+  if (!user) {
     return {
       statusCode: 403,
-      boday: JSON.stringify({
-        status: "not authorized",
-      }),
+      body: "not authorized",
     };
   }
 
@@ -50,17 +45,19 @@ export const handler: Handler = async (event) => {
       };
     }
     const user = await getUserProfile({ userId });
-    try {
-      await notifyGameCreator({
-        creatorId: game.creator_id,
-        joiningUserName: user.username,
-        gameId: game.id,
-        gameName: game.title,
-      });
-    } catch (error) {
-      error.message =
-        error.message || "Failed to send notification to game creator";
-      await logError({ message: JSON.stringify(error) });
+    if (!skipNotifyCreator) {
+      try {
+        await notifyGameCreator({
+          creatorId: game.creator_id,
+          joiningUserName: user.username,
+          gameId: game.id,
+          gameName: game.title,
+        });
+      } catch (error) {
+        error.message =
+          error.message || "Failed to send notification to game creator";
+        await logError({ message: JSON.stringify(error) });
+      }
     }
     if (beforeRsvps.length < game.participant_count) {
       const calItem = createCalendarAttachment({
