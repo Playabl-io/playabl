@@ -12,4 +12,6 @@
 
 ## Developing
 
+For information on running a local development version, please see [the development guide](./docs//developing.md) and the [code of conduct](./CODE_OF_CONDUCT.md)
+
 - [Read about how to use feature flags](./docs/feature-flags.md)

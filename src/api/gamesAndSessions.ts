@@ -67,7 +67,7 @@ export function sessionIsWithinRange({
   if (endtime) {
     const endLimitBasedOnStartDate = addSeconds(
       parse(endtime, "HH:mm", sessionStart),
-      30,
+      30
     );
     endsOnTime = isBefore(sessionEnd, endLimitBasedOnStartDate);
   }
@@ -77,10 +77,10 @@ export function sessionIsWithinRange({
 export function filterGameSessionsByTimeRange(
   record: GameListing,
   starttime?: string,
-  endtime?: string,
+  endtime?: string
 ) {
   return record.sessions.some((session) =>
-    sessionIsWithinRange({ session, starttime, endtime }),
+    sessionIsWithinRange({ session, starttime, endtime })
   );
 }
 
@@ -156,7 +156,7 @@ export async function loadBrowsableGames({
   const query = supabase
     .from("games")
     .select(
-      "*, community_id (id, name), sessions!inner(*), community_events(*)",
+      "*, community_id (id, name), sessions!inner(*), community_events(*)"
     )
     .is("deleted_at", null)
     .in("sessions.has_openings", openOnly ? [true] : [true, false])
@@ -200,7 +200,7 @@ export async function loadChronologicalCommunityGames(communityIds: string[]) {
   const { data, error } = await supabase
     .from("games")
     .select(
-      "*, community_id (id, name), sessions!inner(*), community_events(*)",
+      "*, community_id (id, name), sessions!inner(*), community_events(*)"
     )
     .is("deleted_at", null)
     .gte("sessions.start_time", today.getTime())
@@ -220,7 +220,7 @@ export async function loadGamesWithOpenings() {
   const { data, error } = await supabase
     .from("games")
     .select(
-      "*, community_id (id, name), sessions!inner(*), community_events(*)",
+      "*, community_id (id, name), sessions!inner(*), community_events(*)"
     )
     .is("deleted_at", null)
     .eq("sessions.has_openings", true)
@@ -240,7 +240,7 @@ export async function loadCommunityGamesWithOpenings(communityIds: string[]) {
   const { data, error } = await supabase
     .from("games")
     .select(
-      "*, community_id (id, name), sessions!inner(id, start_time, has_openings), community_events(*)",
+      "*, community_id (id, name), sessions!inner(id, start_time, has_openings), community_events(*)"
     )
     .is("deleted_at", null)
     .eq("sessions.has_openings", true)
@@ -349,7 +349,7 @@ export async function loadOpenEventSessions({ eventId }: { eventId: number }) {
   const { data, error } = await supabase
     .from("sessions")
     .select(
-      "*, game_id!inner(*, community_events(*), sessions(*), community_id(*))",
+      "*, game_id!inner(*, community_events(*), sessions(*), community_id(*))"
     )
     .is("deleted_at", null)
     .eq("has_openings", true)
@@ -367,7 +367,7 @@ export async function loadEventSessions({ eventId }: { eventId: number }) {
   const { data, error } = await supabase
     .from("sessions")
     .select(
-      "*, game_id!inner(*, community_events(*), sessions(*), community_id(*))",
+      "*, game_id!inner(*, community_events(*), sessions(*), community_id(*))"
     )
     .is("deleted_at", null)
     .eq("game_id.event_id", eventId)
@@ -389,18 +389,18 @@ export async function rsvpToAllGameSessions({
 }) {
   const now = new Date();
   const futureSessions = gameSessions.filter(
-    (session) => session.start_time >= now.getTime(),
+    (session) => session.start_time >= now.getTime()
   );
   const joinPromises = await Promise.allSettled(
     futureSessions.map((session) =>
-      joinSession({ sessionId: session.id, userId }),
-    ),
+      joinSession({ sessionId: session.id, userId })
+    )
   );
   const failedPromises = joinPromises.filter(
-    (promise) => promise.status === "rejected",
+    (promise) => promise.status === "rejected"
   );
   const successPromises = joinPromises.filter(
-    (promise) => promise.status === "fulfilled",
+    (promise) => promise.status === "fulfilled"
   );
 
   return {
@@ -413,31 +413,15 @@ export async function rsvpToAllGameSessions({
 export async function joinSession({
   sessionId,
   userId,
+  skipNotifyCreator = false,
 }: {
   sessionId: string;
   userId: string;
+  skipNotifyCreator?: boolean;
 }) {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  if (!session?.access_token) return;
-  fetch(
-    `/.netlify/functions/processRsvp?sessionId=${sessionId}&userId=${userId}`,
-    {
-      method: "POST",
-      headers: {
-        token: session.access_token,
-      },
-    },
-  )
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-    })
-    .catch((error) => {
-      log({ error });
-    });
+  return client.post(
+    `/.netlify/functions/processRsvp?sessionId=${sessionId}&userId=${userId}&skipNotifyCreator=${skipNotifyCreator}`
+  );
 }
 
 export async function leaveSession({
@@ -447,30 +431,9 @@ export async function leaveSession({
   sessionId: string;
   userId: string;
 }) {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  if (!session?.access_token) return;
-  const data = await fetch(
-    `/.netlify/functions/processRsvp?sessionId=${sessionId}&userId=${userId}`,
-    {
-      method: "DELETE",
-      headers: {
-        token: session.access_token,
-      },
-    },
-  )
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .catch((error) => {
-      log({ error });
-      throw error;
-    });
-  return data;
+  return client.delete(
+    `/.netlify/functions/processRsvp?sessionId=${sessionId}&userId=${userId}`
+  );
 }
 
 export async function sendRemovalEmail({
@@ -497,7 +460,7 @@ export async function sendRemovalEmail({
       headers: {
         token: session.access_token,
       },
-    },
+    }
   ).catch((error) => {
     log({ error });
     throw error;
@@ -579,7 +542,7 @@ export async function publishGame(game: Game) {
 
 export async function updateSession(
   id: Session["id"],
-  update: Partial<Session>,
+  update: Partial<Session>
 ) {
   const { error } = await supabase
     .from("sessions")
@@ -608,7 +571,7 @@ export async function addSession(session: Partial<Session>) {
 }
 
 export async function loadGamesAndSessionsForEvent(
-  eventId: CommunityEvent["id"],
+  eventId: CommunityEvent["id"]
 ) {
   const today = new Date();
   const { data, error } = await supabase
