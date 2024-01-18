@@ -1,5 +1,5 @@
 <template>
-  <BaseModal :open="open" title="Member search" @close="emit('close')">
+  <BaseModal :open="open" title="Member search" @close="emit('cancel')">
     <form @submit.prevent="search">
       <div class="flex flex-col">
         <FormLabel>Search term (display name or email)</FormLabel>
