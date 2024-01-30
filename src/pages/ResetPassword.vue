@@ -1,5 +1,5 @@
 <template>
-  <ProfileTemplate>
+  <BaseTemplate>
     <Heading as="h6" level="h6" class="mb-6">Reset your password</Heading>
     <ResetPasswordForm v-if="resetValid" />
     <div v-else>
@@ -14,13 +14,13 @@
         Request a password reset link.
       </RouterLink>
     </div>
-  </ProfileTemplate>
+  </BaseTemplate>
 </template>
 <script lang="ts" setup>
 import { computed } from "vue";
 import { isAfter, subHours } from "date-fns";
 import Heading from "@/components/Heading.vue";
-import ProfileTemplate from "@/layouts/ProfileTemplate.vue";
+import BaseTemplate from "@/layouts/BaseTemplate.vue";
 import ResetPasswordForm from "@/components/ResetPasswordForm.vue";
 import { store } from "@/store";
 
