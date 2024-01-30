@@ -11,14 +11,14 @@
   </AppShell>
 </template>
 <script setup lang="ts">
+import { onMounted, onUnmounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { store } from "./store";
 import { triggerUserAccessLoad } from "./storeActions";
 import { supabase } from "./supabase";
 import ToasterManager from "./components/Toast/ToasterManager.vue";
-import { useRoute, useRouter } from "vue-router";
 import NewProfileModal from "./components/Modals/NewProfileModal.vue";
 import OfflineIndicator from "./components/OfflineIndicator.vue";
-import { onMounted, onUnmounted, ref } from "vue";
 import { loadProfile } from "./api/profiles";
 import { log } from "./util/logger";
 import AppShell from "./layouts/AppShell.vue";
@@ -74,6 +74,10 @@ onMounted(() => {
           }
         }
         break;
+      case "PASSWORD_RECOVERY":
+        store.userSession = session;
+        router.replace("/reset-password");
+        break;
       case "SIGNED_OUT":
         store.user = null;
         store.userSession = null;
@@ -112,9 +116,9 @@ async function loadNotificationsAndSubscribe() {
       },
       (payload) => {
         store.notifications = store.notifications.concat(
-          payload.new as Notification,
+          payload.new as Notification
         );
-      },
+      }
     )
     .on(
       "postgres_changes",
@@ -131,7 +135,7 @@ async function loadNotificationsAndSubscribe() {
           }
           return notification;
         });
-      },
+      }
     )
     .subscribe();
   notificationSubscription.value = subscription;
