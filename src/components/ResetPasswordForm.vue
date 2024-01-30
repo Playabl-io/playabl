@@ -54,6 +54,7 @@
 </template>
 <script lang="ts" setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/vue/24/outline";
 import FormLabel from "@/components/Forms/FormLabel.vue";
 import FormInput from "@/components/Forms/FormInput.vue";
@@ -63,6 +64,7 @@ import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import useToast from "./Toast/useToast";
 
 const { showError, showSuccess } = useToast();
+const router = useRouter();
 
 const newPassword = ref("");
 const showNewPw = ref(false);
@@ -90,6 +92,7 @@ async function handleSubmit() {
       password: newPassword.value,
     });
     showSuccess({ message: "Password updated!" });
+    router.push("/login");
   } catch (error) {
     showError({ message: "Unable to update password" });
   } finally {
