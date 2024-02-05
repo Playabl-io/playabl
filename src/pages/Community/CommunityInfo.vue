@@ -68,6 +68,7 @@ const editInfoDrawerOpen = ref(false);
 
 const details = computed(() => [
   { value: communityStore.community.description, label: "Description" },
+  { value: communityStore.community.how_to_join, label: "How to join" },
   { value: communityStore.community.website, label: "Website" },
   {
     value: communityStore.community.code_of_conduct_url,

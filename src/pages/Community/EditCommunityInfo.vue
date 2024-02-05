@@ -10,6 +10,10 @@
           <FormTextArea id="description" v-model="description" class="h-40" />
         </div>
         <div class="flex flex-col">
+          <FormLabel for="howToJoin">How to join</FormLabel>
+          <FormTextArea id="howToJoin" v-model="howToJoin" class="h-40" />
+        </div>
+        <div class="flex flex-col">
           <FormLabel for="website">Website</FormLabel>
           <FormInput id="website" v-model="website" type="url" />
         </div>
@@ -143,6 +147,7 @@ const enabledSocials = ref<string[]>(
   }, [] as string[])
 );
 const description = ref(communityStore.community.description ?? "");
+const howToJoin = ref(communityStore.community.how_to_join ?? "");
 const website = ref(communityStore.community.website ?? "");
 const codeOfConductUrl = ref(
   communityStore.community.code_of_conduct_url ?? ""
@@ -160,6 +165,7 @@ async function handleSubmit() {
   try {
     const update = {
       description: description.value,
+      how_to_join: howToJoin.value,
       website: website.value,
       code_of_conduct_url: codeOfConductUrl.value,
       twitter: enabledSocials.value.includes("Twitter") ? twitter.value : null,
