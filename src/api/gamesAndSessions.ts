@@ -101,6 +101,7 @@ export async function loadUpcomingCommunityGamesWithCount(communityId: string) {
   const { data, error, count } = await supabase
     .from("games")
     .select("*, sessions!inner(start_time)", { count: "estimated" })
+    .is("deleted_at", null)
     .eq("community_id", communityId)
     .gte("sessions.start_time", new Date().getTime());
   if (error) {
@@ -577,6 +578,7 @@ export async function loadGamesAndSessionsForEvent(
   const { data, error } = await supabase
     .from("games")
     .select("*, sessions!inner(*), profiles(*)")
+    .is("deleted_at", null)
     .eq("event_id", eventId)
     .gte("sessions.start_time", today.getTime());
   if (error) {
