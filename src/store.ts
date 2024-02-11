@@ -29,6 +29,7 @@ interface Store {
     }
   >;
   userSettings: Profile["user_settings"];
+  authState: "signedout" | "loading" | "signedin";
 }
 
 export const store = reactive<Store>({
@@ -42,6 +43,7 @@ export const store = reactive<Store>({
   userCommunityAccess: [],
   userCommunityMembership: {},
   userSettings: {},
+  authState: "loading",
 });
 
 watch(
@@ -54,7 +56,7 @@ watch(
       return acc;
     }, [] as Community[]);
     store.userManagedCommunities = managedCommunities;
-  },
+  }
 );
 
 export const userCommunityMembershipIds = computed(() =>
@@ -63,6 +65,6 @@ export const userCommunityMembershipIds = computed(() =>
       acc.push(cur.community.id);
       return acc;
     },
-    [] as Community["id"][],
-  ),
+    [] as Community["id"][]
+  )
 );

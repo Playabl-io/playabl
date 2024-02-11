@@ -99,7 +99,7 @@ const { showSuccess, showError } = useToast();
 
 const newSessionModalOpen = ref(false);
 const isCreating = ref(false);
-const sessionsToCreate = ref<Session[]>([]);
+const sessionsToCreate = ref<Omit<Session, "created_at">[]>([]);
 const preSeatAssignments = ref<{ [id: string]: { members: Member[] } }>({});
 const preSeatMemberModalOpen = ref(false);
 const accessLevels = ref<number[]>([]);
@@ -167,20 +167,20 @@ async function createSessions() {
   isCreating.value = true;
   const levels = gameStore.game.community_events
     ? getLevelsFromStore(
-        gameStore.game.community_events?.event_access_levels ?? [],
+        gameStore.game.community_events?.event_access_levels ?? []
       )
     : getLevelsFromStore(accessLevels.value);
   const times = rsvpTimes(
     levels,
     gameStore.game.community_events?.fixed_access_time ?? undefined,
-    gameStore.game.community_events?.event_access_levels ? "policy" : "global",
+    gameStore.game.community_events?.event_access_levels ? "policy" : "global"
   );
   const toCreate = sessionsToCreate.value.map((session) => {
     // remove the local ID
     const partial = R.omit(["id"], session);
     if (preSeatAssignments.value[session.id]?.members.length > 0) {
       partial.rsvps = preSeatAssignments.value[session.id]?.members.map(
-        (member) => member.id,
+        (member) => member.id
       );
     }
     partial.access_times = JSON.stringify(times);
@@ -209,7 +209,7 @@ async function createSessions() {
 
 function deleteSession(id: string) {
   sessionsToCreate.value = sessionsToCreate.value.filter(
-    (session) => session.id !== id,
+    (session) => session.id !== id
   );
 }
 

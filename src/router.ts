@@ -11,9 +11,10 @@ import CommunityIntegrations from "@/pages/Community/CommunityIntegrations.vue";
 import CommunityMembers from "@/pages/Community/CommunityMembers.vue";
 import CommunitiesManage from "@/pages/CommunitiesManage.vue";
 import CommunityBase from "@/pages/Community/CommunityBase.vue";
+import GameNewShell from "./pages/GameNewShell.vue";
 import GamesJoined from "@/pages/GamesJoined.vue";
 import GamesBrowse from "@/pages/GamesBrowse.vue";
-import GamesManage from "@/pages/GamesManage.vue";
+import GamesManageShell from "./pages/GamesManageShell.vue";
 import GameBase from "@/pages/Game/GameBase.vue";
 import GameHome from "@/pages/Game/GameHome.vue";
 import NotFound from "@/pages/NotFound.vue";
@@ -195,11 +196,11 @@ const routes = [
   },
   {
     path: "/games/manage",
-    component: GamesManage,
+    component: GamesManageShell,
   },
   {
     path: "/games/new",
-    component: () => import("@/pages/GameNew.vue"),
+    component: GameNewShell,
   },
   {
     path: "/games/:game_id",

@@ -223,7 +223,7 @@ async function loadGames() {
     system: system.value,
   });
   if (data) {
-    games.value = data;
+    games.value = data as GameListing[];
   }
   isLoading.value = false;
 }
@@ -282,7 +282,7 @@ const filteredByTimeRange = computed(() => {
     return filterGameSessionsByTimeRange(
       game,
       starttime.value ?? "",
-      endtime.value ?? "",
+      endtime.value ?? ""
     );
   });
   return byTimeRange;

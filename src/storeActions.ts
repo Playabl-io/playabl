@@ -30,15 +30,21 @@ export async function triggerUserAccessLoad(id: string) {
   getUserMemberships(id);
 }
 
-export async function getAccessLevels(communityId: string) {
+export async function getAccessLevels(
+  communityId: string,
+  preselectedLevels?: number[]
+) {
   const data = await loadCommunityAccessTimes(communityId);
   if (data) {
     store.communityAccessLevels = data;
   }
-  return store.communityAccessLevels.reduce((acc, level) => {
+  const mandatory = store.communityAccessLevels.reduce((acc, level) => {
     if (level.is_mandatory) {
       acc.push(level.id);
     }
     return acc;
   }, [] as number[]);
+  return preselectedLevels
+    ? [...new Set(mandatory.concat(preselectedLevels))]
+    : mandatory;
 }

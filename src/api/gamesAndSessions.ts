@@ -1,7 +1,7 @@
 import * as R from "ramda";
 import { supabase } from "@/supabase";
 import { GameDetailBlock, GameListing, NewGame, Game } from "@/typings/Game";
-import { Session } from "@/typings/Session";
+import { NewSession, Session } from "@/typings/Session";
 import { log } from "@/util/logger";
 import { Community } from "@/typings/Community";
 import {
@@ -18,6 +18,7 @@ import axios from "axios";
 import { CommunityEvent } from "@/typings/CommunityEvent";
 import { SORT_DIR, SORT_KEY, sortDirs, sortKeys } from "@/util/urlParams";
 import client from "./client";
+import { Member } from "@/typings/Member";
 
 // helper functions
 const sortSessionByTimeAsc = (a: Session, b: Session) => {
@@ -185,7 +186,7 @@ export async function loadBrowsableGames({
   }
   if (data) {
     const withoutDrafts = data.filter(filterDraftEventGames);
-    const sorter = R.sortBy((listing: any) => {
+    const sorter = R.sortBy((listing: { sessions: Session[] }) => {
       return listing?.sessions?.[0][sortKey];
     });
     const result = sorter(mapToAscSessions(withoutDrafts));
@@ -586,4 +587,81 @@ export async function loadGamesAndSessionsForEvent(
     throw new Error(error.message);
   }
   return data;
+}
+
+export async function loadDraftManagedGames(userId: string) {
+  const { data, error } = await supabase
+    .from("draft_games")
+    .select("*")
+    .eq("user_id", userId);
+  if (error) {
+    log({ error });
+  }
+
+  if (data) {
+    return data;
+  }
+}
+
+export async function saveToDraftGames({
+  id,
+  gameJson,
+  sessionsJson,
+  preseatingJson,
+  enabledAccessLevels,
+  userId,
+}: {
+  id: string | null;
+  gameJson: NewGame;
+  sessionsJson: Record<string, NewSession>;
+  preseatingJson: {
+    [id: string]: {
+      members: Member[];
+    };
+  };
+  enabledAccessLevels: number[];
+  userId: string;
+}) {
+  const insert = {
+    id: id ?? undefined,
+    game_json: gameJson,
+    sessions_json: sessionsJson,
+    preseating_json: preseatingJson,
+    enabled_access_levels: enabledAccessLevels,
+    user_id: userId,
+    updated_at: new Date(),
+  };
+
+  const { error } = await supabase.from("draft_games").upsert(insert);
+
+  if (error) {
+    log({ error });
+    throw new Error(error.message);
+  }
+}
+
+export async function loadDraftGameById(id: number) {
+  const { data, error } = await supabase
+    .from("draft_games")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    log({ error });
+    throw new Error(error.message);
+  }
+
+  if (data) {
+    return data;
+  }
+}
+
+export async function deleteDraftGame(id: number) {
+  const { error } = await supabase.from("draft_games").delete().eq("id", id);
+
+  if (error) {
+    log({ error });
+    throw new Error(error.message);
+  }
 }
