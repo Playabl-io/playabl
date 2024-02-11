@@ -623,7 +623,6 @@ export async function saveToDraftGames({
   userId: string;
 }) {
   const insert = {
-    id: id ?? undefined,
     game_json: gameJson,
     sessions_json: sessionsJson,
     preseating_json: preseatingJson,
@@ -632,7 +631,14 @@ export async function saveToDraftGames({
     updated_at: new Date(),
   };
 
-  const { error } = await supabase.from("draft_games").upsert(insert);
+  let query;
+  if (id) {
+    query = supabase.from("draft_games").update(insert).eq("id", Number(id));
+  } else {
+    query = supabase.from("draft_games").insert(insert);
+  }
+
+  const { error } = await query;
 
   if (error) {
     log({ error });
