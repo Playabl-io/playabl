@@ -1,6 +1,6 @@
 <template>
   <base-button
-    class="bg-inherit hover:bg-gray-100 dark:hover:bg-gray-700 text-current dark:text-slate-100 transition-all"
+    class="bg-inherit hover:bg-gray-200 dark:hover:bg-gray-700 text-current dark:text-slate-100 transition-all"
     v-bind="$attrs"
     :disabled="$attrs.disabled || isLoading"
   >

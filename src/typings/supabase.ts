@@ -364,6 +364,47 @@ export interface Database {
           }
         ]
       }
+      draft_games: {
+        Row: {
+          created_at: string
+          enabled_access_levels: Json
+          game_json: Json
+          id: number
+          preseating_json: Json | null
+          sessions_json: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          enabled_access_levels?: Json
+          game_json: Json
+          id?: number
+          preseating_json?: Json | null
+          sessions_json: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          enabled_access_levels?: Json
+          game_json?: Json
+          id?: number
+          preseating_json?: Json | null
+          sessions_json?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "draft_games_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       flags: {
         Row: {
           community_ids: string[] | null

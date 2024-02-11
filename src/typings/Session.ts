@@ -2,6 +2,7 @@ import { Game } from "./Game";
 
 export interface Session {
   id: string;
+  created_at: string;
   start_time: number;
   end_time: number;
   game_id: number;
@@ -13,7 +14,7 @@ export interface Session {
   rsvps: string[];
 }
 
-export type NewSession = Omit<Session, "id">;
+export type NewSession = Omit<Session, "id" | "created_at">;
 
 /**
  * Used for Calendar and List displays
