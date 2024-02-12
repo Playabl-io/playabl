@@ -564,8 +564,8 @@ const newGameMachine = createMachine<GameMachineContext>(
             }
             const draftGame = await loadDraftGameById(Number(draftId));
             if (draftGame.game_json?.cover_image) {
-              draftGame.cover_image = await getCoverImageUrl(
-                draftGame.game_json?.cover_image
+              draftGame.game_json.cover_image = await getCoverImageUrl(
+                draftGame.game_json.cover_image
               );
             }
             return draftGame;
