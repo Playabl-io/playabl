@@ -177,7 +177,7 @@
           <FormFileInput
             class="mt-2"
             :file="existingImageToUse?.src || coverImage"
-            :current-image="savedImagePath"
+            :current-image="savedImagePathFromDraft"
             @file-change="onFileChange"
             @file-drop="onFileDrop"
             @clear-file="clearFile"
@@ -448,6 +448,9 @@ interface GameMachineContext {
   enabledAccessLevels: number[];
   communityEvents: CommunityEvent[];
   sessionErrors: string[];
+  savedDraft?: {
+    game_json: NewGame;
+  };
 }
 
 function validateTimingOfEventSessions(): boolean {
@@ -564,9 +567,10 @@ const newGameMachine = createMachine<GameMachineContext>(
             }
             const draftGame = await loadDraftGameById(Number(draftId));
             if (draftGame.game_json?.cover_image) {
-              draftGame.game_json.cover_image = await getCoverImageUrl(
+              const imageUrl = await getCoverImageUrl(
                 draftGame.game_json.cover_image
               );
+              savedImagePathFromDraft.value = imageUrl;
             }
             return draftGame;
           },
@@ -740,7 +744,7 @@ const newGameMachine = createMachine<GameMachineContext>(
         usesSafetyTools.value = draftGame.uses_safety_tools;
         system.value = draftGame.system;
         tabletop.value = draftGame.virtual_tabletop;
-        savedImagePath.value = draftGame.cover_image;
+        savedImagePathFromDraft.value = draftGame.cover_image;
         eventId.value = draftGame.event_id;
 
         return {
@@ -748,6 +752,7 @@ const newGameMachine = createMachine<GameMachineContext>(
           selectedCommunity:
             store.userCommunityMembership[draftGame.community_id].community,
           enabledAccessLevels: event.data.enabled_access_levels,
+          savedDraft: event.data,
         };
       }),
       assignFirstCommunity: assign({
@@ -798,7 +803,7 @@ const newGameMachine = createMachine<GameMachineContext>(
 
 const { state, send } = useMachine(newGameMachine);
 
-const savedImagePath = ref();
+const savedImagePathFromDraft = ref();
 const existingImageToUse = ref<{ image: EnhancedFileObject; src: string }>();
 const showGallery = ref(false);
 function handleImageSelect(selection: {
@@ -882,14 +887,14 @@ function onFileChange(event: Event) {
   if (file) {
     coverImage.value = file;
     existingImageToUse.value = undefined;
-    savedImagePath.value = undefined;
+    savedImagePathFromDraft.value = undefined;
   }
 }
 
 function clearFile() {
   coverImage.value = undefined;
   existingImageToUse.value = undefined;
-  savedImagePath.value = undefined;
+  savedImagePathFromDraft.value = undefined;
 }
 
 function addSessions(dates: { start: Date; end: Date }[]) {
@@ -947,8 +952,8 @@ async function submitGame() {
     } catch (error) {
       showError({ message: "Unable to upload image" });
     }
-  } else if (savedImagePath.value) {
-    imagePath = savedImagePath.value;
+  } else if (savedImagePathFromDraft.value) {
+    imagePath = state.value.context.savedDraft?.game_json?.cover_image;
   }
 
   const newGame: NewGame = {
@@ -1020,8 +1025,8 @@ async function saveGameToDrafts() {
     } catch (error) {
       showError({ message: "Unable to upload image" });
     }
-  } else if (savedImagePath.value) {
-    imagePath = savedImagePath.value;
+  } else if (savedImagePathFromDraft.value) {
+    imagePath = state.value.context.savedDraft?.game_json.cover_image;
   }
 
   const draftGame: NewGame = {
