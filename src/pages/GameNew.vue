@@ -401,7 +401,7 @@ import {
   handleFileDrop,
 } from "@/components/Forms/fileInputUtil";
 import AddSessions from "@/components/Game/AddSessions.vue";
-import { uploadToCoverImageStorage } from "@/api/storage";
+import { getCoverImageUrl, uploadToCoverImageStorage } from "@/api/storage";
 import TipTapEditor from "@/components/TipTapEditor.vue";
 import ImageGalleryModal from "@/components/Modals/ImageGalleryModal.vue";
 import { EnhancedFileObject } from "@/typings/Storage";
@@ -562,7 +562,13 @@ const newGameMachine = createMachine<GameMachineContext>(
             if (!draftId) {
               throw new Error("No draft ID provided in URL");
             }
-            return loadDraftGameById(Number(draftId));
+            const draftGame = await loadDraftGameById(Number(draftId));
+            if (draftGame.game_json?.cover_image) {
+              draftGame.cover_image = await getCoverImageUrl(
+                draftGame.game_json?.cover_image
+              );
+            }
+            return draftGame;
           },
           onDone: {
             target: "gameDetails",
