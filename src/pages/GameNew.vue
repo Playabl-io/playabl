@@ -878,6 +878,7 @@ function onFileDrop(event: DragEvent) {
   if (file) {
     coverImage.value = file;
     existingImageToUse.value = undefined;
+    savedImagePathFromDraft.value = undefined;
   }
 }
 
