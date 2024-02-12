@@ -570,7 +570,6 @@ const newGameMachine = createMachine<GameMachineContext>(
               const imageUrl = await getCoverImageUrl(
                 draftGame.game_json.cover_image
               );
-              console.log(imageUrl);
               savedImagePathFromDraft.value = imageUrl;
             }
             return draftGame;
@@ -745,7 +744,6 @@ const newGameMachine = createMachine<GameMachineContext>(
         usesSafetyTools.value = draftGame.uses_safety_tools;
         system.value = draftGame.system;
         tabletop.value = draftGame.virtual_tabletop;
-        savedImagePathFromDraft.value = draftGame.cover_image;
         eventId.value = draftGame.event_id;
 
         return {
