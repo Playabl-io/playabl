@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 
 import IndexPage from "@/pages/IndexPage.vue";
 import CommunitiesAll from "@/pages/CommunitiesAll.vue";
-import CommunitiesJoined from "@/pages/CommunitiesJoined.vue";
+import CommunitiesJoinedPage from "./pages/CommunitiesJoinedPage.vue";
 import CommunityHome from "@/pages/Community/CommunityHome.vue";
 import CommunityAccess from "@/pages/Community/CommunityAccess.vue";
 import CommunityOverview from "@/pages/Community/CommunityOverview.vue";
@@ -12,7 +12,7 @@ import CommunityMembers from "@/pages/Community/CommunityMembers.vue";
 import CommunitiesManage from "@/pages/CommunitiesManage.vue";
 import CommunityBase from "@/pages/Community/CommunityBase.vue";
 import GameNewShell from "./pages/GameNewShell.vue";
-import GamesJoined from "@/pages/GamesJoined.vue";
+import GamesJoinedShell from "@/pages/GamesJoinedShell.vue";
 import GamesBrowse from "@/pages/GamesBrowse.vue";
 import GamesManageShell from "./pages/GamesManageShell.vue";
 import GameBase from "@/pages/Game/GameBase.vue";
@@ -73,7 +73,7 @@ const routes = [
   },
   {
     path: "/communities/joined",
-    component: CommunitiesJoined,
+    component: CommunitiesJoinedPage,
   },
   {
     path: "/communities/browse",
@@ -179,7 +179,7 @@ const routes = [
   },
   {
     path: "/games/joined",
-    component: GamesJoined,
+    component: GamesJoinedShell,
   },
   {
     path: "/games/browse",
