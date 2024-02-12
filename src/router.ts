@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 
 import IndexPage from "@/pages/IndexPage.vue";
 import CommunitiesAll from "@/pages/CommunitiesAll.vue";
-import CommunitiesJoined from "@/pages/CommunitiesJoined.vue";
+import CommunitiesJoinedPage from "./pages/CommunitiesJoinedPage.vue";
 import CommunityHome from "@/pages/Community/CommunityHome.vue";
 import CommunityAccess from "@/pages/Community/CommunityAccess.vue";
 import CommunityOverview from "@/pages/Community/CommunityOverview.vue";
@@ -73,7 +73,7 @@ const routes = [
   },
   {
     path: "/communities/joined",
-    component: CommunitiesJoined,
+    component: CommunitiesJoinedPage,
   },
   {
     path: "/communities/browse",
