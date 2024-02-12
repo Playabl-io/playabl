@@ -12,7 +12,7 @@ import CommunityMembers from "@/pages/Community/CommunityMembers.vue";
 import CommunitiesManage from "@/pages/CommunitiesManage.vue";
 import CommunityBase from "@/pages/Community/CommunityBase.vue";
 import GameNewShell from "./pages/GameNewShell.vue";
-import GamesJoined from "@/pages/GamesJoined.vue";
+import GamesJoinedShell from "@/pages/GamesJoinedShell.vue";
 import GamesBrowse from "@/pages/GamesBrowse.vue";
 import GamesManageShell from "./pages/GamesManageShell.vue";
 import GameBase from "@/pages/Game/GameBase.vue";
@@ -179,7 +179,7 @@ const routes = [
   },
   {
     path: "/games/joined",
-    component: GamesJoined,
+    component: GamesJoinedShell,
   },
   {
     path: "/games/browse",
