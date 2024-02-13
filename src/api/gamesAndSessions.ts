@@ -422,7 +422,9 @@ export async function joinSession({
   skipNotifyCreator?: boolean;
 }) {
   return client.post(
-    `/.netlify/functions/processRsvp?sessionId=${sessionId}&userId=${userId}&skipNotifyCreator=${skipNotifyCreator}`
+    `/.netlify/functions/processRsvp?sessionId=${sessionId}&userId=${userId}${
+      skipNotifyCreator ? "&skipNotifyCreator=true" : ""
+    }`
   );
 }
 
