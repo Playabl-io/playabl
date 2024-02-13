@@ -1,5 +1,10 @@
 import { Handler } from "@netlify/functions";
-import { buildCommunityAdminMessage, logError, sendEmail } from "../utils";
+import {
+  buildCommunityAdminMessage,
+  logError,
+  logInfo,
+  sendEmail,
+} from "../utils";
 
 /**
  * This function is called any time a record is written to the
@@ -31,7 +36,7 @@ export const handler: Handler = async (event) => {
         relatedUrl: record.related_url,
         gameName: record.custom_fields?.game_name,
       });
-      console.info("successfully sent rsvp email");
+      logInfo({ message: "successfully sent rsvp email" });
     } catch (error) {
       logError({
         message: `failed to send rsvp email: ${error}`,
@@ -47,10 +52,10 @@ export const handler: Handler = async (event) => {
     });
     try {
       await sendEmail(adminMessage);
-      console.info("successfully sent community admin email");
+      logInfo({ message: "successfully sent pre_seated_rsvp email" });
     } catch (error) {
       logError({
-        message: `failed to send pre_seat email: ${error}`,
+        message: `failed to send pre_seated_rsvp email: ${error}`,
       });
     }
   }
@@ -61,7 +66,7 @@ export const handler: Handler = async (event) => {
         email: record.email,
         gameName: record.custom_fields?.game_name,
       });
-      console.info("successfully sent cancel email");
+      logInfo({ message: "successfully sent cancel email" });
     } catch (error) {
       logError({
         message: `failed to send cancel email: ${error}`,
@@ -76,10 +81,10 @@ export const handler: Handler = async (event) => {
           email: record.email,
           message: record.message,
         });
-        console.info("successfully sent new join email");
+        logInfo({ message: "successfully sent notify_creator_of_rsvp email" });
       } catch (error) {
         logError({
-          message: `failed to send join email: ${error}`,
+          message: `failed to send notify_creator_of_rsvp email: ${error}`,
         });
       }
     }
@@ -92,7 +97,7 @@ export const handler: Handler = async (event) => {
         message: record.message,
         relatedUrl: record.related_url,
       });
-      console.info("successfully sent membership approval email");
+      logInfo({ message: "successfully sent membership approval email" });
     } catch (error) {
       logError({
         message: `failed to send membership_request email: ${error}`,
@@ -112,7 +117,7 @@ export const handler: Handler = async (event) => {
     });
     try {
       await sendEmail(adminMessage);
-      console.info("successfully sent community admin email");
+      logInfo({ message: "successfully sent community admin email" });
     } catch (error) {
       logError({
         message: `failed to send community_admin email: ${error}`,

@@ -3,6 +3,7 @@ import {
   addNotificationRecord,
   buildCommunityAdminMessage,
   loadCommunitySupportEmails,
+  logError,
   sendEmail,
   supabase,
 } from "../utils";
@@ -54,7 +55,13 @@ export const handler: Handler = async (event) => {
         subject: params.subject,
         relatedUrl: params.relatedUrl,
       });
-      await sendEmail(message);
+      try {
+        await sendEmail(message);
+      } catch (error) {
+        logError({
+          message: `Failed sending community admin message in sendMessageToCommunity: ${error}`,
+        });
+      }
     }
   }
 
