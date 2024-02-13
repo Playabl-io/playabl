@@ -32,6 +32,10 @@ import {
   sortKeys,
 } from "./util/urlParams";
 import { format } from "date-fns";
+import ProfileShell from "./pages/Profile/ProfileShell.vue";
+import NotificationsShell from "./pages/Profile/NotificationsShell.vue";
+import MediaShell from "./pages/Profile/MediaShell.vue";
+import SettingsShell from "./pages/Profile/SettingsShell.vue";
 
 const routes = [
   {
@@ -57,19 +61,19 @@ const routes = [
   },
   {
     path: "/profile",
-    component: () => import("@/pages/Profile/ProfilePage.vue"),
+    component: ProfileShell,
   },
   {
     path: "/notifications",
-    component: () => import("@/pages/Profile/NotificationsPage.vue"),
+    component: NotificationsShell,
   },
   {
     path: "/media",
-    component: () => import("@/pages/Profile/MediaPage.vue"),
+    component: MediaShell,
   },
   {
     path: "/settings",
-    component: () => import("@/pages/Profile/SettingsPage.vue"),
+    component: SettingsShell,
   },
   {
     path: "/communities/joined",
