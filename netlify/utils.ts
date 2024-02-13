@@ -1,9 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
 import axios from "axios";
+import { isEmpty } from "ramda";
 
 export const supabase = createClient(
   process.env.SUPABASE_URL ?? "",
-  process.env.SUPABASE_SERVICE_ROLE ?? "",
+  process.env.SUPABASE_SERVICE_ROLE ?? ""
 );
 
 export async function authenticateUser(event) {
@@ -37,24 +38,23 @@ export function sendEmail(message) {
 }
 
 function sendEmails(messages) {
-  return axios
-    .post(
-      "https://api.mailjet.com/v3.1/send",
-      {
-        Messages: messages,
+  if (!messages || isEmpty(messages)) {
+    logError({ message: "Send emails called with no messages!" });
+    return;
+  }
+  return axios.post(
+    "https://api.mailjet.com/v3.1/send",
+    {
+      Messages: messages,
+    },
+    {
+      auth: {
+        username: process.env.MJ_USER ?? "",
+        password: process.env.MJ_PW ?? "",
       },
-      {
-        auth: {
-          username: process.env.MJ_USER ?? "",
-          password: process.env.MJ_PW ?? "",
-        },
-        timeout: 7000,
-      },
-    )
-    .catch(async (error) => {
-      error.message = error.message || "Failed to send emails";
-      await logError({ message: JSON.stringify(error) });
-    });
+      timeout: 7000,
+    }
+  );
 }
 
 export async function loadCommunitySupportEmails(communityId: string): Promise<
@@ -178,7 +178,7 @@ export async function logToNewRelic(data = {}) {
       {
         timestamp: new Date().getTime(),
         ...data,
-      },
+      }
     );
   } catch (error) {
     console.error(error);

@@ -1,6 +1,5 @@
 import { Handler } from "@netlify/functions";
-import { sendEmail, supabase } from "../utils";
-import axios from "axios";
+import { logError, sendEmail, supabase } from "../utils";
 import { format } from "date-fns";
 
 export const handler: Handler = async (event) => {
@@ -20,13 +19,22 @@ export const handler: Handler = async (event) => {
     };
   }
 
-  await sendRemovalEmail({
-    name: toName,
-    email: toEmail,
-    gameName,
-    sessionTime: format(new Date(Number(sessionTime)), "EEE, MMM do h:mm a O"),
-    relatedUrl: `https://app.playabl.io/games/${gameId}`,
-  });
+  try {
+    await sendRemovalEmail({
+      name: toName,
+      email: toEmail,
+      gameName,
+      sessionTime: format(
+        new Date(Number(sessionTime)),
+        "EEE, MMM do h:mm a O"
+      ),
+      relatedUrl: `https://app.playabl.io/games/${gameId}`,
+    });
+  } catch (error) {
+    logError({
+      message: `Failed sending removal email in sendRemovedFromSessionMessage: ${error}`,
+    });
+  }
 
   return {
     statusCode: 200,

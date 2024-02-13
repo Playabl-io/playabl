@@ -5,6 +5,7 @@ import { authenticateUser, logError, sendEmail, supabase } from "../utils";
 import { joinSession, leaveSession } from "../rpc";
 import { userCanRsvp } from "../../src/util/time";
 import { GameSession } from "../../src/typings/Session";
+
 export const handler: Handler = async (event) => {
   const method = event.httpMethod;
   const { sessionId, userId, skipNotifyCreator } = event.queryStringParameters;
@@ -66,13 +67,19 @@ export const handler: Handler = async (event) => {
         title: game.title,
         gameId: game.id,
       });
-      await sendRsvpEmail({
-        gameName: game.title,
-        relatedUrl: `https://app.playabl.io/games/${game.id}`,
-        email: user.email,
-        name: user.username || user.email,
-        calItem,
-      });
+      try {
+        await sendRsvpEmail({
+          gameName: game.title,
+          relatedUrl: `https://app.playabl.io/games/${game.id}`,
+          email: user.email,
+          name: user.username || user.email,
+          calItem,
+        });
+      } catch (error) {
+        logError({
+          message: `Failed sending rsvp email in processRsvp: ${error}`,
+        });
+      }
     }
     return {
       statusCode: 201,

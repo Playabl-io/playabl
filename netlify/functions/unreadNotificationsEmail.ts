@@ -1,5 +1,5 @@
 import { Handler } from "@netlify/functions";
-import { sendEmail } from "../utils";
+import { logError, sendEmail } from "../utils";
 
 export const handler: Handler = async (event) => {
   const { authorization } = event.headers;
@@ -15,7 +15,13 @@ export const handler: Handler = async (event) => {
 
   const { username, email, count } = JSON.parse(event.body);
 
-  await sendUnreadNotificationEmail({ name: username, email, count });
+  try {
+    await sendUnreadNotificationEmail({ name: username, email, count });
+  } catch (error) {
+    logError({
+      message: `Failed sending unred notification email in unreadNotificationsEmail: ${error}`,
+    });
+  }
   return {
     statusCode: 201,
   };
