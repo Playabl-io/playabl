@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import axios from "axios";
+import { isEmpty } from "ramda";
 
 export const supabase = createClient(
   process.env.SUPABASE_URL ?? "",
@@ -37,6 +38,10 @@ export function sendEmail(message) {
 }
 
 function sendEmails(messages) {
+  if (!messages || isEmpty(messages)) {
+    logError({ message: "Send emails called with no messages!" });
+    return;
+  }
   return axios.post(
     "https://api.mailjet.com/v3.1/send",
     {
