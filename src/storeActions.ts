@@ -33,7 +33,6 @@ export async function triggerUserAccessLoad(id: string) {
 
 export async function loadWebCal(id: string) {
   const record = await loadWebCalForUser(id);
-  console.log(record);
   if (record) {
     store.userWebCalId = record.webcal_id;
   }
