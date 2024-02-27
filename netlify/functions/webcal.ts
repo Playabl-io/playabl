@@ -44,18 +44,33 @@ export const handler: Handler = async (event) => {
     });
   }
 
-  function sessionToCalFormat(session) {
+  const PLAYER_ROLE = "player";
+  function sessionToIcal({ session, userId, role }) {
+    let title = `RUNNING - ${session.game_id.title}`;
+    if (role === PLAYER_ROLE) {
+      title =
+        session.rsvps.indexOf(userId) < session.participant_count
+          ? `CONFIRMED - ${session.game_id.title}`
+          : `WAITLIST - ${session.game_id.title}`;
+    }
     return {
+      uid: `${session.id}#${userId}@playabl`,
       startTime: session.start_time,
       endTime: session.end_time,
-      title: session.game_id.title,
+      title,
       gameId: session.game_id.id,
-      description: session.game_id.description_as_flat_text,
+      description: `<!DOCTYPE html><html><body>${session.game_id.description}</body></html>`,
     };
   }
   const events = playingSessions
-    .map(sessionToCalFormat)
-    .concat(managingSessions.map(sessionToCalFormat));
+    .map((session) =>
+      sessionToIcal({ session, userId: data.user_id, role: PLAYER_ROLE })
+    )
+    .concat(
+      managingSessions.map((session) =>
+        sessionToIcal({ session, userId: data.user_id, role: "creator" })
+      )
+    );
   const ics = createIcs(events);
 
   return {
@@ -98,8 +113,9 @@ function createIcs(
       ],
       title: event.title,
       url: `https://app.playabl.io/games/${event.gameId}`,
+      location: `https://app.playabl.io/games/${event.gameId}`,
       busyStatus: "BUSY",
-      description: `Game URL - https://app.playabl.io/games/${event.gameId}`,
+      description: event.description,
     }))
   );
   return value;
