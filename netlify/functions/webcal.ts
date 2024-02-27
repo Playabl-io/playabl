@@ -60,6 +60,9 @@ export const handler: Handler = async (event) => {
 
   return {
     statusCode: 200,
+    headers: {
+      "Content-Type": "text/calendar;charset=utf8",
+    },
     body: JSON.stringify(ics),
   };
 };
