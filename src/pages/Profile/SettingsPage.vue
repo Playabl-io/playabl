@@ -13,7 +13,7 @@
       <div class="flex flex-col">
         <Heading level="h6" as="h3" class="mb-6">Email settings</Heading>
         <fieldset :disabled="emailsEnabled === false">
-          <Well class="mb-4">
+          <Well class="mb-4 text-sm">
             <p>
               We will always email when you join or are seated in a game. You
               can control when some other emails are sent below.
@@ -46,12 +46,14 @@
       <div class="flex flex-col">
         <Heading level="h6" as="h3" class="mb-6">User preferences</Heading>
         <div class="mb-3">
-          <FormLabel no-margin>Time of Day </FormLabel>
-          <p class="text-xs mt-1">
-            You can set a start and end time to help identify sessions and games
-            that occur during your preferred times. You can also set this from
-            the games browse page.
-          </p>
+          <Well>
+            <FormLabel no-margin>Time of Day </FormLabel>
+            <p class="text-sm mt-1">
+              You can set a start and end time to help identify sessions and
+              games that occur during your preferred times. You can also set
+              this from the games browse page.
+            </p>
+          </Well>
         </div>
         <div class="grid grid-cols-2 gap-2">
           <div class="flex flex-col gap-1">
@@ -63,6 +65,17 @@
             <FormInput v-model="endtime" type="time" />
           </div>
         </div>
+        <template v-if="false">
+          <!-- TODO: User time preference -->
+          <div class="mt-4 mb-3">
+            <Well>
+              <FormLabel no-margin>Time Display Preference</FormLabel>
+              <p class="text-sm mt-1">
+                Select your preferred format for displaying times.
+              </p>
+            </Well>
+          </div>
+        </template>
         <PrimaryButton
           v-if="store.user"
           class="mt-4 mr-auto"
@@ -73,18 +86,29 @@
       </div>
       <div class="flex flex-col">
         <Heading level="h6" as="h3" class="mb-6">Web calendar</Heading>
-        <Well>
+        <Well class="text-sm">
           <p>
             Create a web calendar link that you can use with other programs to
-            subscribe to your RSVPs and managed games. This link is unique to
-            you and should be kept private.
+            subscribe to your RSVPs and managed games.
+            <span class="font-semibold"
+              >This link is unique to you and should be kept private.</span
+            >
+          </p>
+          <p class="mt-2">
+            Your calendar items will say if you are the
+            <span class="font-semibold">Game Facilitator</span>, a
+            <span class="font-semibold">Confirmed Player</span>, or a
+            <span class="font-semibold">Waitlisted Player</span>. Because
+            calendar applications only sync periodically, always double-check
+            your RSVP status when waitlisted. You will continue to receive
+            emails when promoted from the waitlist.
           </p>
         </Well>
         <div v-if="store.userWebCalId" class="mt-3">
           <p class="text-sm font-semibold">
             {{ webcalLink }}
           </p>
-          <div class="grid grid-cols-2 gap-3 mt-3">
+          <div class="grid md:grid-cols-2 gap-3 mt-3">
             <SecondaryButton
               v-if="isSupported"
               size="small"
@@ -102,12 +126,12 @@
                 leave-to-class="transform scale-95 opacity-0 "
               >
                 <span v-if="copied"> Copied! </span>
-                <span v-else> Copy webcal link </span>
+                <span v-else> Copy web calendar link </span>
               </transition>
             </SecondaryButton>
 
             <WarningButton size="small" @click="deleteWebCal">
-              Delete my link (you can create a new one after)
+              Delete web calendar link (you can create a new one after)
             </WarningButton>
           </div>
         </div>
@@ -117,7 +141,7 @@
           :is-loading="creatingCal"
           @click="createWebCal"
         >
-          Create your web calendar
+          Create your web calendar link
         </PrimaryButton>
       </div>
     </div>
