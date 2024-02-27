@@ -118,7 +118,7 @@ export async function loadUpcomingJoinedGames(userId: string) {
     .select("*, community_id (id, name), sessions!inner(*)")
     .contains("sessions.rsvps", [userId])
     .gte("sessions.start_time", today.getTime())
-    .order("start_time", { foreignTable: "sessions", ascending: true });
+    .order("start_time", { referencedTable: "sessions", ascending: true });
   if (error) {
     log({ error });
   }
@@ -149,8 +149,8 @@ export async function loadBrowsableGames({
   system?: string;
 }) {
   const today = new Date();
-  const sort: { foreignTable: string; ascending: boolean } = {
-    foreignTable: [sortKeys.startTime, sortKeys.endTime].includes(sortKey)
+  const sort: { referencedTable: string; ascending: boolean } = {
+    referencedTable: [sortKeys.startTime, sortKeys.endTime].includes(sortKey)
       ? "sessions"
       : "",
     ascending: sortDir === sortDirs.asc,
@@ -207,7 +207,7 @@ export async function loadChronologicalCommunityGames(communityIds: string[]) {
     .is("deleted_at", null)
     .gte("sessions.start_time", today.getTime())
     .in("community_id", communityIds)
-    .order("start_time", { foreignTable: "sessions", ascending: true });
+    .order("start_time", { referencedTable: "sessions", ascending: true });
   if (error) {
     log({ error });
   }
@@ -227,7 +227,7 @@ export async function loadGamesWithOpenings() {
     .is("deleted_at", null)
     .eq("sessions.has_openings", true)
     .gte("sessions.start_time", today.getTime())
-    .order("start_time", { foreignTable: "sessions", ascending: true });
+    .order("start_time", { referencedTable: "sessions", ascending: true });
   if (error) {
     log({ error });
   }
@@ -248,7 +248,7 @@ export async function loadCommunityGamesWithOpenings(communityIds: string[]) {
     .eq("sessions.has_openings", true)
     .gte("sessions.start_time", today.getTime())
     .in("community_id", communityIds)
-    .order("start_time", { foreignTable: "sessions", ascending: true });
+    .order("start_time", { referencedTable: "sessions", ascending: true });
   if (error) {
     log({ error });
   }
@@ -262,10 +262,10 @@ export async function loadManagedGames(userId: string) {
   const today = new Date();
   const { data, error } = await supabase
     .from("games")
-    .select("*, community_id (id, name), sessions (*)")
+    .select("*, community_id (id, name), sessions!inner(*)")
     .gte("sessions.start_time", today.getTime())
     .eq("creator_id", userId)
-    .order("start_time", { foreignTable: "sessions" });
+    .order("start_time", { referencedTable: "sessions" });
   if (error) {
     log({ error });
   }
@@ -282,7 +282,7 @@ export async function loadPastManagedGames(userId: string) {
     .select("*, community_id (id, name), sessions!inner(*)")
     .lt("sessions.start_time", today.getTime())
     .eq("creator_id", userId)
-    .order("start_time", { foreignTable: "sessions" });
+    .order("start_time", { referencedTable: "sessions" });
   if (error) {
     log({ error });
   }

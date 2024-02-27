@@ -10,6 +10,7 @@ import { ROLES } from "./util/roles";
 
 interface Store {
   user: Profile | null;
+  userWebCalId: string | null;
   userSession?: Session | null;
   notifications: Notification[];
   communityAccessLevels: AccessLevel[];
@@ -34,6 +35,7 @@ interface Store {
 
 export const store = reactive<Store>({
   user: null,
+  userWebCalId: null,
   userSession: null,
   notifications: [],
   communityAccessLevels: [],

@@ -14,7 +14,7 @@
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { store } from "./store";
-import { triggerUserAccessLoad } from "./storeActions";
+import { loadWebCal, triggerUserAccessLoad } from "./storeActions";
 import { supabase } from "./supabase";
 import ToasterManager from "./components/Toast/ToasterManager.vue";
 import NewProfileModal from "./components/Modals/NewProfileModal.vue";
@@ -53,6 +53,7 @@ async function setupUserProfile(id: string) {
     removeUser();
     return;
   }
+  loadWebCal(profile.id);
   store.user = profile;
   store.userSettings = profile?.user_settings;
   loadInProgress.value = false;
