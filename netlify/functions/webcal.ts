@@ -84,6 +84,7 @@ export const handler: Handler = async (event) => {
 
 function createIcs(
   events: {
+    uid: string;
     startTime: number;
     endTime: number;
     title: string;
@@ -93,6 +94,7 @@ function createIcs(
 ) {
   const { value } = ics.createEvents(
     events.map((event) => ({
+      uid: event.uid,
       start: format(event.startTime, "yyyy-M-d-H-m")
         .split("-")
         .map((val) => parseInt(val)) as [
