@@ -13,7 +13,7 @@
       <div class="flex flex-col">
         <Heading level="h6" as="h3" class="mb-6">Email settings</Heading>
         <fieldset :disabled="emailsEnabled === false">
-          <Well class="mb-4">
+          <Well class="mb-4 text-sm">
             <p>
               We will always email when you join or are seated in a game. You
               can control when some other emails are sent below.
@@ -46,12 +46,14 @@
       <div class="flex flex-col">
         <Heading level="h6" as="h3" class="mb-6">User preferences</Heading>
         <div class="mb-3">
-          <FormLabel no-margin>Time of Day </FormLabel>
-          <p class="text-xs mt-1">
-            You can set a start and end time to help identify sessions and games
-            that occur during your preferred times. You can also set this from
-            the games browse page.
-          </p>
+          <Well>
+            <FormLabel no-margin>Time of Day </FormLabel>
+            <p class="text-sm mt-1">
+              You can set a start and end time to help identify sessions and
+              games that occur during your preferred times. You can also set
+              this from the games browse page.
+            </p>
+          </Well>
         </div>
         <div class="grid grid-cols-2 gap-2">
           <div class="flex flex-col gap-1">
@@ -63,6 +65,17 @@
             <FormInput v-model="endtime" type="time" />
           </div>
         </div>
+        <template v-if="false">
+          <!-- TODO: User time preference -->
+          <div class="mt-4 mb-3">
+            <Well>
+              <FormLabel no-margin>Time Display Preference</FormLabel>
+              <p class="text-sm mt-1">
+                Select your preferred format for displaying times.
+              </p>
+            </Well>
+          </div>
+        </template>
         <PrimaryButton
           v-if="store.user"
           class="mt-4 mr-auto"
@@ -71,26 +84,64 @@
           Update user preferences
         </PrimaryButton>
       </div>
-      <div v-if="store.userEnabledFlags[flags.webcal]" class="flex flex-col">
+      <div class="flex flex-col">
         <Heading level="h6" as="h3" class="mb-6">Web calendar</Heading>
-        <Well>
+        <Well class="text-sm">
           <p>
             Create a web calendar link that you can use with other programs to
             subscribe to your RSVPs and managed games.
+            <span class="font-semibold"
+              >This link is unique to you and should be kept private.</span
+            >
+          </p>
+          <p class="mt-2">
+            Your calendar items will say if you are the
+            <span class="font-semibold">Game Facilitator</span>, a
+            <span class="font-semibold">Confirmed Player</span>, or a
+            <span class="font-semibold">Waitlisted Player</span>. Because
+            calendar applications only sync periodically, always double-check
+            your RSVP status when waitlisted. You will continue to receive
+            emails when promoted from the waitlist.
           </p>
         </Well>
-        <p v-if="store.userWebCalId" class="text-sm mt-3">
-          {{
-            `webcal://app.playabl.io/.netlify/functions/webcal?id=${store.userWebCalId}`
-          }}
-        </p>
+        <div v-if="store.userWebCalId" class="mt-3">
+          <p class="text-sm font-semibold">
+            {{ webcalLink }}
+          </p>
+          <div class="grid md:grid-cols-2 gap-3 mt-3">
+            <SecondaryButton
+              v-if="isSupported"
+              size="small"
+              :color="copied ? 'blue' : 'grey'"
+              class="duration-150 transition-colors"
+              @click="copy(webcalLink)"
+            >
+              <transition
+                mode="out-in"
+                enter-active-class="transition duration-200 ease-out"
+                enter-from-class="transform scale-70 opacity-0"
+                enter-to-class="transform scale-100 opacity-100"
+                leave-active-class="transition duration-75 ease-out"
+                leave-from-class="transform scale-100 opacity-100"
+                leave-to-class="transform scale-95 opacity-0 "
+              >
+                <span v-if="copied"> Copied! </span>
+                <span v-else> Copy web calendar link </span>
+              </transition>
+            </SecondaryButton>
+
+            <WarningButton size="small" @click="deleteWebCal">
+              Delete web calendar link (you can create a new one after)
+            </WarningButton>
+          </div>
+        </div>
         <PrimaryButton
           v-else
           class="mt-4 mr-auto"
           :is-loading="creatingCal"
           @click="createWebCal"
         >
-          Create your web calendar
+          Create your web calendar link
         </PrimaryButton>
       </div>
     </div>
@@ -99,20 +150,27 @@
 
 <script setup lang="ts">
 import { supabase } from "@/supabase";
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import FormLabel from "@/components/Forms/FormLabel.vue";
 import FormCheckbox from "@/components/Forms/FormCheckbox.vue";
 import FormInput from "@/components/Forms/FormInput.vue";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import ProfileTemplate from "@/layouts/ProfileTemplate.vue";
-import { createWebCalForUser, updateProfile } from "@/api/profiles";
+import {
+  createWebCalForUser,
+  deleteWebCalForUser,
+  updateProfile,
+} from "@/api/profiles";
 import Heading from "@/components/Heading.vue";
 import { store } from "@/store";
 import useToast from "@/components/Toast/useToast";
 import Well from "@/components/Well.vue";
-import flags from "@/util/flags";
+import { useClipboard } from "@vueuse/core";
+import WarningButton from "@/components/Buttons/WarningButton.vue";
+import SecondaryButton from "@/components/Buttons/SecondaryButton.vue";
 
 const { showSuccess, showError } = useToast();
+const { copy, copied, isSupported } = useClipboard();
 
 const starttime = ref(store.user?.user_settings?.starttime);
 const endtime = ref(store.user?.user_settings?.endtime);
@@ -131,6 +189,10 @@ const communityAdminEmailsEnabled = ref(
 );
 const saving = ref(false);
 const creatingCal = ref(false);
+const webcalLink = computed(
+  () =>
+    `webcal://app.playabl.io/.netlify/functions/webcal?id=${store.userWebCalId}`
+);
 
 watch(
   () => emailsEnabled.value,
@@ -206,6 +268,29 @@ async function createWebCal() {
     showError({ message: "Unable to create web calendar" });
   } finally {
     creatingCal.value = false;
+  }
+}
+
+async function deleteWebCal() {
+  if (!store.userWebCalId) {
+    throw new Error("No webcal ID found. Please report this error.");
+  }
+
+  if (
+    confirm(
+      "Are you sure you want to delete your calendar link? You can create a new one after but will have to update any places where you have used the old value."
+    )
+  ) {
+    try {
+      await deleteWebCalForUser(store.userWebCalId);
+      store.userWebCalId = null;
+      showSuccess({
+        message:
+          "Web calendar deleted. You can now create a new one if you like.",
+      });
+    } catch (error) {
+      showError({ message: "Unable to delete web calendar" });
+    }
   }
 }
 </script>

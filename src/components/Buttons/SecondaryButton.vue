@@ -26,6 +26,8 @@ const props = defineProps({
 });
 const colorClasses = computed(() => {
   switch (props.color) {
+    case "green":
+      return "bg-green-200 hover:bg-green-300 text-green-900";
     case "blue":
       return "bg-blue-100 hover:bg-blue-200 text-blue-700";
     case "gray":

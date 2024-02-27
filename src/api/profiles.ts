@@ -48,6 +48,17 @@ export async function createWebCalForUser(userId: string) {
   if (data) return data;
 }
 
+export async function deleteWebCalForUser(webcalId: string) {
+  const { error } = await supabase
+    .from("user_calendars")
+    .delete()
+    .eq("webcal_id", webcalId);
+  if (error) {
+    log(error);
+    throw error;
+  }
+}
+
 export async function loadWebCalForUser(userId: string) {
   const { data, error } = await supabase
     .from("user_calendars")
