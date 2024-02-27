@@ -63,7 +63,7 @@ export const handler: Handler = async (event) => {
     headers: {
       "Content-Type": "text/calendar;charset=utf8",
     },
-    body: JSON.stringify(ics),
+    body: ics,
   };
 };
 
