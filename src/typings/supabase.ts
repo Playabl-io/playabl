@@ -797,6 +797,35 @@ export type Database = {
           },
         ]
       }
+      user_calendars: {
+        Row: {
+          created_at: string
+          id: number
+          user_id: string
+          webcal_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          user_id: string
+          webcal_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          user_id?: string
+          webcal_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_calendars_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

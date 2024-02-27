@@ -1,6 +1,7 @@
 import { supabase } from "@/supabase";
 import { Profile } from "@/typings/Profile";
 import { log } from "@/util/logger";
+import { v4 as uuidv4 } from "uuid";
 
 export async function loadProfile(userId: string) {
   const { data } = await supabase
@@ -29,6 +30,33 @@ export async function updateProfile({
   if (error) {
     log(error);
     throw error;
+  }
+  if (data) return data;
+}
+
+export async function createWebCalForUser(userId: string) {
+  const uuid = uuidv4();
+  const { data, error } = await supabase
+    .from("user_calendars")
+    .insert({ user_id: userId, webcal_id: uuid })
+    .select()
+    .single();
+  if (error) {
+    log(error);
+    throw error;
+  }
+  if (data) return data;
+}
+
+export async function loadWebCalForUser(userId: string) {
+  const { data, error } = await supabase
+    .from("user_calendars")
+    .select("*")
+    .eq("user_id", userId)
+    .single();
+
+  if (error && error.code !== "PGRST116") {
+    log(error);
   }
   if (data) return data;
 }

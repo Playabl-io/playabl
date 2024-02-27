@@ -3,6 +3,7 @@ import {
   loadCommunityAccessTimes,
 } from "./api/communityAccess";
 import { loadUserCommunities } from "./api/communityMemberships";
+import { loadWebCalForUser } from "./api/profiles";
 import { store } from "./store";
 
 export async function getUserMemberships(id: string) {
@@ -28,6 +29,14 @@ export async function getUserAccess(id: string) {
 export async function triggerUserAccessLoad(id: string) {
   getUserAccess(id);
   getUserMemberships(id);
+}
+
+export async function loadWebCal(id: string) {
+  const record = await loadWebCalForUser(id);
+  console.log(record);
+  if (record) {
+    store.userWebCalId = record.webcal_id;
+  }
 }
 
 export async function getAccessLevels(

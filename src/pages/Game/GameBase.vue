@@ -134,8 +134,8 @@ const isLoading = ref(true);
 
 const userIsInTheGame = computed(() =>
   gameStore.sessions.some((session) =>
-    session.rsvps.includes(store.user?.id ?? ""),
-  ),
+    session.rsvps.includes(store.user?.id ?? "")
+  )
 );
 
 const membership = computed(() => {
@@ -145,7 +145,7 @@ const membership = computed(() => {
 const canManage = computed(
   () =>
     membership.value?.communityMembership?.role_id === ROLES.admin ||
-    gameStore.game.creator_id === store.user?.id,
+    gameStore.game.creator_id === store.user?.id
 );
 const hasAccess = computed(() => {
   return userIsInTheGame.value || canManage.value;
@@ -192,11 +192,11 @@ async function getGameData() {
   const { data, error } = await supabase
     .from("games")
     .select(
-      "*, creator_id (*), sessions (*), community_id (*), community_events (*)",
+      "*, creator_id (*), sessions (*), community_id (*), community_events (*)"
     )
     .eq("id", id as string)
     .is("community_events.deleted_at", null)
-    .order("start_time", { foreignTable: "sessions" })
+    .order("start_time", { referencedTable: "sessions" })
     .single();
 
   if (error) {
@@ -207,7 +207,7 @@ async function getGameData() {
     const game = {
       ...R.omit(
         ["creator_id", "sessions", "community_id"],
-        data as GameWithCommunityAndSessions,
+        data as GameWithCommunityAndSessions
       ),
       creator_id: data.creator_id.id,
       community_id: data.community_id.id,
@@ -218,7 +218,7 @@ async function getGameData() {
     setSessionDataInStore(data.sessions);
     loadAndSetAttendeesInStore(
       // @ts-expect-error crazy ramda stuff that is too complicated
-      R.compose(R.uniq, R.flatten, R.pluck("rsvps"))(data.sessions) as string[],
+      R.compose(R.uniq, R.flatten, R.pluck("rsvps"))(data.sessions) as string[]
     );
     gameData.value = data;
 
@@ -275,7 +275,7 @@ function setSubscription(gameId: number) {
           return session;
         });
         const attendeesToLoad = payload.new.rsvps.filter(
-          (rsvp: string) => !gameStore.attendees[rsvp],
+          (rsvp: string) => !gameStore.attendees[rsvp]
         );
         attendeesToLoad.forEach((member: string) =>
           supabase
@@ -285,9 +285,9 @@ function setSubscription(gameId: number) {
             .single()
             .then(({ data }) => {
               gameStore.attendees[member] = data;
-            }),
+            })
         );
-      },
+      }
     )
     .subscribe();
 }
