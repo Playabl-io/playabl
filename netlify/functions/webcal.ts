@@ -46,12 +46,12 @@ export const handler: Handler = async (event) => {
 
   const PLAYER_ROLE = "player";
   function sessionToIcal({ session, userId, role }) {
-    let title = `RUNNING - ${session.game_id.title}`;
+    let title = `${session.game_id.title} (Game Facilitator)`;
     if (role === PLAYER_ROLE) {
       title =
         session.rsvps.indexOf(userId) < session.participant_count
-          ? `CONFIRMED - ${session.game_id.title}`
-          : `WAITLIST - ${session.game_id.title}`;
+          ? `${session.game_id.title} (Confirmed Player)`
+          : `${session.game_id.title} (Waitlisted Player)`;
     }
     return {
       uid: `${session.id}#${userId}@playabl`,
