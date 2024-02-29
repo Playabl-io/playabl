@@ -58,6 +58,9 @@ async function setupUserProfile(id: string) {
   store.userSettings = profile?.user_settings;
   loadInProgress.value = false;
   store.authState = "signedin";
+  if (!notificationSubscription.value) {
+    loadNotificationsAndSubscribe(profile.id);
+  }
 }
 
 function handleUserInit(session: Session) {
@@ -66,9 +69,6 @@ function handleUserInit(session: Session) {
   setupUserProfile(session.user.id);
   triggerUserAccessLoad(session.user.id);
   getFlags(session.user.id);
-  if (!notificationSubscription.value) {
-    loadNotificationsAndSubscribe();
-  }
 
   if (route.query.redirect && typeof route.query.redirect === "string") {
     log({
@@ -129,13 +129,12 @@ onUnmounted(() => {
   supabaseSubscription.value?.unsubscribe();
 });
 
-async function loadNotificationsAndSubscribe() {
-  if (!store.user?.id) return;
+async function loadNotificationsAndSubscribe(id: string) {
   const { data, error } = await supabase
     .from("notifications")
     .select("*")
     .eq("read", false)
-    .eq("user_id", store.user.id);
+    .eq("user_id", id);
   if (error) {
     log({ error });
   }
@@ -143,14 +142,14 @@ async function loadNotificationsAndSubscribe() {
     store.notifications = data;
   }
   const subscription = supabase
-    .channel(`public:notifications:user_id=eq.${store.user.id}`)
+    .channel(`public:notifications:user_id=eq.${id}`)
     .on(
       "postgres_changes",
       {
         event: "INSERT",
         schema: "public",
         table: "notifications",
-        filter: `user_id=eq.${store.user.id}`,
+        filter: `user_id=eq.${id}`,
       },
       (payload) => {
         store.notifications = store.notifications.concat(
@@ -164,7 +163,7 @@ async function loadNotificationsAndSubscribe() {
         event: "UPDATE",
         schema: "public",
         table: "notifications",
-        filter: `user_id=eq.${store.user.id}`,
+        filter: `user_id=eq.${id}`,
       },
       (payload) => {
         store.notifications = store.notifications.map((notification) => {
