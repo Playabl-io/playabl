@@ -103,6 +103,16 @@
             your RSVP status when waitlisted. You will continue to receive
             emails when promoted from the waitlist.
           </p>
+          <p class="mt-2">
+            For Google Calendar you may need to
+            <a
+              href="https://calendar.google.com/calendar/u/0/syncselect"
+              target="_blank"
+              class="text-blue-700 underline"
+            >
+              enable synchronization after subscribing.
+            </a>
+          </p>
         </Well>
         <div v-if="store.userWebCalId" class="mt-3">
           <p class="text-sm font-semibold">
