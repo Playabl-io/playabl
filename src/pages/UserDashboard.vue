@@ -26,7 +26,7 @@
           >
             <p class="text-sm font-semibold mb-3">Your facilitator</p>
             <p class="grow">
-              {{ db.playerHistory[session.creator_id].bio || "No bio set" }}
+              {{ db.playerHistory[session.creator_id]?.bio || "No bio set" }}
             </p>
             <div class="flex gap-4 mt-4">
               <MemberCheckAvatar
