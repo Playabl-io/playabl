@@ -142,6 +142,28 @@ export async function getCommunityMemberCount(id: string) {
     .eq("community_id", id);
 }
 
+export async function isCommunityNameAvailable({
+  name,
+  id,
+}: {
+  name: string;
+  id: string;
+}) {
+  const { error, status } = await supabase
+    .from("communities")
+    .select("id")
+    .eq("name", name)
+    .neq("id", id)
+    .is("deleted_at", null)
+    .single();
+  if (error && status === 406) {
+    return true;
+  } else if (error) {
+    log({ error });
+  }
+  return false;
+}
+
 export async function isShortNameAvailable({
   shortName,
   id,
@@ -176,7 +198,7 @@ export async function leaveCommunity(communityId: string, userId = "") {
         headers: {
           token: session.access_token,
         },
-      },
+      }
     )
     .catch((error) => {
       log({ error });

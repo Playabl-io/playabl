@@ -1,5 +1,8 @@
 <template>
   <SectionContainer>
+    <CommunityNameChange />
+  </SectionContainer>
+  <SectionContainer>
     <CommunityShortName />
   </SectionContainer>
   <SectionContainer>
@@ -63,6 +66,7 @@ import EditCommunityInfo from "./EditCommunityInfo.vue";
 import CommunityEmailSettings from "./CommunityEmailSettings.vue";
 import CommunityShortName from "./CommunityShortName.vue";
 import AllowPreSeat from "./AllowPreSeat.vue";
+import CommunityNameChange from "./CommunityNameChange.vue";
 
 const editInfoDrawerOpen = ref(false);
 
