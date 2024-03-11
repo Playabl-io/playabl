@@ -205,12 +205,12 @@
             <p class="text-xs text-slate-700 mt-2">
               Don't have one? Consider adopting or creating one based off of
               <a
-                href="https://www.gauntlet-rpg.com/community-code-of-conduct.html"
+                href="https://openhearthgaming.com/code-of-conduct"
                 target="_blank"
                 rel="noreferrer noopener"
                 class="text-brand-500 font-semibold hover:underline"
               >
-                The Gauntlet's
+                Open Hearth Gaming
               </a>
               or the
               <a
