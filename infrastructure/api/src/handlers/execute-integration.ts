@@ -36,7 +36,10 @@ export const processGameIntegration = async (event: SNSEvent) => {
     text: "New game added to Playabl",
     creator: data?.username,
     name: entity.title,
-    description: entity.description_as_flat_text,
+    description:
+      entity.description_as_flat_text.length > 2048
+        ? entity.description_as_flat_text.substring(0, 2040).concat("...")
+        : entity.description_as_flat_text,
     url: `https://app.playabl.io/games/${entity.id}`,
     imageUrl: publicUrl,
   });
