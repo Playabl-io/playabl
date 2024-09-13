@@ -55,6 +55,10 @@ export default [
   "Warhammer",
 ];
 
+/**
+ * Note: adding new tags is always possible, but changing the spelling or capitalization
+ * of one can lead to a mismatch in the community info and require manual fixing.
+ */
 export const GAME_TAGS = [
   "Call of Cthulhu",
   "card-based",
@@ -71,7 +75,7 @@ export const GAME_TAGS = [
   "LARP",
   "Narrative",
   "OSR",
-  "PbtA",
+  "PBTA",
   "RiT",
   "Rules light",
   "Sci-fi",
