@@ -53,6 +53,7 @@ export const handler: Handler = async (event) => {
           joiningUserName: user.username,
           gameId: game.id,
           gameName: game.title,
+          sessionStartTime: session.start_time,
         });
       } catch (error) {
         error.message =
@@ -249,6 +250,7 @@ async function notifyGameCreator({
   joiningUserName,
   gameId,
   gameName,
+  sessionStartTime,
 }) {
   const user = await getUserProfile({ userId: creatorId });
   const { data, error } = await supabase
@@ -263,6 +265,7 @@ async function notifyGameCreator({
       read: false,
       custom_fields: {
         send_notification_email: user.email_preferences.rsvp_to_my_game_enabled,
+        session_start_time: sessionStartTime,
       },
     })
     .select()

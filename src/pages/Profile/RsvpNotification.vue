@@ -14,6 +14,11 @@
             {{ formatRelative(new Date(notification.created_at), new Date()) }}
           </p>
         </div>
+        <div class="flex items-center gap-2" v-if="sessionStartTime">
+          <p class="text-slate-700">
+            {{ sessionStartTime }}
+          </p>
+        </div>
       </div>
     </div>
     <div class="flex justify-end gap-2 mt-3">
@@ -25,11 +30,12 @@
 </template>
 <script setup lang="ts">
 import { PropType, computed } from "vue";
-import { formatRelative } from "date-fns";
+import { formatRelative, format } from "date-fns";
 import { CheckCircleIcon } from "@heroicons/vue/24/solid";
 import { ClockIcon } from "@heroicons/vue/24/outline";
 import { Notification } from "@/typings/Notification";
 import LinkButton from "@/components/Buttons/LinkButton.vue";
+
 const props = defineProps({
   notification: {
     type: Object as PropType<Notification>,
@@ -40,5 +46,13 @@ const emit = defineEmits(["clear"]);
 const relative = computed(() => {
   const url = new URL(props.notification.related_url ?? "");
   return url?.pathname;
+});
+const sessionStartTime = computed(() => {
+  if (props.notification.custom_fields?.session_start_time) {
+    return format(
+      new Date(Number(props.notification.custom_fields?.session_start_time)),
+      "'Session starting' EEE, MMM do h:mm a O"
+    );
+  }
 });
 </script>
