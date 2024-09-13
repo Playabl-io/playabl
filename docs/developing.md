@@ -67,7 +67,7 @@ Realtime replication is not turned on by default and has to be manually activate
 
 ## Local user
 
-There are two users seeded - a community admin and a player.`developer@playabl.io` is the admin, and `player@playbl.io` is the player. Both have the password `let-me-in-please`.
+There are two users seeded - a community admin and a player.`developer@playabl.io` is the admin, and `player@playabl.io` is the player. Both have the password `let-me-in-please`.
 
 ## Common development commands
 
