@@ -27,6 +27,10 @@
           <div class="flex flex-col items-center">
             <template v-if="session.has_openings">
               <p class="font-semibold text-xs">Seats available</p>
+              <p class="sr-only">
+                {{ session.participant_count - session.rsvps.length }} seats
+                available
+              </p>
               <CheckCircleIcon class="h-5 w-5 text-green-700" />
             </template>
 
@@ -39,7 +43,7 @@
           </div>
           <div class="ml-auto relative">
             <Menu>
-              <MenuButton>
+              <MenuButton aria-label="View game or RSVP">
                 <EllipsisHorizontalCircleIcon class="h-6 w-6" />
               </MenuButton>
               <transition
@@ -113,7 +117,11 @@
       </div>
     </div>
     <section class="px-3 pt-3 grid gap-2">
-      <div v-if="isPlayingInGame || isWaitlisted" class="flex justify-end">
+      <div
+        v-if="isPlayingInGame || isWaitlisted"
+        class="flex justify-end"
+        aria-label="Your RSVP status"
+      >
         <div
           v-if="isPlayingInGame"
           class="p-2 rounded-md bg-green-200 flex items-center space-x-1 shadow-sm"
@@ -138,6 +146,7 @@
               session.game_id.community_id.id
             }`"
             class="text-sm line-clamp-2 underline decoration-dashed"
+            aria-label="Hosting community"
           >
             {{ session.game_id.community_id.name }}
           </router-link>
@@ -175,7 +184,7 @@
               intervalToDuration({
                 start: session.start_time,
                 end: session.end_time,
-              }),
+              })
             )
           }}
         </p>
@@ -219,7 +228,7 @@
                     intervalToDuration({
                       start: related.start_time,
                       end: related.end_time,
-                    }),
+                    })
                   )
                 }}
               </li>
@@ -300,12 +309,12 @@ const isWithinRange = computed(() =>
     session: props.session,
     starttime: store.userSettings?.starttime,
     endtime: store.userSettings?.endtime,
-  }),
+  })
 );
 
 const { data: gameCoverImage } = useSWRV(
   props.session.game_id.cover_image,
-  getCoverImageUrl,
+  getCoverImageUrl
 );
 const { data } = useSWRV<Profile>(props.session.creator_id, loadProfile);
 
@@ -329,7 +338,7 @@ const isWaitlisted = computed(() => {
 });
 
 const relatedSessions = computed(() =>
-  props.allGameSessions.filter((session) => session.id !== props.session.id),
+  props.allGameSessions.filter((session) => session.id !== props.session.id)
 );
 
 const otherReservableSessions = computed(() =>
@@ -339,8 +348,8 @@ const otherReservableSessions = computed(() =>
       session,
       userId: store.user?.id,
       hostId: props.session.creator_id,
-    }),
-  ),
+    })
+  )
 );
 
 const canRsvpToRelatedSessions = computed(() => {
@@ -349,7 +358,7 @@ const canRsvpToRelatedSessions = computed(() => {
 });
 
 const sessionPlacement = computed(() =>
-  props.allGameSessions.findIndex((session) => session.id === props.session.id),
+  props.allGameSessions.findIndex((session) => session.id === props.session.id)
 );
 
 async function rsvpToSession() {

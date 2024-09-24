@@ -1,4 +1,5 @@
 <template>
+  <div class="sr-only">Loading</div>
   <div class="spinner flex space-x-1">
     <div class="bounce1" :class="`bg-${color}`"></div>
     <div class="bounce2" :class="`bg-${color}`"></div>

@@ -6,6 +6,7 @@
         <Menu>
           <MenuButton
             class="border border-solid border-gray-200 bg-white bg-opacity-70 hover:bg-opacity-100 transition-all rounded-md h-10 w-10 grid place-content-center"
+            aria-label="Filter sessions"
           >
             <AdjustmentsHorizontalIcon class="h-6 w-6" />
           </MenuButton>
@@ -205,7 +206,7 @@ function onDateChange(date: Date) {
 
 const sessionsByGame = computed(() => {
   const groupByGame = R.groupBy((session: sessionWithGame) =>
-    String(session.game_id.id),
+    String(session.game_id.id)
   );
   return groupByGame(sessions.value);
 });
@@ -218,17 +219,17 @@ const filteredSessions = computed(() => {
   let filteredSessions = sessions.value;
   if (excludeOwnGames.value) {
     filteredSessions = sessions.value.filter(
-      (session) => session.creator_id !== store.user?.id,
+      (session) => session.creator_id !== store.user?.id
     );
   }
   if (excludeRsvpdGames.value) {
     filteredSessions = filteredSessions.filter(
-      (session) => !session.rsvps.includes(store.user?.id || ""),
+      (session) => !session.rsvps.includes(store.user?.id || "")
     );
   }
   if (!includeCompleted.value) {
     filteredSessions = filteredSessions.filter((session) =>
-      isAfter(new Date(session.start_time), now.value),
+      isAfter(new Date(session.start_time), now.value)
     );
   }
   return filteredSessions;
@@ -244,13 +245,13 @@ watch(
   () => referenceDate.value,
   (newVal) => {
     sortOption.value.value(newVal);
-  },
+  }
 );
 watch(
   () => sortOption.value,
   (newVal) => {
     newVal.value(referenceDate.value);
-  },
+  }
 );
 
 async function refreshSessions() {
