@@ -48,7 +48,7 @@
     </div>
     <div class="items-center relative">
       <Menu>
-        <MenuButton aria-label="Available actions">
+        <MenuButton aria-label="View game or RSVP">
           <EllipsisHorizontalCircleIcon class="h-6 w-6" />
         </MenuButton>
         <transition

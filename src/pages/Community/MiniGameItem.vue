@@ -43,8 +43,7 @@
           </div>
           <div class="ml-auto relative">
             <Menu>
-              <MenuButton>
-                <p class="sr-only">View game or RSVP</p>
+              <MenuButton aria-label="View game or RSVP">
                 <EllipsisHorizontalCircleIcon class="h-6 w-6" />
               </MenuButton>
               <transition
