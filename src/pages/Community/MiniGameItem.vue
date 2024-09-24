@@ -116,12 +116,12 @@
     </div>
     <section class="px-3 pt-3 grid gap-2">
       <div
-        v-if="isPlayingInGame || isWaitlisted || true"
+        v-if="isPlayingInGame || isWaitlisted"
         class="flex justify-end"
         aria-label="Your RSVP status"
       >
         <div
-          v-if="isPlayingInGame || true"
+          v-if="isPlayingInGame"
           class="p-2 rounded-md bg-green-200 flex items-center space-x-1 shadow-sm"
         >
           <p class="text-sm font-semibold">RSVP'd</p>
