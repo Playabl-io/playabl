@@ -27,7 +27,10 @@
           <div class="flex flex-col items-center">
             <template v-if="session.has_openings">
               <p class="font-semibold text-xs">Seats available</p>
-              <p class="sr-only">Yes</p>
+              <p class="sr-only">
+                {{ session.participant_count - session.rsvps.length }} seats
+                available
+              </p>
               <CheckCircleIcon class="h-5 w-5 text-green-700" />
             </template>
 
