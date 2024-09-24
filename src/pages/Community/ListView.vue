@@ -1,13 +1,13 @@
 <template>
   <section class="relative">
     <div class="flex items-center gap-2 mb-4">
-      <GhostButton @click="priorMonth">
+      <GhostButton aria-label="Previous month" @click="priorMonth">
         <ChevronLeftIcon class="h-6 w-6" />
       </GhostButton>
       <Heading as="h3" level="h4" class="w-64 text-center">
         {{ format(referenceDate, "MMMM, yyyy") }}
       </Heading>
-      <GhostButton @click="nextMonth">
+      <GhostButton aria-label="Next month" @click="nextMonth">
         <ChevronRightIcon class="h-6 w-6" />
       </GhostButton>
     </div>
@@ -17,37 +17,21 @@
     <div class="flex gap-2">
       <component
         :is="view === 'tile' ? SecondaryButton : GhostButton"
+        class="flex gap-1 items-center"
+        :aria-selected="view === 'tile'"
         @click="view = 'tile'"
       >
-        <Tooltip>
-          <template #trigger="{ toggleTooltip }">
-            <Squares2X2Icon
-              class="h-5 w-5 text-slate-700"
-              @mouseenter="toggleTooltip"
-              @mouseleave="toggleTooltip"
-              @focus="toggleTooltip"
-              @blur="toggleTooltip"
-            />
-          </template>
-          <template #tooltip> Display as cards </template>
-        </Tooltip>
+        <Squares2X2Icon class="h-5 w-5 text-slate-700" />
+        <p class="text-xs">Display as cards</p>
       </component>
       <component
         :is="view === 'list' ? SecondaryButton : GhostButton"
+        class="flex gap-1 items-center"
+        :aria-selected="view === 'list'"
         @click="view = 'list'"
       >
-        <Tooltip>
-          <template #trigger="{ toggleTooltip }">
-            <ListBulletIcon
-              class="h-5 w-5 text-slate-700"
-              @mouseenter="toggleTooltip"
-              @mouseleave="toggleTooltip"
-              @focus="toggleTooltip"
-              @blur="toggleTooltip"
-            />
-          </template>
-          <template #tooltip> Display as list </template>
-        </Tooltip>
+        <ListBulletIcon class="h-5 w-5 text-slate-700" />
+        <p class="text-xs">Display as list</p>
       </component>
     </div>
     <ul
@@ -56,6 +40,7 @@
         'grid md:grid-cols-2 lg:grid-cols-3 gap-6 items-start': view === 'tile',
         grid: view === 'list',
       }"
+      aria-live="polite"
     >
       <div v-if="loading" class="col-span-full my-3">
         <LoadingSpinner color="brand-500" />
@@ -64,10 +49,10 @@
         v-if="view === 'list'"
         class="grid list-grid gap-2 p-2 font-semibold text-xs"
       >
-        <p>Created by</p>
-        <p>Game title and system</p>
-        <p>Time</p>
-        <p class="md:justify-self-center">Open seats</p>
+        <p id="created-by">Created by</p>
+        <p id="game-title-system">Game title and system</p>
+        <p id="time">Time</p>
+        <p id="open-seats">Open seats</p>
       </li>
       <component
         :is="listComponent"
@@ -96,7 +81,6 @@ import SecondaryButton from "@/components/Buttons/SecondaryButton.vue";
 import MiniGameItem from "./MiniGameItem.vue";
 import ListViewItem from "./ListViewItem.vue";
 import { sessionWithGame } from "../IndexPage.vue";
-import Tooltip from "@/components/Tooltip.vue";
 
 const props = defineProps({
   sessions: {
@@ -129,7 +113,7 @@ const monthSessions = computed(() => {
   const start = startOfMonth(props.referenceDate).getTime();
   const end = endOfMonth(props.referenceDate).getTime();
   return props.sessions.filter(
-    (session) => session.start_time >= start && session.end_time <= end,
+    (session) => session.start_time >= start && session.end_time <= end
   );
 });
 

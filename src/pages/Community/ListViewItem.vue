@@ -10,7 +10,10 @@
       :avatar-url="data.avatar_url"
     />
     <div>
-      <router-link :to="`/games/${session.game_id.id}`">
+      <router-link
+        :to="`/games/${session.game_id.id}`"
+        aria-describedby="game-title-system"
+      >
         <p class="text-md">
           {{ session.game_id.title }}
         </p>
@@ -19,7 +22,7 @@
         </p>
       </router-link>
     </div>
-    <div class="flex flex-col gap-1">
+    <div class="flex flex-col gap-1" aria-describedby="time">
       <p class="text-sm">
         {{ format(session.start_time, "EEE, MMM do h:mm aa") }} -
         {{ format(session.end_time, "EEE, MMM do h:mm aa") }}
@@ -30,29 +33,22 @@
             intervalToDuration({
               start: session.start_time,
               end: session.end_time,
-            }),
+            })
           )
         }}
       </p>
     </div>
-    <div
-      class="text-xs md:justify-self-center flex flex-col gap-2 items-center"
-    >
-      <div
-        class="h-3 w-3"
-        :class="[
-          session.has_openings
-            ? 'bg-green-500 rounded-full'
-            : 'bg-red-700 rounded-sm',
-        ]"
-      />
-      <p v-if="!session.has_openings">
+    <div class="text-xs" aria-describedby="open-seats">
+      <p v-if="session.has_openings">
+        {{ session.participant_count - session.rsvps.length }} seats available
+      </p>
+      <p v-else>
         {{ session.rsvps.length - session.participant_count }} waitlisted
       </p>
     </div>
     <div class="items-center relative">
       <Menu>
-        <MenuButton>
+        <MenuButton aria-label="Available actions">
           <EllipsisHorizontalCircleIcon class="h-6 w-6" />
         </MenuButton>
         <transition
@@ -147,7 +143,7 @@
                   intervalToDuration({
                     start: related.start_time,
                     end: related.end_time,
-                  }),
+                  })
                 )
               }}
             </li>
@@ -207,7 +203,7 @@ const canRsvp = userCanRsvp({
 });
 
 const relatedSessions = computed(() =>
-  props.allGameSessions.filter((session) => session.id !== props.session.id),
+  props.allGameSessions.filter((session) => session.id !== props.session.id)
 );
 
 const otherReservableSessions = computed(() =>
@@ -217,8 +213,8 @@ const otherReservableSessions = computed(() =>
       session,
       userId: store.user?.id,
       hostId: props.session.creator_id,
-    }),
-  ),
+    })
+  )
 );
 
 const canRsvpToRelatedSessions = computed(() => {
@@ -227,7 +223,7 @@ const canRsvpToRelatedSessions = computed(() => {
 });
 
 const sessionPlacement = computed(() =>
-  props.allGameSessions.indexOf(props.session),
+  props.allGameSessions.indexOf(props.session)
 );
 
 async function rsvpToSession() {
