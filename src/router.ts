@@ -47,7 +47,7 @@ const routes = [
   },
   {
     path: "/invite/:invite_id",
-    component: () => import("@/pages/InvitePage.vue"),
+    component: () => import("@/pages/InviteShell.vue"),
     meta: {
       title: "Playabl",
     },
