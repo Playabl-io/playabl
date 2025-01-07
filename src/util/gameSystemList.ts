@@ -23,6 +23,7 @@ export default [
   "Monster of the Week",
   "Mörk Borg",
   "Mothership",
+  "Mausritter",
   "Night Witches",
   "Numenera",
   "Old-School Essentials",
