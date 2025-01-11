@@ -29,9 +29,11 @@ jobs:
       - uses: supabase/setup-cli@v1
         with:
           version: latest
+      - run: supabase init
+      - run: supabase db start
 
-      - name: Start Supabase local development setup
-        run: supabase start
+      # - name: Start Supabase local development setup
+      #   run: supabase start
 
       - name: Verify generated types are checked in
         run: |
