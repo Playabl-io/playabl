@@ -20,17 +20,12 @@
         <PrimaryButton
           class="w-full mt-4"
           :is-loading="joining"
-          :disabled="notSignedIn || joining"
+          :disabled="joining"
           @click="joinCommunity"
         >
           Join now
         </PrimaryButton>
       </div>
-      <SignUpModal
-        :open="notSignedIn"
-        :allow-dismiss="false"
-        @signed-in="notSignedIn = false"
-      />
     </div>
   </BaseTemplate>
 </template>
@@ -43,7 +38,6 @@ import { onMounted, ref } from "vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import PrimaryButton from "@/components/Buttons/PrimaryButton.vue";
 import useToast from "@/components/Toast/useToast";
-import SignUpModal from "@/components/Modals/SignUpModal.vue";
 
 const { showSuccess, showError } = useToast();
 
@@ -57,7 +51,6 @@ const inviteInfo = ref<{
 const isLoading = ref(false);
 const joining = ref(false);
 const alreadyJoined = ref(false);
-const notSignedIn = ref(false);
 
 async function loadCommunityInvite() {
   const { data } = await supabase
@@ -93,7 +86,7 @@ async function checkCommunityMember() {
 async function joinCommunity() {
   joining.value = true;
   const { data } = await fetch(
-    `/.netlify/functions/joinThroughInviteLink?inviteId=${route.params.invite_id}&userId=${store.user?.id}&communityId=${inviteInfo.value?.community_id.id}`,
+    `/.netlify/functions/joinThroughInviteLink?inviteId=${route.params.invite_id}&userId=${store.user?.id}&communityId=${inviteInfo.value?.community_id.id}`
   )
     .then((response) => response.json())
     .catch(() => {
@@ -110,9 +103,6 @@ async function joinCommunity() {
 
 onMounted(async () => {
   isLoading.value = true;
-  if (!store.user?.id) {
-    notSignedIn.value = true;
-  }
   await loadCommunityInvite();
   await checkCommunityMember();
   isLoading.value = false;
