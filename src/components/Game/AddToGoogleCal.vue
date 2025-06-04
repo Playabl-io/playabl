@@ -34,12 +34,12 @@ const props = defineProps({
 
 const formattedStartTime = computed(() => {
   const dateString = format(props.startTime, "yyyyMMdd");
-  const timeString = format(props.startTime, "HHmmssX");
+  const timeString = format(props.startTime, "HHmmss");
   return `${dateString}T${timeString}`;
 });
 const formattedEndTime = computed(() => {
   const dateString = format(props.endTime, "yyyyMMdd");
-  const timeString = format(props.endTime, "HHmmssX");
+  const timeString = format(props.endTime, "HHmmss");
   return `${dateString}T${timeString}`;
 });
 
